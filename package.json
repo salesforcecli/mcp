@@ -2,15 +2,19 @@
   "name": "@salesforce/mcp",
   "version": "0.0.1",
   "description": "MCP Server for interacting with Salesforce instances",
-  "main": "lib/index",
+  "bin": {
+    "sf-mcp-server": "lib/index.js"
+  },
   "types": "lib/index.d.ts",
   "license": "Apache-2.0",
   "scripts": {
     "build": "wireit",
+    "build:watch": "yarn build --watch",
     "clean": "sf-clean",
     "clean-all": "sf-clean all",
     "compile": "wireit",
     "docs": "sf-docs",
+    "exec-perms": "shx chmod +x lib/*.js",
     "fix-license": "eslint src test --fix --rule \"header/header: [2]\"",
     "format": "wireit",
     "link-check": "wireit",
@@ -18,6 +22,7 @@
     "lint-fix": "yarn sf-lint --fix",
     "prepack": "sf-prepack",
     "prepare": "sf-install",
+    "start": "yarn build && npm link && mcp-inspector sf-mcp-server",
     "test": "wireit",
     "test:nuts": "nyc mocha \"**/*.nut.ts\" --slow 4500 --timeout 600000 --parallel",
     "test:nuts:local": "mocha \"**/local/*.nut.ts\" --slow 4500 --timeout 600000 --parallel",
@@ -34,6 +39,7 @@
     "messages"
   ],
   "dependencies": {
+    "@jsforce/jsforce-node": "^3.8.0",
     "@modelcontextprotocol/sdk": "^1.10.2",
     "@salesforce/core": "^8.9.1",
     "@salesforce/kit": "^3.1.6",
@@ -42,6 +48,7 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
+    "@modelcontextprotocol/inspector": "^0.10.2",
     "@salesforce/cli-plugins-testkit": "^5.3.39",
     "@salesforce/dev-scripts": "11.0.2",
     "eslint-config-salesforce-license": "^1.0.1",
@@ -61,7 +68,7 @@
       ]
     },
     "compile": {
-      "command": "tsc -p . --pretty --incremental",
+      "command": "tsc -p . --pretty --incremental && yarn exec-perms",
       "files": [
         "src/**/*.ts",
         "**/tsconfig.json",
