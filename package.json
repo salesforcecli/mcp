@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/mcp",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "MCP Server for interacting with Salesforce instances",
   "main": "lib/index",
   "types": "lib/index.d.ts",
