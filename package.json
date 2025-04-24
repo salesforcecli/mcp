@@ -1,0 +1,138 @@
+{
+  "name": "@salesforce/mcp",
+  "version": "0.0.0",
+  "description": "MCP Server for interacting with Salesforce instances",
+  "main": "lib/index",
+  "types": "lib/index.d.ts",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "wireit",
+    "clean": "sf-clean",
+    "clean-all": "sf-clean all",
+    "compile": "wireit",
+    "docs": "sf-docs",
+    "fix-license": "eslint src test --fix --rule \"header/header: [2]\"",
+    "format": "wireit",
+    "link-check": "wireit",
+    "lint": "wireit",
+    "lint-fix": "yarn sf-lint --fix",
+    "prepack": "sf-prepack",
+    "prepare": "sf-install",
+    "test": "wireit",
+    "test:nuts": "nyc mocha \"**/*.nut.ts\" --slow 4500 --timeout 600000 --parallel",
+    "test:nuts:local": "mocha \"**/local/*.nut.ts\" --slow 4500 --timeout 600000 --parallel",
+    "test:only": "wireit"
+  },
+  "repository": "salesforcecli/mcp",
+  "bugs": {
+    "url": "https://github.com/salesforcecli/mcp/issues"
+  },
+  "homepage": "https://github.com/salesforcecli/mcp",
+  "files": [
+    "lib",
+    "!lib/**/*.map",
+    "messages"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.10.2",
+    "@salesforce/core": "^8.9.1",
+    "@salesforce/kit": "^3.1.6",
+    "@salesforce/source-deploy-retrieve": "^12.19.3",
+    "@salesforce/ts-types": "^2.0.11",
+    "zod": "^3.24.3"
+  },
+  "devDependencies": {
+    "@salesforce/cli-plugins-testkit": "^5.3.39",
+    "@salesforce/dev-scripts": "11.0.2",
+    "eslint-config-salesforce-license": "^1.0.1",
+    "eslint-plugin-sf-plugin": "^1.20.20",
+    "ts-node": "^10.9.2",
+    "ts-patch": "^3.3.0",
+    "typescript": "^5.8.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "wireit": {
+    "build": {
+      "dependencies": [
+        "compile",
+        "lint"
+      ]
+    },
+    "compile": {
+      "command": "tsc -p . --pretty --incremental",
+      "files": [
+        "src/**/*.ts",
+        "**/tsconfig.json",
+        "messages/**"
+      ],
+      "output": [
+        "lib/**",
+        "*.tsbuildinfo"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "format": {
+      "command": "prettier --write \"+(src|test|schemas)/**/*.+(ts|js|json)|command-snapshot.json\"",
+      "files": [
+        "src/**/*.ts",
+        "test/**/*.ts",
+        "schemas/**/*.json",
+        "command-snapshot.json",
+        ".prettier*"
+      ],
+      "output": []
+    },
+    "lint": {
+      "command": "eslint src test --color --cache --cache-location .eslintcache",
+      "files": [
+        "src/**/*.ts",
+        "test/**/*.ts",
+        "messages/**",
+        "**/.eslint*",
+        "**/tsconfig.json"
+      ],
+      "output": []
+    },
+    "test:compile": {
+      "command": "tsc -p \"./test\" --pretty",
+      "files": [
+        "test/**/*.ts",
+        "**/tsconfig.json"
+      ],
+      "output": []
+    },
+    "test": {
+      "dependencies": [
+        "test:only",
+        "test:compile",
+        "link-check"
+      ]
+    },
+    "test:only": {
+      "command": "nyc mocha \"test/**/*.test.ts\"",
+      "env": {
+        "FORCE_COLOR": "2"
+      },
+      "files": [
+        "test/**/*.ts",
+        "src/**/*.ts",
+        "**/tsconfig.json",
+        ".mocha*",
+        "!*.nut.ts",
+        ".nycrc"
+      ],
+      "output": []
+    },
+    "link-check": {
+      "command": "node -e \"process.exit(process.env.CI ? 0 : 1)\" || linkinator \"**/*.md\" --skip \"CHANGELOG.md|node_modules|test/|confluence.internal.salesforce.com|my.salesforce.com|localhost|%s\" --markdown --retry --directory-listing --verbosity error",
+      "files": [
+        "./*.md",
+        "./!(CHANGELOG).md",
+        "messages/**/*.md"
+      ],
+      "output": []
+    }
+  }
+}

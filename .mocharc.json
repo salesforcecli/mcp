@@ -1,0 +1,8 @@
+{
+  "require": "test/init.js, ts-node/register, source-map-support/register",
+  "watch-extensions": "ts",
+  "watch-files": ["src", "test"],
+  "recursive": true,
+  "reporter": "spec",
+  "timeout": 5000
+}
