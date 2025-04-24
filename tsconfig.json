@@ -1,0 +1,9 @@
+{
+  "extends": "@salesforce/dev-config/tsconfig-strict",
+  "compilerOptions": {
+    "outDir": "./lib",
+    "strictNullChecks": true,
+    "plugins": [{ "transform": "@salesforce/core/lib/messageTransformer", "import": "messageTransformer" }]
+  },
+  "include": ["src/**/*.ts"]
+}

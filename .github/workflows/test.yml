@@ -1,0 +1,28 @@
+name: tests
+on:
+  push:
+    branches-ignore: [main]
+  workflow_dispatch:
+
+jobs:
+  yarn-lockfile-check:
+    uses: salesforcecli/github-workflows/.github/workflows/lockFileCheck.yml@main
+  # Since the Windows unit tests take much longer, we run the linux unit tests first and then run the windows unit tests in parallel with NUTs
+  linux-unit-tests:
+    needs: yarn-lockfile-check
+    uses: salesforcecli/github-workflows/.github/workflows/unitTestsLinux.yml@main
+  windows-unit-tests:
+    needs: linux-unit-tests
+    uses: salesforcecli/github-workflows/.github/workflows/unitTestsWindows.yml@main
+
+  # Uncomment to enable NUT testing in Github Actions
+  # nuts:
+  #   needs: linux-unit-tests
+  #   uses: salesforcecli/github-workflows/.github/workflows/nut.yml@main
+  #   secrets: inherit
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-latest, windows-latest]
+  #     fail-fast: false
+  #   with:
+  #     os: ${{ matrix.os }}

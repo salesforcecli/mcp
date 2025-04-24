@@ -1,0 +1,10 @@
+name: devScripts
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '50 6 * * 0'
+
+jobs:
+  update:
+    uses: salesforcecli/github-workflows/.github/workflows/devScriptsUpdate.yml@main
+    secrets: inherit

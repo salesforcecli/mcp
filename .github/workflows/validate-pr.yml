@@ -1,0 +1,11 @@
+name: pr-validation
+
+on:
+  pull_request:
+    types: [opened, reopened, edited]
+    # only applies to PRs that want to merge to main
+    branches: [main]
+
+jobs:
+  pr-validation:
+    uses: salesforcecli/github-workflows/.github/workflows/validatePR.yml@main
