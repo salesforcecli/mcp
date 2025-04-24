@@ -34,20 +34,21 @@
     "messages"
   ],
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.10.2",
     "@salesforce/core": "^8.9.1",
     "@salesforce/kit": "^3.1.6",
+    "@salesforce/source-deploy-retrieve": "^12.19.3",
     "@salesforce/ts-types": "^2.0.11",
-    "@modelcontextprotocol/sdk": "^1.10.2",
     "zod": "^3.24.3"
   },
   "devDependencies": {
     "@salesforce/cli-plugins-testkit": "^5.3.39",
     "@salesforce/dev-scripts": "11.0.2",
+    "eslint-config-salesforce-license": "^1.0.1",
     "eslint-plugin-sf-plugin": "^1.20.20",
     "ts-node": "^10.9.2",
     "ts-patch": "^3.3.0",
-    "typescript": "^5.8.3",
-    "eslint-config-salesforce-license": "^1.0.1"
+    "typescript": "^5.8.3"
   },
   "publishConfig": {
     "access": "public"
