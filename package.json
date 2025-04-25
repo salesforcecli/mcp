@@ -22,7 +22,7 @@
     "lint-fix": "yarn sf-lint --fix",
     "prepack": "sf-prepack",
     "prepare": "sf-install",
-    "start": "yarn build && npm link && mcp-inspector sf-mcp-server",
+    "start": "yarn build && yarn exec-perms && npm link && mcp-inspector sf-mcp-server",
     "test": "wireit",
     "test:nuts": "nyc mocha \"**/*.nut.ts\" --slow 4500 --timeout 600000 --parallel",
     "test:nuts:local": "mocha \"**/local/*.nut.ts\" --slow 4500 --timeout 600000 --parallel",
@@ -68,7 +68,7 @@
       ]
     },
     "compile": {
-      "command": "tsc -p . --pretty --incremental && yarn exec-perms",
+      "command": "tsc -p . --pretty --incremental",
       "files": [
         "src/**/*.ts",
         "**/tsconfig.json",

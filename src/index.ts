@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
  * Copyright 2025, Salesforce, Inc.
  *
@@ -14,13 +15,15 @@
  * limitations under the License.
  */
 
-import { exec } from 'node:child_process';
-import { promisify } from 'node:util';
+/* eslint-disable no-console */
+
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { z } from 'zod';
+// import { z } from 'zod';
+import { getOrgs } from './shared/auth.js';
+import { parseAllowedOrgs } from './shared/utils.js';
 
-const execAsync = promisify(exec);
+export const ALLOWED_ORGS = parseAllowedOrgs(process.argv);
 
 // Create server instance
 const server = new McpServer({
@@ -33,19 +36,19 @@ const server = new McpServer({
 });
 
 server.tool(
-  'run-soql-query',
-  'Runs a SOQL query against a Salesforce instance.',
+  'sf-list-all-orgs',
+  'Lists all configured Salesforce orgs.',
   {
-    soql_query: z.string().describe('SOQL query'),
+    // skipConnectionStatus: z.boolean().default(false).optional().describe('Skip checking connection status of the orgs'),
   },
-  async ({ soql_query }) => {
+  async () => {
     try {
-      const { stdout } = await execAsync(`sf data query -q "${soql_query}" -o foo --json`);
+      const orgs = await getOrgs();
       return {
         content: [
           {
             type: 'text',
-            text: `Results of the "${soql_query}" SOQL query in JSON format:\n\n${stdout}`,
+            text: `List of configured Salesforce orgs:\n\n${JSON.stringify(orgs, null, 2)}`,
           },
         ],
       };
@@ -54,41 +57,7 @@ server.tool(
         content: [
           {
             type: 'text',
-            text: `Failed to run the query: ${JSON.stringify(error)}`,
-          },
-        ],
-      };
-    }
-  }
-);
-
-server.tool(
-  'org-details',
-  'Gets details of a locally configured Salesforce org.',
-  {
-    org_name_or_alias: z.string().describe('Name or alias of the Salesforce org'),
-  },
-  async ({ org_name_or_alias }) => {
-    try {
-      const { stdout } = await execAsync(`sf org display -o ${org_name_or_alias} --json`);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const safeStdout = JSON.parse(stdout);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      delete safeStdout.result.accessToken;
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `Results of the "${org_name_or_alias}" org display command in JSON format (access token removed):\n\n${safeStdout}`,
-          },
-        ],
-      };
-    } catch (error) {
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `Failed to get org information: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            text: `Failed to list orgs: ${error instanceof Error ? error.message : 'Unknown error'}`,
           },
         ],
       };
@@ -99,12 +68,11 @@ server.tool(
 async function main(): Promise<void> {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  // eslint-disable-next-line no-console
   console.error('✅ Salesforce MCP Server running on stdio');
+  console.error(' - Allowed orgs:', ALLOWED_ORGS);
 }
 
 main().catch((error) => {
-  // eslint-disable-next-line no-console
   console.error('Fatal error in main():', error);
   process.exit(1);
 });
