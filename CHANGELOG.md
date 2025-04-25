@@ -1,4 +1,13 @@
-## 0.0.1 (2025-04-24)
+## [0.0.2](https://github.com/salesforcecli/mcp/compare/0.0.1...0.0.2) (2025-04-25)
+
+
+### Bug Fixes
+
+* **deps:** bump braces from 3.0.2 to 3.0.3 ([7648323](https://github.com/salesforcecli/mcp/commit/764832387a22e5b6fbd08a9a0624048674902e5b))
+
+
+
+## [0.0.1](https://github.com/salesforcecli/mcp/compare/b72b9dce44b9c97428574a3ce89043e1030c73f9...0.0.1) (2025-04-24)
 
 
 ### Bug Fixes
