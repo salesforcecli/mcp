@@ -1,3 +1,12 @@
+## [0.0.3](https://github.com/salesforcecli/mcp/compare/0.0.2...0.0.3) (2025-04-25)
+
+
+### Bug Fixes
+
+* **deps:** bump micromatch from 4.0.4 to 4.0.8 ([f64a166](https://github.com/salesforcecli/mcp/commit/f64a166b6c6a796da5b9adc9288a7f0474dc26e4))
+
+
+
 ## [0.0.2](https://github.com/salesforcecli/mcp/compare/0.0.1...0.0.2) (2025-04-25)
 
 
