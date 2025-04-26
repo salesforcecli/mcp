@@ -555,10 +555,10 @@
     strip-ansi "6.0.1"
     ts-retry-promise "^0.8.1"
 
-"@salesforce/core@^8.8.0", "@salesforce/core@^8.8.7", "@salesforce/core@^8.9.1":
-  version "8.9.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.9.1.tgz#e31d307d495cc0b916c0b9312fba751714034e0a"
-  integrity sha512-Q1evH4WD7IYWgbcIYCUDi3FTEMgy1KLVg4Xa4GacKLNcOBfom5s6whNsz3gUFESqjndGDwV5Pbgpi0ImC17PfQ==
+"@salesforce/core@^8.10.0", "@salesforce/core@^8.8.0", "@salesforce/core@^8.8.7", "@salesforce/core@^8.9.1":
+  version "8.10.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.10.0.tgz#017fe618b1dd086298d1133a6ed0f509d56ea495"
+  integrity sha512-gStIzB8wPjjwyKZCK8eSfwkLiv9h9qzP64b51U5THBskEjm6Sw6ZyWqZmCzA85FEZ/IM/n1nh4e3R9JoG6Z6mA==
   dependencies:
     "@jsforce/jsforce-node" "^3.7.0"
     "@salesforce/kit" "^3.2.2"
@@ -1167,17 +1167,7 @@ ajv@^6.12.4:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
-ajv@^8.11.0:
-  version "8.12.0"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.12.0.tgz#d1a0527323e22f53562c567c00991577dfbe19d1"
-  integrity sha512-sRu1kpcO9yLtYxBKvqfTeh9KzZEwO3STyX1HT+4CaDzC6HpTGYhIhPIzj9XuKU7KYDwnaeh5hcOwjy1QuJzBPA==
-  dependencies:
-    fast-deep-equal "^3.1.1"
-    json-schema-traverse "^1.0.0"
-    require-from-string "^2.0.2"
-    uri-js "^4.2.2"
-
-ajv@^8.17.1:
+ajv@^8.11.0, ajv@^8.17.1:
   version "8.17.1"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.17.1.tgz#37d9a5c776af6bc92d7f4f9510eba4c0a60d11a6"
   integrity sha512-B/gBuNg5SiMTrPkC+A2+cW0RszwxYmn6VYxB/inlBStS5nx6xHIt/ehKRhIMhqusl7a8LjQoZnjCs5vhwxOQ1g==
@@ -5586,31 +5576,12 @@ semver@7.5.4:
   dependencies:
     lru-cache "^6.0.0"
 
-semver@^6.0.0:
-  version "6.3.0"
-  resolved "https://registry.npmjs.org/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
-  integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
-
-semver@^6.3.1:
+semver@^6.0.0, semver@^6.3.1:
   version "6.3.1"
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.1.tgz#556d2ef8689146e46dcea4bfdd095f3434dffcb4"
   integrity sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==
 
-semver@^7.3.4:
-  version "7.3.5"
-  resolved "https://registry.npmjs.org/semver/-/semver-7.3.5.tgz#0b621c879348d8998e4b0e4be94b3f12e6018ef7"
-  integrity sha512-PoeGJYh8HK4BTO/a9Tf6ZG3veo/A7ZVsYrSA6J8ny9nb3B1VrpkuN+z9OE5wfE5p6H4LchYZsegiQgbJD94ZFQ==
-  dependencies:
-    lru-cache "^6.0.0"
-
-semver@^7.5.4:
-  version "7.6.0"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-7.6.0.tgz#1a46a4db4bffcccd97b743b5005c8325f23d4e2d"
-  integrity sha512-EnwXhrlwXMk9gKu5/flx5sv/an57AkRplG3hTK68W7FRDN+k+OWBj65M7719OkA82XLBxrcX0KSHj+X5COhOVg==
-  dependencies:
-    lru-cache "^6.0.0"
-
-semver@^7.6.0, semver@^7.6.3:
+semver@^7.3.4, semver@^7.5.4, semver@^7.6.0, semver@^7.6.3:
   version "7.7.1"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.7.1.tgz#abd5098d82b18c6c81f6074ff2647fd3e7220c9f"
   integrity sha512-hlq8tAfn0m/61p4BVRcPzIGr6LKiMwo4VM6dGi6pt4qcRkmNzTcWq6eCEjEh+qXjkMDvPlOFFSGwQjoEa6gyMA==
