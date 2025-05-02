@@ -16,17 +16,24 @@
 
 /* eslint-disable no-console */
 
-export function parseAllowedOrgs(args: string[]): Set<string> {
-  // Depending how this server is started, the argv count may vary
-  const executableIndex = args.findIndex((arg) => arg.endsWith('lib/index.js'));
-  const passedArgs = args.slice(executableIndex + 1);
+import { suggestUsername } from '../shared/auth.js';
+import { type ToolTextResponse } from './types.js';
 
+export function parseAllowedOrgs(args: string[]): Set<string> {
+  // Depending how this server is started, the argv values vary
+  // TODO: look at native flags parser.
+  const executableIndex = args.findIndex((arg) => arg.endsWith('.js') || arg.endsWith('sf-mcp-server'));
+  if (executableIndex === -1) {
+    console.error('Something went wrong parsing args.', args);
+    process.exit(1);
+  }
+  const passedArgs = args.slice(executableIndex + 1);
   const usageMessage = `Usage: sf-mcp-server [OPTIONS]
 
 OPTIONS:
   DEFAULT_TARGET_ORG     - Allow access to default orgs (global and local)
   DEFAULT_TARGET_DEV_HUB - Allow access to default dev hubs (global and local)
-  ALLOW_ALL_YIKES        - Allow access to all authenticated orgs (use with caution)
+  ALLOW_ALL_ORGS         - Allow access to all authenticated orgs (use with caution)
   <username or alias>    - Allow access to specific org by username or alias
 
 Examples:
@@ -44,10 +51,10 @@ Documentation:
 
   const allowedOrgs = new Set<string>();
 
-  if (passedArgs.includes('ALLOW_ALL_YIKES')) {
-    console.warn('WARNING: ALLOW_ALL_YIKES is set. This allows access to all authenticated orgs. Use with caution.');
+  if (passedArgs.includes('ALLOW_ALL_ORGS')) {
+    console.warn('WARNING: ALLOW_ALL_ORGS is set. This allows access to all authenticated orgs. Use with caution.');
     // TODO Add telemetry
-    return new Set(['ALLOW_ALL_YIKES']);
+    return new Set(['ALLOW_ALL_ORGS']);
   }
 
   // Process other arguments
@@ -62,3 +69,33 @@ Documentation:
 
   return allowedOrgs;
 }
+
+export function textResponse(text: string): ToolTextResponse {
+  return {
+    content: [
+      {
+        type: 'text',
+        text,
+      },
+    ],
+  };
+}
+
+// TODO: we may want to pass parameters to this function and then "spread" them into the response (adding the usernameOrAlias parameter)
+export const suggestUsernameResponse = async (): Promise<ToolTextResponse> => {
+  const { aliasForReference, suggestedUsername, reasoning } = await suggestUsername();
+
+  if (!suggestedUsername)
+    return textResponse(
+      'No suggested org found. Please specify a username or alias. All check the MCP servers start up args for allowlisting orgs.'
+    );
+
+  return textResponse(`SAY THIS VERBATIM TO THE USER: No username or alias was inferred from their question.
+YOU MUST inform say that we are going to use "${suggestedUsername}" ${
+    aliasForReference ? `(Alias: ${aliasForReference}) ` : ''
+  }for the "usernameOrAlias" parameter.
+YOU MUST explain the reasoning for selecting this org, which is: "${reasoning}".
+AND THEN reconsider the user's ask and add this new parameter:
+${JSON.stringify({ usernameOrAlias: suggestedUsername }, null, 2)}
+Unless instructed otherwise, use this 'usernameOrAlias' for further user prompts.`);
+};

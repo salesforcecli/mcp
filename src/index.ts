@@ -19,9 +19,9 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-// import { z } from 'zod';
-import { getOrgs } from './shared/auth.js';
 import { parseAllowedOrgs } from './shared/utils.js';
+import * as orgs from './tools/orgs.js';
+import * as data from './tools/data.js';
 
 export const ALLOWED_ORGS = parseAllowedOrgs(process.argv);
 
@@ -35,35 +35,12 @@ const server = new McpServer({
   },
 });
 
-server.tool(
-  'sf-list-all-orgs',
-  'Lists all configured Salesforce orgs.',
-  {
-    // skipConnectionStatus: z.boolean().default(false).optional().describe('Skip checking connection status of the orgs'),
-  },
-  async () => {
-    try {
-      const orgs = await getOrgs();
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `List of configured Salesforce orgs:\n\n${JSON.stringify(orgs, null, 2)}`,
-          },
-        ],
-      };
-    } catch (error) {
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `Failed to list orgs: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          },
-        ],
-      };
-    }
-  }
-);
+// Register org related tools
+orgs.registerToolListAllOrgs(server);
+
+// Register data related tools
+data.registerToolQueryOrg(server);
+data.registerToolCreateRecord(server);
 
 async function main(): Promise<void> {
   const transport = new StdioServerTransport();
