@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "salesforce": {
+      "command": "node",
+      "args": ["/Users/ewillhoit/dev/mcp/lib/index.js", "foo"]
+    }
+  }
+}

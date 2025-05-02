@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-module.exports = {
-  extends: ['eslint-config-salesforce-typescript', 'eslint-config-salesforce-license', 'plugin:sf-plugin/library'],
-  rules: {
-    camelcase: 'off',
-  },
+// TOOL RESPONSES
+
+export type ToolTextResponse = {
+  content: Array<{
+    type: 'text';
+    text: string;
+  }>;
 };

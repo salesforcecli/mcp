@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
  * Copyright 2025, Salesforce, Inc.
  *
@@ -14,5 +15,41 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line no-console
-console.log('Coming soon ✨');
+/* eslint-disable no-console */
+
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { parseAllowedOrgs } from './shared/utils.js';
+import * as orgs from './tools/orgs.js';
+import * as data from './tools/data.js';
+
+export const ALLOWED_ORGS = parseAllowedOrgs(process.argv);
+
+// Create server instance
+const server = new McpServer({
+  name: 'sf-mcp-server',
+  version: '0.0.1', // TODO: pull from package.json
+  capabilities: {
+    resources: {},
+    tools: {},
+  },
+});
+
+// Register org related tools
+orgs.registerToolListAllOrgs(server);
+
+// Register data related tools
+data.registerToolQueryOrg(server);
+data.registerToolCreateRecord(server);
+
+async function main(): Promise<void> {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  console.error('✅ Salesforce MCP Server running on stdio');
+  console.error(' - Allowed orgs:', ALLOWED_ORGS);
+}
+
+main().catch((error) => {
+  console.error('Fatal error in main():', error);
+  process.exit(1);
+});

@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-module.exports = {
-  extends: ['eslint-config-salesforce-typescript', 'eslint-config-salesforce-license', 'plugin:sf-plugin/library'],
-  rules: {
-    camelcase: 'off',
-  },
-};
+import { z } from 'zod';
+
+/*
+ * A collection of reuseable Tool parameters
+ */
+
+export const usernameOrAliasParam = z.string().optional()
+  .describe(`The username or alias for the Salesforce org to run this tool against.
+
+AGENT INSTRUCTIONS:
+If it is not clear what username or alias is, this MUST BE empty.
+
+USAGE:
+...for the my-alias org
+...for alias myAlias
+...for my 'test@example.com' user
+...for the 'test@example.com' org`);

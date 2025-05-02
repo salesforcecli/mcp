@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "salesforce": {
+      "command": "node",
+      "args": ["/Users/ewillhoit/dev/mcp/lib/index.js", "ALLOW_ALL_ORGS"]
+    }
+  }
+}
