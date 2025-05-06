@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { getAllAllowedOrgs } from '../shared/auth.js';
 import { textResponse } from '../shared/utils.js';
+import { getDefaultTargetOrg, getDefaultTargetDevHub } from '../shared/auth.js';
 
 export const registerToolListAllOrgs = (server: McpServer): void => {
   server.tool(
@@ -38,6 +40,51 @@ List all orgs
         return textResponse(`List of configured Salesforce orgs:\n\n${JSON.stringify(orgs, null, 2)}`);
       } catch (error) {
         return textResponse(`Failed to list orgs: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
+  );
+};
+
+export const getDefaultOrgParamsSchema = z.object({
+  devHub: z.boolean().optional().default(false).describe(`Force lookup of DevHub org
+AGENT INSTRUCTIONS:
+Users may ask for a DevHub, dev hub, target-dev-hub, etc. Use this parameter only if the user explicitly asks for it.
+
+USAGE EXAMPLE:
+Get my default DevHub
+...for my default dev hub
+...for my default target-dev-hub`),
+});
+
+export type GetDefaultOrgParamsSchema = z.infer<typeof getDefaultOrgParamsSchema>;
+
+export const registerToolGetDefaultOrg = (server: McpServer): void => {
+  server.tool(
+    'sf-get-default-org',
+    `Get the default Salesforce org.
+
+AGENT INSTRUCTIONS:
+ALWAYS notify the user the following 3 pieces of information:
+1. If it is target-org or target-dev-hub
+2. The value of '.location' on the config
+3. The value of '.value' on the config
+
+EXAMPLE USAGE:
+Can you get the default Salesforce org for me
+Get the default Salesforce org
+Get the global default org
+...for the target org
+...for the target dev hub`,
+    getDefaultOrgParamsSchema.shape,
+    async ({ devHub }) => {
+      try {
+        const defaultFromConfig = devHub ? await getDefaultTargetDevHub() : await getDefaultTargetOrg();
+        if (!defaultFromConfig) {
+          return textResponse(`No default ${devHub ? 'target-dev-hub' : 'target-org'} found`);
+        }
+        return textResponse(`Default org: ${JSON.stringify(defaultFromConfig, null, 2)}`);
+      } catch (error) {
+        return textResponse(`Failed to get default org: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
   );

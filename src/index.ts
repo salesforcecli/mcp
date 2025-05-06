@@ -28,18 +28,27 @@ export const ALLOWED_ORGS = parseAllowedOrgs(process.argv);
 // Create server instance
 const server = new McpServer({
   name: 'sf-mcp-server',
-  version: '0.0.1', // TODO: pull from package.json
+  version: '0.0.1',
   capabilities: {
     resources: {},
     tools: {},
   },
 });
 
-// Register org related tools
+// ************************
+// ORG TOOLS
+// ************************
+// list all orgs
 orgs.registerToolListAllOrgs(server);
+// get default org
+orgs.registerToolGetDefaultOrg(server);
 
-// Register data related tools
+// ************************
+// DATA TOOLS
+// ************************
+// query org
 data.registerToolQueryOrg(server);
+// create a record
 data.registerToolCreateRecord(server);
 
 async function main(): Promise<void> {
