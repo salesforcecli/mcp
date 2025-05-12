@@ -16,7 +16,6 @@
 
 /* eslint-disable no-console */
 
-import { suggestUsername } from '../shared/auth.js';
 import { type ToolTextResponse } from './types.js';
 
 export function parseAllowedOrgs(args: string[]): Set<string> {
@@ -70,8 +69,10 @@ Documentation:
   return allowedOrgs;
 }
 
-export function textResponse(text: string): ToolTextResponse {
+// TODO: break into two helpers? One for errors and one for success?
+export function textResponse(text: string, isError: boolean = false): ToolTextResponse {
   return {
+    isError,
     content: [
       {
         type: 'text',
@@ -80,22 +81,3 @@ export function textResponse(text: string): ToolTextResponse {
     ],
   };
 }
-
-// TODO: we may want to pass parameters to this function and then "spread" them into the response (adding the usernameOrAlias parameter)
-export const suggestUsernameResponse = async (): Promise<ToolTextResponse> => {
-  const { aliasForReference, suggestedUsername, reasoning } = await suggestUsername();
-
-  if (!suggestedUsername)
-    return textResponse(
-      'No suggested org found. Please specify a username or alias. All check the MCP servers start up args for allowlisting orgs.'
-    );
-
-  return textResponse(`SAY THIS VERBATIM TO THE USER: No username or alias was inferred from their question.
-YOU MUST inform say that we are going to use "${suggestedUsername}" ${
-    aliasForReference ? `(Alias: ${aliasForReference}) ` : ''
-  }for the "usernameOrAlias" parameter.
-YOU MUST explain the reasoning for selecting this org, which is: "${reasoning}".
-AND THEN reconsider the user's ask and add this new parameter:
-${JSON.stringify({ usernameOrAlias: suggestedUsername }, null, 2)}
-Unless instructed otherwise, use this 'usernameOrAlias' for further user prompts.`);
-};

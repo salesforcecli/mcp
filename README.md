@@ -188,10 +188,17 @@ Add this snippet to your Trae `mcp_settings.json`:
 ### Org Management
 
 - `sf-list-all-orgs` - Lists all configured Salesforce orgs, with optional connection status checking.
+- `sf-suggest-username` - Suggests a username or alias for the Salesforce org.
+- `sf-get-default-org` - Gets the default Salesforce org configuration.
+
+### User Management
+
+- `sf-assign-permission-set` - Assigns a permission set to the user or on behalf of another.
 
 ### Data Management
 
-- `sf-query-org` - Run a SOQL query against a Salesforce org.
+- `sf-query-org` - Runs a SOQL query against a Salesforce org.
+- `sf-create-record` - Creates and inserts a record into a Salesforce or Tooling API object.
 
 ## Debugging
 

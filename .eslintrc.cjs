@@ -18,5 +18,6 @@ module.exports = {
   extends: ['eslint-config-salesforce-typescript', 'eslint-config-salesforce-license', 'plugin:sf-plugin/library'],
   rules: {
     camelcase: 'off',
+    '@typescript-eslint/prefer-nullish-coalescing': 'warn',
   },
 };
