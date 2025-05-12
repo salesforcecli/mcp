@@ -1,8 +1,9 @@
 {
-  "require": "test/init.js, ts-node/register, source-map-support/register",
+  "import": "ts-node/register",
   "watch-extensions": "ts",
   "watch-files": ["src", "test"],
   "recursive": true,
   "reporter": "spec",
-  "timeout": 5000
+  "timeout": 5000,
+  "node-option": ["loader=ts-node/esm"]
 }
