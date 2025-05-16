@@ -19,12 +19,10 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { parseAllowedOrgs } from './shared/utils.js';
+import { parseAllowedOrgs, parseStartupArguments, getEnabledToolsets } from './shared/utils.js';
 import * as orgs from './tools/orgs.js';
 import * as data from './tools/data.js';
 import * as users from './tools/users.js';
-
-export const ALLOWED_ORGS = parseAllowedOrgs(process.argv);
 
 // Create server instance
 const server = new McpServer({
@@ -36,31 +34,46 @@ const server = new McpServer({
   },
 });
 
+const { values, positionals } = parseStartupArguments();
+const { toolsets } = values;
+
+// Toolsets will always be set. It is 'all' by default
+const availableToolsets = ['all', 'orgs', 'data', 'users'];
+const enabledToolsets = getEnabledToolsets(availableToolsets, toolsets);
+const all = enabledToolsets.has('all');
+
+export const ALLOWED_ORGS = parseAllowedOrgs(positionals);
+
 // TODO: Should we add annotations to our tools? https://modelcontextprotocol.io/docs/concepts/tools#tool-definition-structure
+// TODO: Move tool names into a shared file, that way if we reference them in multiple places, we can update them in one place
 
 // ************************
 // ORG TOOLS
 // ************************
-// suggest username
-orgs.registerToolSuggestUsername(server);
-// list all orgs
-orgs.registerToolListAllOrgs(server);
-// get default org
-orgs.registerToolGetDefaultOrg(server);
+if (all || enabledToolsets.has('orgs')) {
+  // get username
+  orgs.registerToolGetUsername(server);
+  // list all orgs
+  orgs.registerToolListAllOrgs(server);
+}
 
 // ************************
 // DATA TOOLS
 // ************************
-// query org
-data.registerToolQueryOrg(server);
-// create a record
-data.registerToolCreateRecord(server);
+if (all || enabledToolsets.has('data')) {
+  // query org
+  data.registerToolQueryOrg(server);
+  // create a record
+  data.registerToolCreateRecord(server);
+}
 
 // ************************
 // USER TOOLS
 // ************************
-// assign permission set
-users.registerToolAssignPermissionSet(server);
+if (all || enabledToolsets.has('users')) {
+  // assign permission set
+  users.registerToolAssignPermissionSet(server);
+}
 
 async function main(): Promise<void> {
   const transport = new StdioServerTransport();

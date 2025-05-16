@@ -17,7 +17,7 @@
 import { Org, StateAggregator, User } from '@salesforce/core';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { usernameOrAliasParam } from '../shared/params.js';
+import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
 import { textResponse } from '../shared/utils.js';
 import { getConnection } from '../shared/auth.js';
 
@@ -51,13 +51,14 @@ Set the perm set MyPermSet`),
 
 AGENT INSTRUCTIONS:
 If the user does not specifically say "on behalf of" this will be empty.
-If the user does specifically say "on behalf of", but it is unclear what the target-org is, run the #sf-suggest-username tool.
+If the user does specifically say "on behalf of", but it is unclear what the target-org is, run the #sf-get-username tool.
 In that case, use the usernameOrAlias parameter as the org to assign the permission set to.
 
 USAGE EXAMPLE:
 Assign the permission set MyPermSet.
 Set the permission set MyPermSet on behalf of test-3uyb8kmftiu@example.com.
 Set the permission set MyPermSet on behalf of my-alias.`),
+  directory: directoryParam,
 });
 
 export type AssignPermissionSetOptions = z.infer<typeof assignPermissionSetParamsSchema>;
@@ -67,11 +68,14 @@ export const registerToolAssignPermissionSet = (server: McpServer): void => {
     'sf-assign-permission-set',
     'Assign a permission set to one or more org users.',
     assignPermissionSetParamsSchema.shape,
-    async ({ permissionSetName, usernameOrAlias, onBehalfOf }) => {
+    async ({ permissionSetName, usernameOrAlias, onBehalfOf, directory }) => {
       try {
+        process.chdir(directory);
         // We build the connection from the usernameOrAlias
         const connection = await getConnection(usernameOrAlias);
 
+        // TODO - Singleton cache issue!
+        // TODO - Add a check there to see if the alias matches assignedTo (failed to resolve)
         // Must NOT be nullish coalescing (??) In case the LLM uses and empty string
         const assignTo = (await StateAggregator.getInstance()).aliases.resolveUsername(onBehalfOf || usernameOrAlias);
 

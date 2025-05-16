@@ -16,17 +16,40 @@
 
 /* eslint-disable no-console */
 
+import { parseArgs, ParseArgsConfig } from 'node:util';
 import { type ToolTextResponse } from './types.js';
 
-export function parseAllowedOrgs(args: string[]): Set<string> {
+type ParseArgsResult = {
+  values: {
+    toolsets: string;
+  };
+  positionals: string[];
+};
+
+export function parseStartupArguments(): ParseArgsResult {
+  const options: ParseArgsConfig['options'] = {
+    toolsets: { type: 'string', short: 't', default: 'all' },
+  };
+
+  const { values, positionals } = parseArgs({ args: process.argv, options, allowPositionals: true }) as ParseArgsResult;
+
+  // TODO: Convert Allowed orgs to be a value instead of a positional arg??
   // Depending how this server is started, the argv values vary
-  // TODO: look at native flags parser.
-  const executableIndex = args.findIndex((arg) => arg.endsWith('.js') || arg.endsWith('sf-mcp-server'));
+  const executableIndex = positionals.findIndex((pos) => pos.endsWith('.js') || pos.endsWith('sf-mcp-server'));
+
   if (executableIndex === -1) {
-    console.error('Something went wrong parsing args.', args);
+    console.error('Something went wrong parsing args. All positional args:', positionals);
     process.exit(1);
   }
-  const passedArgs = args.slice(executableIndex + 1);
+  const parsedPositionals = positionals.slice(executableIndex + 1);
+
+  return { values, positionals: parsedPositionals };
+}
+
+const test = parseStartupArguments();
+console.error('Parsed startup arguments:', test);
+
+export function parseAllowedOrgs(args: string[]): Set<string> {
   const usageMessage = `Usage: sf-mcp-server [OPTIONS]
 
 OPTIONS:
@@ -43,21 +66,21 @@ Examples:
 Documentation:
   See: https://github.com/salesforcecli/mcp`;
 
-  if (passedArgs.length === 0) {
+  if (args.length === 0) {
     console.error('No arguments provided.\n\n' + usageMessage);
     process.exit(1); // Stop the server
   }
 
   const allowedOrgs = new Set<string>();
 
-  if (passedArgs.includes('ALLOW_ALL_ORGS')) {
+  if (args.includes('ALLOW_ALL_ORGS')) {
     console.warn('WARNING: ALLOW_ALL_ORGS is set. This allows access to all authenticated orgs. Use with caution.');
     // TODO Add telemetry
     return new Set(['ALLOW_ALL_ORGS']);
   }
 
   // Process other arguments
-  for (const arg of passedArgs) {
+  for (const arg of args) {
     if (arg === 'DEFAULT_TARGET_ORG' || arg === 'DEFAULT_TARGET_DEV_HUB' || arg.includes('@') || !arg.startsWith('-')) {
       allowedOrgs.add(arg);
     } else {
@@ -80,4 +103,35 @@ export function textResponse(text: string, isError: boolean = false): ToolTextRe
       },
     ],
   };
+}
+
+/**
+ * Gets the enabled toolsets based on user input and validates against available toolsets
+ *
+ * @param availableToolsets - The list of available toolsets
+ * @param toolsetsInput - The comma-separated list of toolsets
+ * @returns A Set of enabled toolsets
+ */
+export function getEnabledToolsets(availableToolsets: string[], toolsetsInput: string): Set<string> {
+  const availableToolsetsSet = new Set<string>(availableToolsets);
+  const passedToolsets = toolsetsInput.split(',').map((toolset) => toolset.trim());
+
+  // Check if any passed toolset is not in the available list
+  for (const toolset of passedToolsets) {
+    if (!availableToolsetsSet.has(toolset)) {
+      console.error(
+        `Passed toolset "${toolset}" is not in the allowed toolset list. Available toolsets are "all (default), ${Array.from(
+          availableToolsetsSet
+        )
+          .filter((t) => t !== 'all')
+          .join(', ')}"`
+      );
+      process.exit(1);
+    }
+  }
+
+  const enabledToolsets = new Set<string>(passedToolsets.filter((toolset) => availableToolsetsSet.has(toolset)));
+  console.error('Enabling toolsets:', Array.from(enabledToolsets).join(', '));
+
+  return enabledToolsets;
 }
