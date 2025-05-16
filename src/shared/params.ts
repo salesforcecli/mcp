@@ -20,14 +20,21 @@ import { z } from 'zod';
  * A collection of reuseable Tool parameters
  */
 
-export const usernameOrAliasParam = z.string().optional()
+export const usernameOrAliasParam = z.string()
   .describe(`The username or alias for the Salesforce org to run this tool against.
 
 AGENT INSTRUCTIONS:
-If it is not clear what username or alias is, this MUST BE empty.
+If it is not clear what username or alias is, run the #sf-suggest-username tool.
+DO NOT use #sf-suggest-username if the user says something like "for my default org" or "for my the org 'an-alias' or 'for my test-prgelc2petd9@example.com org'.
 
 USAGE:
 ...for the my-alias org
+...for my 'my-alias' user
 ...for alias myAlias
 ...for my 'test@example.com' user
 ...for the 'test@example.com' org`);
+
+export const useToolingApiParam = z
+  .boolean()
+  .optional()
+  .describe('Use Tooling API to insert a record in a Tooling API object');

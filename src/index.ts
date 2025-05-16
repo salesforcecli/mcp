@@ -22,25 +22,45 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { parseAllowedOrgs } from './shared/utils.js';
 import * as orgs from './tools/orgs.js';
 import * as data from './tools/data.js';
+import * as users from './tools/users.js';
 
 export const ALLOWED_ORGS = parseAllowedOrgs(process.argv);
 
 // Create server instance
 const server = new McpServer({
   name: 'sf-mcp-server',
-  version: '0.0.1', // TODO: pull from package.json
+  version: '0.0.1',
   capabilities: {
     resources: {},
     tools: {},
   },
 });
 
-// Register org related tools
-orgs.registerToolListAllOrgs(server);
+// TODO: Should we add annotations to our tools? https://modelcontextprotocol.io/docs/concepts/tools#tool-definition-structure
 
-// Register data related tools
+// ************************
+// ORG TOOLS
+// ************************
+// suggest username
+orgs.registerToolSuggestUsername(server);
+// list all orgs
+orgs.registerToolListAllOrgs(server);
+// get default org
+orgs.registerToolGetDefaultOrg(server);
+
+// ************************
+// DATA TOOLS
+// ************************
+// query org
 data.registerToolQueryOrg(server);
+// create a record
 data.registerToolCreateRecord(server);
+
+// ************************
+// USER TOOLS
+// ************************
+// assign permission set
+users.registerToolAssignPermissionSet(server);
 
 async function main(): Promise<void> {
   const transport = new StdioServerTransport();

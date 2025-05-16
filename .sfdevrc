@@ -1,3 +1,4 @@
 {
   "devDepOverrides": ["eslint-config-salesforce-license", "shx"]
+
 }

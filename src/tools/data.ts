@@ -21,8 +21,7 @@ import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { getConnection } from '../shared/auth.js';
 import { textResponse } from '../shared/utils.js';
-import { usernameOrAliasParam } from '../shared/params.js';
-import { suggestUsernameResponse } from '../shared/utils.js';
+import { usernameOrAliasParam, useToolingApiParam } from '../shared/params.js';
 
 /*
  * Query Salesforce org
@@ -51,14 +50,12 @@ export const registerToolQueryOrg = (server: McpServer): void => {
     queryOrgParamsSchema.shape,
     async ({ query, usernameOrAlias }) => {
       try {
-        if (!usernameOrAlias) return await suggestUsernameResponse();
-
         const connection = await getConnection(usernameOrAlias);
         const result = await connection.query(query);
 
         return textResponse(`SOQL query results for ${usernameOrAlias}:\n\n${JSON.stringify(result, null, 2)}`);
       } catch (error) {
-        return textResponse(`Failed to query org: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        return textResponse(`Failed to query org: ${error instanceof Error ? error.message : 'Unknown error'}`, true);
       }
     }
   );
@@ -85,8 +82,7 @@ export const createRecordParamsSchema = z.object({
     .string()
     .describe('Values for the fields in the form <fieldName>=<value>, separate multiple pairs with spaces'),
   usernameOrAlias: usernameOrAliasParam,
-  // todo: This should probably be moved to the params file
-  useToolingApi: z.boolean().optional().describe('Use Tooling API to insert a record in a Tooling API object'),
+  useToolingApi: useToolingApiParam,
 });
 
 export type CreateRecordOptions = z.infer<typeof createRecordParamsSchema>;
@@ -98,8 +94,6 @@ export const registerToolCreateRecord = (server: McpServer): void => {
     createRecordParamsSchema.shape,
     async ({ sobject, values, usernameOrAlias, useToolingApi }) => {
       try {
-        if (!usernameOrAlias) return await suggestUsernameResponse();
-
         const connection = await getConnection(usernameOrAlias);
 
         // Parse the values string into a dictionary of field-value pairs
@@ -126,10 +120,13 @@ export const registerToolCreateRecord = (server: McpServer): void => {
           );
         } else {
           const errors = Array.isArray(result.errors) ? result.errors.join(', ') : 'Unknown error';
-          return textResponse(`Failed to create record: ${errors}`);
+          return textResponse(`Failed to create record: ${errors}`, true);
         }
       } catch (error) {
-        return textResponse(`Failed to create record: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        return textResponse(
+          `Failed to create record: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          true
+        );
       }
     }
   );

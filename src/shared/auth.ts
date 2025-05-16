@@ -123,6 +123,7 @@ export function findOrgByUsernameOrAlias(
 export async function getAllAllowedOrgs(): Promise<FilteredOrgAuthorization[]> {
   const orgs = await AuthInfo.listAllAuthorizations();
 
+  // Allowlisted keys to be returned. This prevents accidental exposure of sensitive data (accessToken).
   const fieldsToReturn: OrgAuthorizationField[] = [
     'aliases',
     'username',
