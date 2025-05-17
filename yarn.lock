@@ -508,10 +508,26 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@jsforce/jsforce-node@^3.7.0", "@jsforce/jsforce-node@^3.8.0":
+"@jsforce/jsforce-node@^3.8.0":
   version "3.8.0"
   resolved "https://registry.yarnpkg.com/@jsforce/jsforce-node/-/jsforce-node-3.8.0.tgz#c4ef21994f6b83d2c6f21d20ada70481a641e2c1"
   integrity sha512-oiPovVNSQHk54i5G/xauufSzzuU4ElRvsnWVAiAJq20SOiHNR9LUye7nhUy4Cfgje1asXBc+CCs8g+Vv+x54AA==
+  dependencies:
+    "@sindresorhus/is" "^4"
+    base64url "^3.0.1"
+    csv-parse "^5.5.2"
+    csv-stringify "^6.4.4"
+    faye "^1.4.0"
+    form-data "^4.0.0"
+    https-proxy-agent "^5.0.0"
+    multistream "^3.1.0"
+    node-fetch "^2.6.1"
+    xml2js "^0.6.2"
+
+"@jsforce/jsforce-node@^3.8.1":
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/@jsforce/jsforce-node/-/jsforce-node-3.8.1.tgz#482fcf2820b48a6b10930d33550eb4e4cbd1e480"
+  integrity sha512-+IZZC7VfNjhkTyeAspBc4Z35Y5eAP0RIWQnyfKahsbY/aLjiFRIM9ejl1YbWbrbabf5ODFSUgBGmOiEYLW3f7Q==
   dependencies:
     "@sindresorhus/is" "^4"
     base64url "^3.0.1"
@@ -990,12 +1006,12 @@
     strip-ansi "6.0.1"
     ts-retry-promise "^0.8.1"
 
-"@salesforce/core@^8.10.0", "@salesforce/core@^8.8.0", "@salesforce/core@^8.8.7", "@salesforce/core@^8.9.1":
-  version "8.10.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.10.0.tgz#017fe618b1dd086298d1133a6ed0f509d56ea495"
-  integrity sha512-gStIzB8wPjjwyKZCK8eSfwkLiv9h9qzP64b51U5THBskEjm6Sw6ZyWqZmCzA85FEZ/IM/n1nh4e3R9JoG6Z6mA==
+"@salesforce/core@^8.10.0", "@salesforce/core@^8.10.3", "@salesforce/core@^8.8.0", "@salesforce/core@^8.8.7":
+  version "8.11.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.11.0.tgz#23d5ddcc318008230258ab449e70a26f671123c2"
+  integrity sha512-S4UgHKUy1hykRQVaoYm+LSktQgRhI3ltAUoLGI25/Q8gYokERTa2E7MpPMb+X/kTpjJJvDlnQqelB/sQJs/AKA==
   dependencies:
-    "@jsforce/jsforce-node" "^3.7.0"
+    "@jsforce/jsforce-node" "^3.8.1"
     "@salesforce/kit" "^3.2.2"
     "@salesforce/schemas" "^1.9.0"
     "@salesforce/ts-types" "^2.0.10"
@@ -2998,12 +3014,12 @@ eslint-plugin-jsdoc@^46.10.1:
     semver "^7.5.4"
     spdx-expression-parse "^4.0.0"
 
-eslint-plugin-sf-plugin@^1.20.20:
-  version "1.20.20"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-sf-plugin/-/eslint-plugin-sf-plugin-1.20.20.tgz#714a1dd750fa27f72a2708d2fecb0627c9bd38a8"
-  integrity sha512-JoYnjalq/SuFP3v+hOMpXGZAAfCW64cuCZRXrcy6PZZRn4nxCXZQKfPM/RQ+nI2Viie8WUL9uKq6xI4tFCVMSw==
+eslint-plugin-sf-plugin@^1.20.23:
+  version "1.20.23"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-sf-plugin/-/eslint-plugin-sf-plugin-1.20.23.tgz#213c514a67b734c989eac1ebbc23ff506f9ddc85"
+  integrity sha512-zlvxTJW4nMugGqgedymkEEeP/uiW/hgVGaaKZXEnCU+FMU7aW4kgTtLn+1JWk08mLwRlv/5NynGcABnsON21PA==
   dependencies:
-    "@salesforce/core" "^8.9.1"
+    "@salesforce/core" "^8.10.3"
     "@typescript-eslint/utils" "^7.18.0"
 
 eslint-plugin-unicorn@^50.0.1:
