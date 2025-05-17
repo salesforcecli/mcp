@@ -53,7 +53,7 @@
     "@salesforce/cli-plugins-testkit": "^5.3.39",
     "@salesforce/dev-scripts": "11.0.2",
     "eslint-config-salesforce-license": "^1.0.1",
-    "eslint-plugin-sf-plugin": "^1.20.20",
+    "eslint-plugin-sf-plugin": "^1.20.23",
     "ts-node": "^10.9.2",
     "ts-patch": "^3.3.0",
     "typescript": "^5.8.3"
