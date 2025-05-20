@@ -52,6 +52,7 @@ Set the perm set MyPermSet`),
 AGENT INSTRUCTIONS:
 If the user does not specifically say "on behalf of" this will be empty.
 If the user does specifically say "on behalf of", but it is unclear what the target-org is, run the #sf-get-username tool.
+If the user does specifically say "on behalf of", but it is unclear what the target-org is, run the #sf-suggest-username tool.
 In that case, use the usernameOrAlias parameter as the org to assign the permission set to.
 
 USAGE EXAMPLE:

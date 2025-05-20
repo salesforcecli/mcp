@@ -28,6 +28,7 @@ import * as users from './tools/users.js';
 const server = new McpServer({
   name: 'sf-mcp-server',
   version: '0.0.1',
+  version: '0.0.1',
   capabilities: {
     resources: {},
     tools: {},
