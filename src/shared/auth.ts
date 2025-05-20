@@ -44,11 +44,9 @@ export async function suggestUsername(): Promise<{
   let suggestedUsername: string | undefined;
   let aliasForReference: string | undefined;
 
-  const [allAllowedOrgs, defaultTargetOrg, defaultTargetDevHub] = await Promise.all([
-    getAllAllowedOrgs(),
-    getDefaultTargetOrg(),
-    getDefaultTargetDevHub(),
-  ]);
+  const allAllowedOrgs = await getAllAllowedOrgs();
+  const defaultTargetOrg = await getDefaultTargetOrg();
+  const defaultTargetDevHub = await getDefaultTargetDevHub();
 
   const targetOrgLocation = defaultTargetOrg?.location ? `(${defaultTargetOrg.location}) ` : '';
   const targetDevHubLocation = defaultTargetDevHub?.location ? `(${defaultTargetDevHub.location}) ` : '';
