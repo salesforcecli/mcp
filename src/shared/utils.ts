@@ -17,14 +17,7 @@
 /* eslint-disable no-console */
 
 import { parseArgs, ParseArgsConfig } from 'node:util';
-import { type ToolTextResponse } from './types.js';
-
-type ParseArgsResult = {
-  values: {
-    toolsets: string;
-  };
-  positionals: string[];
-};
+import { type ToolTextResponse, type ParseArgsResult } from './types.js';
 
 export function parseStartupArguments(): ParseArgsResult {
   const options: ParseArgsConfig['options'] = {
@@ -45,9 +38,6 @@ export function parseStartupArguments(): ParseArgsResult {
 
   return { values, positionals: parsedPositionals };
 }
-
-const test = parseStartupArguments();
-console.error('Parsed startup arguments:', test);
 
 export function parseAllowedOrgs(args: string[]): Set<string> {
   const usageMessage = `Usage: sf-mcp-server [OPTIONS]
@@ -94,6 +84,7 @@ Documentation:
 
 // TODO: break into two helpers? One for errors and one for success?
 export function textResponse(text: string, isError: boolean = false): ToolTextResponse {
+  if (text === '') throw new Error('textResponse error: "text" cannot be empty');
   return {
     isError,
     content: [

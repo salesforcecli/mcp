@@ -82,7 +82,7 @@ export async function getConnection(username: string): Promise<Connection> {
   const foundOrg = findOrgByUsernameOrAlias(allOrgs, username);
 
   if (!foundOrg) {
-    console.log(`No org found with username/alias: ${username}`);
+    console.error(`No org found with username/alias: ${username}`);
     return Promise.reject(new Error(`No org found with username/alias: ${username}`));
   }
 

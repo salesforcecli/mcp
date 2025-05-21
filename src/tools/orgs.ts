@@ -123,7 +123,7 @@ EXAMPLE USAGE:
       try {
         process.chdir(directory);
 
-        const generateConfigResponse = (defaultFromConfig: ConfigInfo | undefined): ToolTextResponse =>
+        const generateResponse = (defaultFromConfig: ConfigInfo | undefined): ToolTextResponse =>
           textResponse(`ALWAYS notify the user the following 3 pieces of information:
 1. If it is default target-org or target-dev-hub ('.name' on the config)
 2. The value of '.location' on the config
@@ -133,16 +133,10 @@ EXAMPLE USAGE:
 UNLESS THE USER SPECIFIES OTHERWISE, use this username for the "usernameOrAlias" parameter in future Tool calls.`);
 
         // Case 1: User explicitly asked for default target org
-        if (defaultTargetOrg) {
-          const defaultFromConfig = await getDefaultTargetOrg();
-          return generateConfigResponse(defaultFromConfig);
-        }
+        if (defaultTargetOrg) return generateResponse(await getDefaultTargetOrg());
 
         // Case 2: User explicitly asked for default dev hub
-        if (defaultDevHub) {
-          const defaultFromConfig = await getDefaultTargetDevHub();
-          return generateConfigResponse(defaultFromConfig);
-        }
+        if (defaultDevHub) return generateResponse(await getDefaultTargetDevHub());
 
         // Case 3: User was vague, so suggest a username
         const { aliasForReference, suggestedUsername, reasoning } = await suggestUsername();
