@@ -188,8 +188,7 @@ Add this snippet to your Trae `mcp_settings.json`:
 ### Org Management
 
 - `sf-list-all-orgs` - Lists all configured Salesforce orgs, with optional connection status checking.
-- `sf-suggest-username` - Suggests a username or alias for the Salesforce org.
-- `sf-get-default-org` - Gets the default Salesforce org configuration.
+- `sf-get-username` - Intelligently determines the appropriate username or alias for Salesforce operations, handling both default orgs and dev hubs.
 
 ### User Management
 
