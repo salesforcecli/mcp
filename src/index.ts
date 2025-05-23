@@ -48,11 +48,15 @@ export const ALLOWED_ORGS = parseAllowedOrgs(positionals);
 // TODO: Move tool names into a shared file, that way if we reference them in multiple places, we can update them in one place
 
 // ************************
+// CORE TOOLS (always on)
+// ************************
+// get username
+orgs.registerToolGetUsername(server);
+
+// ************************
 // ORG TOOLS
 // ************************
 if (all || enabledToolsets.has('orgs')) {
-  // get username
-  orgs.registerToolGetUsername(server);
   // list all orgs
   orgs.registerToolListAllOrgs(server);
 }

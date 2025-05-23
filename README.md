@@ -98,7 +98,6 @@ Each toolset enables the following tools:
 
 #### Orgs Toolset
 
-- `sf-get-username` - Intelligently determines the appropriate username or alias
 - `sf-list-all-orgs` - Lists all configured Salesforce orgs
 
 #### Data Toolset

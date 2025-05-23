@@ -25,7 +25,7 @@ export const usernameOrAliasParam = z.string()
 
 AGENT INSTRUCTIONS:
 If it is not clear what username or alias is, run the #sf-get-username tool.
-DO NOT use #sf-get-username if the user says something like "for my default org" or "for my the org 'an-alias' or 'for my test-prgelc2petd9@example.com org'.
+DO NOT use #sf-get-username if the user mentions an alias or username, like "for my an-alias org" or "for my test-prgelc2petd9@example.com org".
 
 USAGE:
 ...for the my-alias org
