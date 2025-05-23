@@ -15,61 +15,13 @@
  */
 
 import { z } from 'zod';
+import { type ConfigInfo } from '@salesforce/core';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { getAllAllowedOrgs } from '../shared/auth.js';
 import { textResponse } from '../shared/utils.js';
 import { getDefaultTargetOrg, getDefaultTargetDevHub, suggestUsername } from '../shared/auth.js';
-
-/*
- * Suggest a username
- *
- * Suggest a username or alias for the Salesforce org.
- *
- * Parameters:
- * - None required
- *
- * Returns:
- * - textResponse: Suggested username, alias, and reason for choosing
- */
-
-export const registerToolSuggestUsername = (server: McpServer): void => {
-  server.tool(
-    'sf-suggest-username',
-    `Suggest a username or alias for the Salesforce org.
-
-AGENT/LLM INSTRUCTIONS:
-DO NOT use this tool if the users says something like "for my default org" or "for my the org 'an-alias'" or "for my test-prgelc2petd9@example.com org".
-If it is not clear which username or alias is to be used, use this tool to try to determine which org a user wants.
-The response of this tool should then be used as the usernameOrAlias param in the users original request.
-
-EXAMPLE USAGE (notice how these are vague):
-Do X for my org
-Run X tool in my org`,
-    {},
-    async () => {
-      try {
-        const { aliasForReference, suggestedUsername, reasoning } = await suggestUsername();
-
-        if (!suggestedUsername) {
-          return textResponse(
-            'No suggested org found. Please specify a username or alias. All check the MCP servers start up args for allowlisting orgs.'
-          );
-        }
-
-        return textResponse(`
-YOU MUST inform say that we are going to use "${suggestedUsername}" ${
-          aliasForReference ? `(Alias: ${aliasForReference}) ` : ''
-        }for the "usernameOrAlias" parameter.
-YOU MUST explain the reasoning for selecting this org, which is: "${reasoning}".
-AND THEN reconsider the user's ask and add this new parameter:
-${JSON.stringify({ usernameOrAlias: suggestedUsername }, null, 2)}
-Unless instructed otherwise, use this 'usernameOrAlias' for further user prompts.`);
-      } catch (error) {
-        return textResponse(`Failed to list orgs: ${error instanceof Error ? error.message : 'Unknown error'}`, true);
-      }
-    }
-  );
-};
+import { directoryParam } from '../shared/params.js';
+import { type ToolTextResponse } from '../shared/types.js';
 
 /*
  * List all Salesforce orgs
@@ -89,7 +41,7 @@ export const registerToolListAllOrgs = (server: McpServer): void => {
     `Lists all configured Salesforce orgs.
 
 AGENT INSTRUCTIONS:
-Don't use this tool to try to determine which org a user wants, use #sf-suggest-username instead. Only use it if the user explicitly asks for a list of orgs.
+DO NOT use this tool to try to determine which org a user wants, use #sf-get-username instead. Only use it if the user explicitly asks for a list of orgs.
 
 Example usage:
 Can you list all Salesforce orgs for me
@@ -109,58 +61,103 @@ List all orgs
 };
 
 /*
- * Get default Salesforce org
+ * Get username for Salesforce org
  *
- * Get the default Salesforce org configuration.
+ * Intelligently determines the appropriate username or alias for Salesforce operations.
  *
  * Parameters:
- * - devHub: Force lookup of DevHub org (optional)
+ * - defaultTargetOrg: Force lookup of default target org (optional)
+ * - defaultDevHub: Force lookup of default dev hub (optional)
+ * - directory: The directory to run this tool from
  *
  * Returns:
- * - textResponse: Default org configuration
+ * - textResponse: Username/alias and org configuration
  */
 
-export const getDefaultOrgParamsSchema = z.object({
-  devHub: z.boolean().optional().default(false).describe(`Force lookup of DevHub org
+export const getUsernameParamsSchema = z.object({
+  defaultTargetOrg: z.boolean().optional().default(false).describe(`Try to find default org
 AGENT INSTRUCTIONS:
-Users may ask for a DevHub, dev hub, target-dev-hub, etc. Use this parameter only if the user explicitly asks for it.
+ONLY SET TO TRUE when the user explicitly asks for the default org or default target org.
+Leave it as false when the user is vague and says something like "for my org" or "for my-alias".
 
 USAGE EXAMPLE:
-Get my default DevHub
-...for my default dev hub
-...for my default target-dev-hub`),
+Get username for my default org
+...for my default target org`),
+  defaultDevHub: z.boolean().optional().default(false).describe(`Try to find default dev hub
+AGENT INSTRUCTIONS:
+ONLY SET TO TRUE when the user explicitly asks for the default dev hub or default target devhub.
+Leave it as false when the user is vague and says something like "for my org" or "for my-alias".
+
+USAGE EXAMPLE:
+Get username for my default dev hub
+...for my default target dev hub
+...for my default devhub`),
+  directory: directoryParam,
 });
 
-export type GetDefaultOrgParamsSchema = z.infer<typeof getDefaultOrgParamsSchema>;
+export type GetUsernameParamsSchema = z.infer<typeof getUsernameParamsSchema>;
 
-export const registerToolGetDefaultOrg = (server: McpServer): void => {
+export const registerToolGetUsername = (server: McpServer): void => {
   server.tool(
-    'sf-get-default-org',
-    `Get the default Salesforce org.
+    'sf-get-username',
+    `Intelligently determines the appropriate username or alias for Salesforce operations.
 
-AGENT INSTRUCTIONS:
-ALWAYS notify the user the following 3 pieces of information:
-1. If it is target-org or target-dev-hub
-2. The value of '.location' on the config
-3. The value of '.value' on the config
+AGENT/LLM INSTRUCTIONS:
+Use this tool when uncertain which username/org a user wants for Salesforce operations.
+This tool handles three distinct scenarios:
+
+1. When defaultTargetOrg=true: Fetches the default target org configuration
+   - Use when user says "for my default org" or "for my default target org"
+
+2. When defaultDevHub=true: Fetches the default dev hub configuration
+   - Use when user says "for my default dev hub" or "for my default target dev hub"
+
+3. When both are false (default): Uses suggestUsername to intelligently determine the appropriate org
+   - Use when user is vague and says something like "for my org" or doesn't specify
 
 EXAMPLE USAGE:
-Can you get the default Salesforce org for me
-Get the default Salesforce org
-Get the global default org
-...for the target org
-...for the target dev hub`,
-    getDefaultOrgParamsSchema.shape,
-    async ({ devHub }) => {
+- When user says "Do X for my org" → defaultTargetOrg=false, defaultDevHub=false
+- When user says "For my default org" → defaultTargetOrg=true
+- When user says "For my default dev hub" → defaultDevHub=true`,
+    getUsernameParamsSchema.shape,
+    async ({ defaultTargetOrg, defaultDevHub, directory }) => {
       try {
-        const defaultFromConfig = devHub ? await getDefaultTargetDevHub() : await getDefaultTargetOrg();
-        if (!defaultFromConfig) {
-          return textResponse(`No default ${devHub ? 'target-dev-hub' : 'target-org'} found`);
+        process.chdir(directory);
+
+        const generateResponse = (defaultFromConfig: ConfigInfo | undefined): ToolTextResponse =>
+          textResponse(`ALWAYS notify the user the following 3 pieces of information:
+1. If it is default target-org or target-dev-hub ('.name' on the config)
+2. The value of '.location' on the config
+3. The value of '.value' on the config
+- Full config: ${JSON.stringify(defaultFromConfig, null, 2)}
+
+UNLESS THE USER SPECIFIES OTHERWISE, use this username for the "usernameOrAlias" parameter in future Tool calls.`);
+
+        // Case 1: User explicitly asked for default target org
+        if (defaultTargetOrg) return generateResponse(await getDefaultTargetOrg());
+
+        // Case 2: User explicitly asked for default dev hub
+        if (defaultDevHub) return generateResponse(await getDefaultTargetDevHub());
+
+        // Case 3: User was vague, so suggest a username
+        const { aliasForReference, suggestedUsername, reasoning } = await suggestUsername();
+
+        if (!suggestedUsername) {
+          return textResponse(
+            "No suggested username found. Please specify a username or alias explicitly. Also check the MCP server's startup args for allowlisting orgs.",
+            true
+          );
         }
-        return textResponse(`Default org: ${JSON.stringify(defaultFromConfig, null, 2)}`);
+
+        return textResponse(`
+YOU MUST inform the user that we are going to use "${suggestedUsername}" ${
+          aliasForReference ? `(Alias: ${aliasForReference}) ` : ''
+        }for the "usernameOrAlias" parameter.
+YOU MUST explain the reasoning for selecting this org, which is: "${reasoning}"
+UNLESS THE USER SPECIFIES OTHERWISE, use this username for the "usernameOrAlias" parameter in future Tool calls.`);
       } catch (error) {
         return textResponse(
-          `Failed to get default org: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          `Failed to determine appropriate username: ${error instanceof Error ? error.message : 'Unknown error'}`,
           true
         );
       }

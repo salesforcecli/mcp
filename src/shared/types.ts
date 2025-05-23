@@ -15,11 +15,18 @@
  */
 
 // TOOL RESPONSES
-
 export type ToolTextResponse = {
   isError: boolean;
   content: Array<{
     type: 'text';
     text: string;
   }>;
+};
+
+// STARTUP ARGS
+export type ParseArgsResult = {
+  values: {
+    toolsets: string;
+  };
+  positionals: string[];
 };

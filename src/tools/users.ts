@@ -17,7 +17,7 @@
 import { Org, StateAggregator, User } from '@salesforce/core';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { usernameOrAliasParam } from '../shared/params.js';
+import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
 import { textResponse } from '../shared/utils.js';
 import { getConnection } from '../shared/auth.js';
 
@@ -51,13 +51,14 @@ Set the perm set MyPermSet`),
 
 AGENT INSTRUCTIONS:
 If the user does not specifically say "on behalf of" this will be empty.
-If the user does specifically say "on behalf of", but it is unclear what the target-org is, run the #sf-suggest-username tool.
+If the user does specifically say "on behalf of", but it is unclear what the target-org is, run the #sf-get-username tool.
 In that case, use the usernameOrAlias parameter as the org to assign the permission set to.
 
 USAGE EXAMPLE:
 Assign the permission set MyPermSet.
 Set the permission set MyPermSet on behalf of test-3uyb8kmftiu@example.com.
 Set the permission set MyPermSet on behalf of my-alias.`),
+  directory: directoryParam,
 });
 
 export type AssignPermissionSetOptions = z.infer<typeof assignPermissionSetParamsSchema>;
@@ -67,32 +68,31 @@ export const registerToolAssignPermissionSet = (server: McpServer): void => {
     'sf-assign-permission-set',
     'Assign a permission set to one or more org users.',
     assignPermissionSetParamsSchema.shape,
-    async ({ permissionSetName, usernameOrAlias, onBehalfOf }) => {
+    async ({ permissionSetName, usernameOrAlias, onBehalfOf, directory }) => {
       try {
+        process.chdir(directory);
         // We build the connection from the usernameOrAlias
         const connection = await getConnection(usernameOrAlias);
 
+        // We need to clear the instance so we know we have the most up to date aliases
+        // If a user sets an alias after server start up, it was not getting picked up
+        StateAggregator.clearInstance();
         // Must NOT be nullish coalescing (??) In case the LLM uses and empty string
         const assignTo = (await StateAggregator.getInstance()).aliases.resolveUsername(onBehalfOf || usernameOrAlias);
 
-        try {
-          const org = await Org.create({ connection });
-          const user = await User.create({ org });
-          const queryResult = await connection.singleRecordQuery<{ Id: string }>(
-            `SELECT Id FROM User WHERE Username='${assignTo}'`
-          );
-
-          await user.assignPermissionSets(queryResult.Id, [permissionSetName]);
-
-          return textResponse(`Assigned ${permissionSetName} to ${assignTo}`);
-        } catch (error) {
-          return textResponse(
-            `Failed to assign permission set to ${assignTo}: ${
-              error instanceof Error ? error.message : 'Unknown error'
-            }`,
-            true
-          );
+        if (!assignTo.includes('@')) {
+          return textResponse(`Unable to resolve the username for ${assignTo}. Make sure it is correct`, true);
         }
+
+        const org = await Org.create({ connection });
+        const user = await User.create({ org });
+        const queryResult = await connection.singleRecordQuery<{ Id: string }>(
+          `SELECT Id FROM User WHERE Username='${assignTo}'`
+        );
+
+        await user.assignPermissionSets(queryResult.Id, [permissionSetName]);
+
+        return textResponse(`Assigned ${permissionSetName} to ${assignTo}`);
       } catch (error) {
         return textResponse(
           `Failed to assign permission set: ${error instanceof Error ? error.message : 'Unknown error'}`,

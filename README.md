@@ -65,6 +65,83 @@ sf-mcp-server DEFAULT_TARGET_DEV_HUB my-alias
 sf-mcp-server test-org@example.com my-dev-hub-alias my-scratch-org-alias
 ```
 
+## Available Tools
+
+### Org Management
+
+- `sf-list-all-orgs` - Lists all configured Salesforce orgs, with optional connection status checking.
+- `sf-get-username` - Intelligently determines the appropriate username or alias for Salesforce operations, handling both default orgs and dev hubs.
+
+### User Management
+
+- `sf-assign-permission-set` - Assigns a permission set to the user or on behalf of another.
+
+### Data Management
+
+- `sf-query-org` - Runs a SOQL query against a Salesforce org.
+- `sf-create-record` - Creates and inserts a record into a Salesforce or Tooling API object.
+
+## Toolsets
+
+The Salesforce MCP Server supports **toolsets** - a way to selectively enable different groups of tools based on your needs. This allows you to run the server with only the tools you require to reduce the context.
+
+### Available Toolsets
+
+- `all` (default) - Enables all available tools
+- `orgs` - Organization management tools
+- `data` - Data management tools
+- `users` - User management tools
+
+### Toolset-specific Tools
+
+Each toolset enables the following tools:
+
+#### Orgs Toolset
+
+- `sf-list-all-orgs` - Lists all configured Salesforce orgs
+
+#### Data Toolset
+
+- `sf-query-org` - Runs SOQL queries against Salesforce orgs
+- `sf-create-record` - Creates records in Salesforce or Tooling API objects
+
+#### Users Toolset
+
+- `sf-assign-permission-set` - Assigns permission sets to users
+
+### Usage
+
+Specify toolsets using the `--toolsets` (or `-t`) flag:
+
+```sh
+# Enable all tools (default behavior)
+sf-mcp-server DEFAULT_TARGET_ORG
+
+# Enable only org management tools
+sf-mcp-server --toolsets orgs DEFAULT_TARGET_ORG
+
+# Enable multiple specific toolsets
+sf-mcp-server --toolsets orgs,data DEFAULT_TARGET_ORG
+
+# Short flag syntax
+sf-mcp-server -t users,data DEFAULT_TARGET_ORG
+```
+
+### Configuration Examples
+
+When configuring your MCP client, you can specify toolsets in the args:
+
+```json
+{
+  "mcpServers": {
+    "salesforce": {
+      "command": "npx",
+      "args": ["-y", "@salesforce/mcp", "--toolsets", "orgs,data", "DEFAULT_TARGET_ORG"]
+    }
+  }
+}
+```
+
 ## Configure the Salesforce MCP Server
 
 You can configure Claude Desktop, Zed, Cursor, Windsurf and others to work with the Salesforce MCP Server.
@@ -182,23 +259,6 @@ Add this snippet to your Trae `mcp_settings.json`:
   }
 }
 ```
-
-## Available Tools
-
-### Org Management
-
-- `sf-list-all-orgs` - Lists all configured Salesforce orgs, with optional connection status checking.
-- `sf-suggest-username` - Suggests a username or alias for the Salesforce org.
-- `sf-get-default-org` - Gets the default Salesforce org configuration.
-
-### User Management
-
-- `sf-assign-permission-set` - Assigns a permission set to the user or on behalf of another.
-
-### Data Management
-
-- `sf-query-org` - Runs a SOQL query against a Salesforce org.
-- `sf-create-record` - Creates and inserts a record into a Salesforce or Tooling API object.
 
 ## Debugging
 

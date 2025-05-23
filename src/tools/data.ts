@@ -21,7 +21,7 @@ import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { getConnection } from '../shared/auth.js';
 import { textResponse } from '../shared/utils.js';
-import { usernameOrAliasParam, useToolingApiParam } from '../shared/params.js';
+import { directoryParam, usernameOrAliasParam, useToolingApiParam } from '../shared/params.js';
 
 /*
  * Query Salesforce org
@@ -39,6 +39,7 @@ import { usernameOrAliasParam, useToolingApiParam } from '../shared/params.js';
 export const queryOrgParamsSchema = z.object({
   query: z.string().describe('SOQL query to run'),
   usernameOrAlias: usernameOrAliasParam,
+  directory: directoryParam,
 });
 
 export type QueryOrgOptions = z.infer<typeof queryOrgParamsSchema>;
@@ -48,8 +49,9 @@ export const registerToolQueryOrg = (server: McpServer): void => {
     'sf-query-org',
     'Run a SOQL query against a Salesforce org.',
     queryOrgParamsSchema.shape,
-    async ({ query, usernameOrAlias }) => {
+    async ({ query, usernameOrAlias, directory }) => {
       try {
+        process.chdir(directory);
         const connection = await getConnection(usernameOrAlias);
         const result = await connection.query(query);
 
@@ -83,6 +85,7 @@ export const createRecordParamsSchema = z.object({
     .describe('Values for the fields in the form <fieldName>=<value>, separate multiple pairs with spaces'),
   usernameOrAlias: usernameOrAliasParam,
   useToolingApi: useToolingApiParam,
+  directory: directoryParam,
 });
 
 export type CreateRecordOptions = z.infer<typeof createRecordParamsSchema>;
@@ -92,8 +95,9 @@ export const registerToolCreateRecord = (server: McpServer): void => {
     'sf-create-record',
     'Create and insert a record into a Salesforce or Tooling API object.',
     createRecordParamsSchema.shape,
-    async ({ sobject, values, usernameOrAlias, useToolingApi }) => {
+    async ({ sobject, values, usernameOrAlias, useToolingApi, directory }) => {
       try {
+        process.chdir(directory);
         const connection = await getConnection(usernameOrAlias);
 
         // Parse the values string into a dictionary of field-value pairs

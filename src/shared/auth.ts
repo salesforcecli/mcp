@@ -17,12 +17,7 @@
 /* eslint-disable no-console */
 
 import { AuthInfo, Connection, ConfigAggregator, ConfigInfo, OrgConfigProperties } from '@salesforce/core';
-// import { ALLOWED_ORGS } from '../index.js';
-
-// temp for testing, this will be imported from the entry point (index.js)
-import { parseAllowedOrgs } from './utils.js';
-export const ALLOWED_ORGS = parseAllowedOrgs(process.argv);
-// end temp for testing
+import { ALLOWED_ORGS } from '../index.js';
 
 // Define interface for filtered org data
 type FilteredOrgAuthorization = {
@@ -49,11 +44,9 @@ export async function suggestUsername(): Promise<{
   let suggestedUsername: string | undefined;
   let aliasForReference: string | undefined;
 
-  const [allAllowedOrgs, defaultTargetOrg, defaultTargetDevHub] = await Promise.all([
-    getAllAllowedOrgs(),
-    getDefaultTargetOrg(),
-    getDefaultTargetDevHub(),
-  ]);
+  const allAllowedOrgs = await getAllAllowedOrgs();
+  const defaultTargetOrg = await getDefaultTargetOrg();
+  const defaultTargetDevHub = await getDefaultTargetDevHub();
 
   const targetOrgLocation = defaultTargetOrg?.location ? `(${defaultTargetOrg.location}) ` : '';
   const targetDevHubLocation = defaultTargetDevHub?.location ? `(${defaultTargetDevHub.location}) ` : '';
@@ -74,9 +67,7 @@ export async function suggestUsername(): Promise<{
     aliasForReference = foundOrg?.aliases?.[0];
     reasoning = `it is the default ${targetDevHubLocation}dev hub org`;
   } else {
-    // temp for testing, this will be removed
-    suggestedUsername = 'test-pocycrmkqdpi@example.com';
-    reasoning = 'it was the only org I could find. YOLO!';
+    reasoning = 'Error: no org was inferred. Ask the user to specify one';
   }
 
   return {
@@ -86,19 +77,12 @@ export async function suggestUsername(): Promise<{
   };
 }
 
-// const test = await suggestUsername();
-// console.log('suggested username', test);
-// const conn = await getConnection(test.suggestedUsername as string)
-// console.log('connection', conn);
-// const queryResult = await conn.query('SELECT Id, Name FROM Property__c LIMIT 3');
-// console.log('query result', queryResult);
-
 export async function getConnection(username: string): Promise<Connection> {
   const allOrgs = await getAllAllowedOrgs();
   const foundOrg = findOrgByUsernameOrAlias(allOrgs, username);
 
   if (!foundOrg) {
-    console.log(`No org found with username/alias: ${username}`);
+    console.error(`No org found with username/alias: ${username}`);
     return Promise.reject(new Error(`No org found with username/alias: ${username}`));
   }
 
@@ -226,6 +210,10 @@ export async function filterAllowedOrgs(orgs: FilteredOrgAuthorization[]): Promi
 
 // Helper function to get default config for a property
 async function getDefaultConfig(property: OrgConfigProperties): Promise<ConfigInfo | undefined> {
+  // If the directory changes, the singleton instance of ConfigAggregator is not updated.
+  // It continues to use the old local or global config.
+  // @ts-expect-error Accessing private static instance to reset singleton between directory changes
+  ConfigAggregator.instance = undefined;
   const aggregator = await ConfigAggregator.create();
   const config = aggregator.getInfo(property);
   return config.value ? config : undefined;
@@ -238,10 +226,3 @@ export async function getDefaultTargetOrg(): Promise<ConfigInfo | undefined> {
 export async function getDefaultTargetDevHub(): Promise<ConfigInfo | undefined> {
   return getDefaultConfig(OrgConfigProperties.TARGET_DEV_HUB);
 }
-
-// const test = await getDefaultTargetOrg();
-// console.log('Default Target Org:', test);
-// const test2 = await getDefaultTargetDevHub();
-// console.log('Default Target Dev Hub:', test2);
-// const orgs = await getAllAllowedOrgs();
-// console.log('Orgs:', orgs);
