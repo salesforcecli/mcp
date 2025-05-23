@@ -66,7 +66,8 @@ List all orgs
  * Intelligently determines the appropriate username or alias for Salesforce operations.
  *
  * Parameters:
- * - devHub: Force lookup of DevHub org (optional)
+ * - defaultTargetOrg: Force lookup of default target org (optional)
+ * - defaultDevHub: Force lookup of default dev hub (optional)
  * - directory: The directory to run this tool from
  *
  * Returns:
