@@ -75,29 +75,25 @@ export const registerToolAssignPermissionSet = (server: McpServer): void => {
         // We build the connection from the usernameOrAlias
         const connection = await getConnection(usernameOrAlias);
 
-        // TODO - Singleton cache issue!
-        // TODO - Add a check there to see if the alias matches assignedTo (failed to resolve)
+        // We need to clear the instance so we know we have the most up to date aliases
+        // If a user sets an alias after server start up, it was not getting picked up
+        StateAggregator.clearInstance();
         // Must NOT be nullish coalescing (??) In case the LLM uses and empty string
         const assignTo = (await StateAggregator.getInstance()).aliases.resolveUsername(onBehalfOf || usernameOrAlias);
 
-        try {
-          const org = await Org.create({ connection });
-          const user = await User.create({ org });
-          const queryResult = await connection.singleRecordQuery<{ Id: string }>(
-            `SELECT Id FROM User WHERE Username='${assignTo}'`
-          );
-
-          await user.assignPermissionSets(queryResult.Id, [permissionSetName]);
-
-          return textResponse(`Assigned ${permissionSetName} to ${assignTo}`);
-        } catch (error) {
-          return textResponse(
-            `Failed to assign permission set to ${assignTo}: ${
-              error instanceof Error ? error.message : 'Unknown error'
-            }`,
-            true
-          );
+        if (!assignTo.includes('@')) {
+          return textResponse(`Unable to resolve the username for ${assignTo}. Make sure it is correct`, true);
         }
+
+        const org = await Org.create({ connection });
+        const user = await User.create({ org });
+        const queryResult = await connection.singleRecordQuery<{ Id: string }>(
+          `SELECT Id FROM User WHERE Username='${assignTo}'`
+        );
+
+        await user.assignPermissionSets(queryResult.Id, [permissionSetName]);
+
+        return textResponse(`Assigned ${permissionSetName} to ${assignTo}`);
       } catch (error) {
         return textResponse(
           `Failed to assign permission set: ${error instanceof Error ? error.message : 'Unknown error'}`,
