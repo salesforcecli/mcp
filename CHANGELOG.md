@@ -1,3 +1,12 @@
+## [0.0.8](https://github.com/salesforcecli/mcp/compare/0.0.7...0.0.8) (2025-05-24)
+
+
+### Bug Fixes
+
+* **deps:** bump @jsforce/jsforce-node from 3.8.1 to 3.8.2 ([4d86942](https://github.com/salesforcecli/mcp/commit/4d86942025aefcb4a4f3f94475bec55c40fd84cb))
+
+
+
 ## [0.0.7](https://github.com/salesforcecli/mcp/compare/0.0.6...0.0.7) (2025-05-24)
 
 
