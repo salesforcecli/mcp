@@ -43,3 +43,4 @@ node_modules
 /Library
 
 .cursor
+src/tools/test.ts

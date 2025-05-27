@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+import { ConfigInfo } from '@salesforce/core';
+
+export type ConfigInfoWithCache = ConfigInfo & {
+  cached?: boolean;
+};
+
 // TOOL RESPONSES
 export type ToolTextResponse = {
   isError: boolean;

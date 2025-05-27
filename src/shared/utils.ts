@@ -24,7 +24,13 @@ export function parseStartupArguments(): ParseArgsResult {
     toolsets: { type: 'string', short: 't', default: 'all' },
   };
 
-  const { values, positionals } = parseArgs({ args: process.argv, options, allowPositionals: true }) as ParseArgsResult;
+  // TODO: strict false is to ignore flags pass at testing startup. Revisit this
+  const { values, positionals } = parseArgs({
+    args: process.argv,
+    options,
+    allowPositionals: true,
+    strict: false,
+  }) as ParseArgsResult;
 
   // TODO: Convert Allowed orgs to be a value instead of a positional arg??
   // Depending how this server is started, the argv values vary
