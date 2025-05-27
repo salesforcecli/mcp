@@ -1,3 +1,21 @@
+## [0.0.9](https://github.com/salesforcecli/mcp/compare/0.0.8...0.0.9) (2025-05-25)
+
+### Bug Fixes
+
+- **deps:** bump zod from 3.24.3 to 3.25.28 ([d0c0f2d](https://github.com/salesforcecli/mcp/commit/d0c0f2dd1ca3741bc9306c7eab2f8a5ddd29c9ff))
+
+## [0.0.8](https://github.com/salesforcecli/mcp/compare/0.0.7...0.0.8) (2025-05-24)
+
+### Bug Fixes
+
+- **deps:** bump @jsforce/jsforce-node from 3.8.1 to 3.8.2 ([4d86942](https://github.com/salesforcecli/mcp/commit/4d86942025aefcb4a4f3f94475bec55c40fd84cb))
+
+## [0.0.7](https://github.com/salesforcecli/mcp/compare/0.0.6...0.0.7) (2025-05-24)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-deploy-retrieve ([08bb6e6](https://github.com/salesforcecli/mcp/commit/08bb6e6c6264e5301c8e32e7632ecbd07bc022a9))
+
 ## [0.0.6](https://github.com/salesforcecli/mcp/compare/0.0.5...0.0.6) (2025-05-17)
 
 ### Bug Fixes

@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/mcp",
-  "version": "0.0.6",
+  "version": "0.0.9",
   "description": "MCP Server for interacting with Salesforce instances",
   "bin": {
     "sf-mcp-server": "lib/index.js"
@@ -40,16 +40,16 @@
     "messages"
   ],
   "dependencies": {
-    "@jsforce/jsforce-node": "^3.8.1",
+    "@jsforce/jsforce-node": "^3.8.2",
     "@modelcontextprotocol/sdk": "^1.10.2",
     "@salesforce/core": "^8.10.0",
     "@salesforce/kit": "^3.1.6",
-    "@salesforce/source-deploy-retrieve": "^12.19.3",
+    "@salesforce/source-deploy-retrieve": "^12.19.7",
     "@salesforce/ts-types": "^2.0.11",
-    "zod": "^3.24.3"
+    "zod": "^3.25.28"
   },
   "devDependencies": {
-    "@modelcontextprotocol/inspector": "^0.12.0",
+    "@modelcontextprotocol/inspector": "^0.13.0",
     "@salesforce/cli-plugins-testkit": "^5.3.39",
     "@salesforce/dev-scripts": "11.0.2",
     "@types/node": "^22.15.17",
