@@ -17,9 +17,9 @@
 import { Org, StateAggregator, User } from '@salesforce/core';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
-import { textResponse } from '../shared/utils.js';
-import { getConnection } from '../shared/auth.js';
+import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
+import { textResponse } from '../../shared/utils.js';
+import { getConnection } from '../../shared/auth.js';
 
 /*
  * Assign permission set

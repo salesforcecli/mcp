@@ -19,49 +19,9 @@
 import { z } from 'zod';
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { getConnection } from '../shared/auth.js';
-import { textResponse } from '../shared/utils.js';
-import { directoryParam, usernameOrAliasParam, useToolingApiParam } from '../shared/params.js';
-
-/*
- * Query Salesforce org
- *
- * Run a SOQL query against a Salesforce org.
- *
- * Parameters:
- * - query: SOQL query to run (required)
- * - usernameOrAlias: username or alias for the Salesforce org to run the query against
- *
- * Returns:
- * - textResponse: SOQL query results
- */
-
-export const queryOrgParamsSchema = z.object({
-  query: z.string().describe('SOQL query to run'),
-  usernameOrAlias: usernameOrAliasParam,
-  directory: directoryParam,
-});
-
-export type QueryOrgOptions = z.infer<typeof queryOrgParamsSchema>;
-
-export const registerToolQueryOrg = (server: McpServer): void => {
-  server.tool(
-    'sf-query-org',
-    'Run a SOQL query against a Salesforce org.',
-    queryOrgParamsSchema.shape,
-    async ({ query, usernameOrAlias, directory }) => {
-      try {
-        process.chdir(directory);
-        const connection = await getConnection(usernameOrAlias);
-        const result = await connection.query(query);
-
-        return textResponse(`SOQL query results for ${usernameOrAlias}:\n\n${JSON.stringify(result, null, 2)}`);
-      } catch (error) {
-        return textResponse(`Failed to query org: ${error instanceof Error ? error.message : 'Unknown error'}`, true);
-      }
-    }
-  );
-};
+import { getConnection } from '../../shared/auth.js';
+import { textResponse } from '../../shared/utils.js';
+import { directoryParam, usernameOrAliasParam, useToolingApiParam } from '../../shared/params.js';
 
 /*
  * Create a record in Salesforce

@@ -20,9 +20,10 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { parseStartupArguments, getEnabledToolsets } from './shared/utils.js';
-import * as orgs from './tools/orgs.js';
-import * as data from './tools/data.js';
-import * as users from './tools/users.js';
+import * as core from './tools/core/index.js';
+import * as orgs from './tools/orgs/index.js';
+import * as data from './tools/data/index.js';
+import * as users from './tools/users/index.js';
 
 // Create server instance
 const server = new McpServer({
@@ -48,7 +49,7 @@ const all = enabledToolsets.has('all');
 // CORE TOOLS (always on)
 // ************************
 // get username
-orgs.registerToolGetUsername(server);
+core.registerToolGetUsername(server);
 
 // ************************
 // ORG TOOLS
