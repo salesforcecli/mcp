@@ -15,6 +15,7 @@
  */
 
 import { z } from 'zod';
+import { sanitizePath } from './utils.js';
 
 /*
  * A collection of reuseable Tool parameters
@@ -39,7 +40,11 @@ export const useToolingApiParam = z
   .optional()
   .describe('Use Tooling API to insert a record in a Tooling API object');
 
-export const directoryParam = z.string().describe(`The directory to run this tool from.
+export const baseAbsolutePathParam = z
+  .string()
+  .refine(sanitizePath, 'Invalid path: Must be an absolute path and cannot contain path traversal sequences');
+
+export const directoryParam = baseAbsolutePathParam.describe(`The directory to run this tool from.
 AGENT INSTRUCTIONS:
 We need to know where the user wants to run this tool from.
 Look at your current Workspace Context to determine this filepath.

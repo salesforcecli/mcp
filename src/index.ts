@@ -24,6 +24,7 @@ import * as core from './tools/core/index.js';
 import * as orgs from './tools/orgs/index.js';
 import * as data from './tools/data/index.js';
 import * as users from './tools/users/index.js';
+import * as metadata from './tools/metadata/index.js';
 
 // Create server instance
 const server = new McpServer({
@@ -38,7 +39,7 @@ const server = new McpServer({
 const { values } = parseStartupArguments();
 
 // Toolsets will always be set. It is 'all' by default
-const availableToolsets = ['all', 'orgs', 'data', 'users'];
+const availableToolsets = ['all', 'orgs', 'data', 'users', 'metadata'];
 const enabledToolsets = getEnabledToolsets(availableToolsets, values.toolsets);
 const all = enabledToolsets.has('all');
 
@@ -75,6 +76,16 @@ if (all || enabledToolsets.has('data')) {
 if (all || enabledToolsets.has('users')) {
   // assign permission set
   users.registerToolAssignPermissionSet(server);
+}
+
+// ************************
+// METADATA TOOLS
+// ************************
+if (all || enabledToolsets.has('metadata')) {
+  // deploy metadata
+  metadata.registerToolDeployMetadata(server);
+  // retrieve metadata
+  metadata.registerToolRetrieveMetadata(server);
 }
 
 async function main(): Promise<void> {

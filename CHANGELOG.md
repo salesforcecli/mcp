@@ -1,3 +1,12 @@
+# [0.2.0](https://github.com/salesforcecli/mcp/compare/0.1.0...0.2.0) (2025-05-29)
+
+
+### Features
+
+* add `sf-deploy/retrieve-metadata` tools W-18573019 ([#25](https://github.com/salesforcecli/mcp/issues/25)) ([db28795](https://github.com/salesforcecli/mcp/commit/db28795981fd80062f6a03cb7b53069754bbeb58))
+
+
+
 # [0.1.0](https://github.com/salesforcecli/mcp/compare/0.0.9...0.1.0) (2025-05-29)
 
 

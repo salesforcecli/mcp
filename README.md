@@ -81,6 +81,11 @@ sf-mcp-server test-org@example.com my-dev-hub-alias my-scratch-org-alias
 - `sf-query-org` - Runs a SOQL query against a Salesforce org.
 - `sf-create-record` - Creates and inserts a record into a Salesforce or Tooling API object.
 
+### Metadata Management
+
+- `sf-deploy-metadata` - Deploy metadata to a Salesforce org.
+- `sf-retrieve-metadata` - Retrieve metadata from a Salesforce org.
+
 ## Toolsets
 
 The Salesforce MCP Server supports **toolsets** - a way to selectively enable different groups of tools based on your needs. This allows you to run the server with only the tools you require to reduce the context.
@@ -91,6 +96,7 @@ The Salesforce MCP Server supports **toolsets** - a way to selectively enable di
 - `orgs` - Organization management tools
 - `data` - Data management tools
 - `users` - User management tools
+- `metadata` - Metadata management tools
 
 ### Toolset-specific Tools
 
@@ -112,6 +118,11 @@ Each toolset enables the following tools:
 #### Users Toolset
 
 - `sf-assign-permission-set` - Assigns permission sets to users
+
+#### Metadata Toolset
+
+- `sf-deploy-metadata` - Deploy metadata to a Salesforce org.
+- `sf-retrieve-metadata` - Retrieve metadata from a Salesforce org.
 
 ### Usage
 
