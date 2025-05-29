@@ -45,7 +45,7 @@ export function parseStartupArguments(): ParseArgsResult {
   return { values, positionals: parsedPositionals };
 }
 
-export function parseAllowedOrgs(args: string[]): Set<string> {
+export function buildOrgAllowList(args: string[]): Set<string> {
   const usageMessage = `Usage: sf-mcp-server [OPTIONS]
 
 OPTIONS:

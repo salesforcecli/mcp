@@ -16,29 +16,34 @@
 
 /* eslint-disable no-console */
 
-import { AuthInfo, Connection, ConfigAggregator, ConfigInfo, OrgConfigProperties } from '@salesforce/core';
-import { type ConfigInfoWithCache } from './types.js';
-import { parseAllowedOrgs, parseStartupArguments } from './utils.js';
+import { AuthInfo, Connection, ConfigAggregator, OrgConfigProperties, type OrgAuthorization } from '@salesforce/core';
+import { type ConfigInfoWithCache, type SanitizedOrgAuthorization } from './types.js';
+import { buildOrgAllowList, parseStartupArguments } from './utils.js';
 
 const { positionals } = parseStartupArguments();
-const ALLOWED_ORGS = parseAllowedOrgs(positionals);
-console.error(' - Allowed orgs:', ALLOWED_ORGS);
+const ORG_ALLOWLIST = buildOrgAllowList(positionals);
+console.error(' - Allowed orgs:', ORG_ALLOWLIST);
 
-// Define interface for filtered org data
-type FilteredOrgAuthorization = {
-  aliases?: string[];
-  username?: string;
-  instanceUrl?: string;
-  isScratchOrg?: boolean;
-  isDevHub?: boolean;
-  isSandbox?: boolean;
-  orgId?: string;
-  oauthMethod?: string;
-  isExpired?: boolean;
-};
-
-// Define a type for valid field keys
-type OrgAuthorizationField = keyof FilteredOrgAuthorization;
+/**
+ * Sanitizes org authorization data by filtering out sensitive fields
+ *
+ * @param orgs - Array of OrgAuthorization objects
+ * @returns Array of sanitized org authorization objects with only allowed fields
+ */
+export function sanitizeOrgs(orgs: OrgAuthorization[]): SanitizedOrgAuthorization[] {
+  return orgs.map((org) => ({
+    aliases: org.aliases,
+    configs: org.configs,
+    username: org.username,
+    instanceUrl: org.instanceUrl,
+    isScratchOrg: org.isScratchOrg,
+    isDevHub: org.isDevHub,
+    isSandbox: org.isSandbox,
+    orgId: org.orgId,
+    oauthMethod: org.oauthMethod,
+    isExpired: org.isExpired,
+  }));
+}
 
 export async function suggestUsername(): Promise<{
   suggestedUsername: string | undefined;
@@ -60,14 +65,13 @@ export async function suggestUsername(): Promise<{
     suggestedUsername = allAllowedOrgs[0].username;
     aliasForReference = allAllowedOrgs[0].aliases?.[0];
     reasoning = 'it was the only org found in the MCP Servers allowlisted orgs';
-  } else if (defaultTargetOrg && defaultTargetOrg.value) {
-    // TODO: fix as?
-    const foundOrg = findOrgByUsernameOrAlias(allAllowedOrgs, defaultTargetOrg.value as string);
+  } else if (defaultTargetOrg?.value) {
+    const foundOrg = findOrgByUsernameOrAlias(allAllowedOrgs, defaultTargetOrg.value);
     suggestedUsername = foundOrg?.username;
     aliasForReference = foundOrg?.aliases?.[0];
     reasoning = `it is the default ${targetOrgLocation}target org`;
-  } else if (defaultTargetDevHub && defaultTargetDevHub.value) {
-    const foundOrg = findOrgByUsernameOrAlias(allAllowedOrgs, defaultTargetDevHub.value as string);
+  } else if (defaultTargetDevHub?.value) {
+    const foundOrg = findOrgByUsernameOrAlias(allAllowedOrgs, defaultTargetDevHub.value);
     suggestedUsername = foundOrg?.username;
     aliasForReference = foundOrg?.aliases?.[0];
     reasoning = `it is the default ${targetDevHubLocation}dev hub org`;
@@ -77,19 +81,24 @@ export async function suggestUsername(): Promise<{
 
   return {
     suggestedUsername,
-    reasoning,
     aliasForReference,
+    reasoning,
   };
 }
 
+// This function is the main entry point for Tools to get an allowlisted Connection
+
 export async function getConnection(username: string): Promise<Connection> {
+  // We get all allowed orgs each call in case the directory has changed (default configs)
   const allOrgs = await getAllAllowedOrgs();
   const foundOrg = findOrgByUsernameOrAlias(allOrgs, username);
 
-  if (!foundOrg) {
-    console.error(`No org found with username/alias: ${username}`);
-    return Promise.reject(new Error(`No org found with username/alias: ${username}`));
-  }
+  if (!foundOrg)
+    return Promise.reject(
+      new Error(
+        'No org found with the provided username/alias. Ask the user to specify one or check their MCP Server startup config.'
+      )
+    );
 
   const authInfo = await AuthInfo.create({ username: foundOrg.username });
   const connection = await Connection.create({ authInfo });
@@ -97,115 +106,66 @@ export async function getConnection(username: string): Promise<Connection> {
 }
 
 export function findOrgByUsernameOrAlias(
-  allOrgs: FilteredOrgAuthorization[],
+  allOrgs: SanitizedOrgAuthorization[],
   usernameOrAlias: string
-): FilteredOrgAuthorization | undefined {
+): SanitizedOrgAuthorization | undefined {
   return allOrgs.find((org) => {
     // Check if the org's username or alias matches the provided usernameOrAlias
     const isMatchingUsername = org.username === usernameOrAlias;
-    const isMatchingAlias = org.aliases && org.aliases.includes(usernameOrAlias);
+    const isMatchingAlias = org.aliases && Array.isArray(org.aliases) && org.aliases.includes(usernameOrAlias);
 
     return isMatchingUsername || isMatchingAlias;
   });
 }
 
-export async function getAllAllowedOrgs(): Promise<FilteredOrgAuthorization[]> {
-  const orgs = await AuthInfo.listAllAuthorizations();
+export async function getAllAllowedOrgs(): Promise<SanitizedOrgAuthorization[]> {
+  // Get all orgs on the user's machine
+  const allOrgs = await AuthInfo.listAllAuthorizations();
 
-  // Allowlisted keys to be returned. This prevents accidental exposure of sensitive data (accessToken).
-  const fieldsToReturn: OrgAuthorizationField[] = [
-    'aliases',
-    'username',
-    'instanceUrl',
-    'isScratchOrg',
-    'isDevHub',
-    'isSandbox',
-    'orgId',
-    'oauthMethod',
-    'isExpired',
-  ];
+  // Sanitize the orgs to remove sensitive data
+  const sanitizedOrgs = sanitizeOrgs(allOrgs);
 
-  // Get filtered orgs with all the fields we need
-  const sanitizedOrgPromises = orgs.map((org) => {
-    const sanitizedOrgs: FilteredOrgAuthorization = {};
+  // Filter out orgs that are not in ORG_ALLOWLIST
+  const allowedOrgs = await filterAllowedOrgs(sanitizedOrgs);
 
-    // Extract basic fields from the org
-    fieldsToReturn.forEach((field) => {
-      const value = org[field as keyof typeof org];
-      if (value !== null) {
-        // Use type assertion to the correct type based on the field
-        switch (field) {
-          case 'aliases':
-            if (Array.isArray(value)) sanitizedOrgs.aliases = value;
-            break;
-          case 'username':
-          case 'instanceUrl':
-          case 'orgId':
-          case 'oauthMethod':
-            if (typeof value === 'string') sanitizedOrgs[field] = value;
-            break;
-          case 'isScratchOrg':
-          case 'isDevHub':
-          case 'isSandbox':
-          case 'isExpired':
-            if (typeof value === 'boolean') sanitizedOrgs[field] = value;
-            break;
-        }
-      }
-    });
-
-    return sanitizedOrgs;
-  });
-
-  // Resolve all promises
-  const filteredOrgs = await Promise.all(sanitizedOrgPromises);
-
-  // Apply filtering based on allowed orgs
-  const allowedOrgs = await filterAllowedOrgs(filteredOrgs);
-
-  // TODO: this might not be the best place for this check
+  // If no orgs are found, stop the server
   if (allowedOrgs.length === 0) {
-    console.error('No orgs found that match the allowed orgs configuration.');
+    console.error('No orgs found that match the allowed orgs configuration. Check MCP Server startup config.');
+    process.exit(1);
   }
 
   return allowedOrgs;
 }
 
-// Function to filter orgs based on ALLOWED_ORGS configuration
-export async function filterAllowedOrgs(orgs: FilteredOrgAuthorization[]): Promise<FilteredOrgAuthorization[]> {
+// Function to filter orgs based on ORG_ALLOWLIST configuration
+export async function filterAllowedOrgs(orgs: SanitizedOrgAuthorization[]): Promise<SanitizedOrgAuthorization[]> {
   // Return all orgs if ALLOW_ALL_ORGS is set
-  if (ALLOWED_ORGS.has('ALLOW_ALL_ORGS')) {
-    return orgs;
-  }
+  if (ORG_ALLOWLIST.has('ALLOW_ALL_ORGS')) return orgs;
 
   // Get default orgs for filtering
   const defaultTargetOrg = await getDefaultTargetOrg();
-  const defaultDevHub = await getDefaultTargetDevHub();
+  const defaultTargetDevHub = await getDefaultTargetDevHub();
 
   return orgs.filter((org) => {
     // Skip orgs without a username
     if (!org.username) return false;
 
     // Check if org is specifically allowed by username
-    if (ALLOWED_ORGS.has(org.username)) return true;
+    if (ORG_ALLOWLIST.has(org.username)) return true;
 
     // Check if org is allowed by alias
-    if (org.aliases && org.aliases.some((alias) => ALLOWED_ORGS.has(alias))) return true;
+    if (org.aliases?.some((alias) => ORG_ALLOWLIST.has(alias))) return true;
 
-    // Check if org matches the default target org and DEFAULT_TARGET_ORG is allowed
-    if (ALLOWED_ORGS.has('DEFAULT_TARGET_ORG') && defaultTargetOrg) {
-      const targetOrgValue = defaultTargetOrg.value as string | undefined;
-      // Check if the default target org value matches username or any alias
-      if (targetOrgValue && org.username === targetOrgValue) return true;
-      if (targetOrgValue && org.aliases && org.aliases.includes(targetOrgValue)) return true;
+    // If DEFAULT_TARGET_ORG is set, check for a username or alias match
+    if (ORG_ALLOWLIST.has('DEFAULT_TARGET_ORG') && defaultTargetOrg?.value) {
+      if (org.username === defaultTargetOrg.value) return true;
+      if (org.aliases?.includes(defaultTargetOrg.value)) return true;
     }
 
-    // Check if org matches the default dev hub and DEFAULT_TARGET_DEV_HUB is allowed
-    if (ALLOWED_ORGS.has('DEFAULT_TARGET_DEV_HUB') && defaultDevHub) {
-      const devHubValue = defaultDevHub.value as string | undefined;
-      // Check if the default dev hub value matches username or any alias
-      if (devHubValue && org.username === devHubValue) return true;
-      if (devHubValue && org.aliases && org.aliases.includes(devHubValue)) return true;
+    // If DEFAULT_TARGET_DEV_HUB is set, check for a username or alias match
+    if (ORG_ALLOWLIST.has('DEFAULT_TARGET_DEV_HUB') && defaultTargetDevHub?.value) {
+      if (org.username === defaultTargetDevHub.value) return true;
+      if (org.aliases?.includes(defaultTargetDevHub.value)) return true;
     }
 
     // Org not allowed
@@ -214,40 +174,46 @@ export async function filterAllowedOrgs(orgs: FilteredOrgAuthorization[]): Promi
 }
 
 const defaultOrgMaps = {
-  [OrgConfigProperties.TARGET_ORG]: new Map<string, ConfigInfo>(),
-  [OrgConfigProperties.TARGET_DEV_HUB]: new Map<string, ConfigInfo>(),
+  [OrgConfigProperties.TARGET_ORG]: new Map<string, ConfigInfoWithCache>(),
+  [OrgConfigProperties.TARGET_DEV_HUB]: new Map<string, ConfigInfoWithCache>(),
 };
 
 // Helper function to get default config for a property
+// Values are cached based on ConfigInfo path after first retrieval
+// This is to prevent manipulation of the config file after server start
 async function getDefaultConfig(
   property: OrgConfigProperties.TARGET_ORG | OrgConfigProperties.TARGET_DEV_HUB
-): Promise<ConfigInfo | undefined> {
+): Promise<ConfigInfoWithCache | undefined> {
   // If the directory changes, the singleton instance of ConfigAggregator is not updated.
   // It continues to use the old local or global config.
   // Note: We could update ConfigAggregator to have a clearInstance method like StateAggregator
   // @ts-expect-error Accessing private static instance to reset singleton between directory changes
   ConfigAggregator.instance = undefined;
   const aggregator = await ConfigAggregator.create();
-  let config = aggregator.getInfo(property) as ConfigInfoWithCache;
+  const config = aggregator.getInfo(property);
 
-  const { value, path } = config;
+  const { value, path, key, location } = config;
 
-  if (!value || !path) return undefined;
+  if (!value || typeof value !== 'string' || !path) return undefined;
+
+  // Create a typed config object with the necessary properties
+  // This reduces assertions and lowers context returned to the LLM
+  const typedConfig: ConfigInfoWithCache = { key, location, value, path };
 
   if (defaultOrgMaps[property].has(path)) {
-    // If the cache has the path set, use the cached config
-    config = { ...defaultOrgMaps[property].get(path)!, cached: true };
+    // If the cache has the config's path set, use the cached config
+    const cachedConfig = defaultOrgMaps[property].get(path)!;
+    return { ...cachedConfig, cached: true };
   } else {
-    defaultOrgMaps[property].set(path, config);
+    defaultOrgMaps[property].set(path, typedConfig);
+    return typedConfig;
   }
-
-  return config;
 }
 
-export async function getDefaultTargetOrg(): Promise<ConfigInfo | undefined> {
+export async function getDefaultTargetOrg(): Promise<ConfigInfoWithCache | undefined> {
   return getDefaultConfig(OrgConfigProperties.TARGET_ORG);
 }
 
-export async function getDefaultTargetDevHub(): Promise<ConfigInfo | undefined> {
+export async function getDefaultTargetDevHub(): Promise<ConfigInfoWithCache | undefined> {
   return getDefaultConfig(OrgConfigProperties.TARGET_DEV_HUB);
 }
