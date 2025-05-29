@@ -20,7 +20,7 @@ import {
   textResponse,
   getEnabledToolsets,
   parseStartupArguments,
-  parseAllowedOrgs,
+  buildOrgAllowList,
   sanitizePath,
 } from '../../src/shared/utils.js';
 
@@ -229,7 +229,7 @@ describe('utilities tests', () => {
     });
   });
 
-  describe('parseAllowedOrgs', () => {
+  describe('buildOrgAllowList', () => {
     let consoleWarnStub: sinon.SinonStub;
 
     beforeEach(() => {
@@ -239,7 +239,7 @@ describe('utilities tests', () => {
     it('should return a Set containing valid org identifiers', () => {
       const args = ['DEFAULT_TARGET_ORG', 'user@example.com', 'my-alias'];
 
-      const result = parseAllowedOrgs(args);
+      const result = buildOrgAllowList(args);
 
       expect(result).to.be.instanceOf(Set);
       expect(result.size).to.equal(3);
@@ -251,7 +251,7 @@ describe('utilities tests', () => {
     it('should return a Set containing only ALLOW_ALL_ORGS when it is included', () => {
       const args = ['DEFAULT_TARGET_ORG', 'ALLOW_ALL_ORGS', 'user@example.com'];
 
-      const result = parseAllowedOrgs(args);
+      const result = buildOrgAllowList(args);
 
       expect(result.size).to.equal(1);
       expect(result.has('ALLOW_ALL_ORGS')).to.be.true;
@@ -261,7 +261,7 @@ describe('utilities tests', () => {
     it('should handle DEFAULT_TARGET_DEV_HUB argument', () => {
       const args = ['DEFAULT_TARGET_DEV_HUB'];
 
-      const result = parseAllowedOrgs(args);
+      const result = buildOrgAllowList(args);
 
       expect(result.size).to.equal(1);
       expect(result.has('DEFAULT_TARGET_DEV_HUB')).to.be.true;
@@ -270,7 +270,7 @@ describe('utilities tests', () => {
     it('should exit with code 1 when no arguments are provided', () => {
       const args: string[] = [];
 
-      parseAllowedOrgs(args);
+      buildOrgAllowList(args);
 
       expect(processExitStub.calledWith(1)).to.be.true;
       expect(consoleErrorStub.calledWithMatch(/No arguments provided/)).to.be.true;
@@ -279,7 +279,7 @@ describe('utilities tests', () => {
     it('should exit with code 1 when an invalid argument is provided', () => {
       const args = ['DEFAULT_TARGET_ORG', '--invalid-flag'];
 
-      parseAllowedOrgs(args);
+      buildOrgAllowList(args);
 
       expect(processExitStub.calledWith(1)).to.be.true;
       expect(consoleErrorStub.calledWithMatch(/Invalid argument/)).to.be.true;
@@ -288,7 +288,7 @@ describe('utilities tests', () => {
     it('should accept usernames with @ symbols', () => {
       const args = ['user@example.com', 'another.user@test.org'];
 
-      const result = parseAllowedOrgs(args);
+      const result = buildOrgAllowList(args);
 
       expect(result.size).to.equal(2);
       expect(result.has('user@example.com')).to.be.true;
@@ -298,7 +298,7 @@ describe('utilities tests', () => {
     it('should accept aliases that do not start with a dash', () => {
       const args = ['my-alias', 'another_alias'];
 
-      const result = parseAllowedOrgs(args);
+      const result = buildOrgAllowList(args);
 
       expect(result.size).to.equal(2);
       expect(result.has('my-alias')).to.be.true;
