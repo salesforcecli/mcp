@@ -15,50 +15,11 @@
  */
 
 import { z } from 'zod';
-import { type ConfigInfo } from '@salesforce/core';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { getAllAllowedOrgs } from '../shared/auth.js';
-import { textResponse } from '../shared/utils.js';
-import { getDefaultTargetOrg, getDefaultTargetDevHub, suggestUsername } from '../shared/auth.js';
-import { directoryParam } from '../shared/params.js';
-import { type ToolTextResponse } from '../shared/types.js';
-
-/*
- * List all Salesforce orgs
- *
- * Lists all configured Salesforce orgs.
- *
- * Parameters:
- * - None required
- *
- * Returns:
- * - textResponse: List of configured Salesforce orgs
- */
-
-export const registerToolListAllOrgs = (server: McpServer): void => {
-  server.tool(
-    'sf-list-all-orgs',
-    `Lists all configured Salesforce orgs.
-
-AGENT INSTRUCTIONS:
-DO NOT use this tool to try to determine which org a user wants, use #sf-get-username instead. Only use it if the user explicitly asks for a list of orgs.
-
-Example usage:
-Can you list all Salesforce orgs for me
-List all Salesforce orgs
-List all orgs
-`,
-    {},
-    async () => {
-      try {
-        const orgs = await getAllAllowedOrgs();
-        return textResponse(`List of configured Salesforce orgs:\n\n${JSON.stringify(orgs, null, 2)}`);
-      } catch (error) {
-        return textResponse(`Failed to list orgs: ${error instanceof Error ? error.message : 'Unknown error'}`, true);
-      }
-    }
-  );
-};
+import { textResponse } from '../../shared/utils.js';
+import { getDefaultTargetOrg, getDefaultTargetDevHub, suggestUsername } from '../../shared/auth.js';
+import { directoryParam } from '../../shared/params.js';
+import { type ConfigInfoWithCache, type ToolTextResponse } from '../../shared/types.js';
 
 /*
  * Get username for Salesforce org
@@ -124,11 +85,13 @@ EXAMPLE USAGE:
       try {
         process.chdir(directory);
 
-        const generateResponse = (defaultFromConfig: ConfigInfo | undefined): ToolTextResponse =>
-          textResponse(`ALWAYS notify the user the following 3 pieces of information:
-1. If it is default target-org or target-dev-hub ('.name' on the config)
+        const generateResponse = (defaultFromConfig: ConfigInfoWithCache | undefined): ToolTextResponse =>
+          textResponse(`ALWAYS notify the user the following 3 (maybe 4) pieces of information:
+1. If it is default target-org or target-dev-hub ('.key' on the config)
 2. The value of '.location' on the config
 3. The value of '.value' on the config
+4. IF '.cached' IS TRUE, tell then we are using a cached value and if they have changed it, restart the MCP Server
+
 - Full config: ${JSON.stringify(defaultFromConfig, null, 2)}
 
 UNLESS THE USER SPECIFIES OTHERWISE, use this username for the "usernameOrAlias" parameter in future Tool calls.`);

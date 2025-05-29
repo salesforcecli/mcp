@@ -17,7 +17,12 @@
 /* eslint-disable no-console */
 
 import { AuthInfo, Connection, ConfigAggregator, ConfigInfo, OrgConfigProperties } from '@salesforce/core';
-import { ALLOWED_ORGS } from '../index.js';
+import { type ConfigInfoWithCache } from './types.js';
+import { parseAllowedOrgs, parseStartupArguments } from './utils.js';
+
+const { positionals } = parseStartupArguments();
+const ALLOWED_ORGS = parseAllowedOrgs(positionals);
+console.error(' - Allowed orgs:', ALLOWED_ORGS);
 
 // Define interface for filtered org data
 type FilteredOrgAuthorization = {
@@ -208,15 +213,35 @@ export async function filterAllowedOrgs(orgs: FilteredOrgAuthorization[]): Promi
   });
 }
 
+const defaultOrgMaps = {
+  [OrgConfigProperties.TARGET_ORG]: new Map<string, ConfigInfo>(),
+  [OrgConfigProperties.TARGET_DEV_HUB]: new Map<string, ConfigInfo>(),
+};
+
 // Helper function to get default config for a property
-async function getDefaultConfig(property: OrgConfigProperties): Promise<ConfigInfo | undefined> {
+async function getDefaultConfig(
+  property: OrgConfigProperties.TARGET_ORG | OrgConfigProperties.TARGET_DEV_HUB
+): Promise<ConfigInfo | undefined> {
   // If the directory changes, the singleton instance of ConfigAggregator is not updated.
   // It continues to use the old local or global config.
+  // Note: We could update ConfigAggregator to have a clearInstance method like StateAggregator
   // @ts-expect-error Accessing private static instance to reset singleton between directory changes
   ConfigAggregator.instance = undefined;
   const aggregator = await ConfigAggregator.create();
-  const config = aggregator.getInfo(property);
-  return config.value ? config : undefined;
+  let config = aggregator.getInfo(property) as ConfigInfoWithCache;
+
+  const { value, path } = config;
+
+  if (!value || !path) return undefined;
+
+  if (defaultOrgMaps[property].has(path)) {
+    // If the cache has the path set, use the cached config
+    config = { ...defaultOrgMaps[property].get(path)!, cached: true };
+  } else {
+    defaultOrgMaps[property].set(path, config);
+  }
+
+  return config;
 }
 
 export async function getDefaultTargetOrg(): Promise<ConfigInfo | undefined> {

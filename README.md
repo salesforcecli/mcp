@@ -96,6 +96,10 @@ The Salesforce MCP Server supports **toolsets** - a way to selectively enable di
 
 Each toolset enables the following tools:
 
+#### Core Toolset (always enabled)
+
+- `sf-get-username` - Attempts to resolve the org to be used by another tool
+
 #### Orgs Toolset
 
 - `sf-list-all-orgs` - Lists all configured Salesforce orgs

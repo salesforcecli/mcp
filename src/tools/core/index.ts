@@ -14,25 +14,4 @@
  * limitations under the License.
  */
 
-import { ConfigInfo } from '@salesforce/core';
-
-export type ConfigInfoWithCache = ConfigInfo & {
-  cached?: boolean;
-};
-
-// TOOL RESPONSES
-export type ToolTextResponse = {
-  isError: boolean;
-  content: Array<{
-    type: 'text';
-    text: string;
-  }>;
-};
-
-// STARTUP ARGS
-export type ParseArgsResult = {
-  values: {
-    toolsets: string;
-  };
-  positionals: string[];
-};
+export * from './sf-get-username.js';
