@@ -1,3 +1,12 @@
+## [0.2.1](https://github.com/salesforcecli/mcp/compare/0.2.0...0.2.1) (2025-05-29)
+
+
+### Bug Fixes
+
+* auth refactor ([d8e9fc1](https://github.com/salesforcecli/mcp/commit/d8e9fc13327df9f9f0f0e4730f120ab6478cce00))
+
+
+
 # [0.2.0](https://github.com/salesforcecli/mcp/compare/0.1.0...0.2.0) (2025-05-29)
 
 
