@@ -16,6 +16,7 @@
 
 /* eslint-disable no-console */
 
+import { sep } from 'node:path';
 import { parseArgs, ParseArgsConfig } from 'node:util';
 import { type ToolTextResponse, type ParseArgsResult } from './types.js';
 
@@ -131,4 +132,25 @@ export function getEnabledToolsets(availableToolsets: string[], toolsetsInput: s
   console.error('Enabling toolsets:', Array.from(enabledToolsets).join(', '));
 
   return enabledToolsets;
+}
+
+export function sanitizePath(path: string): boolean {
+  // Decode URL-encoded sequences
+  const decodedPath = decodeURIComponent(path);
+  // Normalize Unicode characters
+  const normalizedPath = decodedPath.normalize();
+
+  // Check for various traversal patterns
+  const hasTraversal =
+    normalizedPath.includes('..') ||
+    normalizedPath.includes('\\..') ||
+    normalizedPath.includes('../') ||
+    normalizedPath.includes('..\\') ||
+    normalizedPath.includes('\u2025') || // Unicode horizontal ellipsis
+    normalizedPath.includes('\u2026'); // Unicode vertical ellipsis
+
+  // Ensure path is absolute
+  const isAbsolute = path.startsWith(sep);
+
+  return !hasTraversal && isAbsolute;
 }

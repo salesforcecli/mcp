@@ -13,9 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { sep } from 'node:path';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { textResponse, getEnabledToolsets, parseStartupArguments, parseAllowedOrgs } from '../../src/shared/utils.js';
+import {
+  textResponse,
+  getEnabledToolsets,
+  parseStartupArguments,
+  parseAllowedOrgs,
+  sanitizePath,
+} from '../../src/shared/utils.js';
 
 // Create a mock version of availableToolsets for testing instead of importing from index.js
 // This avoids the error with parseArgs when running tests
@@ -296,6 +303,41 @@ describe('utilities tests', () => {
       expect(result.size).to.equal(2);
       expect(result.has('my-alias')).to.be.true;
       expect(result.has('another_alias')).to.be.true;
+    });
+  });
+
+  describe('sanitizePath', () => {
+    it('should return true for valid absolute paths', () => {
+      expect(sanitizePath(`${sep}valid${sep}path`)).to.be.true;
+      expect(sanitizePath(`${sep}another${sep}valid${sep}path`)).to.be.true;
+    });
+
+    it('should return false for relative paths', () => {
+      expect(sanitizePath('relative/path')).to.be.false;
+      expect(sanitizePath('./relative/path')).to.be.false;
+    });
+
+    it('should detect path traversal attempts', () => {
+      expect(sanitizePath(`${sep}path${sep}..${sep}file`)).to.be.false;
+      expect(sanitizePath(`${sep}path${sep}\\..${sep}file`)).to.be.false;
+      expect(sanitizePath(`${sep}path${sep}../file`)).to.be.false;
+      expect(sanitizePath(`${sep}path${sep}..\\file`)).to.be.false;
+    });
+
+    it('should handle URL-encoded sequences', () => {
+      expect(sanitizePath(`${sep}path${sep}%2e%2e${sep}file`)).to.be.false;
+      expect(sanitizePath(`${sep}valid${sep}%20path`)).to.be.true;
+    });
+
+    it('should handle Unicode characters', () => {
+      expect(sanitizePath(`${sep}path${sep}\u2025file`)).to.be.false;
+      expect(sanitizePath(`${sep}path${sep}\u2026file`)).to.be.false;
+      expect(sanitizePath(`${sep}valid${sep}path\u00e9`)).to.be.true;
+    });
+
+    it('should handle mixed path separators', () => {
+      expect(sanitizePath(`${sep}path\\subpath${sep}file`)).to.be.true;
+      expect(sanitizePath(`${sep}path${sep}..\\file`)).to.be.false;
     });
   });
 });
