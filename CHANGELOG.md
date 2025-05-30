@@ -1,3 +1,12 @@
+## [0.2.2](https://github.com/salesforcecli/mcp/compare/0.2.1...0.2.2) (2025-05-30)
+
+
+### Bug Fixes
+
+* remove sf-create-record tool ([#29](https://github.com/salesforcecli/mcp/issues/29)) ([9189053](https://github.com/salesforcecli/mcp/commit/9189053a0837bee28fb12487133b57c923959514))
+
+
+
 ## [0.2.1](https://github.com/salesforcecli/mcp/compare/0.2.0...0.2.1) (2025-05-29)
 
 
