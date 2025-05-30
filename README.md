@@ -95,12 +95,9 @@ Make sure that you have a Salesforce DX environment set up on your computer. In 
    - List all my orgs.
    - Which are my active scratch orgs?
    - Show me all the accounts in the org with alias my-org.
-   - Add a new account with the name "Exciting Account". Then list all the accounts again.
    - Deploy everything in my project to the org with alias my-org.
 
 1. To manage the Salesforce MCP server, such as stopping or restarting it or viewing its configuration, run the **MCP: List Servers** command, click `salesforce`, then click the appropriate option.
-
-Pretty nifty, huh.
 
 ## Configure Orgs and Toolsets
 
@@ -161,10 +158,9 @@ Includes this tool:
 
 #### Data Toolset
 
-Includes these tools:
+Includes this tool:
 
 - `sf-query-org` - Runs a SOQL query against a Salesforce org.
-- `sf-create-record` - Creates and inserts a record into a Salesforce or Tooling API object.
 
 #### Users Toolset
 
@@ -181,6 +177,8 @@ Includes these tools:
 
 ## Configure Other Clients to Use the Salesforce MCP Server
 
+\*_Cursor_
+
 To configure [Cursor](https://www.cursor.com/) to work with Salesforce MCP server, add this snippet to your Cursor `mcp.json` file:
 
 ```json
@@ -196,12 +194,28 @@ To configure [Cursor](https://www.cursor.com/) to work with Salesforce MCP serve
 }
 ```
 
-For these clients, refer to their documentation for adding MCP servers and follow the same pattern as in the preceding VS Code and Cursor JSON snippets:
+**Cline**
+
+To configure [Cline](https://cline.bot), add this snippet to your Cline `cline_mcp_settings.json` file:
+
+```json
+{
+  "mcpServers": {
+    "salesforce": {
+      "command": "npx",
+      "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "all"]
+    }
+  }
+}
+```
+
+**Other Clients**
+
+For these other clients, refer to their documentation for adding MCP servers and follow the same pattern as in the preceding VS Code and Cursor JSON snippets:
 
 - [Claude Desktop](https://claude.ai/download)
 - [Zed](https://github.com/zed-industries/zed)
 - [Windsurf](https://www.windsurf.com/)
-- [Cline](https://cline.bot)
 - [Trae](https://trae.ai)
 
 ## Debugging
