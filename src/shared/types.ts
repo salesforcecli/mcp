@@ -52,6 +52,6 @@ export type ToolTextResponse = {
 export type ParseArgsResult = {
   values: {
     toolsets: string;
+    orgs: string;
   };
-  positionals: string[];
 };

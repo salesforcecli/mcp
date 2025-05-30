@@ -20,8 +20,8 @@ import { AuthInfo, Connection, ConfigAggregator, OrgConfigProperties, type OrgAu
 import { type ConfigInfoWithCache, type SanitizedOrgAuthorization } from './types.js';
 import { buildOrgAllowList, parseStartupArguments } from './utils.js';
 
-const { positionals } = parseStartupArguments();
-const ORG_ALLOWLIST = buildOrgAllowList(positionals);
+const { values } = parseStartupArguments();
+const ORG_ALLOWLIST = buildOrgAllowList(values.orgs);
 console.error(' - Allowed orgs:', ORG_ALLOWLIST);
 
 /**

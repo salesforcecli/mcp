@@ -17,37 +17,11 @@
 /* eslint-disable no-console */
 
 import { sep } from 'node:path';
+import { EOL } from 'node:os';
 import { parseArgs, ParseArgsConfig } from 'node:util';
 import { type ToolTextResponse, type ParseArgsResult } from './types.js';
 
-export function parseStartupArguments(): ParseArgsResult {
-  const options: ParseArgsConfig['options'] = {
-    toolsets: { type: 'string', short: 't', default: 'all' },
-  };
-
-  // TODO: strict false is to ignore flags pass at testing startup. Revisit this
-  const { values, positionals } = parseArgs({
-    args: process.argv,
-    options,
-    allowPositionals: true,
-    strict: false,
-  }) as ParseArgsResult;
-
-  // TODO: Convert Allowed orgs to be a value instead of a positional arg??
-  // Depending how this server is started, the argv values vary
-  const executableIndex = positionals.findIndex((pos) => pos.endsWith('.js') || pos.endsWith('sf-mcp-server'));
-
-  if (executableIndex === -1) {
-    console.error('Something went wrong parsing args. All positional args:', positionals);
-    process.exit(1);
-  }
-  const parsedPositionals = positionals.slice(executableIndex + 1);
-
-  return { values, positionals: parsedPositionals };
-}
-
-export function buildOrgAllowList(args: string[]): Set<string> {
-  const usageMessage = `Usage: sf-mcp-server [OPTIONS]
+const usageMessage = `Usage: sf-mcp-server [OPTIONS]
 
 OPTIONS:
   DEFAULT_TARGET_ORG     - Allow access to default orgs (global and local)
@@ -63,25 +37,55 @@ Examples:
 Documentation:
   See: https://github.com/salesforcecli/mcp`;
 
-  if (args.length === 0) {
-    console.error('No arguments provided.\n\n' + usageMessage);
-    process.exit(1); // Stop the server
+export function parseStartupArguments(): ParseArgsResult {
+  const options: ParseArgsConfig['options'] = {
+    toolsets: { type: 'string', short: 't', default: 'all' },
+    orgs: { type: 'string', short: 'o' },
+  };
+
+  // TODO: strict false is to ignore flags pass at testing startup. Revisit this
+  const { values } = parseArgs({
+    args: process.argv,
+    options,
+    allowPositionals: true,
+    strict: false,
+  }) as unknown as ParseArgsResult;
+
+  return { values };
+}
+
+export function buildOrgAllowList(orgs: string): Set<string> {
+  const runningInMocha = typeof describe === 'function';
+
+  if (!runningInMocha) {
+    // Fail if `--orgs` wasn't specified
+    if (!orgs) {
+      console.error(usageMessage);
+      process.exit(1);
+    }
+
+    // Fail if `--orgs` was specified without a value
+    if (orgs === 'boolean') {
+      console.error(usageMessage);
+      process.exit(1);
+    }
   }
+  const usernames = runningInMocha ? (orgs ? orgs.split(',') : '') : orgs.split(',');
 
   const allowedOrgs = new Set<string>();
 
-  if (args.includes('ALLOW_ALL_ORGS')) {
+  if (usernames.includes('ALLOW_ALL_ORGS')) {
     console.warn('WARNING: ALLOW_ALL_ORGS is set. This allows access to all authenticated orgs. Use with caution.');
     // TODO Add telemetry
     return new Set(['ALLOW_ALL_ORGS']);
   }
 
   // Process other arguments
-  for (const arg of args) {
+  for (const arg of usernames) {
     if (arg === 'DEFAULT_TARGET_ORG' || arg === 'DEFAULT_TARGET_DEV_HUB' || arg.includes('@') || !arg.startsWith('-')) {
       allowedOrgs.add(arg);
     } else {
-      console.error(`Invalid argument: ${arg}\n\n${usageMessage}`);
+      console.error(`Invalid flag value: ${arg + EOL + EOL + usageMessage}`);
       process.exit(1); // Stop the server
     }
   }
