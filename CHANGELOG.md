@@ -1,3 +1,12 @@
+## [0.2.3](https://github.com/salesforcecli/mcp/compare/0.2.2...0.2.3) (2025-05-30)
+
+
+### Bug Fixes
+
+* orgs flag ([2550fff](https://github.com/salesforcecli/mcp/commit/2550fff88b82a4bb99e302ae0ce92c5216f71c1b))
+
+
+
 ## [0.2.2](https://github.com/salesforcecli/mcp/compare/0.2.1...0.2.2) (2025-05-30)
 
 
