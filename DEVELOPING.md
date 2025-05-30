@@ -34,8 +34,19 @@
    - _Suggestion:_ Use branch name format of `<initials>/<work-title>`.
      - Example: `mb/refactor-tests`
 1. Make code changes and build: `yarn build`
-1. Run changed commands: e.g., `./bin/run.js my-topic my-command`
-1. Write tests and run: `yarn test` ([unit](#unit-tests)) and/or `yarn test:nuts` ([NUTS](#nuts-non-unit-tests))
+1. Update your MCP client to launch the local build with node instead of the npm package via npx, example with vscode MCP config file:
+```json
+{
+  "servers": {
+    "salesforce": {
+      "command": "node",
+      "args": ["/full/path/to/mcp/lib/index.js", "--toolsets", "all", "--orgs", "ALLOW_ALL_ORGS"]
+    }
+  }
+}
+```
+1. Start the MCP server and call the tools via prompts
+1. Write tests and run: `yarn test` ([unit](#unit-tests))
 1. Show all changed files: `git status`
 1. Add all files to staging: `git add .`
 1. Commit staged files with helpful commit message: `git commit`
@@ -45,39 +56,68 @@
 
 ## Testing
 
-All changes must have associated tests. This library uses a combination of unit testing and NUTs (non-unit tests).
+All changes must have associated unit tests when possible.
+E2E tests for tools will be added in the future.
+
+For manual tool testing you can use the MCP inspector to make tool calls directly from your browser or terminal, this is handy when starting working on a new tool and you want to focus on the tool logic first before optimizing the agent instructions.
+Install the MCP inspector CLI: 
+```
+npm i -g @modelcontextprotocol/inspector
+```
+
+then do the following:
+
+### Browser
+1. Build the local server: `yarn build`
+2. Start the inspector server: `mcp-inspector node lib/index.js --orgs DEFAULT_TARGET_ORG`
+3. If successful, open printed the localhost URL in your browser:
+```
+MCP Inspector is up and running at http://127.0.0.1:6274
+```
+4. Click `Connect` button, you should the this msg in the bottom-left panel
+```
+✅ Salesforce MCP Server running on stdio
+```
+5. Click on `List Tools`, then select one and fill the parameters required and click `Run Tool`
+
+### Terminal
+
+1. Build the local server: `yarn build`
+5. Call a specific tool with its params by via the MCP inspector CLI:
+
+Example calling sf-query-org from the context of an SFDX project
+```shell
+mcp-inspector --cli node lib/index.js --orgs DEFAULT_TARGET_ORG \
+  --method tools/call \
+  --tool-name sf-query-org \
+  --tool-arg query="select id from account limit 5" \
+  --tool-arg usernameOrAlias=dreamhouse \
+  --tool-arg directory="/path/to/sfdx-project"
+
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "SOQL query results for dreamhouse:\n\n{\n  \"records\": [\n    {\n      \"attributes\": {\n        \"type\": \"Account\",\n        \"url\": \"/services/d
+ata/v63.0/sobjects/Account/001DK00001BFbHbYAL\"\n      },\n      \"Id\": \"001DK00001BFbHbYAL\"\n    }\n  ],\n  \"totalSize\": 1,\n  \"done\": true\n}"
+    }
+  ],
+  "isError": false
+}
+```
+You can know more about each tool argument by looking at the their definition in code, the inspector browser UI or by listing all tools via the inspector CLI:
+```shell
+mcp-inspector --cli node lib/index.js --orgs DEFAULT_TARGET_ORG --method tools/list
+```
+
 
 ### Unit tests
 
-Unit tests are run with `yarn test` and use the mocha test framework. Tests are located in the test directory and are named with the pattern, `test/commands/my-topic/my-command/<test-file>.test.ts`. Notice that the directory structure is similar to the commands in the `src` directory. Reference the existing unit tests when writing and testing code changes.
-
-### NUTs (non-unit tests)
-
-Non-unit tests are run with `yarn test:nuts` and use the [cli-plugin-testkit](https://github.com/salesforcecli/cli-plugins-testkit) framework. These tests run using the default devhub in your environment. NUTs are a way to test the library code in a real environment versus a unit test environment where many things are stubbed.
+Unit tests are run with `yarn test` and use the mocha test framework. Tests are located in the test directory and are named with the pattern, `test/**/*.test.ts`.
 
 ## Debugging
 
-If you need to debug plugin code or tests you should refer to the excellent documentation on this topic in the [Plugin Developer Guide](https://github.com/salesforcecli/cli/wiki/Debug-Your-Plugin).
-
-## Running Commands
-
-To run your modified plugin commands locally, use `./bin/run.js` or `./bin/run.cmd` (Windows). Note that you must compile any code changes (`yarn compile`) before seeing those changes with `./bin/run.js`.
-
-```bash
-# Run using local script.
-./bin/run.js my-topic my-command
-```
-
-There should be no differences when running via the Salesforce CLI or using the local `bin` scripts. However, it can be useful to link the plugin to the CLI to do some additional testing or run your commands from anywhere on your machine.
-
-```bash
-# Link your plugin to the sf cli
-sf plugins link .
-# To verify
-sf plugins
-# To run
-sf my-topic my-command
-```
+<TODO>
 
 ## Useful yarn commands
 
@@ -108,7 +148,3 @@ This cleans all generated files and directories. Run `yarn clean-all` to also cl
 #### `yarn test`
 
 This runs unit tests (mocha) for the project using ts-node.
-
-#### `yarn test:nuts`
-
-This runs NUTs (non-unit tests) for the project using ts-node.
