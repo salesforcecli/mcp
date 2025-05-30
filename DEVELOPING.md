@@ -47,8 +47,7 @@
 1. Write tests and run: `yarn test` ([unit](#unit-tests))
 1. Show all changed files: `git status`
 1. Add all files to staging: `git add .`
-1. Commit staged files with helpful commit message: `git commit`
-   - TODO
+1. Commit staged files with helpful a commit message that adhere to the [conventional commits specification](https://www.conventionalcommits.org/en/v1.0.0/): `git commit -m "feat: add new tool"`
 1. Push commit(s) to remote: `git push -u origin <branch_name>`
 1. Create a pull request (PR) using the GitHub UI [here](https://github.com/salesforcecli/mcp).
 
