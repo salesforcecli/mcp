@@ -267,14 +267,14 @@ describe('utilities tests', () => {
       expect(result.has('DEFAULT_TARGET_DEV_HUB')).to.be.true;
     });
 
-    // it('should exit with code 1 when no arguments are provided', () => {
-    //   const args = '';
-    //
-    //   buildOrgAllowList(args);
-    //
-    //   expect(processExitStub.calledWith(1)).to.be.true;
-    //   expect(consoleErrorStub.calledWithMatch(/No arguments provided/)).to.be.true;
-    // });
+    it('should exit with code 1 when no arguments are provided', () => {
+      const args = '';
+
+      buildOrgAllowList(args);
+
+      expect(processExitStub.calledWith(1)).to.be.true;
+      expect(consoleErrorStub.calledWithMatch(/Missing --orgs flag/)).to.be.true;
+    });
 
     it('should exit with code 1 when an invalid argument is provided', () => {
       const args = 'DEFAULT_TARGET_ORG,--invalid-flag';

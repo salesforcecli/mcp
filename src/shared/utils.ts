@@ -80,7 +80,7 @@ export function parseStartupArguments(): ParseArgsResult {
 export function buildOrgAllowList(orgs: string): Set<string> {
   // Fail if `--orgs` wasn't specified
   if (!orgs) {
-    console.error(usageMessage);
+    console.error(`Missing --orgs flag${EOL}${EOL}${usageMessage}`);
     process.exit(1);
   }
 
