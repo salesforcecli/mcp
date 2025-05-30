@@ -55,22 +55,18 @@ export function parseStartupArguments(): ParseArgsResult {
 }
 
 export function buildOrgAllowList(orgs: string): Set<string> {
-  const runningInMocha = typeof describe === 'function';
-
-  if (!runningInMocha) {
-    // Fail if `--orgs` wasn't specified
-    if (!orgs) {
-      console.error(usageMessage);
-      process.exit(1);
-    }
-
-    // Fail if `--orgs` was specified without a value
-    if (orgs === 'boolean') {
-      console.error(usageMessage);
-      process.exit(1);
-    }
+  // Fail if `--orgs` wasn't specified
+  if (!orgs) {
+    console.error(usageMessage);
+    process.exit(1);
   }
-  const usernames = runningInMocha ? (orgs ? orgs.split(',') : '') : orgs.split(',');
+
+  // Fail if `--orgs` was specified without a value
+  if (orgs === 'boolean') {
+    console.error(usageMessage);
+    process.exit(1);
+  }
+  const usernames = orgs.split(',');
 
   const allowedOrgs = new Set<string>();
 
