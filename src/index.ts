@@ -66,8 +66,6 @@ if (all || enabledToolsets.has('orgs')) {
 if (all || enabledToolsets.has('data')) {
   // query org
   data.registerToolQueryOrg(server);
-  // create a record
-  data.registerToolCreateRecord(server);
 }
 
 // ************************
