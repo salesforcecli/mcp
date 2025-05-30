@@ -23,16 +23,39 @@ import { type ToolTextResponse, type ParseArgsResult } from './types.js';
 
 const usageMessage = `Usage: sf-mcp-server [OPTIONS]
 
-OPTIONS:
-  DEFAULT_TARGET_ORG     - Allow access to default orgs (global and local)
-  DEFAULT_TARGET_DEV_HUB - Allow access to default dev hubs (global and local)
-  ALLOW_ALL_ORGS         - Allow access to all authenticated orgs (use with caution)
-  <username or alias>    - Allow access to specific org by username or alias
+FLAGS:
+  -o, --orgs             - Org username(s) to allow access to.
+  -t, --toolsets         - List of toolsets to enable.
 
-Examples:
-  sf-mcp-server DEFAULT_TARGET_ORG
-  sf-mcp-server DEFAULT_TARGET_DEV_HUB my-alias
-  sf-mcp-server test-org@example.com my-dev-hub my-alias
+FLAG DESCRIPTIONS:
+  -o, --orgs=<string>  Org usernames to allow access to.
+
+    Use this flag to specify the org usernames to allow the MCP server to access to.
+    If you need to pass more than one username/alias, pass all of them as a comma-separated string.
+
+    Special values:
+    DEFAULT_TARGET_ORG     - Allow access to default orgs (global and local)
+    DEFAULT_TARGET_DEV_HUB - Allow access to default dev hubs (global and local)
+    ALLOW_ALL_ORGS         - Allow access to all authenticated orgs (use with caution)
+
+  -t, --toolsets=<string>  List of toolsets to enable.
+
+  Specify the toolsets to enable, possible values:
+  * all (default)
+  * orgs
+  * data
+  * users
+  * metadata
+
+EXAMPLES:
+  // Start the server with all toolsets enabled and access only to the default org in the project:
+  sf-mcp-server --orgs DEFAULT_TARGET_ORG
+
+  // Allow access to the default org and "my-alias" one with only "data" tools;
+  sf-mcp-server --orgs DEFAULT_TARGET_DEV_HUB,my-alias --toolsets data
+
+  // Allow acccess to 3 specific orgs and enable all toolsets:
+  sf-mcp-server --orgs test-org@example.com,my-dev-hub,my-alias
 
 Documentation:
   See: https://github.com/salesforcecli/mcp`;
