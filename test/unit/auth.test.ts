@@ -17,7 +17,13 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { AuthInfo, ConfigAggregator, ConfigInfo, OrgConfigProperties, type OrgAuthorization } from '@salesforce/core';
-import { getDefaultTargetOrg, getDefaultTargetDevHub, getAllAllowedOrgs, sanitizeOrgs } from '../../src/shared/auth.js';
+
+// Import types for dynamic imports with query strings
+import type * as AuthModuleType from '../../src/shared/auth.js';
+const { sanitizeOrgs, getAllAllowedOrgs, getDefaultTargetOrg, getDefaultTargetDevHub } = (await import(
+  // @ts-expect-error Dynamic import with query string to control ORG_ALLOWLIST for testing
+  '../../src/shared/auth.js?orgs=org1@example.com'
+)) as typeof AuthModuleType;
 
 describe('auth tests', () => {
   const sandbox = sinon.createSandbox();

@@ -17,71 +17,94 @@
 /* eslint-disable no-console */
 
 import { sep } from 'node:path';
+import { EOL } from 'node:os';
 import { parseArgs, ParseArgsConfig } from 'node:util';
 import { type ToolTextResponse, type ParseArgsResult } from './types.js';
 
-export function parseStartupArguments(): ParseArgsResult {
-  const options: ParseArgsConfig['options'] = {
-    toolsets: { type: 'string', short: 't', default: 'all' },
-  };
+const usageMessage = `Usage: sf-mcp-server [OPTIONS]
 
-  // TODO: strict false is to ignore flags pass at testing startup. Revisit this
-  const { values, positionals } = parseArgs({
-    args: process.argv,
-    options,
-    allowPositionals: true,
-    strict: false,
-  }) as ParseArgsResult;
+FLAGS:
+  -o, --orgs             - Org username(s) to allow access to.
+  -t, --toolsets         - List of toolsets to enable.
 
-  // TODO: Convert Allowed orgs to be a value instead of a positional arg??
-  // Depending how this server is started, the argv values vary
-  const executableIndex = positionals.findIndex((pos) => pos.endsWith('.js') || pos.endsWith('sf-mcp-server'));
+FLAG DESCRIPTIONS:
+  -o, --orgs=<string>  Org usernames to allow access to.
 
-  if (executableIndex === -1) {
-    console.error('Something went wrong parsing args. All positional args:', positionals);
-    process.exit(1);
-  }
-  const parsedPositionals = positionals.slice(executableIndex + 1);
+    Use this flag to specify the org usernames to allow the MCP server to access to.
+    If you need to pass more than one username/alias, pass all of them as a comma-separated string.
 
-  return { values, positionals: parsedPositionals };
-}
+    Special values:
+    DEFAULT_TARGET_ORG     - Allow access to default orgs (global and local)
+    DEFAULT_TARGET_DEV_HUB - Allow access to default dev hubs (global and local)
+    ALLOW_ALL_ORGS         - Allow access to all authenticated orgs (use with caution)
 
-export function buildOrgAllowList(args: string[]): Set<string> {
-  const usageMessage = `Usage: sf-mcp-server [OPTIONS]
+  -t, --toolsets=<string>  List of toolsets to enable.
 
-OPTIONS:
-  DEFAULT_TARGET_ORG     - Allow access to default orgs (global and local)
-  DEFAULT_TARGET_DEV_HUB - Allow access to default dev hubs (global and local)
-  ALLOW_ALL_ORGS         - Allow access to all authenticated orgs (use with caution)
-  <username or alias>    - Allow access to specific org by username or alias
+  Specify the toolsets to enable, possible values:
+  * all (default)
+  * orgs
+  * data
+  * users
+  * metadata
 
-Examples:
-  sf-mcp-server DEFAULT_TARGET_ORG
-  sf-mcp-server DEFAULT_TARGET_DEV_HUB my-alias
-  sf-mcp-server test-org@example.com my-dev-hub my-alias
+EXAMPLES:
+  // Start the server with all toolsets enabled and access only to the default org in the project:
+  sf-mcp-server --orgs DEFAULT_TARGET_ORG
+
+  // Allow access to the default org and "my-alias" one with only "data" tools;
+  sf-mcp-server --orgs DEFAULT_TARGET_DEV_HUB,my-alias --toolsets data
+
+  // Allow acccess to 3 specific orgs and enable all toolsets:
+  sf-mcp-server --orgs test-org@example.com,my-dev-hub,my-alias
 
 Documentation:
   See: https://github.com/salesforcecli/mcp`;
 
-  if (args.length === 0) {
-    console.error('No arguments provided.\n\n' + usageMessage);
-    process.exit(1); // Stop the server
+export function parseStartupArguments(): ParseArgsResult {
+  const options: ParseArgsConfig['options'] = {
+    toolsets: { type: 'string', short: 't', default: 'all' },
+    orgs: { type: 'string', short: 'o' },
+  };
+
+  // TODO: strict false is to ignore flags pass at testing startup. Revisit this
+  const { values } = parseArgs({
+    args: process.argv,
+    options,
+    allowPositionals: true,
+    strict: false,
+  }) as unknown as ParseArgsResult;
+
+  return { values };
+}
+
+export function buildOrgAllowList(orgs: string): Set<string> {
+  // Fail if `--orgs` wasn't specified
+  if (!orgs) {
+    console.error(`Missing --orgs flag${EOL}${EOL}${usageMessage}`);
+    process.exit(1);
   }
+
+  // Fail if `--orgs` was specified without a value
+  if (orgs === 'boolean') {
+    console.error(usageMessage);
+    process.exit(1);
+  }
+  const allOrgs = orgs.split(',');
 
   const allowedOrgs = new Set<string>();
 
-  if (args.includes('ALLOW_ALL_ORGS')) {
+  if (allOrgs.includes('ALLOW_ALL_ORGS')) {
     console.warn('WARNING: ALLOW_ALL_ORGS is set. This allows access to all authenticated orgs. Use with caution.');
     // TODO Add telemetry
     return new Set(['ALLOW_ALL_ORGS']);
   }
 
   // Process other arguments
-  for (const arg of args) {
+  for (const arg of allOrgs) {
     if (arg === 'DEFAULT_TARGET_ORG' || arg === 'DEFAULT_TARGET_DEV_HUB' || arg.includes('@') || !arg.startsWith('-')) {
       allowedOrgs.add(arg);
     } else {
-      console.error(`Invalid argument: ${arg}\n\n${usageMessage}`);
+      console.error(`Invalid flag value: ${arg + EOL + EOL + usageMessage}`);
       process.exit(1); // Stop the server
     }
   }

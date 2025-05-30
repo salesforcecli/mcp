@@ -57,74 +57,38 @@ describe('utilities tests', () => {
     });
 
     it('should return default toolsets when no options are provided', () => {
-      process.argv = ['/usr/bin/node', 'sf-mcp-server', 'DEFAULT_TARGET_ORG'];
+      process.argv = ['/usr/bin/node', 'sf-mcp-server', '--orgs', 'DEFAULT_TARGET_ORG'];
 
       const result = parseStartupArguments();
 
       expect(result.values.toolsets).to.equal('all');
-      expect(result.positionals).to.deep.equal(['DEFAULT_TARGET_ORG']);
+      expect(result.values.orgs).to.equal('DEFAULT_TARGET_ORG');
     });
 
     it('should parse specified toolsets correctly', () => {
-      process.argv = ['/usr/bin/node', 'sf-mcp-server', '--toolsets', 'orgs,data', 'DEFAULT_TARGET_ORG'];
+      process.argv = ['/usr/bin/node', 'sf-mcp-server', '--toolsets', 'orgs,data', '--orgs', 'DEFAULT_TARGET_ORG'];
 
       const result = parseStartupArguments();
 
       expect(result.values.toolsets).to.equal('orgs,data');
-      expect(result.positionals).to.deep.equal(['DEFAULT_TARGET_ORG']);
+      expect(result.values.orgs).to.equal('DEFAULT_TARGET_ORG');
     });
 
     it('should parse specified toolsets with short option correctly', () => {
-      process.argv = ['/usr/bin/node', 'sf-mcp-server', '-t', 'orgs,data', 'DEFAULT_TARGET_ORG'];
+      process.argv = ['/usr/bin/node', 'sf-mcp-server', '-t', 'orgs,data', '-o', 'DEFAULT_TARGET_ORG'];
 
       const result = parseStartupArguments();
 
       expect(result.values.toolsets).to.equal('orgs,data');
-      expect(result.positionals).to.deep.equal(['DEFAULT_TARGET_ORG']);
-    });
-
-    it('should properly parse values and positional args (even with mixed order)', () => {
-      process.argv = ['/usr/bin/node', 'sf-mcp-server', 'my-org-alias', '-t', 'orgs,data', 'DEFAULT_TARGET_ORG'];
-
-      const result = parseStartupArguments();
-
-      expect(result.values.toolsets).to.equal('orgs,data');
-      expect(result.positionals).to.deep.equal(['my-org-alias', 'DEFAULT_TARGET_ORG']);
-    });
-
-    it('should handle multiple positional arguments', () => {
-      process.argv = ['/usr/bin/node', 'sf-mcp-server', 'DEFAULT_TARGET_ORG', 'user@example.com', 'my-org-alias'];
-
-      const result = parseStartupArguments();
-
-      // all is the default toolset
-      expect(result.values.toolsets).to.equal('all');
-      expect(result.positionals).to.deep.equal(['DEFAULT_TARGET_ORG', 'user@example.com', 'my-org-alias']);
+      expect(result.values.orgs).to.equal('DEFAULT_TARGET_ORG');
     });
 
     it('should handle when server is started with local node path', () => {
-      process.argv = ['/usr/bin/node', '/path/to/server.js', 'DEFAULT_TARGET_ORG'];
+      process.argv = ['/usr/bin/node', '/path/to/server.js', '-o', 'DEFAULT_TARGET_ORG'];
 
       const result = parseStartupArguments();
 
-      expect(result.positionals).to.deep.equal(['DEFAULT_TARGET_ORG']);
-    });
-
-    it('should exit with code 1 when executable index cannot be found', () => {
-      process.argv = ['/usr/bin/node', 'some-other-script'];
-
-      parseStartupArguments();
-
-      expect(processExitStub.calledWith(1)).to.be.true;
-      const errorCall = consoleErrorStub
-        .getCalls()
-        .find(
-          (call) =>
-            call.args[0] &&
-            typeof call.args[0] === 'string' &&
-            call.args[0].includes('Something went wrong parsing args')
-        );
-      expect(errorCall).to.not.be.undefined;
+      expect(result.values.orgs).to.equal('DEFAULT_TARGET_ORG');
     });
   });
 
@@ -237,7 +201,7 @@ describe('utilities tests', () => {
     });
 
     it('should return a Set containing valid org identifiers', () => {
-      const args = ['DEFAULT_TARGET_ORG', 'user@example.com', 'my-alias'];
+      const args = 'DEFAULT_TARGET_ORG,user@example.com,my-alias';
 
       const result = buildOrgAllowList(args);
 
@@ -249,7 +213,7 @@ describe('utilities tests', () => {
     });
 
     it('should return a Set containing only ALLOW_ALL_ORGS when it is included', () => {
-      const args = ['DEFAULT_TARGET_ORG', 'ALLOW_ALL_ORGS', 'user@example.com'];
+      const args = 'DEFAULT_TARGET_ORG,ALLOW_ALL_ORGS,user@example.com';
 
       const result = buildOrgAllowList(args);
 
@@ -259,7 +223,7 @@ describe('utilities tests', () => {
     });
 
     it('should handle DEFAULT_TARGET_DEV_HUB argument', () => {
-      const args = ['DEFAULT_TARGET_DEV_HUB'];
+      const args = 'DEFAULT_TARGET_DEV_HUB';
 
       const result = buildOrgAllowList(args);
 
@@ -268,25 +232,25 @@ describe('utilities tests', () => {
     });
 
     it('should exit with code 1 when no arguments are provided', () => {
-      const args: string[] = [];
+      const args = '';
 
       buildOrgAllowList(args);
 
       expect(processExitStub.calledWith(1)).to.be.true;
-      expect(consoleErrorStub.calledWithMatch(/No arguments provided/)).to.be.true;
+      expect(consoleErrorStub.calledWithMatch(/Missing --orgs flag/)).to.be.true;
     });
 
     it('should exit with code 1 when an invalid argument is provided', () => {
-      const args = ['DEFAULT_TARGET_ORG', '--invalid-flag'];
+      const args = 'DEFAULT_TARGET_ORG,--invalid-flag';
 
       buildOrgAllowList(args);
 
       expect(processExitStub.calledWith(1)).to.be.true;
-      expect(consoleErrorStub.calledWithMatch(/Invalid argument/)).to.be.true;
+      expect(consoleErrorStub.calledWithMatch(/Invalid flag value/)).to.be.true;
     });
 
     it('should accept usernames with @ symbols', () => {
-      const args = ['user@example.com', 'another.user@test.org'];
+      const args = 'user@example.com,another.user@test.org';
 
       const result = buildOrgAllowList(args);
 
@@ -296,7 +260,7 @@ describe('utilities tests', () => {
     });
 
     it('should accept aliases that do not start with a dash', () => {
-      const args = ['my-alias', 'another_alias'];
+      const args = 'my-alias,another_alias';
 
       const result = buildOrgAllowList(args);
 
