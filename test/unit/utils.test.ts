@@ -295,7 +295,7 @@ describe('utilities tests', () => {
       expect(result.has('another.user@test.org')).to.be.true;
     });
 
-    it.skip('should accept aliases that do not start with a dash', () => {
+    it('should accept aliases that do not start with a dash', () => {
       const args = 'my-alias,another_alias';
 
       const result = buildOrgAllowList(args);

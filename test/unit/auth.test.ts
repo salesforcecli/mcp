@@ -219,7 +219,7 @@ describe('auth tests', () => {
       configAggregatorGetInfoStub.returns(emptyConfig);
     });
 
-    it.skip('should exit on an empty org list', async () => {
+    it('should exit on an empty org list', async () => {
       authInfoListStub.resolves([]);
 
       await getAllAllowedOrgs();
