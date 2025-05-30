@@ -1,10 +1,10 @@
 # mcp
 
-MCP Server for Interacting with Salesforce Orgs (Developer Preview)
+MCP Server for Interacting with Salesforce Orgs
 
 [![NPM](https://img.shields.io/npm/v/@salesforce/mcp.svg?label=@salesforce/mcp)](https://www.npmjs.com/package/@salesforce/mcp) [![License](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](https://opensource.org/license/apache-2-0)
 
-## Overview of the Salesforce MCP Server
+## Overview of the Salesforce MCP Server (Developer Preview)
 
 The Salesforce MCP Server is a specialized Model Context Protocol (MCP) implementation designed to facilitate seamless interaction between large language models (LLMs) and Salesforce orgs. This MCP server provides a robust set of tools and capabilities that enable LLMs to read, manage, and operate Salesforce resources securely.
 
@@ -13,12 +13,10 @@ Key Features:
 - Direct interaction with Salesforce orgs through LLM-driven tools.
 - Secure access using TypeScript libraries (not shelling out to the `sf` Salesforce CLI).
 - Improved security by avoiding the exposure of secrets in plain text.
-- Granular access control with org allow-listing.
+- Granular access control with org allowlisting.
 - Modular tool architecture for easy extensibility.
 
-NOTE: The Salesforce MCP Server is available as a developer preview. The integration isn’t generally available unless or until Salesforce announces its general availability in documentation or in press releases or public statements. All commands, parameters, and other features are subject to change or deprecation at any time, with or without notice. Don't implement functionality developed with these commands or tools.
-
-Note: The Salesforce MCP Server is currently in early development. As we continue to enhance and refine the implementation, the available functionality and tools may evolve. We welcome feedback and contributions to help shape the future of this project.
+NOTE: The Salesforce MCP Server is available as a developer preview. The feature isn’t generally available unless or until Salesforce announces its general availability in documentation or in press releases or public statements. All commands, parameters, and other features are subject to change or deprecation at any time, with or without notice. Don't implement functionality developed with these commands or tools. As we continue to enhance and refine the implementation, the available functionality and tools may evolve. We welcome feedback and contributions to help shape the future of this project.
 
 ### Security Features
 
@@ -42,7 +40,7 @@ The Salesforce MCP Server was designed with security as a top priority.
 
 - **Granular access control**
 
-  - MCP Server can only access auth info for orgs that have been explicitly allowlisted.
+  - MCP Server can access auth info for only orgs that have been explicitly allowlisted.
   - Users specify allowed orgs when starting the server.
 
 ## Get Started Using VS Code as the Client
@@ -63,25 +61,23 @@ For the best getting-started experience, make sure that you have a Salesforce DX
 
 **Let's Do It**
 
-1. Edit the VS Code [settings.json](https://code.visualstudio.com/docs/configure/settings#_settings-file-locations) file and add this JSON snippet:
+1. Create a `.vscode/mcp.json` file at the root of your DX project and add this JSON:
 
    ```json
    {
-     "mcp": {
-       "servers": {
-         "salesforce": {
-           "type": "stdio",
-           "command": "npx",
-           "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "all"]
-         }
+     "servers": {
+       "salesforce": {
+         "type": "stdio",
+         "command": "npx",
+         "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "all"]
        }
      }
    }
    ```
 
-   The `--orgs` argument is required and specifies the authorized orgs you're allowing the MCP server to access. The `--toolsets` argument is optional and specifies the toolsets it should consult when determining the specific tool to run. See [Configure Orgs and Toolsets](README.md#configure-orgs-and-toolsets) for the available values for the two arguments.
+You can also configure the MCP server globally by editing the VS Code [settings.json](https://code.visualstudio.com/docs/configure/settings#_settings-file-locations) file and adding a similar JSON snippet but contained in an `mcp:servers` section.
 
-   If you already have an `mcp:servers` section in your VS Code settings file, then add just the `salesforce` part, which adds the Salesforce MCP server. If you prefer to configure the MCP server for only your DX project, create a `.vscode/mcp.json` file at the root of the DX project with the same JSON snippet.
+The `--orgs` argument is required and specifies the authorized orgs you're allowing the MCP server to access. The `--toolsets` argument is optional and specifies the toolsets it should consult when determining the specific tool to run. See [Configure Orgs and Toolsets](README.md#configure-orgs-and-toolsets) for the available values for the two arguments.
 
 1. Open VS Code, go to **View -> Command Palette** and enter **MCP: List Servers**.
 
@@ -246,36 +242,3 @@ For these other clients, refer to their documentation for adding MCP servers and
 - [Zed](https://github.com/zed-industries/zed)
 - [Windsurf](https://www.windsurf.com/)
 - [Trae](https://trae.ai)
-
-## Debugging
-
-You can use the [MCP inspector](https://modelcontextprotocol.io/docs/tools/inspector) or the
-[VS Code Run and Debug function](https://code.visualstudio.com/docs/debugtest/debugging#_start-a-debugging-session) to
-run and debug the Salesforce MCP server.
-
-1. Link the project as a global CLI using `npm link` from the project root.
-2. Build with `npm run build` or watch for file changes and build automatically with `npm run build:watch`.
-
-### Use the MCP Inspector
-
-Use the MCP inspector with no breakpoints in the code:
-
-```
-# Breakpoints are not available
-npx @modelcontextprotocol/inspector sf-mcp-server DEFAULT_TARGET_ORG
-```
-
-Alternatively, if you installed the package in a specific directory or are actively developing on the Salesforce MCP server:
-
-```
-cd /path/to/servers
-npx @modelcontextprotocol/inspector dist/index.js DEFAULT_TARGET_ORG
-```
-
-### Use the VSCode Run and Debug Function
-
-Use the VS Code [Run and Debug launcher](https://code.visualstudio.com/docs/debugtest/debugging#_start-a-debugging-session) with fully functional breakpoints in the code:
-
-1. Locate and select the run debug.
-2. Select the configuration labeled "`MCP Server Launcher`" in the dropdown.
-3. Select the run/debug button.
