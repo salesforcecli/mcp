@@ -83,25 +83,6 @@ describe('utilities tests', () => {
       expect(result.values.orgs).to.equal('DEFAULT_TARGET_ORG');
     });
 
-    // it('should properly parse values and positional args (even with mixed order)', () => {
-    //   process.argv = ['/usr/bin/node', 'sf-mcp-server', 'my-org-alias', '-t', 'orgs,data', '-o','DEFAULT_TARGET_ORG'];
-    //
-    //   const result = parseStartupArguments();
-    //
-    //   expect(result.values.toolsets).to.equal('orgs,data');
-    //   expect(result.values.orgs).to.equal('my-org-alias,DEFAULT_TARGET_ORG');
-    // });
-
-    // it('should handle multiple positional arguments', () => {
-    //   process.argv = ['/usr/bin/node', 'sf-mcp-server', 'DEFAULT_TARGET_ORG', 'user@example.com', 'my-org-alias'];
-    //
-    //   const result = parseStartupArguments();
-    //
-    //   // all is the default toolset
-    //   expect(result.values.toolsets).to.equal('all');
-    //   expect(result.positionals).to.deep.equal(['DEFAULT_TARGET_ORG', 'user@example.com', 'my-org-alias']);
-    // });
-
     it('should handle when server is started with local node path', () => {
       process.argv = ['/usr/bin/node', '/path/to/server.js', '-o', 'DEFAULT_TARGET_ORG'];
 
@@ -109,23 +90,6 @@ describe('utilities tests', () => {
 
       expect(result.values.orgs).to.equal('DEFAULT_TARGET_ORG');
     });
-
-    // it('should exit with code 1 when executable index cannot be found', () => {
-    //   process.argv = ['/usr/bin/node', 'some-other-script'];
-    //
-    //   parseStartupArguments();
-    //
-    //   expect(processExitStub.calledWith(1)).to.be.true;
-    //   const errorCall = consoleErrorStub
-    //     .getCalls()
-    //     .find(
-    //       (call) =>
-    //         call.args[0] &&
-    //         typeof call.args[0] === 'string' &&
-    //         call.args[0].includes('Something went wrong parsing args')
-    //     );
-    //   expect(errorCall).to.not.be.undefined;
-    // });
   });
 
   describe('textResponse', () => {
