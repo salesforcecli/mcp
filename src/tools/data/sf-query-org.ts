@@ -53,7 +53,7 @@ export const registerToolQueryOrg = (server: McpServer): void => {
         const connection = await getConnection(usernameOrAlias);
         const result = await connection.query(query);
 
-        return textResponse(`SOQL query results for ${usernameOrAlias}:\n\n${JSON.stringify(result, null, 2)}`);
+        return textResponse(`SOQL query results:\n\n${JSON.stringify(result, null, 2)}`);
       } catch (error) {
         return textResponse(`Failed to query org: ${error instanceof Error ? error.message : 'Unknown error'}`, true);
       }

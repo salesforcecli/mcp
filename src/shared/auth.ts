@@ -130,7 +130,7 @@ export async function getAllAllowedOrgs(): Promise<SanitizedOrgAuthorization[]> 
   const sanitizedOrgs = sanitizeOrgs(allOrgs);
 
   // Filter out orgs that are not in ORG_ALLOWLIST
-  const allowedOrgs = await filterAllowedOrgs(sanitizedOrgs);
+  const allowedOrgs = await filterAllowedOrgs(sanitizedOrgs, ORG_ALLOWLIST);
 
   // If no orgs are found, stop the server
   if (allowedOrgs.length === 0) {
@@ -142,9 +142,12 @@ export async function getAllAllowedOrgs(): Promise<SanitizedOrgAuthorization[]> 
 }
 
 // Function to filter orgs based on ORG_ALLOWLIST configuration
-export async function filterAllowedOrgs(orgs: SanitizedOrgAuthorization[]): Promise<SanitizedOrgAuthorization[]> {
+export async function filterAllowedOrgs(
+  orgs: SanitizedOrgAuthorization[],
+  ALLOWLIST = ORG_ALLOWLIST
+): Promise<SanitizedOrgAuthorization[]> {
   // Return all orgs if ALLOW_ALL_ORGS is set
-  if (ORG_ALLOWLIST.has('ALLOW_ALL_ORGS')) return orgs;
+  if (ALLOWLIST.has('ALLOW_ALL_ORGS')) return orgs;
 
   // Get default orgs for filtering
   const defaultTargetOrg = await getDefaultTargetOrg();
@@ -155,19 +158,19 @@ export async function filterAllowedOrgs(orgs: SanitizedOrgAuthorization[]): Prom
     if (!org.username) return false;
 
     // Check if org is specifically allowed by username
-    if (ORG_ALLOWLIST.has(org.username)) return true;
+    if (ALLOWLIST.has(org.username)) return true;
 
     // Check if org is allowed by alias
-    if (org.aliases?.some((alias) => ORG_ALLOWLIST.has(alias))) return true;
+    if (org.aliases?.some((alias) => ALLOWLIST.has(alias))) return true;
 
     // If DEFAULT_TARGET_ORG is set, check for a username or alias match
-    if (ORG_ALLOWLIST.has('DEFAULT_TARGET_ORG') && defaultTargetOrg?.value) {
+    if (ALLOWLIST.has('DEFAULT_TARGET_ORG') && defaultTargetOrg?.value) {
       if (org.username === defaultTargetOrg.value) return true;
       if (org.aliases?.includes(defaultTargetOrg.value)) return true;
     }
 
     // If DEFAULT_TARGET_DEV_HUB is set, check for a username or alias match
-    if (ORG_ALLOWLIST.has('DEFAULT_TARGET_DEV_HUB') && defaultTargetDevHub?.value) {
+    if (ALLOWLIST.has('DEFAULT_TARGET_DEV_HUB') && defaultTargetDevHub?.value) {
       if (org.username === defaultTargetDevHub.value) return true;
       if (org.aliases?.includes(defaultTargetDevHub.value)) return true;
     }
