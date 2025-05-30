@@ -89,7 +89,7 @@ export function buildOrgAllowList(orgs: string): Set<string> {
     console.error(usageMessage);
     process.exit(1);
   }
-  const allOrgs = orgs.split(',');
+  const allOrgs = orgs.split(',').map((toolset) => toolset.trim());
 
   const allowedOrgs = new Set<string>();
 

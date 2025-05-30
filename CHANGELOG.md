@@ -1,3 +1,12 @@
+## [0.2.4](https://github.com/salesforcecli/mcp/compare/0.2.3...0.2.4) (2025-05-30)
+
+
+### Bug Fixes
+
+* trim spaces ([#33](https://github.com/salesforcecli/mcp/issues/33)) ([faec308](https://github.com/salesforcecli/mcp/commit/faec308b31caf9c5a02a84fad345ee73c323905e))
+
+
+
 ## [0.2.3](https://github.com/salesforcecli/mcp/compare/0.2.2...0.2.3) (2025-05-30)
 
 

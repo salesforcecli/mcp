@@ -81,7 +81,7 @@ export const registerToolAssignPermissionSet = (server: McpServer): void => {
         const assignTo = (await StateAggregator.getInstance()).aliases.resolveUsername(onBehalfOf || usernameOrAlias);
 
         if (!assignTo.includes('@')) {
-          return textResponse(`Unable to resolve the username for ${assignTo}. Make sure it is correct`, true);
+          return textResponse('Unable to resolve the username for alias. Make sure it is correct', true);
         }
 
         const org = await Org.create({ connection });
