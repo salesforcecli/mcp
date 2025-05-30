@@ -1,3 +1,17 @@
+## [0.2.5](https://github.com/salesforcecli/mcp/compare/0.2.4...0.2.5) (2025-05-30)
+
+
+### Bug Fixes
+
+* clean up the orgs section ([b8f2fa2](https://github.com/salesforcecli/mcp/commit/b8f2fa299bedf6763218ef9fec9222af33e5eff9))
+* edits ([8206bb2](https://github.com/salesforcecli/mcp/commit/8206bb27edc73033ffb67516d76f19b3a7e35db9))
+* first edit of README ([b80771a](https://github.com/salesforcecli/mcp/commit/b80771ac460e0a697f7ae63856f5bde1a279ace8))
+* more editing ([4fa5fc8](https://github.com/salesforcecli/mcp/commit/4fa5fc825bdfc9a551b5417008c86655e4d18eb5))
+* more edits ([7431210](https://github.com/salesforcecli/mcp/commit/7431210646f9fa8b2ab85fb2547a48fd2b3811bb))
+* remove a tool, add info about Cline ([3eeeef7](https://github.com/salesforcecli/mcp/commit/3eeeef711f76779e1c65b951aaecb304e7673f6c))
+
+
+
 ## [0.2.4](https://github.com/salesforcecli/mcp/compare/0.2.3...0.2.4) (2025-05-30)
 
 
