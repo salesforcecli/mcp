@@ -116,7 +116,7 @@ Deploy X to my org and run A,B and C apex tests.
 
       if (!sourceDir && !manifest && !(await org.tracksSource())) {
         return textResponse(
-          'This org does not support source-tracking, you should specify what to files or manifest to deploy.',
+          'This org does not have source-tracking enabled or does not support source-tracking. You should specify the files or a manifest to deploy.',
           true
         );
       }
