@@ -5,8 +5,6 @@
 [One-time Setup](#one-time-setup)</br>
 [Quick Start](#quick-start)</br>
 [Testing](#testing)</br>
-[Debugging](#debugging)</br>
-[Running Commands](#running-commands)</br>
 [Useful Yarn Commands](#useful-yarn-commands)</br>
 
 <hr>
