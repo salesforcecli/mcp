@@ -89,18 +89,18 @@ export function buildOrgAllowList(orgs: string): Set<string> {
     console.error(usageMessage);
     process.exit(1);
   }
-  const usernames = orgs.split(',');
+  const allOrgs = orgs.split(',');
 
   const allowedOrgs = new Set<string>();
 
-  if (usernames.includes('ALLOW_ALL_ORGS')) {
+  if (allOrgs.includes('ALLOW_ALL_ORGS')) {
     console.warn('WARNING: ALLOW_ALL_ORGS is set. This allows access to all authenticated orgs. Use with caution.');
     // TODO Add telemetry
     return new Set(['ALLOW_ALL_ORGS']);
   }
 
   // Process other arguments
-  for (const arg of usernames) {
+  for (const arg of allOrgs) {
     if (arg === 'DEFAULT_TARGET_ORG' || arg === 'DEFAULT_TARGET_DEV_HUB' || arg.includes('@') || !arg.startsWith('-')) {
       allowedOrgs.add(arg);
     } else {
