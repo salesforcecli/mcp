@@ -1,6 +1,6 @@
 # mcp
 
-MCP Server for interacting with Salesforce orgs
+MCP Server for Interacting with Salesforce Orgs (Developer Preview)
 
 [![NPM](https://img.shields.io/npm/v/@salesforce/mcp.svg?label=@salesforce/mcp)](https://www.npmjs.com/package/@salesforce/mcp) [![License](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](https://opensource.org/license/apache-2-0)
 
@@ -16,31 +16,34 @@ Key Features:
 - Granular access control with org allow-listing.
 - Modular tool architecture for easy extensibility.
 
+NOTE: The Salesforce MCP Server is available as a developer preview. The integration isn’t generally available unless or until Salesforce announces its general availability in documentation or in press releases or public statements. All commands, parameters, and other features are subject to change or deprecation at any time, with or without notice. Don't implement functionality developed with these commands or tools.
+
 Note: The Salesforce MCP Server is currently in early development. As we continue to enhance and refine the implementation, the available functionality and tools may evolve. We welcome feedback and contributions to help shape the future of this project.
 
 ### Security Features
 
-The Salesforce MCP Server was designed with security as a top priority:
+The Salesforce MCP Server was designed with security as a top priority.
 
 - **Uses TypeScript libraries directly**
 
-  - Greatly decreases the size of the MCP Server
-  - Significantly reduces the risk of remote code execution (RCE)
+  - Greatly decreases the size of the MCP Server.
+  - Significantly reduces the risk of remote code execution (RCE).
 
 - **No secrets needed in configuration**
 
-  - Eliminates the risk of plain text secret exposure
-  - Accesses pre-existing (encrypted) auth files on the user's machine
-  - Implements allowlisting for auth info key/values to prevent sensitive data exposure
+  - Eliminates the risk of plain text secret exposure.
+  - Accesses pre-existing (encrypted) auth files on the user's machine.
+  - Implements allowlisting for auth info key/values to prevent sensitive data exposure.
 
 - **No secrets exposed via MCP tools**
 
-  - Prevents other tools from accessing unencrypted tokens
-  - Tools pass usernames around instead of tokens
+  - Prevents other tools from accessing unencrypted tokens.
+  - Tools pass usernames around instead of tokens.
 
 - **Granular access control**
-  - MCP Server can only access auth info for orgs that have been explicitly allowlisted
-  - Users specify allowed orgs when starting the server
+
+  - MCP Server can only access auth info for orgs that have been explicitly allowlisted.
+  - Users specify allowed orgs when starting the server.
 
 ## Get Started Using VS Code as the Client
 
@@ -50,13 +53,13 @@ This example uses Visual Studio Code (VS Code) as the MCP client because it's a 
 
 But you're not limited to using only VS Code and Copilot! You can configure many other clients to use the Salesforce MCP server, such as Cursor, Claude Desktop, Zed, Windsurf, and more.
 
-**Prerequisites**
+**Before You Begin**
 
-Make sure that you have a Salesforce DX environment set up on your computer. In particular, you've already:
+For the best getting-started experience, make sure that you have a Salesforce DX environment set up on your computer. In particular:
 
-- [Installed VS Code](https://code.visualstudio.com/docs) on your computer.
-- [Created a Salesforce DX project](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_create_new.htm) and opened it in VS Code.
-- [Authorized at least one Salesforce org](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_web_flow.htm) to use with your DX project.
+- [Install VS Code](https://code.visualstudio.com/docs) on your computer.
+- [Create a Salesforce DX project](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_create_new.htm) and open it in VS Code.
+- [Authorize at least one Salesforce org](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_web_flow.htm) to use with your DX project.
 
 **Let's Do It**
 
@@ -101,32 +104,58 @@ Make sure that you have a Salesforce DX environment set up on your computer. In 
 
 ## Configure Orgs and Toolsets
 
-### Orgs
+You configure the Salesforce MCP server by specifying at least one authorized org and an optional list of MCP toolsets.
 
-#### OPTIONS:
+### Configure Orgs
 
-- `DEFAULT_TARGET_ORG` - Allow access to default orgs (local then global)
-- `DEFAULT_TARGET_DEV_HUB` - Allow access to default dev hubs (local then global)
-- `ALLOW_ALL_ORGS` - Allow access to all authenticated orgs (use with caution)
-- `<username or alias>` - Allow access to specific org by username or alias
+The Salesforce MCP tools require an org, and so you must include the required `--orgs` argument to specify at least one authorized org when you configure the MCP server. Separate multiple values with commas.
 
-#### Examples:
+You must explicitly [authorize the orgs](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_web_flow.htm) on your computer before the MCP server can access them. Use the `org login web` Salesforce CLI command or the VS Code **SFDX: Authorize an Org** command from the command palette.
 
-```sh
-sf-mcp-server DEFAULT_TARGET_ORG
-sf-mcp-server DEFAULT_TARGET_DEV_HUB my-alias
-sf-mcp-server test-org@example.com my-dev-hub-alias my-scratch-org-alias
+These are the available values for the `--orgs` argument:
+
+- `DEFAULT_TARGET_ORG` - Allow access to your default org. If you've set a local default org in your DX project, the MCP server uses it. If not, the server uses a globally-set default org.
+- `DEFAULT_TARGET_DEV_HUB` - Allow access to your default Dev Hub org. If you've set a local default Dev Hub org in your DX project, the MCP server uses it. If not, the server uses a globally-set default Dev Hub org.
+- `ALLOW_ALL_ORGS` - Allow access to all authorized orgs. Use this value with caution.
+- `<username or alias>` - Allow access to a specific org by specifying its username or alias.
+
+This example shows how to specify that the MCP tools run against your default org when you configure the MCP server for VS Code:
+
+```json
+     "mcp": {
+       "servers": {
+         "salesforce": {
+           "type": "stdio",
+           "command": "npx",
+           "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG"]
+         }
+       }
+     }
 ```
 
-### Toolsets
+This sample snippet shows how to configure access to your default Dev Hub org and an org with username `test-org@example.com`:
 
-The Salesforce MCP Server supports **toolsets** - a way to selectively enable different groups of tools based on your needs. This allows you to run the MCP server with only the tools you require, which in turn reduces the context.
+```json
+           "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_DEV_HUB,test-org@example.com"]
+```
 
-Use the `--toolsets` (or short name `-t`) argument to specify a toolset when you configure the Salesforce MCP server. These are the available toolsets:
+This sample snippet shows how to configure access to two orgs for which you specified aliases when you authorized them:
+
+```json
+           "args": ["-y", "@salesforce/mcp", "--orgs", "my-scratch-org,my-dev-hub"]
+```
+
+### Configure Toolsets
+
+The Salesforce MCP Server supports **toolsets** - a way to selectively enable different groups of MCP tools based on your needs. This allows you to run the MCP server with only the tools you require, which in turn reduces the context.
+
+Use the `--toolsets` (or short name `-t`) argument to specify the toolsets when you configure the Salesforce MCP server. Separate multiple toolsets with commas. The `--toolsets` argument is optional; if you don't specify it, the MCP server is configured with all toolsets.
+
+These are the available toolsets:
 
 - `all` (default) - Enables all available tools from all toolsets.
 - `orgs` - [Tools to manage your authorized orgs.](README.md#orgs-toolset)
-- `data` - [Tools to manage the data in your org, such as listing all accounts or creating a new opportunity.](README.md#data-toolset)
+- `data` - [Tools to manage the data in your org, such as listing all accounts.](README.md#data-toolset)
 - `users` - [Tools to manage org users, such as assigning a permission set.](README.md#users-toolset)
 - `metadata` - [Tools to deploy and retrieve metadata to and from your org and your DX project.](README.md#metadata-toolset)
 
@@ -177,7 +206,7 @@ Includes these tools:
 
 ## Configure Other Clients to Use the Salesforce MCP Server
 
-\*_Cursor_
+**Cursor**
 
 To configure [Cursor](https://www.cursor.com/) to work with Salesforce MCP server, add this snippet to your Cursor `mcp.json` file:
 
