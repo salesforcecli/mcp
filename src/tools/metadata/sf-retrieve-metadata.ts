@@ -81,7 +81,7 @@ Retrieve X metadata from my org
 
       if (!sourceDir && !manifest && !(await org.tracksSource())) {
         return textResponse(
-          'This org does not support source-tracking, you should specify what to files or manifest to retrieve.',
+          'This org does not have source-tracking enabled or does not support source-tracking. You should specify the files or a manifest to retrieve.',
           true
         );
       }
