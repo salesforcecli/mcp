@@ -16,7 +16,7 @@ Key Features:
 - Granular access control with org allowlisting.
 - Modular tool architecture for easy extensibility.
 
-NOTE: The Salesforce MCP Server is available as a developer preview. The feature isn’t generally available unless or until Salesforce announces its general availability in documentation or in press releases or public statements. All commands, parameters, and other features are subject to change or deprecation at any time, with or without notice. Don't implement functionality developed with these commands or tools. As we continue to enhance and refine the implementation, the available functionality and tools may evolve. We welcome feedback and contributions to help shape the future of this project.
+**NOTE**: The Salesforce MCP Server is available as a developer preview. The feature isn’t generally available unless or until Salesforce announces its general availability in documentation or in press releases or public statements. All commands, parameters, and other features are subject to change or deprecation at any time, with or without notice. Don't implement functionality developed with these commands or tools. As we continue to enhance and refine the implementation, the available functionality and tools may evolve. We welcome feedback and contributions to help shape the future of this project.
 
 ### Security Features
 
@@ -47,9 +47,9 @@ The Salesforce MCP Server was designed with security as a top priority.
 
 Want to jump in and see what all the fuss is about? Read on!
 
-This example uses Visual Studio Code (VS Code) as the MCP client because it's a standard Salesforce DX development tool. After you configure VS Code with the Salesforce MCP server, you then use GitHub Copilot and natural language to easily execute typical Salesforce DX development tasks, such as listing your authorized orgs, viewing org records, and deploying or retrieving metadata.
+This example uses Visual Studio Code (VS Code) as the MCP client because it's a standard Salesforce DX development tool. After you configure it with the Salesforce MCP server, you then use GitHub Copilot and natural language to easily execute typical Salesforce DX development tasks, such as listing your authorized orgs, viewing org records, and deploying or retrieving metadata.
 
-But you're not limited to using only VS Code and Copilot! You can configure many other clients to use the Salesforce MCP server, such as Cursor, Claude Desktop, Zed, Windsurf, and more.
+But you're not limited to using only VS Code and Copilot! You can [configure many other clients](README.md#configure-other-clients-to-use-the-salesforce-mcp-server) to use the Salesforce MCP server, such as Cursor, Cline, Claude Desktop, Zed, Windsurf, and more.
 
 **Before You Begin**
 
@@ -75,9 +75,9 @@ For the best getting-started experience, make sure that you have a Salesforce DX
    }
    ```
 
-You can also configure the MCP server globally by editing the VS Code [settings.json](https://code.visualstudio.com/docs/configure/settings#_settings-file-locations) file and adding a similar JSON snippet but contained in an `mcp:servers` section.
+   You can also configure the MCP server globally by editing the VS Code [settings.json](https://code.visualstudio.com/docs/configure/settings#_settings-file-locations) file and adding a similar JSON snippet but contained in an `mcp:servers` section.
 
-The `--orgs` argument is required and specifies the authorized orgs you're allowing the MCP server to access. The `--toolsets` argument is optional and specifies the toolsets it should consult when determining the specific tool to run. See [Configure Orgs and Toolsets](README.md#configure-orgs-and-toolsets) for the available values for the two arguments.
+   The `--orgs` argument is required and specifies the authorized orgs you're allowing the MCP server to access. The `--toolsets` argument is optional and specifies the toolsets it should consult when determining the specific tool to run. See [Configure Orgs and Toolsets](README.md#configure-orgs-and-toolsets) for the available values for the two arguments.
 
 1. Open VS Code, go to **View -> Command Palette** and enter **MCP: List Servers**.
 
@@ -96,7 +96,7 @@ The `--orgs` argument is required and specifies the authorized orgs you're allow
    - Show me all the accounts in the org with alias my-org.
    - Deploy everything in my project to the org with alias my-org.
 
-1. To manage the Salesforce MCP server, such as stopping or restarting it or viewing its configuration, run the **MCP: List Servers** command, click `salesforce`, then click the appropriate option.
+1. To stop, restart, or view the MCP server configuration, run the **MCP: List Servers** command, click `salesforce`, then click the appropriate option.
 
 ## Configure Orgs and Toolsets
 
