@@ -26,7 +26,7 @@ import {
 
 // Create a mock version of availableToolsets for testing instead of importing from index.js
 // This avoids the error with parseArgs when running tests
-const MOCK_AVAILABLE_TOOLSETS = ['all', 'orgs', 'data', 'users'];
+const MOCK_AVAILABLE_TOOLSETS = ['all', 'orgs', 'data', 'users', 'metadata'];
 
 describe('utilities tests', () => {
   // Common test setup
@@ -261,6 +261,16 @@ describe('utilities tests', () => {
 
     it('should accept aliases that do not start with a dash', () => {
       const args = 'my-alias,another_alias';
+
+      const result = buildOrgAllowList(args);
+
+      expect(result.size).to.equal(2);
+      expect(result.has('my-alias')).to.be.true;
+      expect(result.has('another_alias')).to.be.true;
+    });
+
+    it('should handle spaces', () => {
+      const args = 'my-alias , another_alias';
 
       const result = buildOrgAllowList(args);
 
