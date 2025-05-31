@@ -44,7 +44,7 @@
     "@salesforce/source-deploy-retrieve": "^12.19.7",
     "@salesforce/source-tracking": "^7.3.25",
     "@salesforce/ts-types": "^2.0.11",
-    "zod": "^3.25.28"
+    "zod": "^3.25.42"
   },
   "devDependencies": {
     "@modelcontextprotocol/inspector": "^0.13.0",
