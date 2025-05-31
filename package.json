@@ -38,7 +38,7 @@
   ],
   "dependencies": {
     "@jsforce/jsforce-node": "^3.8.2",
-    "@modelcontextprotocol/sdk": "^1.10.2",
+    "@modelcontextprotocol/sdk": "^1.12.1",
     "@salesforce/core": "^8.11.1",
     "@salesforce/kit": "^3.1.6",
     "@salesforce/source-deploy-retrieve": "^12.19.7",
