@@ -1,3 +1,12 @@
+## [0.2.8](https://github.com/salesforcecli/mcp/compare/0.2.7...0.2.8) (2025-06-01)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/core from 8.11.1 to 8.11.4 ([325c217](https://github.com/salesforcecli/mcp/commit/325c217dd5fb7df1aaa970b4572bed19324e2562))
+
+
+
 ## [0.2.7](https://github.com/salesforcecli/mcp/compare/0.2.6...0.2.7) (2025-05-31)
 
 
