@@ -91,7 +91,9 @@ For the best getting-started experience, make sure that you have a Salesforce DX
 
    Be sure your Copilot chat window is in `Agent` mode; if you're in `Ask` or `Edit` mode, use the [little drop-down](https://github.blog/ai-and-ml/github-copilot/copilot-ask-edit-and-agent-modes-what-they-do-and-when-to-use-them/) to switch. 
 
-1. In the GitHub Copilot chat window, use natural language to explain what you want to do. The MCP server determines which configured tool to use, and then shows it to you along with other information. Click **Continue** to run the tool and see the results of your request. Try out these examples:
+1. In the GitHub Copilot chat window, use natural language to explain what you want to do. The MCP server determines which configured tool to use, and then shows it to you along with other information. Click **Continue** to run the tool and see the results of your request. Click the dropdown to the right of **Continue** to allow the tool to run in the session, workspace, or always. 
+
+    Try out these examples:
 
    - List all my orgs.
    - Which are my active scratch orgs?
