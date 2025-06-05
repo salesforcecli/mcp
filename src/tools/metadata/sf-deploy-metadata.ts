@@ -106,6 +106,12 @@ Deploy X to my org and run A,B and C apex tests.
         return textResponse("You can't specify both `sourceDir` and `manifest` parameters.", true);
       }
 
+      if (!usernameOrAlias)
+        return textResponse(
+          'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
+          true
+        );
+
       // needed for org allowlist to work
       process.chdir(directory);
 

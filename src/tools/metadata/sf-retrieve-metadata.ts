@@ -71,6 +71,12 @@ Retrieve X metadata from my org
         return textResponse("You can't specify both `sourceDir` and `manifest` parameters.", true);
       }
 
+      if (!usernameOrAlias)
+        return textResponse(
+          'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
+          true
+        );
+
       // needed for org allowlist to work
       process.chdir(directory);
 
