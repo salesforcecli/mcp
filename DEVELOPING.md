@@ -33,16 +33,18 @@
      - Example: `mb/refactor-tests`
 1. Make code changes and build: `yarn build`
 1. Update your MCP client to launch the local build with node instead of the npm package via npx, example with vscode MCP config file:
+
 ```json
 {
   "servers": {
     "salesforce": {
       "command": "node",
-      "args": ["/full/path/to/mcp/lib/index.js", "--toolsets", "all", "--orgs", "ALLOW_ALL_ORGS"]
+      "args": ["/full/path/to/mcp/bin/run.js", "--toolsets", "all", "--orgs", "ALLOW_ALL_ORGS"]
     }
   }
 }
 ```
+
 1. Start the MCP server and call the tools via prompts
 1. Write tests and run: `yarn test` ([unit](#unit-tests))
 1. Show all changed files: `git status`
@@ -57,7 +59,8 @@ All changes must have associated unit tests when possible.
 E2E tests for tools will be added in the future.
 
 For manual tool testing you can use the MCP inspector to make tool calls directly from your browser or terminal, this is handy when starting working on a new tool and you want to focus on the tool logic first before optimizing the agent instructions.
-Install the MCP inspector CLI: 
+Install the MCP inspector CLI:
+
 ```
 npm i -g @modelcontextprotocol/inspector
 ```
@@ -65,26 +68,32 @@ npm i -g @modelcontextprotocol/inspector
 then do the following:
 
 ### Browser
+
 1. Build the local server: `yarn build`
 2. Start the inspector server: `mcp-inspector node lib/index.js --orgs DEFAULT_TARGET_ORG`
 3. If successful, open printed the localhost URL in your browser:
+
 ```
 MCP Inspector is up and running at http://127.0.0.1:6274
 ```
+
 4. Click `Connect` button, you should the this msg in the bottom-left panel
+
 ```
 ✅ Salesforce MCP Server running on stdio
 ```
+
 5. Click on `List Tools`, then select one and fill the parameters required and click `Run Tool`
 
 ### Terminal
 
 1. Build the local server: `yarn build`
-5. Call a specific tool with its params by via the MCP inspector CLI:
+2. Call a specific tool with its params by via the MCP inspector CLI:
 
 Example calling sf-query-org from the context of an SFDX project
+
 ```shell
-mcp-inspector --cli node lib/index.js --orgs DEFAULT_TARGET_ORG \
+mcp-inspector --cli node bin/run.js --orgs DEFAULT_TARGET_ORG \
   --method tools/call \
   --tool-name sf-query-org \
   --tool-arg query="select id from account limit 5" \
@@ -102,16 +111,16 @@ ata/v63.0/sobjects/Account/001DK00001BFbHbYAL\"\n      },\n      \"Id\": \"001DK
   "isError": false
 }
 ```
-You can know more about each tool argument by looking at the their definition in code, the inspector browser UI or by listing all tools via the inspector CLI:
-```shell
-mcp-inspector --cli node lib/index.js --orgs DEFAULT_TARGET_ORG --method tools/list
-```
 
+You can know more about each tool argument by looking at the their definition in code, the inspector browser UI or by listing all tools via the inspector CLI:
+
+```shell
+mcp-inspector --cli node bin/run.js --orgs DEFAULT_TARGET_ORG --method tools/list
+```
 
 ### Unit tests
 
 Unit tests are run with `yarn test` and use the mocha test framework. Tests are located in the test directory and are named with the pattern, `test/**/*.test.ts`.
-
 
 ## Useful yarn commands
 

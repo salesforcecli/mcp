@@ -1,3 +1,15 @@
 {
-  "devDepOverrides": ["eslint-config-salesforce-license", "@types/node"]
+  "devDepOverrides": [
+    "eslint-config-salesforce-license",
+    "@types/node"
+  ],
+  "wireit": {
+    "test": {
+      "dependencies": [
+        "test:only",
+        "test:compile",
+        "link-check"
+      ]
+    }
+  }
 }

@@ -2,7 +2,7 @@
   "servers": {
     "salesforce": {
       "command": "node",
-      "args": ["/Users/username/dev/mcp/lib/index.js", "--toolsets", "all", "--orgs", "ALLOW_ALL_ORGS"]
+      "args": ["/Users/username/dev/mcp/bin/run.js", "--toolsets", "all", "--orgs", "ALLOW_ALL_ORGS"]
     }
   }
 }

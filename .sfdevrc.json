@@ -1,5 +1,0 @@
-{
-  "test": {
-    "testsPath": "test/**/*.test.ts"
-  }
-}

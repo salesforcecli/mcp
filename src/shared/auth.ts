@@ -18,15 +18,7 @@
 
 import { AuthInfo, Connection, ConfigAggregator, OrgConfigProperties, type OrgAuthorization } from '@salesforce/core';
 import { type ConfigInfoWithCache, type SanitizedOrgAuthorization } from './types.js';
-import { buildOrgAllowList, parseStartupArguments } from './utils.js';
-
-const url = new URL(import.meta.url);
-const params = url.searchParams.get('orgs');
-const paramOrg = params ? params : undefined;
-
-const { values } = parseStartupArguments();
-const ORG_ALLOWLIST = buildOrgAllowList(paramOrg ?? values.orgs);
-console.error(' - Allowed orgs:', ORG_ALLOWLIST);
+import Cache from './cache.js';
 
 /**
  * Sanitizes org authorization data by filtering out sensitive fields
@@ -91,7 +83,6 @@ export async function suggestUsername(): Promise<{
 }
 
 // This function is the main entry point for Tools to get an allowlisted Connection
-
 export async function getConnection(username: string): Promise<Connection> {
   // We get all allowed orgs each call in case the directory has changed (default configs)
   const allOrgs = await getAllAllowedOrgs();
@@ -123,6 +114,11 @@ export function findOrgByUsernameOrAlias(
 }
 
 export async function getAllAllowedOrgs(): Promise<SanitizedOrgAuthorization[]> {
+  // Support for passing orgs via URL parameters for testing purposes
+  const url = new URL(import.meta.url);
+  const params = url.searchParams.get('orgs');
+  const paramOrg = params ? params : undefined;
+  const orgAllowList = paramOrg ? new Set([paramOrg]) : Cache.getInstance().get('allowedOrgs') ?? new Set<string>();
   // Get all orgs on the user's machine
   const allOrgs = await AuthInfo.listAllAuthorizations();
 
@@ -130,7 +126,7 @@ export async function getAllAllowedOrgs(): Promise<SanitizedOrgAuthorization[]> 
   const sanitizedOrgs = sanitizeOrgs(allOrgs);
 
   // Filter out orgs that are not in ORG_ALLOWLIST
-  const allowedOrgs = await filterAllowedOrgs(sanitizedOrgs, ORG_ALLOWLIST);
+  const allowedOrgs = await filterAllowedOrgs(sanitizedOrgs, orgAllowList);
 
   // If no orgs are found, stop the server
   if (allowedOrgs.length === 0) {
@@ -144,10 +140,10 @@ export async function getAllAllowedOrgs(): Promise<SanitizedOrgAuthorization[]> 
 // Function to filter orgs based on ORG_ALLOWLIST configuration
 export async function filterAllowedOrgs(
   orgs: SanitizedOrgAuthorization[],
-  ALLOWLIST = ORG_ALLOWLIST
+  allowList: Set<string>
 ): Promise<SanitizedOrgAuthorization[]> {
   // Return all orgs if ALLOW_ALL_ORGS is set
-  if (ALLOWLIST.has('ALLOW_ALL_ORGS')) return orgs;
+  if (allowList.has('ALLOW_ALL_ORGS')) return orgs;
 
   // Get default orgs for filtering
   const defaultTargetOrg = await getDefaultTargetOrg();
@@ -158,19 +154,19 @@ export async function filterAllowedOrgs(
     if (!org.username) return false;
 
     // Check if org is specifically allowed by username
-    if (ALLOWLIST.has(org.username)) return true;
+    if (allowList.has(org.username)) return true;
 
     // Check if org is allowed by alias
-    if (org.aliases?.some((alias) => ALLOWLIST.has(alias))) return true;
+    if (org.aliases?.some((alias) => allowList.has(alias))) return true;
 
     // If DEFAULT_TARGET_ORG is set, check for a username or alias match
-    if (ALLOWLIST.has('DEFAULT_TARGET_ORG') && defaultTargetOrg?.value) {
+    if (allowList.has('DEFAULT_TARGET_ORG') && defaultTargetOrg?.value) {
       if (org.username === defaultTargetOrg.value) return true;
       if (org.aliases?.includes(defaultTargetOrg.value)) return true;
     }
 
     // If DEFAULT_TARGET_DEV_HUB is set, check for a username or alias match
-    if (ALLOWLIST.has('DEFAULT_TARGET_DEV_HUB') && defaultTargetDevHub?.value) {
+    if (allowList.has('DEFAULT_TARGET_DEV_HUB') && defaultTargetDevHub?.value) {
       if (org.username === defaultTargetDevHub.value) return true;
       if (org.aliases?.includes(defaultTargetDevHub.value)) return true;
     }

@@ -24,6 +24,11 @@ coverage
 # generated docs
 docs
 
+
+npm-shrinkwrap.json
+oclif.manifest.json
+oclif.lock
+
 # -- CLEAN ALL
 node_modules
 

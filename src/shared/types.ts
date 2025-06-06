@@ -47,11 +47,3 @@ export type ToolTextResponse = {
     text: string;
   }>;
 };
-
-// STARTUP ARGS
-export type ParseArgsResult = {
-  values: {
-    toolsets: string;
-    orgs: string;
-  };
-};
