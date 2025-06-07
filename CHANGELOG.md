@@ -1,3 +1,12 @@
+## [0.2.9](https://github.com/salesforcecli/mcp/compare/0.2.8...0.2.9) (2025-06-07)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/source-tracking from 7.3.25 to 7.4.1 ([23963a3](https://github.com/salesforcecli/mcp/commit/23963a3ade374160b2b092d399e1cdc83a5085b9))
+
+
+
 ## [0.2.8](https://github.com/salesforcecli/mcp/compare/0.2.7...0.2.8) (2025-06-01)
 
 
