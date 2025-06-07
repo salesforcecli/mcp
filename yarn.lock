@@ -488,21 +488,21 @@
     node-fetch "^2.6.1"
     xml2js "^0.6.2"
 
-"@modelcontextprotocol/inspector-cli@^0.13.0":
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/inspector-cli/-/inspector-cli-0.13.0.tgz#dceb81127e011935643667d592b435727ae2f8db"
-  integrity sha512-JeVVbhb4bvHv0vIlrKNCk7aZmWO+4e8T+/cHNee6og5hm8GZcpDULnMTSlovppfwryHSTLPN4aVZUGuM2/pxLg==
+"@modelcontextprotocol/inspector-cli@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/inspector-cli/-/inspector-cli-0.14.0.tgz#880ddbd921a98fac5c9765cdff20e4dd13e93bfc"
+  integrity sha512-b9vCikgnq1ZnPz//sAMRRpAvLuK7tfiZSLQk2PhosmLUFXo9lo1dvpPRhqGAhP5L9IZUKx/+YyKusQsp7lPV0A==
   dependencies:
-    "@modelcontextprotocol/sdk" "^1.11.5"
+    "@modelcontextprotocol/sdk" "^1.12.1"
     commander "^13.1.0"
     spawn-rx "^5.1.2"
 
-"@modelcontextprotocol/inspector-client@^0.13.0":
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/inspector-client/-/inspector-client-0.13.0.tgz#15153c09603602f2bc17f815e154ff33ae08a557"
-  integrity sha512-k1bHgZBGVW3KP40GF5mAfe7/qXjt8XUpODbf69mnfeO9X+Y/vHaUPv5QVQ6NEiA1DmV9yBd6yVnJXr3MO8kzLw==
+"@modelcontextprotocol/inspector-client@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/inspector-client/-/inspector-client-0.14.0.tgz#d237fee53e4975ec2d5ed822c9965ee1e6a24144"
+  integrity sha512-mN7BtM32yS8T8WpHbmqxdRjqRsRCss63+TbDmOciMKUULNr5Mi4fIQc6v+TZjC6DsDa8hiSZ/v32ShuQlFwAzw==
   dependencies:
-    "@modelcontextprotocol/sdk" "^1.11.5"
+    "@modelcontextprotocol/sdk" "^1.12.1"
     "@radix-ui/react-checkbox" "^1.1.4"
     "@radix-ui/react-dialog" "^1.1.3"
     "@radix-ui/react-icons" "^1.3.0"
@@ -513,6 +513,7 @@
     "@radix-ui/react-tabs" "^1.1.1"
     "@radix-ui/react-toast" "^1.2.6"
     "@radix-ui/react-tooltip" "^1.1.8"
+    ajv "^6.12.6"
     class-variance-authority "^0.7.0"
     clsx "^2.1.1"
     cmdk "^1.0.4"
@@ -527,26 +528,26 @@
     tailwindcss-animate "^1.0.7"
     zod "^3.23.8"
 
-"@modelcontextprotocol/inspector-server@^0.13.0":
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/inspector-server/-/inspector-server-0.13.0.tgz#a3ea43093c8a4d814f684be17aac5b24afc6701a"
-  integrity sha512-PVZoaqp9/GJ+JZRLnz7YjI1H3dilmFBvTJ/LwjUoBye1n25C5wL/xCBnSypteI+VhxvwV8PPGPnG+ixubHDSjQ==
+"@modelcontextprotocol/inspector-server@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/inspector-server/-/inspector-server-0.14.0.tgz#005b7db2942989cccb242023d7cb2d2c161b5c42"
+  integrity sha512-1t3j2aCygXZB7Oc8hBh+R+MJsjHNytUqoSVf4Glt7g8iqk4NtyS6vDrEepJ59YCp1JVgNqbi9/INBUF7JwReyg==
   dependencies:
-    "@modelcontextprotocol/sdk" "^1.11.5"
+    "@modelcontextprotocol/sdk" "^1.12.1"
     cors "^2.8.5"
     express "^5.1.0"
     ws "^8.18.0"
     zod "^3.23.8"
 
-"@modelcontextprotocol/inspector@^0.13.0":
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/inspector/-/inspector-0.13.0.tgz#04b0b3796bcdd2ec4c38fbced39c4a821af4e18d"
-  integrity sha512-yiu4LmtYF4xG4rPyRzGROZU+9AvM/nt9YzCr1FmOBGK3vzxbRca/O3eoPQPshtNmVaUd9q/nCgbyKHZSuGy8Ww==
+"@modelcontextprotocol/inspector@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/inspector/-/inspector-0.14.0.tgz#5120e1683987e0977e106ef04bec2af353d2c429"
+  integrity sha512-dv0ATp+qtrbm8tku1Kdtqqf/h9mYt0xrBGuCMNJF5YKFzPUBG5nPaZOVSw5RyycsgvcWsPZe2YRdu0BCbFistw==
   dependencies:
-    "@modelcontextprotocol/inspector-cli" "^0.13.0"
-    "@modelcontextprotocol/inspector-client" "^0.13.0"
-    "@modelcontextprotocol/inspector-server" "^0.13.0"
-    "@modelcontextprotocol/sdk" "^1.11.5"
+    "@modelcontextprotocol/inspector-cli" "^0.14.0"
+    "@modelcontextprotocol/inspector-client" "^0.14.0"
+    "@modelcontextprotocol/inspector-server" "^0.14.0"
+    "@modelcontextprotocol/sdk" "^1.12.1"
     concurrently "^9.0.1"
     open "^10.1.0"
     shell-quote "^1.8.2"
@@ -554,7 +555,7 @@
     ts-node "^10.9.2"
     zod "^3.23.8"
 
-"@modelcontextprotocol/sdk@^1.11.5", "@modelcontextprotocol/sdk@^1.12.1":
+"@modelcontextprotocol/sdk@^1.12.1":
   version "1.12.1"
   resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.12.1.tgz#f77503f0263b33cb1e5b81a6ff0c322393cabd37"
   integrity sha512-KG1CZhZfWg+u8pxeM/mByJDScJSrjjxLc8fwQqbsS8xCjBmQfMNEBTotYdNanKekepnfRI85GtgQlctLFpcYPw==
