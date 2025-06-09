@@ -70,6 +70,11 @@ export const registerToolAssignPermissionSet = (server: McpServer): void => {
     assignPermissionSetParamsSchema.shape,
     async ({ permissionSetName, usernameOrAlias, onBehalfOf, directory }) => {
       try {
+        if (!usernameOrAlias)
+          return textResponse(
+            'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
+            true
+          );
         process.chdir(directory);
         // We build the connection from the usernameOrAlias
         const connection = await getConnection(usernameOrAlias);

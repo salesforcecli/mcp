@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import { z } from 'zod';
+
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { getAllAllowedOrgs } from '../../shared/auth.js';
 import { textResponse } from '../../shared/utils.js';
+import { directoryParam } from '../../shared/params.js';
 
 /*
  * List all Salesforce orgs
@@ -24,11 +27,17 @@ import { textResponse } from '../../shared/utils.js';
  * Lists all configured Salesforce orgs.
  *
  * Parameters:
- * - None required
+ * - directory: directory to change to before running the command
  *
  * Returns:
  * - textResponse: List of configured Salesforce orgs
  */
+
+export const listAllOrgsParamsSchema = z.object({
+  directory: directoryParam,
+});
+
+export type ListAllOrgsOptions = z.infer<typeof listAllOrgsParamsSchema>;
 
 export const registerToolListAllOrgs = (server: McpServer): void => {
   server.tool(
@@ -43,9 +52,10 @@ Can you list all Salesforce orgs for me
 List all Salesforce orgs
 List all orgs
 `,
-    {},
-    async () => {
+    listAllOrgsParamsSchema.shape,
+    async ({ directory }) => {
       try {
+        process.chdir(directory);
         const orgs = await getAllAllowedOrgs();
         return textResponse(`List of configured Salesforce orgs:\n\n${JSON.stringify(orgs, null, 2)}`);
       } catch (error) {

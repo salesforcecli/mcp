@@ -49,6 +49,11 @@ export const registerToolQueryOrg = (server: McpServer): void => {
     queryOrgParamsSchema.shape,
     async ({ query, usernameOrAlias, directory }) => {
       try {
+        if (!usernameOrAlias)
+          return textResponse(
+            'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
+            true
+          );
         process.chdir(directory);
         const connection = await getConnection(usernameOrAlias);
         const result = await connection.query(query);
