@@ -1,3 +1,14 @@
+# [0.3.0](https://github.com/salesforcecli/mcp/compare/0.2.9...0.3.0) (2025-06-09)
+
+### Bug Fixes
+
+- list all orgs with default W-18717116 ([#41](https://github.com/salesforcecli/mcp/issues/41)) ([13f8d9d](https://github.com/salesforcecli/mcp/commit/13f8d9d240b61e51301fafe7adae2bb5ab714c92))
+- report version at startup ([e53277a](https://github.com/salesforcecli/mcp/commit/e53277a01df7f0746b6c7574afe225a4480d9885))
+
+### Features
+
+- **W-18707407:** use oclif ([#40](https://github.com/salesforcecli/mcp/issues/40)) ([74ff246](https://github.com/salesforcecli/mcp/commit/74ff246c2e51e4ad535cfbbfcb0bc55aa46e3f16))
+
 ## [0.2.9](https://github.com/salesforcecli/mcp/compare/0.2.8...0.2.9) (2025-06-07)
 
 ### Bug Fixes
