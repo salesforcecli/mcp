@@ -1,9 +1,9 @@
 {
   "name": "@salesforce/mcp",
-  "version": "0.2.9",
+  "version": "0.2.9-qa.1",
   "description": "MCP Server for interacting with Salesforce instances",
   "bin": {
-    "sf-mcp-server": "lib/index.js"
+    "sf-mcp-server": "bin/run.js"
   },
   "types": "lib/index.d.ts",
   "license": "Apache-2.0",
@@ -20,6 +20,7 @@
     "link-check": "wireit",
     "lint": "wireit",
     "lint-fix": "yarn sf-lint --fix",
+    "postpack": "sf-clean --ignore-signing-artifacts",
     "prepack": "sf-prepack",
     "prepare": "sf-install",
     "start": "yarn build && npm link && mcp-inspector sf-mcp-server",
@@ -32,6 +33,7 @@
   },
   "homepage": "https://github.com/salesforcecli/mcp",
   "files": [
+    "bin",
     "lib",
     "!lib/**/*.map",
     "messages"
@@ -39,6 +41,7 @@
   "dependencies": {
     "@jsforce/jsforce-node": "^3.8.2",
     "@modelcontextprotocol/sdk": "^1.12.1",
+    "@oclif/core": "^4.3.1",
     "@salesforce/core": "^8.11.4",
     "@salesforce/kit": "^3.1.6",
     "@salesforce/source-deploy-retrieve": "^12.19.7",
@@ -53,12 +56,21 @@
     "@types/node": "^22.15.30",
     "eslint-config-salesforce-license": "^1.0.1",
     "eslint-plugin-sf-plugin": "^1.20.24",
+    "oclif": "^4.18.0",
     "ts-node": "^10.9.2",
     "ts-patch": "^3.3.0",
     "typescript": "^5.8.3"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "oclif": {
+    "bin": "sf-mcp-server",
+    "dirname": "sf-mcp-server",
+    "commands": {
+      "strategy": "single",
+      "target": "./lib/index.js"
+    }
   },
   "wireit": {
     "build": {
@@ -138,6 +150,35 @@
         "./*.md",
         "./!(CHANGELOG).md",
         "messages/**/*.md"
+      ],
+      "output": []
+    },
+    "test:command-reference": {
+      "command": "node --loader ts-node/esm --no-warnings=ExperimentalWarning \"./bin/dev.js\" commandreference:generate --erroronwarnings",
+      "files": [
+        "src/**/*.ts",
+        "messages/**",
+        "package.json"
+      ],
+      "output": [
+        "tmp/root"
+      ]
+    },
+    "test:deprecation-policy": {
+      "command": "node --loader ts-node/esm --no-warnings=ExperimentalWarning \"./bin/dev.js\" snapshot:compare",
+      "files": [
+        "src/**/*.ts"
+      ],
+      "output": [],
+      "dependencies": [
+        "compile"
+      ]
+    },
+    "test:json-schema": {
+      "command": "node --loader ts-node/esm --no-warnings=ExperimentalWarning \"./bin/dev.js\" schema:compare",
+      "files": [
+        "src/**/*.ts",
+        "schemas"
       ],
       "output": []
     }

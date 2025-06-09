@@ -16,13 +16,7 @@
 import { sep } from 'node:path';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import {
-  textResponse,
-  getEnabledToolsets,
-  parseStartupArguments,
-  buildOrgAllowList,
-  sanitizePath,
-} from '../../src/shared/utils.js';
+import { textResponse, getEnabledToolsets, sanitizePath } from '../../src/shared/utils.js';
 
 // Create a mock version of availableToolsets for testing instead of importing from index.js
 // This avoids the error with parseArgs when running tests
@@ -43,53 +37,6 @@ describe('utilities tests', () => {
   afterEach(() => {
     // Clean up common stubs
     sandbox.restore();
-  });
-
-  describe('parseStartupArguments', () => {
-    let originalArgv: string[];
-
-    beforeEach(() => {
-      originalArgv = process.argv;
-    });
-
-    afterEach(() => {
-      process.argv = originalArgv;
-    });
-
-    it('should return default toolsets when no options are provided', () => {
-      process.argv = ['/usr/bin/node', 'sf-mcp-server', '--orgs', 'DEFAULT_TARGET_ORG'];
-
-      const result = parseStartupArguments();
-
-      expect(result.values.toolsets).to.equal('all');
-      expect(result.values.orgs).to.equal('DEFAULT_TARGET_ORG');
-    });
-
-    it('should parse specified toolsets correctly', () => {
-      process.argv = ['/usr/bin/node', 'sf-mcp-server', '--toolsets', 'orgs,data', '--orgs', 'DEFAULT_TARGET_ORG'];
-
-      const result = parseStartupArguments();
-
-      expect(result.values.toolsets).to.equal('orgs,data');
-      expect(result.values.orgs).to.equal('DEFAULT_TARGET_ORG');
-    });
-
-    it('should parse specified toolsets with short option correctly', () => {
-      process.argv = ['/usr/bin/node', 'sf-mcp-server', '-t', 'orgs,data', '-o', 'DEFAULT_TARGET_ORG'];
-
-      const result = parseStartupArguments();
-
-      expect(result.values.toolsets).to.equal('orgs,data');
-      expect(result.values.orgs).to.equal('DEFAULT_TARGET_ORG');
-    });
-
-    it('should handle when server is started with local node path', () => {
-      process.argv = ['/usr/bin/node', '/path/to/server.js', '-o', 'DEFAULT_TARGET_ORG'];
-
-      const result = parseStartupArguments();
-
-      expect(result.values.orgs).to.equal('DEFAULT_TARGET_ORG');
-    });
   });
 
   describe('textResponse', () => {
@@ -190,93 +137,6 @@ describe('utilities tests', () => {
       getEnabledToolsets(MOCK_AVAILABLE_TOOLSETS, toolsetsInput);
 
       expect(consoleErrorStub.calledWith('Enabling toolsets:', 'data, users')).to.be.true;
-    });
-  });
-
-  describe('buildOrgAllowList', () => {
-    let consoleWarnStub: sinon.SinonStub;
-
-    beforeEach(() => {
-      consoleWarnStub = sandbox.stub(console, 'warn');
-    });
-
-    it('should return a Set containing valid org identifiers', () => {
-      const args = 'DEFAULT_TARGET_ORG,user@example.com,my-alias';
-
-      const result = buildOrgAllowList(args);
-
-      expect(result).to.be.instanceOf(Set);
-      expect(result.size).to.equal(3);
-      expect(result.has('DEFAULT_TARGET_ORG')).to.be.true;
-      expect(result.has('user@example.com')).to.be.true;
-      expect(result.has('my-alias')).to.be.true;
-    });
-
-    it('should return a Set containing only ALLOW_ALL_ORGS when it is included', () => {
-      const args = 'DEFAULT_TARGET_ORG,ALLOW_ALL_ORGS,user@example.com';
-
-      const result = buildOrgAllowList(args);
-
-      expect(result.size).to.equal(1);
-      expect(result.has('ALLOW_ALL_ORGS')).to.be.true;
-      expect(consoleWarnStub.calledWithMatch(/ALLOW_ALL_ORGS is set/)).to.be.true;
-    });
-
-    it('should handle DEFAULT_TARGET_DEV_HUB argument', () => {
-      const args = 'DEFAULT_TARGET_DEV_HUB';
-
-      const result = buildOrgAllowList(args);
-
-      expect(result.size).to.equal(1);
-      expect(result.has('DEFAULT_TARGET_DEV_HUB')).to.be.true;
-    });
-
-    it('should exit with code 1 when no arguments are provided', () => {
-      const args = '';
-
-      buildOrgAllowList(args);
-
-      expect(processExitStub.calledWith(1)).to.be.true;
-      expect(consoleErrorStub.calledWithMatch(/Missing --orgs flag/)).to.be.true;
-    });
-
-    it('should exit with code 1 when an invalid argument is provided', () => {
-      const args = 'DEFAULT_TARGET_ORG,--invalid-flag';
-
-      buildOrgAllowList(args);
-
-      expect(processExitStub.calledWith(1)).to.be.true;
-      expect(consoleErrorStub.calledWithMatch(/Invalid flag value/)).to.be.true;
-    });
-
-    it('should accept usernames with @ symbols', () => {
-      const args = 'user@example.com,another.user@test.org';
-
-      const result = buildOrgAllowList(args);
-
-      expect(result.size).to.equal(2);
-      expect(result.has('user@example.com')).to.be.true;
-      expect(result.has('another.user@test.org')).to.be.true;
-    });
-
-    it('should accept aliases that do not start with a dash', () => {
-      const args = 'my-alias,another_alias';
-
-      const result = buildOrgAllowList(args);
-
-      expect(result.size).to.equal(2);
-      expect(result.has('my-alias')).to.be.true;
-      expect(result.has('another_alias')).to.be.true;
-    });
-
-    it('should handle spaces', () => {
-      const args = 'my-alias , another_alias';
-
-      const result = buildOrgAllowList(args);
-
-      expect(result.size).to.equal(2);
-      expect(result.has('my-alias')).to.be.true;
-      expect(result.has('another_alias')).to.be.true;
     });
   });
 
