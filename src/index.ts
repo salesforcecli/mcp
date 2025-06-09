@@ -75,6 +75,7 @@ You can also use special values to control access to orgs:
       delimiter: ',',
       default: ['all'],
     })(),
+    version: Flags.version(),
   };
 
   public static examples = [
@@ -98,7 +99,7 @@ You can also use special values to control access to orgs:
     this.logToStderr(`Allowed orgs:\n${flags.orgs.map((org) => `- ${org}`).join('\n')}`);
     const server = new McpServer({
       name: 'sf-mcp-server',
-      version: '0.0.6',
+      version: this.config.version,
       capabilities: {
         resources: {},
         tools: {},
@@ -153,6 +154,6 @@ You can also use special values to control access to orgs:
 
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.error('✅ Salesforce MCP Server running on stdio');
+    console.error(`✅ Salesforce MCP Server v${this.config.version} running on stdio`);
   }
 }
