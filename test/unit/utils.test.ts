@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { sep } from 'node:path';
+import { platform } from 'node:os';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { textResponse, getEnabledToolsets, sanitizePath } from '../../src/shared/utils.js';
@@ -144,11 +145,19 @@ describe('utilities tests', () => {
     it('should return true for valid absolute paths', () => {
       expect(sanitizePath(`${sep}valid${sep}path`)).to.be.true;
       expect(sanitizePath(`${sep}another${sep}valid${sep}path`)).to.be.true;
+
+      if (platform() === 'win32') {
+        expect(sanitizePath('c:\\Users\\johndoe\\projects\\ebikes-lwc')).to.be.true;
+      }
     });
 
     it('should return false for relative paths', () => {
       expect(sanitizePath('relative/path')).to.be.false;
       expect(sanitizePath('./relative/path')).to.be.false;
+
+      if (platform() === 'win32') {
+        expect(sanitizePath('\\Users\\johndoe\\projects\\ebikes-lwc')).to.be.false;
+      }
     });
 
     it('should detect path traversal attempts', () => {
@@ -156,6 +165,10 @@ describe('utilities tests', () => {
       expect(sanitizePath(`${sep}path${sep}\\..${sep}file`)).to.be.false;
       expect(sanitizePath(`${sep}path${sep}../file`)).to.be.false;
       expect(sanitizePath(`${sep}path${sep}..\\file`)).to.be.false;
+
+      if (platform() === 'win32') {
+        expect(sanitizePath('c:\\Users\\johndoe\\projects\\ebikes-lwc\\..\\dreamhouse-lwc')).to.be.false;
+      }
     });
 
     it('should handle URL-encoded sequences', () => {
