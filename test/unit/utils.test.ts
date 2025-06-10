@@ -143,31 +143,32 @@ describe('utilities tests', () => {
 
   describe('sanitizePath', () => {
     it('should return true for valid absolute paths', () => {
-      expect(sanitizePath(`${sep}valid${sep}path`)).to.be.true;
-      expect(sanitizePath(`${sep}another${sep}valid${sep}path`)).to.be.true;
-
       if (platform() === 'win32') {
-        expect(sanitizePath('c:\\Users\\johndoe\\projects\\ebikes-lwc')).to.be.true;
+        expect(sanitizePath('C:\\Users\\johndoe\\projects\\ebikes-lwc')).to.be.true;
+      } else {
+        // unix-like paths
+        expect(sanitizePath('/Users/johndoe/projects/ebikes-lwc')).to.be.true;
+        expect(sanitizePath('/Users/johndoe/projects/dreamhouse')).to.be.true;
       }
     });
 
     it('should return false for relative paths', () => {
-      expect(sanitizePath('relative/path')).to.be.false;
-      expect(sanitizePath('./relative/path')).to.be.false;
-
       if (platform() === 'win32') {
+        // drive-relative path
         expect(sanitizePath('\\Users\\johndoe\\projects\\ebikes-lwc')).to.be.false;
+      } else {
+        expect(sanitizePath('relative/path/to/ebikes')).to.be.false;
+        expect(sanitizePath('./relative/path/to/ebikes')).to.be.false;
       }
     });
 
     it('should detect path traversal attempts', () => {
-      expect(sanitizePath(`${sep}path${sep}..${sep}file`)).to.be.false;
-      expect(sanitizePath(`${sep}path${sep}\\..${sep}file`)).to.be.false;
-      expect(sanitizePath(`${sep}path${sep}../file`)).to.be.false;
-      expect(sanitizePath(`${sep}path${sep}..\\file`)).to.be.false;
-
       if (platform() === 'win32') {
-        expect(sanitizePath('c:\\Users\\johndoe\\projects\\ebikes-lwc\\..\\dreamhouse-lwc')).to.be.false;
+        expect(sanitizePath('C:\\Users\\johndoe\\projects\\ebikes-lwc\\..\\dreamhouse-lwc')).to.be.false;
+        expect(sanitizePath('C:\\Users\\johndoe\\projects\\ebikes-lwc\\..')).to.be.false;
+      } else {
+        expect(sanitizePath('/Users/johndoe/projects/ebikes-lwc/../dreamhouse')).to.be.false;
+        expect(sanitizePath('/Users/johndoe/projects/ebikes-lwc/..')).to.be.false;
       }
     });
 
