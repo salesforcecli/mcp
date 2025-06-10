@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { sep } from 'node:path';
-import { platform } from 'node:os';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { textResponse, getEnabledToolsets, sanitizePath } from '../../src/shared/utils.js';
@@ -143,7 +142,7 @@ describe('utilities tests', () => {
 
   describe('sanitizePath', () => {
     it('should return true for valid absolute paths', () => {
-      if (platform() === 'win32') {
+      if (process.platform === 'win32') {
         expect(sanitizePath('C:\\Users\\johndoe\\projects\\ebikes-lwc')).to.be.true;
       } else {
         // unix-like paths
@@ -153,7 +152,7 @@ describe('utilities tests', () => {
     });
 
     it('should return false for relative paths', () => {
-      if (platform() === 'win32') {
+      if (process.platform === 'win32') {
         // drive-relative path
         expect(sanitizePath('\\Users\\johndoe\\projects\\ebikes-lwc')).to.be.false;
       } else {
@@ -163,7 +162,7 @@ describe('utilities tests', () => {
     });
 
     it('should detect path traversal attempts', () => {
-      if (platform() === 'win32') {
+      if (process.platform === 'win32') {
         expect(sanitizePath('C:\\Users\\johndoe\\projects\\ebikes-lwc\\..\\dreamhouse-lwc')).to.be.false;
         expect(sanitizePath('C:\\Users\\johndoe\\projects\\ebikes-lwc\\..')).to.be.false;
       } else {
@@ -178,14 +177,21 @@ describe('utilities tests', () => {
     });
 
     it('should handle Unicode characters', () => {
-      expect(sanitizePath(`${sep}path${sep}\u2025file`)).to.be.false;
-      expect(sanitizePath(`${sep}path${sep}\u2026file`)).to.be.false;
-      expect(sanitizePath(`${sep}valid${sep}path\u00e9`)).to.be.true;
+      if (process.platform === 'win32') {
+        expect(sanitizePath('C:\\Users\\johndoe\\projects\\ebikes-lwc\u2025')).to.be.false;
+        expect(sanitizePath('C:\\Users\\johndoe\\projects\\ebikes-lwc\u2026')).to.be.false;
+        expect(sanitizePath('C:\\Users\\johndoe\\projects\\ebikes-lwc\u00e9')).to.be.true;
+      } else {
+        expect(sanitizePath('/Users/johndoe/projects/ebikes-lwc/\u2025')).to.be.false;
+        expect(sanitizePath('/Users/johndoe/projects/ebikes-lwc/\u2026')).to.be.false;
+        expect(sanitizePath('/Users/johndoe/projects/ebikes-lwc/\u00e9')).to.be.true;
+        expect(sanitizePath(`${sep}valid${sep}path\u00e9`)).to.be.true;
+      }
     });
 
     it('should handle mixed path separators', () => {
-      expect(sanitizePath(`${sep}path\\subpath${sep}file`)).to.be.true;
-      expect(sanitizePath(`${sep}path${sep}..\\file`)).to.be.false;
+      expect(sanitizePath('/path\\subpath/file')).to.be.true;
+      expect(sanitizePath('\\path/..\\file')).to.be.false;
     });
   });
 });
