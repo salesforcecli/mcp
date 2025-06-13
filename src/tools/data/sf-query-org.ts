@@ -29,10 +29,10 @@
 
 import { z } from 'zod';
 
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { getConnection } from '../../shared/auth.js';
 import { textResponse } from '../../shared/utils.js';
 import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
+import { SfMcpServer } from '../../sf-mcp-server.js';
 
 export const queryOrgParamsSchema = z.object({
   query: z.string().describe('SOQL query to run'),
@@ -42,7 +42,7 @@ export const queryOrgParamsSchema = z.object({
 
 export type QueryOrgOptions = z.infer<typeof queryOrgParamsSchema>;
 
-export const registerToolQueryOrg = (server: McpServer): void => {
+export const registerToolQueryOrg = (server: SfMcpServer): void => {
   server.tool(
     'sf-query-org',
     'Run a SOQL query against a Salesforce org.',

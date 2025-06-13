@@ -15,11 +15,11 @@
  */
 
 import { Org, StateAggregator, User } from '@salesforce/core';
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
 import { textResponse } from '../../shared/utils.js';
 import { getConnection } from '../../shared/auth.js';
+import { SfMcpServer } from '../../sf-mcp-server.js';
 
 /*
  * Assign permission set
@@ -63,7 +63,7 @@ Set the permission set MyPermSet on behalf of my-alias.`),
 
 export type AssignPermissionSetOptions = z.infer<typeof assignPermissionSetParamsSchema>;
 
-export const registerToolAssignPermissionSet = (server: McpServer): void => {
+export const registerToolAssignPermissionSet = (server: SfMcpServer): void => {
   server.tool(
     'sf-assign-permission-set',
     'Assign a permission set to one or more org users.',
