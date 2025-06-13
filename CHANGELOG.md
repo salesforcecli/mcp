@@ -1,3 +1,9 @@
+# [0.4.0](https://github.com/salesforcecli/mcp/compare/0.3.0...0.4.0) (2025-06-13)
+
+### Features
+
+- **W-18699160:** add telemetry ([#50](https://github.com/salesforcecli/mcp/issues/50)) ([1ab6dff](https://github.com/salesforcecli/mcp/commit/1ab6dffc75a9235facf9600ed5dbd8c6c393e359))
+
 # [0.3.0](https://github.com/salesforcecli/mcp/compare/0.2.9...0.3.0) (2025-06-09)
 
 ### Bug Fixes
