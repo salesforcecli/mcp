@@ -40,7 +40,7 @@
   ],
   "dependencies": {
     "@jsforce/jsforce-node": "^3.8.2",
-    "@modelcontextprotocol/sdk": "^1.12.1",
+    "@modelcontextprotocol/sdk": "^1.12.3",
     "@oclif/core": "^4.3.3",
     "@salesforce/core": "^8.11.4",
     "@salesforce/kit": "^3.1.6",
