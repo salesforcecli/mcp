@@ -1436,10 +1436,10 @@
     ts-node "^10.9.2"
     zod "^3.23.8"
 
-"@modelcontextprotocol/sdk@^1.12.1":
-  version "1.12.1"
-  resolved "https://registry.npmjs.org/@modelcontextprotocol/sdk/-/sdk-1.12.1.tgz"
-  integrity sha512-KG1CZhZfWg+u8pxeM/mByJDScJSrjjxLc8fwQqbsS8xCjBmQfMNEBTotYdNanKekepnfRI85GtgQlctLFpcYPw==
+"@modelcontextprotocol/sdk@^1.12.1", "@modelcontextprotocol/sdk@^1.12.3":
+  version "1.12.3"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.12.3.tgz#c1cba6434b2344d1626b5c12a5b15807e152bf6e"
+  integrity sha512-DyVYSOafBvk3/j1Oka4z5BWT8o4AFmoNyZY9pALOm7Lh3GZglR71Co4r4dEUoqDWdDazIZQHBe7J2Nwkg6gHgQ==
   dependencies:
     ajv "^6.12.6"
     content-type "^1.0.5"
