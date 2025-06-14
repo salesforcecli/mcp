@@ -1,3 +1,9 @@
+## [0.4.1](https://github.com/salesforcecli/mcp/compare/0.4.0...0.4.1) (2025-06-14)
+
+### Bug Fixes
+
+- **deps:** bump zod from 3.25.42 to 3.25.64 ([483cb7a](https://github.com/salesforcecli/mcp/commit/483cb7a7b0076cb916ab35bf6a645028587c9703))
+
 # [0.4.0](https://github.com/salesforcecli/mcp/compare/0.3.0...0.4.0) (2025-06-13)
 
 ### Features
