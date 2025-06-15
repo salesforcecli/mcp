@@ -1,3 +1,9 @@
+## [0.4.3](https://github.com/salesforcecli/mcp/compare/0.4.2...0.4.3) (2025-06-15)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-deploy-retrieve ([aae43cd](https://github.com/salesforcecli/mcp/commit/aae43cdcb95f85da6556685c71d29ed5411979d4))
+
 ## [0.4.2](https://github.com/salesforcecli/mcp/compare/0.4.1...0.4.2) (2025-06-15)
 
 ### Bug Fixes
