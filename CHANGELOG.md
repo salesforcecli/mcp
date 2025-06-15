@@ -1,3 +1,9 @@
+## [0.4.2](https://github.com/salesforcecli/mcp/compare/0.4.1...0.4.2) (2025-06-15)
+
+### Bug Fixes
+
+- **deps:** bump @modelcontextprotocol/sdk from 1.12.1 to 1.12.3 ([f9d75be](https://github.com/salesforcecli/mcp/commit/f9d75be88870a3afe9bd0cfb2a7af1c1b9d55bc4))
+
 ## [0.4.1](https://github.com/salesforcecli/mcp/compare/0.4.0...0.4.1) (2025-06-14)
 
 ### Bug Fixes
