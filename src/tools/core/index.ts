@@ -15,3 +15,4 @@
  */
 
 export * from './sf-get-username.js';
+export * from './sf-resume.js';

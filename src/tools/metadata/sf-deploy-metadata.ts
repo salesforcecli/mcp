@@ -17,7 +17,7 @@
 import { z } from 'zod';
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { Connection, Org, SfProject } from '@salesforce/core';
+import { Connection, Org, SfError, SfProject } from '@salesforce/core';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { ComponentSet, ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
 import { ensureString } from '@salesforce/ts-types';
@@ -49,7 +49,7 @@ NoTestRun="No tests are run"
 RunLocalTests="Run all tests in the org, except the ones that originate from installed managed and unlocked packages."
 RunAllTestsInOrg="Run all tests in the org, including tests of managed packages"
 
-Don't set this param is "apexTests" is also set.
+Don't set this param if "apexTests" is also set.
 `
     ),
   apexTests: z
@@ -127,6 +127,7 @@ Deploy X to my org and run A,B and C apex tests.
         );
       }
 
+      let jobId: string = '';
       try {
         const stl = await SourceTracking.create({
           org,
@@ -148,18 +149,25 @@ Deploy X to my org and run A,B and C apex tests.
             ...(apexTestLevel ? { testLevel: apexTestLevel } : {}),
           },
         });
+        jobId = deploy.id ?? '';
 
-        // polling freq. is set dynamically by SDR based no the component set size.
+        // polling freq. is set dynamically by SDR based on the component set size.
         const result = await deploy.pollStatus({
           timeout: Duration.minutes(10),
         });
 
         return textResponse(`Deploy result: ${JSON.stringify(result.response)}`, !result.response.success);
       } catch (error) {
-        return textResponse(
-          `Failed to deploy metadata: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          true
-        );
+        const err = SfError.wrap(error);
+        if (err.name === 'ClientTimeoutError') {
+          return textResponse(
+            `
+YOU MUST inform the user that the deploy timed out and we are going to automatically resume the deploy using the #sf-resume tool
+and ${jobId} for the jobId parameter.`,
+            true
+          );
+        }
+        return textResponse(`Failed to deploy metadata: ${err.message}`, true);
       }
     }
   );
