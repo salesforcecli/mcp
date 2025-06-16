@@ -16,7 +16,6 @@
 
 import { z } from 'zod';
 
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { Connection, Org, SfError, SfProject } from '@salesforce/core';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { ComponentSet, ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
@@ -25,6 +24,7 @@ import { Duration } from '@salesforce/kit';
 import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
 import { textResponse } from '../../shared/utils.js';
 import { getConnection } from '../../shared/auth.js';
+import { SfMcpServer } from '../../sf-mcp-server.js';
 
 const deployMetadataParams = z.object({
   sourceDir: z
@@ -81,7 +81,7 @@ export type DeployMetadata = z.infer<typeof deployMetadataParams>;
  * Returns:
  * - textResponse: Deploy result.
  */
-export const registerToolDeployMetadata = (server: McpServer): void => {
+export const registerToolDeployMetadata = (server: SfMcpServer): void => {
   server.tool(
     'sf-deploy-metadata',
     `Deploy metadata to an org from your local project.

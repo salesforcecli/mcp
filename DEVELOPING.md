@@ -31,24 +31,25 @@ Use this guide to learn how to contribute to the Salesforce DX MCP Server.
    - _Suggestion:_ If it's been a while since you last ran the command, consider running `yarn clean-all` before you run `yarn install`.
 1. Build and lint the code: `yarn build`.
 1. Create a branch off of `main` for your new work: `git checkout -b <branch_name>`.
-   - _Suggestion:_ Name your branch using this format: `<initials>/<work-title>`.  Example: `mb/refactor-tests`
+   - _Suggestion:_ Name your branch using this format: `<initials>/<work-title>`. Example: `mb/refactor-tests`
 1. Make your code changes and then build: `yarn build`.
 1. Update your MCP client to launch your local build using `node` instead of the published npm package using `npx`. For example, if you're using VS Code, update your MCP configuration file like this (change `/full/path/to` to the full location where you cloned the `mcp` repo):
 
-    ```json
-    {
-      "servers": {
-        "salesforce": {
-          "command": "node",
-          "args": ["/full/path/to/mcp/bin/run.js", "--toolsets", "all", "--orgs", "ALLOW_ALL_ORGS"]
-        }
-      }
-    }
-    ```
-1. Start the Salesforce DX MCP server and call the tools using natural language prompts.  See [./README.md] for details.
+   ```json
+   {
+     "servers": {
+       "salesforce": {
+         "command": "node",
+         "args": ["/full/path/to/mcp/bin/run.js", "--toolsets", "all", "--orgs", "ALLOW_ALL_ORGS"]
+       }
+     }
+   }
+   ```
+
+1. Start the Salesforce DX MCP server and call the tools using natural language prompts. See [./README.md] for details.
 1. Write tests and run them: `yarn test`. See [Unit Tests](#unit-tests) for details.
 1. See all changed files and verify that you want to commit them: `git status`.
-1. Add all files to staging: `git add .`  (Make sure you include the period!)
+1. Add all files to staging: `git add .` (Make sure you include the period!)
 1. Commit staged files with a helpful commit message that adheres to the [conventional commits specification](https://www.conventionalcommits.org/en/v1.0.0/): `git commit -m "feat: add new tool"`.
 1. Push commit(s) to remote: `git push -u origin <branch_name>`.
 1. Create a pull request (PR) using the [GitHub UI](https://github.com/salesforcecli/mcp).
@@ -65,7 +66,7 @@ First install the MCP inspector CLI:
 npm i -g @modelcontextprotocol/inspector
 ```
 
-Then follow the steps for the type of testing you want to do: from the browser or from a terminal. 
+Then follow the steps for the type of testing you want to do: from the browser or from a terminal.
 
 ### Browser
 
@@ -73,15 +74,15 @@ Then follow the steps for the type of testing you want to do: from the browser o
 2. Start the MCP inspector server: `mcp-inspector node lib/index.js --orgs DEFAULT_TARGET_ORG`.
 3. If successful, open the specified localhost URL in your browser. In this example it's `http://127.0.0.1:6274`:
 
-    ```
-    MCP Inspector is up and running at http://127.0.0.1:6274
-    ```
+   ```
+   MCP Inspector is up and running at http://127.0.0.1:6274
+   ```
 
 4. Click the `Connect` button; you should see this message in the bottom-left panel:
 
-    ```
-    ✅ Salesforce MCP Server running on stdio
-    ```
+   ```
+   ✅ Salesforce MCP Server running on stdio
+   ```
 
 5. Click `List Tools`, then select one of the tools, fill the required parameters, and click `Run Tool`.
 

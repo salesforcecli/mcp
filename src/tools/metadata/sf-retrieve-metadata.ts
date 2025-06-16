@@ -16,7 +16,6 @@
 
 import { z } from 'zod';
 
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { Connection, Org, SfProject } from '@salesforce/core';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { ComponentSet, ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
@@ -25,6 +24,7 @@ import { Duration } from '@salesforce/kit';
 import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
 import { textResponse } from '../../shared/utils.js';
 import { getConnection } from '../../shared/auth.js';
+import { SfMcpServer } from '../../sf-mcp-server.js';
 
 const retrieveMetadataParams = z.object({
   sourceDir: z
@@ -50,7 +50,7 @@ const retrieveMetadataParams = z.object({
  * Returns:
  * - textResponse: Retrieve result.
  */
-export const registerToolRetrieveMetadata = (server: McpServer): void => {
+export const registerToolRetrieveMetadata = (server: SfMcpServer): void => {
   server.tool(
     'sf-retrieve-metadata',
     `Retrieve metadata from an org to your local project.
