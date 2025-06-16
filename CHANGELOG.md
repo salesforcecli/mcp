@@ -1,3 +1,9 @@
+# [0.5.0](https://github.com/salesforcecli/mcp/compare/0.4.3...0.5.0) (2025-06-16)
+
+### Features
+
+- **W-18724886:** add logging ([#52](https://github.com/salesforcecli/mcp/issues/52)) ([b5dda36](https://github.com/salesforcecli/mcp/commit/b5dda369fd5cbec252bf4e3d6444fde8bf748344))
+
 ## [0.4.3](https://github.com/salesforcecli/mcp/compare/0.4.2...0.4.3) (2025-06-15)
 
 ### Bug Fixes
