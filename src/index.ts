@@ -99,6 +99,9 @@ You can also use special values to control access to orgs:
     'no-telemetry': Flags.boolean({
       summary: 'Disable telemetry',
     }),
+    debug: Flags.boolean({
+      summary: 'Enable debug logging',
+    }),
   };
 
   public static examples = [
@@ -158,6 +161,7 @@ You can also use special values to control access to orgs:
     // ************************
     // CORE TOOLS (always on)
     // ************************
+    this.logToStderr('Registering core tools');
     // get username
     core.registerToolGetUsername(server);
 
@@ -165,6 +169,7 @@ You can also use special values to control access to orgs:
     // ORG TOOLS
     // ************************
     if (all || enabledToolsets.has('orgs')) {
+      this.logToStderr('Registering org tools');
       // list all orgs
       orgs.registerToolListAllOrgs(server);
     }
@@ -173,6 +178,7 @@ You can also use special values to control access to orgs:
     // DATA TOOLS
     // ************************
     if (all || enabledToolsets.has('data')) {
+      this.logToStderr('Registering data tools');
       // query org
       data.registerToolQueryOrg(server);
     }
@@ -181,6 +187,7 @@ You can also use special values to control access to orgs:
     // USER TOOLS
     // ************************
     if (all || enabledToolsets.has('users')) {
+      this.logToStderr('Registering user tools');
       // assign permission set
       users.registerToolAssignPermissionSet(server);
     }
@@ -189,6 +196,7 @@ You can also use special values to control access to orgs:
     // METADATA TOOLS
     // ************************
     if (all || enabledToolsets.has('metadata')) {
+      this.logToStderr('Registering metadata tools');
       // deploy metadata
       metadata.registerToolDeployMetadata(server);
       // retrieve metadata

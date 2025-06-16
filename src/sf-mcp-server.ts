@@ -18,6 +18,7 @@ import { McpServer, RegisteredTool, ToolCallback } from '@modelcontextprotocol/s
 import { CallToolResult, Implementation, ServerNotification, ServerRequest } from '@modelcontextprotocol/sdk/types.js';
 import { ServerOptions } from '@modelcontextprotocol/sdk/server/index.js';
 import { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js';
+import { Logger } from '@salesforce/core';
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import { Telemetry } from './telemetry.js';
 
@@ -35,6 +36,8 @@ type ToolMethodSignatures = {
  * @extends {McpServer}
  */
 export class SfMcpServer extends McpServer implements ToolMethodSignatures {
+  private logger = Logger.childFromRoot('mcp-server');
+
   /** Optional telemetry instance for tracking server events */
   private telemetry?: Telemetry;
 
@@ -80,9 +83,13 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
     const cb = rest[rest.length - 1] as ToolCallback;
 
     const wrappedCb = async (args: RequestHandlerExtra<ServerRequest, ServerNotification>): Promise<CallToolResult> => {
+      this.logger.debug(`Tool ${name} called`);
       const startTime = Date.now();
       const result = await cb(args);
       const runtimeMs = Date.now() - startTime;
+
+      this.logger.debug(`Tool ${name} completed in ${runtimeMs}ms`);
+      if (result.isError) this.logger.debug(`Tool ${name} errored`);
 
       this.telemetry?.sendEvent('TOOL_CALLED', {
         name,
