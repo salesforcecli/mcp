@@ -162,7 +162,7 @@ Deploy X to my org and run A,B and C apex tests.
         if (err.name === 'ClientTimeoutError') {
           return textResponse(
             `
-YOU MUST inform the user that the deploy timed out and we are going to automatically resume the deploy using the #sf-resume tool
+YOU MUST inform the user that the deploy timed out and if they want to resume the deploy, they can use the #sf-resume tool
 and ${jobId} for the jobId parameter.`,
             true
           );
