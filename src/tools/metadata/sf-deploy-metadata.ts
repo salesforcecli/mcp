@@ -159,7 +159,7 @@ Deploy X to my org and run A,B and C apex tests.
         return textResponse(`Deploy result: ${JSON.stringify(result.response)}`, !result.response.success);
       } catch (error) {
         const err = SfError.wrap(error);
-        if (err.name === 'ClientTimeoutError') {
+        if (err.message.includes('timed out')) {
           return textResponse(
             `
 YOU MUST inform the user that the deploy timed out and if they want to resume the deploy, they can use the #sf-resume tool
