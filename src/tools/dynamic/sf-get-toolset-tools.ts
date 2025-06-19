@@ -15,8 +15,8 @@
  */
 import z from 'zod';
 import { SfMcpServer } from '../../sf-mcp-server.js';
-import Cache from '../../shared/cache.js';
 import { textResponse } from '../../shared/utils.js';
+import { getToolsetStatus } from '../../shared/toolset-management.js';
 
 export const getToolsetToolsParamsSchema = z.object({
   toolset: z.string().describe('The name of the toolset to get the tools for'),
@@ -34,20 +34,21 @@ export function registerToolGetToolsetTools(server: SfMcpServer): void {
       openWorldHint: false,
       title: 'List all tools in a toolset',
     },
-    // eslint-disable-next-line @typescript-eslint/require-await
     async ({ toolset }) => {
-      const toolsetCache = Cache.getInstance().get('toolsets').get(toolset);
-      if (!toolsetCache) {
+      const toolsetStatus = await getToolsetStatus(toolset);
+
+      if (!toolsetStatus) {
         return textResponse(`Toolset ${toolset} not found`);
       }
 
-      const tools = toolsetCache.tools.map(({ tool, name }) => ({
+      const tools = toolsetStatus.tools.map(({ tool, name }) => ({
         name,
         description: tool.description,
-        can_enable: tool.enabled,
+        enabled: tool.enabled,
         toolset,
       }));
-      return textResponse(JSON.stringify(tools));
+
+      return textResponse(JSON.stringify(tools, null, 2));
     }
   );
 }

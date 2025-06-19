@@ -16,9 +16,8 @@
 
 import z from 'zod';
 import { SfMcpServer } from '../../sf-mcp-server.js';
-import Cache from '../../shared/cache.js';
 import { textResponse } from '../../shared/utils.js';
-import { TOOLSET_REGISTRY } from '../../shared/toolsets.js';
+import { isValidToolset, getAvailableToolsets, enableToolset } from '../../shared/toolset-management.js';
 
 export const enableToolsetParamsSchema = z.object({
   toolset: z.string().describe('The name of the toolset to enable'),
@@ -36,27 +35,19 @@ export function registerToolEnableToolset(server: SfMcpServer): void {
       readOnlyHint: true,
       openWorldHint: false,
     },
-    // eslint-disable-next-line @typescript-eslint/require-await
     async ({ toolset }) => {
-      const toolsetCache = Cache.getInstance().get('toolsets').get(toolset);
-      if (!toolsetCache) {
-        return textResponse(`Invalid toolset: ${toolset}. Available: ${Object.keys(TOOLSET_REGISTRY).join(', ')}`);
+      // Validate toolset exists
+      if (!isValidToolset(toolset)) {
+        return textResponse(`Invalid toolset: ${toolset}. Available: ${getAvailableToolsets().join(', ')}`);
       }
 
-      if (toolsetCache.enabled) {
-        return textResponse(`Toolset ${toolset} is already enabled`);
+      const result = await enableToolset(toolset);
+
+      if (result.success) {
+        server.sendToolListChanged();
       }
 
-      toolsetCache.enabled = true;
-      for (const { tool } of toolsetCache.tools) {
-        tool.enable();
-      }
-
-      Cache.getInstance().get('toolsets').set(toolset, toolsetCache);
-
-      server.sendToolListChanged();
-
-      return textResponse(`Toolset ${toolset} enabled`);
+      return textResponse(result.message);
     }
   );
 }

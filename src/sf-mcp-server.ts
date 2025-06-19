@@ -21,8 +21,7 @@ import { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.j
 import { Logger } from '@salesforce/core';
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import { Telemetry } from './telemetry.js';
-import Cache from './shared/cache.js';
-import { getToolsetNameFromTool } from './shared/toolsets.js';
+import { addToolToToolset, getToolsetNameFromTool } from './shared/toolset-management.js';
 
 type ToolMethodSignatures = {
   tool: McpServer['tool'];
@@ -118,15 +117,10 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
 
     if (this.dynamicToolsets && !toolsetName.includes('core') && !toolsetName.includes('dynamic')) {
       tool.disable();
-      const toolsetCache = Cache.getInstance().get('toolsets').get(toolsetName);
-      if (toolsetCache) {
-        toolsetCache.tools.push({ tool, name });
-        Cache.getInstance().get('toolsets').set(toolsetName, toolsetCache);
-      } else {
-        Cache.getInstance()
-          .get('toolsets')
-          .set(toolsetName, { enabled: false, tools: [{ tool, name }] });
-      }
+      // Use async toolset manager methods in a non-blocking way
+      addToolToToolset(toolsetName, tool, name).catch((error) => {
+        this.logger.error(`Failed to add tool ${name} to toolset ${toolsetName}:`, error);
+      });
     }
     return tool;
   };

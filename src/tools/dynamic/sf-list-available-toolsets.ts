@@ -16,7 +16,7 @@
 
 import { SfMcpServer } from '../../sf-mcp-server.js';
 import { textResponse } from '../../shared/utils.js';
-import { TOOLSETS } from '../../shared/toolsets.js';
+import { listAllToolsets } from '../../shared/toolset-management.js';
 
 export const registerToolListAvailableToolsets = (server: SfMcpServer): void => {
   server.tool(
@@ -32,7 +32,14 @@ Once you have enabled the toolset, you can call the specific tool that accomplis
       title: 'List available toolsets',
       openWorldHint: false,
     },
-    // eslint-disable-next-line @typescript-eslint/require-await
-    async () => textResponse(`Toolsets: ${TOOLSETS.join(', ')}`)
+    async () => {
+      const toolsets = await listAllToolsets();
+
+      const toolsetList = toolsets
+        .map((toolset) => `${toolset.name} (${toolset.enabled ? 'enabled' : 'disabled'}, ${toolset.toolCount} tools)`)
+        .join(', ');
+
+      return textResponse(`Available toolsets: ${toolsetList}`);
+    }
   );
 };

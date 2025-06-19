@@ -24,9 +24,3 @@ export const TOOLSET_REGISTRY = {
   metadata: ['sf-deploy-metadata', 'sf-retrieve-metadata'],
   users: ['sf-assign-permission-set'],
 };
-
-export function getToolsetNameFromTool(tool: string): string | undefined {
-  return Object.keys(TOOLSET_REGISTRY).find((key) =>
-    TOOLSET_REGISTRY[key as keyof typeof TOOLSET_REGISTRY].includes(tool)
-  );
-}

@@ -27,7 +27,7 @@ import * as dynamic from './tools/dynamic/index.js';
 import Cache from './shared/cache.js';
 import { Telemetry } from './telemetry.js';
 import { SfMcpServer } from './sf-mcp-server.js';
-import { TOOLSETS } from './shared/toolsets.js';
+import { TOOLSETS } from './shared/toolset-registry.js';
 
 /**
  * Sanitizes an array of org usernames by replacing specific orgs with a placeholder.
@@ -143,7 +143,8 @@ You can also use special values to control access to orgs:
       });
     }
 
-    Cache.getInstance().set('allowedOrgs', new Set(flags.orgs));
+    const cache = await Cache.getInstance();
+    cache.set('allowedOrgs', new Set(flags.orgs));
     this.logToStderr(`Allowed orgs:\n${flags.orgs.map((org) => `- ${org}`).join('\n')}`);
     const server = new SfMcpServer(
       {
