@@ -56,14 +56,21 @@ export function getToolsForToolset(toolsetName: string): string[] {
  * Enable a toolset using thread-safe cache operations
  */
 export async function enableToolset(toolsetName: string): Promise<{ success: boolean; message: string }> {
-  const updatedMap = await Cache.safeUpdate('toolsets', (toolsetsMap) => {
+  const originalMap = await Cache.safeGet('toolsets');
+  const originalToolset = originalMap.get(toolsetName);
+
+  if (!originalToolset) {
+    return { success: false, message: `Toolset ${toolsetName} not found` };
+  }
+
+  if (originalToolset.enabled) {
+    return { success: false, message: `Toolset ${toolsetName} is already enabled` };
+  }
+
+  await Cache.safeUpdate('toolsets', (toolsetsMap) => {
     const toolset = toolsetsMap.get(toolsetName);
 
-    if (!toolset) {
-      return toolsetsMap; // No change, return original map
-    }
-
-    if (toolset.enabled) {
+    if (!toolset || toolset.enabled) {
       return toolsetsMap; // No change, return original map
     }
 
@@ -84,13 +91,6 @@ export async function enableToolset(toolsetName: string): Promise<{ success: boo
     return newMap;
   });
 
-  const toolset = updatedMap.get(toolsetName);
-  if (!toolset) {
-    return { success: false, message: `Toolset ${toolsetName} not found` };
-  }
-  if (!toolset.enabled) {
-    return { success: false, message: `Toolset ${toolsetName} is already enabled` };
-  }
   return { success: true, message: `Toolset ${toolsetName} enabled` };
 }
 
@@ -98,14 +98,21 @@ export async function enableToolset(toolsetName: string): Promise<{ success: boo
  * Disable a toolset using thread-safe cache operations
  */
 export async function disableToolset(toolsetName: string): Promise<{ success: boolean; message: string }> {
-  const updatedMap = await Cache.safeUpdate('toolsets', (toolsetsMap) => {
+  const originalMap = await Cache.safeGet('toolsets');
+  const originalToolset = originalMap.get(toolsetName);
+
+  if (!originalToolset) {
+    return { success: false, message: `Toolset ${toolsetName} not found` };
+  }
+
+  if (!originalToolset.enabled) {
+    return { success: false, message: `Toolset ${toolsetName} is already disabled` };
+  }
+
+  await Cache.safeUpdate('toolsets', (toolsetsMap) => {
     const toolset = toolsetsMap.get(toolsetName);
 
-    if (!toolset) {
-      return toolsetsMap; // No change, return original map
-    }
-
-    if (!toolset.enabled) {
+    if (!toolset || !toolset.enabled) {
       return toolsetsMap; // No change, return original map
     }
 
@@ -126,13 +133,6 @@ export async function disableToolset(toolsetName: string): Promise<{ success: bo
     return newMap;
   });
 
-  const toolset = updatedMap.get(toolsetName);
-  if (!toolset) {
-    return { success: false, message: `Toolset ${toolsetName} not found` };
-  }
-  if (toolset.enabled) {
-    return { success: false, message: `Toolset ${toolsetName} is already disabled` };
-  }
   return { success: true, message: `Toolset ${toolsetName} disabled` };
 }
 
@@ -145,9 +145,18 @@ export async function addToolToToolset(
   name: string
 ): Promise<{ success: boolean; message: string }> {
   const originalMap = await Cache.safeGet('toolsets');
+  const originalToolset = originalMap.get(toolsetName);
   const wasCreated = !originalMap.has(toolsetName);
 
-  const updatedMap = await Cache.safeUpdate('toolsets', (toolsetsMap) => {
+  // Check if tool already exists in existing toolset
+  if (originalToolset) {
+    const existingTool = originalToolset.tools.find((t) => t.name === name);
+    if (existingTool) {
+      return { success: false, message: `Tool ${name} already exists in toolset ${toolsetName}` };
+    }
+  }
+
+  await Cache.safeUpdate('toolsets', (toolsetsMap) => {
     const toolset = toolsetsMap.get(toolsetName);
     const newMap = new Map(toolsetsMap);
 
@@ -161,12 +170,6 @@ export async function addToolToToolset(
       return newMap;
     }
 
-    // Check if tool already exists
-    const existingTool = toolset.tools.find((t) => t.name === name);
-    if (existingTool) {
-      return toolsetsMap; // No change, return original map
-    }
-
     // Create updated toolset with new tool
     const updatedToolset: Toolset = {
       enabled: toolset.enabled,
@@ -176,17 +179,6 @@ export async function addToolToToolset(
     newMap.set(toolsetName, updatedToolset);
     return newMap;
   });
-
-  const toolset = updatedMap.get(toolsetName);
-
-  if (!toolset) {
-    return { success: false, message: `Failed to create toolset ${toolsetName}` };
-  }
-
-  const toolExists = toolset.tools.some((t) => t.name === name);
-  if (!toolExists) {
-    return { success: false, message: `Tool ${name} already exists in toolset ${toolsetName}` };
-  }
 
   if (wasCreated) {
     return { success: true, message: `Created toolset ${toolsetName} and added tool ${name}` };
