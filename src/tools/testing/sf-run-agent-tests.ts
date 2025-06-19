@@ -26,7 +26,7 @@ const runAgentTestsParam = z.object({
   agentApiName: z.string().describe(
     `Agent test to run
             if unsure, list all files matching the pattern *.aiEvaluationDefinition-meta.xml
-            only run test can be ran at a time
+            only run test can be run at a time
 `
   ),
   usernameOrAlias: usernameOrAliasParam,
@@ -54,6 +54,8 @@ export const registerToolRunAgentTest = (server: SfMcpServer): void => {
 AGENT INSTRUCTIONS:
 If the user doesn't specify what to test, take context from the currently open file
 This will ONLY run Agent tests, NOT apex tests, lightning tests, flow tests, or any other type of test.
+
+this should be chosen when a file in the 'aiEvaluationDefinitions' directory is mentioned
 
 EXAMPLE USAGE:
 Run tests for the X agent

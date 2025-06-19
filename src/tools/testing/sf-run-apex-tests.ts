@@ -66,6 +66,9 @@ AGENT INSTRUCTIONS:
 If the user doesn't specify what to test, take context from the currently open file
 This will ONLY run APEX tests, NOT agent tests, lightning tests, flow tests, or any other type of test.
 
+this should be chosen when a file in the 'classes' directory is mentioned
+
+
 EXAMPLE USAGE:
 Run tests A, B, C in the org.
 Run the tests, find apex classes matching the pattern *.cls, that include the @isTest decorator in the file and then join their test names together with ','
