@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
+import { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { TOOLSET_REGISTRY } from './toolsets.js';
+
+type Toolset = {
+  enabled: boolean;
+  tools: Array<{ tool: RegisteredTool; name: string }>;
+};
+
 type CacheContents = {
   allowedOrgs: Set<string>;
+  toolsets: Map<string, Toolset>;
 };
 
 type ValueOf<T> = T[keyof T];
@@ -29,6 +38,12 @@ export default class Cache extends Map<keyof CacheContents, ValueOf<CacheContent
   public constructor() {
     super();
     this.set('allowedOrgs', new Set<string>());
+    this.set('toolsets', new Map<string, Toolset>());
+
+    // Initialize toolsets from TOOLSET_REGISTRY
+    for (const toolsetName of Object.keys(TOOLSET_REGISTRY)) {
+      this.get('toolsets').set(toolsetName, { enabled: false, tools: [] });
+    }
   }
 
   public static getInstance(): Cache {
@@ -38,6 +53,7 @@ export default class Cache extends Map<keyof CacheContents, ValueOf<CacheContent
     return Cache.instance;
   }
 
+  public get(_key: 'toolsets'): Map<string, Toolset>;
   public get(_key: 'allowedOrgs'): Set<string>;
   public get(key: keyof CacheContents): ValueOf<CacheContents> {
     return super.get(key) as ValueOf<CacheContents>;
