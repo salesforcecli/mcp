@@ -14,32 +14,120 @@
  * limitations under the License.
  */
 
+import { Toolset } from './types.js';
+import { TOOLSET_REGISTRY } from './toolset-registry.js';
+
 type CacheContents = {
   allowedOrgs: Set<string>;
+  toolsets: Map<string, Toolset>;
 };
 
 type ValueOf<T> = T[keyof T];
 
 /**
- * A simple cache for storing values that need to be accessed globally.
+ * Simple mutex implementation using promises
+ */
+class Mutex {
+  private mutex = Promise.resolve();
+
+  public async lock<T>(fn: () => Promise<T> | T): Promise<T> {
+    const unlock = await this.acquire();
+    try {
+      return await fn();
+    } finally {
+      unlock();
+    }
+  }
+
+  private async acquire(): Promise<() => void> {
+    let release: () => void;
+    const promise = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+
+    const currentMutex = this.mutex;
+    this.mutex = this.mutex.then(() => promise);
+
+    await currentMutex;
+    return release!;
+  }
+}
+
+/**
+ * A thread-safe cache providing generic Map operations with mutex protection.
+ * Offers atomic read, write, and update operations for concurrent access.
  */
 export default class Cache extends Map<keyof CacheContents, ValueOf<CacheContents>> {
   private static instance: Cache;
 
-  public constructor() {
+  // Mutex for thread-safe cache operations
+  private static mutex = new Mutex();
+
+  private constructor() {
     super();
-    this.set('allowedOrgs', new Set<string>());
+    this.initialize();
   }
 
+  /**
+   * Get the singleton instance of the Cache
+   * Creates a new instance if one doesn't exist
+   *
+   * @returns The singleton Cache instance
+   */
   public static getInstance(): Cache {
-    if (!Cache.instance) {
-      Cache.instance = new Cache();
-    }
-    return Cache.instance;
+    return (Cache.instance ??= new Cache());
   }
 
-  public get(_key: 'allowedOrgs'): Set<string>;
-  public get(key: keyof CacheContents): ValueOf<CacheContents> {
-    return super.get(key) as ValueOf<CacheContents>;
+  /**
+   * Thread-safe atomic update operation
+   * Allows safe read-modify-write operations with mutex protection
+   */
+  public static async safeUpdate<K extends keyof CacheContents>(
+    key: K,
+    updateFn: (currentValue: CacheContents[K]) => CacheContents[K]
+  ): Promise<CacheContents[K]> {
+    const cache = Cache.getInstance();
+
+    return Cache.mutex.lock(() => {
+      const currentValue = cache.get(key);
+      const newValue = updateFn(currentValue);
+      cache.set(key, newValue);
+      return newValue;
+    });
+  }
+
+  /**
+   * Thread-safe atomic read operation
+   */
+  public static async safeGet<K extends keyof CacheContents>(key: K): Promise<CacheContents[K]> {
+    const cache = Cache.getInstance();
+
+    return Cache.mutex.lock(() => cache.get(key));
+  }
+
+  /**
+   * Thread-safe atomic write operation
+   */
+  public static async safeSet<K extends keyof CacheContents>(key: K, value: CacheContents[K]): Promise<void> {
+    const cache = Cache.getInstance();
+
+    return Cache.mutex.lock(() => {
+      cache.set(key, value);
+    });
+  }
+
+  public get<K extends keyof CacheContents>(key: K): CacheContents[K] {
+    return super.get(key) as CacheContents[K];
+  }
+
+  private initialize(): void {
+    this.set('allowedOrgs', new Set<string>());
+    this.set('toolsets', new Map<string, Toolset>());
+
+    // Initialize toolsets from TOOLSET_REGISTRY
+    const toolsetsMap = this.get('toolsets');
+    for (const toolsetName of Object.keys(TOOLSET_REGISTRY)) {
+      toolsetsMap.set(toolsetName, { enabled: false, tools: [] });
+    }
   }
 }

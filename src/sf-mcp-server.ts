@@ -21,6 +21,7 @@ import { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.j
 import { Logger } from '@salesforce/core';
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import { Telemetry } from './telemetry.js';
+import { addToolToToolset, getToolsetNameFromTool } from './shared/toolset-management.js';
 
 type ToolMethodSignatures = {
   tool: McpServer['tool'];
@@ -41,15 +42,21 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
   /** Optional telemetry instance for tracking server events */
   private telemetry?: Telemetry;
 
+  private dynamicToolsets: boolean;
+
   /**
    * Creates a new SfMcpServer instance
    *
    * @param {Implementation} serverInfo - The server implementation details
    * @param {ServerOptions & { telemetry?: Telemetry }} [options] - Optional server configuration including telemetry
    */
-  public constructor(serverInfo: Implementation, options?: ServerOptions & { telemetry?: Telemetry }) {
+  public constructor(
+    serverInfo: Implementation,
+    options?: ServerOptions & { telemetry?: Telemetry; dynamicToolsets?: boolean }
+  ) {
     super(serverInfo, options);
     this.telemetry = options?.telemetry;
+    this.dynamicToolsets = options?.dynamicToolsets ?? false;
     this.server.oninitialized = (): void => {
       const clientInfo = this.server.getClientVersion();
       if (clientInfo) {
@@ -101,6 +108,20 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
     };
 
     // @ts-expect-error because we no longer know what the type of rest is
-    return super.tool(name, ...rest.slice(0, -1), wrappedCb);
+    const tool = super.tool(name, ...rest.slice(0, -1), wrappedCb);
+
+    const toolsetName = getToolsetNameFromTool(name);
+    if (!toolsetName) {
+      throw new Error(`Tool ${name} is not registered in the toolset registry`);
+    }
+
+    if (this.dynamicToolsets && !toolsetName.includes('core') && !toolsetName.includes('dynamic')) {
+      tool.disable();
+      // Use async toolset manager methods in a non-blocking way
+      addToolToToolset(toolsetName, tool, name).catch((error) => {
+        this.logger.error(`Failed to add tool ${name} to toolset ${toolsetName}:`, error);
+      });
+    }
+    return tool;
   };
 }

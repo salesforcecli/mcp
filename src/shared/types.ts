@@ -16,6 +16,7 @@
 
 import { ConfigInfo } from '@salesforce/core';
 import { type Nullable } from '@salesforce/ts-types';
+import { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 export type ConfigInfoWithCache = {
   key: string;
@@ -46,4 +47,12 @@ export type ToolTextResponse = {
     type: 'text';
     text: string;
   }>;
+};
+
+/**
+ * Represents a toolset with its enabled state and associated tools
+ */
+export type Toolset = {
+  enabled: boolean;
+  tools: Array<{ tool: RegisteredTool; name: string }>;
 };

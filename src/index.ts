@@ -23,11 +23,11 @@ import * as orgs from './tools/orgs/index.js';
 import * as data from './tools/data/index.js';
 import * as users from './tools/users/index.js';
 import * as metadata from './tools/metadata/index.js';
+import * as dynamic from './tools/dynamic/index.js';
 import Cache from './shared/cache.js';
 import { Telemetry } from './telemetry.js';
 import { SfMcpServer } from './sf-mcp-server.js';
-
-const TOOLSETS = ['all', 'orgs', 'data', 'users', 'metadata'] as const;
+import { TOOLSETS } from './shared/toolset-registry.js';
 
 /**
  * Sanitizes an array of org usernames by replacing specific orgs with a placeholder.
@@ -88,12 +88,12 @@ You can also use special values to control access to orgs:
       },
     }),
     toolsets: Flags.option({
-      options: TOOLSETS,
+      options: ['all', ...TOOLSETS] as const,
       char: 't',
       summary: 'Toolset to enable',
       multiple: true,
       delimiter: ',',
-      default: ['all'],
+      exclusive: ['dynamic-toolsets'],
     })(),
     version: Flags.version(),
     'no-telemetry': Flags.boolean({
@@ -101,6 +101,11 @@ You can also use special values to control access to orgs:
     }),
     debug: Flags.boolean({
       summary: 'Enable debug logging',
+    }),
+    'dynamic-toolsets': Flags.boolean({
+      summary: 'Enable dynamic toolsets',
+      char: 'd',
+      exclusive: ['toolsets'],
     }),
   };
 
@@ -126,7 +131,7 @@ You can also use special values to control access to orgs:
 
     if (!flags['no-telemetry']) {
       this.telemetry = new Telemetry(this.config, {
-        toolsets: flags.toolsets.join(', '),
+        toolsets: (flags.toolsets ?? []).join(', '),
         orgs: sanitizeOrgInput(flags.orgs),
       });
 
@@ -138,7 +143,7 @@ You can also use special values to control access to orgs:
       });
     }
 
-    Cache.getInstance().set('allowedOrgs', new Set(flags.orgs));
+    await Cache.safeSet('allowedOrgs', new Set(flags.orgs));
     this.logToStderr(`Allowed orgs:\n${flags.orgs.map((org) => `- ${org}`).join('\n')}`);
     const server = new SfMcpServer(
       {
@@ -149,7 +154,10 @@ You can also use special values to control access to orgs:
           tools: {},
         },
       },
-      { telemetry: this.telemetry }
+      {
+        telemetry: this.telemetry,
+        dynamicToolsets: flags['dynamic-toolsets'] ?? false,
+      }
     );
 
     // // TODO: Should we add annotations to our tools? https://modelcontextprotocol.io/docs/concepts/tools#tool-definition-structure
@@ -166,10 +174,19 @@ You can also use special values to control access to orgs:
     core.registerToolGetUsername(server);
     core.registerToolResume(server);
 
+    // DYNAMIC TOOLSETS
+    // ************************
+    if (flags['dynamic-toolsets']) {
+      this.logToStderr('Registering dynamic toolsets');
+      dynamic.registerToolListAvailableToolsets(server);
+      dynamic.registerToolGetToolsetTools(server);
+      dynamic.registerToolEnableToolset(server);
+    }
+
     // ************************
     // ORG TOOLS
     // ************************
-    if (all || enabledToolsets.has('orgs')) {
+    if (flags['dynamic-toolsets'] || all || enabledToolsets.has('orgs')) {
       this.logToStderr('Registering org tools');
       // list all orgs
       orgs.registerToolListAllOrgs(server);
@@ -178,7 +195,7 @@ You can also use special values to control access to orgs:
     // ************************
     // DATA TOOLS
     // ************************
-    if (all || enabledToolsets.has('data')) {
+    if (flags['dynamic-toolsets'] || all || enabledToolsets.has('data')) {
       this.logToStderr('Registering data tools');
       // query org
       data.registerToolQueryOrg(server);
@@ -187,7 +204,7 @@ You can also use special values to control access to orgs:
     // ************************
     // USER TOOLS
     // ************************
-    if (all || enabledToolsets.has('users')) {
+    if (flags['dynamic-toolsets'] || all || enabledToolsets.has('users')) {
       this.logToStderr('Registering user tools');
       // assign permission set
       users.registerToolAssignPermissionSet(server);
@@ -196,7 +213,7 @@ You can also use special values to control access to orgs:
     // ************************
     // METADATA TOOLS
     // ************************
-    if (all || enabledToolsets.has('metadata')) {
+    if (flags['dynamic-toolsets'] || all || enabledToolsets.has('metadata')) {
       this.logToStderr('Registering metadata tools');
       // deploy metadata
       metadata.registerToolDeployMetadata(server);
