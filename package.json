@@ -25,7 +25,8 @@
     "prepare": "sf-install",
     "start": "yarn build && npm link && mcp-inspector sf-mcp-server",
     "test": "wireit",
-    "test:only": "wireit"
+    "test:only": "wireit",
+    "test:llmg": "node --no-warnings --loader ts-node/esm test/llmg.ts"
   },
   "repository": "salesforcecli/mcp",
   "bugs": {
@@ -53,15 +54,18 @@
   },
   "devDependencies": {
     "@modelcontextprotocol/inspector": "^0.14.1",
+    "@oclif/table": "^0.4.8",
     "@salesforce/cli-plugins-testkit": "^5.3.39",
     "@salesforce/dev-scripts": "11.0.2",
     "@types/node": "^22.15.31",
     "eslint-config-salesforce-license": "^1.0.1",
     "eslint-plugin-sf-plugin": "^1.20.25",
+    "gpt-tokenizer": "^3.0.1",
     "oclif": "^4.18.0",
     "ts-node": "^10.9.2",
     "ts-patch": "^3.3.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "yaml": "^2.8.0"
   },
   "publishConfig": {
     "access": "public"
