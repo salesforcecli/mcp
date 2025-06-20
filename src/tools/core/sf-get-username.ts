@@ -81,6 +81,11 @@ EXAMPLE USAGE:
 - When user says "For my default org" → defaultTargetOrg=true
 - When user says "For my default dev hub" → defaultDevHub=true`,
     getUsernameParamsSchema.shape,
+    {
+      title: 'Get Username',
+      readOnlyHint: true,
+      openWorldHint: false,
+    },
     async ({ defaultTargetOrg, defaultDevHub, directory }) => {
       try {
         process.chdir(directory);

@@ -53,6 +53,11 @@ List all Salesforce orgs
 List all orgs
 `,
     listAllOrgsParamsSchema.shape,
+    {
+      title: 'List All Orgs',
+      readOnlyHint: true,
+      openWorldHint: false,
+    },
     async ({ directory }) => {
       try {
         process.chdir(directory);

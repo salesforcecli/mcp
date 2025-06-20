@@ -47,6 +47,10 @@ export const registerToolQueryOrg = (server: SfMcpServer): void => {
     'sf-query-org',
     'Run a SOQL query against a Salesforce org.',
     queryOrgParamsSchema.shape,
+    {
+      title: 'Query Org',
+      openWorldHint: false,
+    },
     async ({ query, usernameOrAlias, directory }) => {
       try {
         if (!usernameOrAlias)

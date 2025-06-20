@@ -97,6 +97,11 @@ Deploy X metadata to my org
 Deploy X to my org and run A,B and C apex tests.
 `,
     deployMetadataParams.shape,
+    {
+      title: 'Deploy Metadata',
+      destructiveHint: true,
+      openWorldHint: false,
+    },
     async ({ sourceDir, usernameOrAlias, apexTests, apexTestLevel, directory, manifest }) => {
       if (apexTests && apexTestLevel) {
         return textResponse("You can't specify both `apexTests` and `apexTestLevel` parameters.", true);
