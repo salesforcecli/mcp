@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 
-export * from './sf-list-available-toolsets.js';
-export * from './sf-get-toolset-tools.js';
-export * from './sf-enable-toolset.js';
+export { registerToolEnableTool } from './sf-enable-tool.js';
+export { registerToolListAllTools } from './sf-list-all-tools.js';

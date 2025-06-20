@@ -15,18 +15,23 @@
  */
 
 import { expect } from 'chai';
+import sinon from 'sinon';
+import { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import Cache from '../../src/shared/cache.js';
-import { Toolset } from '../../src/shared/types.js';
-import { TOOLSET_REGISTRY } from '../../src/shared/toolset-registry.js';
+import { ToolInfo } from '../../src/shared/types.js';
 
 describe('Cache', () => {
+  let sandbox: sinon.SinonSandbox;
+
   beforeEach(() => {
+    sandbox = sinon.createSandbox();
     // Reset the singleton instance before each test
     // @ts-expect-error - accessing private static property for testing
     Cache.instance = undefined;
   });
 
   afterEach(() => {
+    sandbox.restore();
     // Clean up singleton instance after each test
     // @ts-expect-error - accessing private static property for testing
     Cache.instance = undefined;
@@ -63,20 +68,12 @@ describe('Cache', () => {
       expect(allowedOrgs.size).to.equal(0);
     });
 
-    it('should initialize toolsets map with all registry toolsets disabled', () => {
+    it('should initialize with empty tools array', () => {
       const cache = Cache.getInstance();
-      const toolsets = cache.get('toolsets');
+      const tools = cache.get('tools');
 
-      expect(toolsets).to.be.instanceOf(Map);
-      expect(toolsets.size).to.equal(Object.keys(TOOLSET_REGISTRY).length);
-
-      // Check that all toolsets from registry are initialized as disabled
-      Object.keys(TOOLSET_REGISTRY).forEach((toolsetName) => {
-        const toolset = toolsets.get(toolsetName);
-        expect(toolset).to.exist;
-        expect(toolset!.enabled).to.be.false;
-        expect(toolset!.tools).to.be.an('array').that.is.empty;
-      });
+      expect(tools).to.be.an('array');
+      expect(tools).to.have.length(0);
     });
   });
 
@@ -92,16 +89,28 @@ describe('Cache', () => {
       expect(result.has('org2')).to.be.true;
     });
 
-    it('should retrieve toolsets correctly', async () => {
+    it('should retrieve tools correctly', async () => {
       const cache = Cache.getInstance();
-      const testToolset: Toolset = { enabled: true, tools: [] };
-      const toolsets = cache.get('toolsets');
-      toolsets.set('test-toolset', testToolset);
+      const mockTool = {
+        name: 'test-tool',
+        enable: sandbox.stub(),
+        disable: sandbox.stub(),
+        enabled: false,
+      } as unknown as RegisteredTool;
 
-      const result = await Cache.safeGet('toolsets');
+      const testToolInfo: ToolInfo = {
+        tool: mockTool,
+        name: 'test-tool',
+      };
 
-      expect(result).to.be.instanceOf(Map);
-      expect(result.get('test-toolset')).to.deep.equal(testToolset);
+      cache.set('tools', [testToolInfo]);
+
+      const result = await Cache.safeGet('tools');
+
+      expect(result).to.be.an('array');
+      expect(result).to.have.length(1);
+      expect(result[0].name).to.equal('test-tool');
+      expect(result[0].tool).to.equal(mockTool);
     });
   });
 
@@ -118,20 +127,35 @@ describe('Cache', () => {
       expect(result.has('org4')).to.be.true;
     });
 
-    it('should set toolsets correctly', async () => {
-      const newToolsets = new Map([
-        ['toolset1', { enabled: true, tools: [] }],
-        ['toolset2', { enabled: false, tools: [] }],
-      ]);
+    it('should set tools correctly', async () => {
+      const mockTool1 = {
+        name: 'tool1',
+        enable: sandbox.stub(),
+        disable: sandbox.stub(),
+        enabled: false,
+      } as unknown as RegisteredTool;
 
-      await Cache.safeSet('toolsets', newToolsets);
+      const mockTool2 = {
+        name: 'tool2',
+        enable: sandbox.stub(),
+        disable: sandbox.stub(),
+        enabled: true,
+      } as unknown as RegisteredTool;
+
+      const newTools: ToolInfo[] = [
+        { tool: mockTool1, name: 'tool1' },
+        { tool: mockTool2, name: 'tool2' },
+      ];
+
+      await Cache.safeSet('tools', newTools);
 
       const cache = Cache.getInstance();
-      const result = cache.get('toolsets');
+      const result = cache.get('tools');
 
-      expect(result).to.equal(newToolsets);
-      expect(result.get('toolset1')?.enabled).to.be.true;
-      expect(result.get('toolset2')?.enabled).to.be.false;
+      expect(result).to.equal(newTools);
+      expect(result).to.have.length(2);
+      expect(result[0].name).to.equal('tool1');
+      expect(result[1].name).to.equal('tool2');
     });
   });
 
@@ -157,19 +181,27 @@ describe('Cache', () => {
       expect(persistedOrgs).to.deep.equal(result);
     });
 
-    it('should update toolsets atomically', async () => {
-      const result = await Cache.safeUpdate('toolsets', (currentToolsets) => {
-        const newToolsets = new Map(currentToolsets);
-        newToolsets.set('new-toolset', { enabled: true, tools: [] });
-        return newToolsets;
-      });
+    it('should update tools atomically', async () => {
+      const mockTool = {
+        name: 'new-tool',
+        enable: sandbox.stub(),
+        disable: sandbox.stub(),
+        enabled: false,
+      } as unknown as RegisteredTool;
 
-      expect(result.has('new-toolset')).to.be.true;
-      expect(result.get('new-toolset')?.enabled).to.be.true;
+      const result = await Cache.safeUpdate('tools', (currentTools) => [
+        ...currentTools,
+        { tool: mockTool, name: 'new-tool' },
+      ]);
+
+      expect(result).to.have.length(1);
+      expect(result[0].name).to.equal('new-tool');
+      expect(result[0].tool).to.equal(mockTool);
 
       // Verify the change persisted
-      const persistedToolsets = await Cache.safeGet('toolsets');
-      expect(persistedToolsets.has('new-toolset')).to.be.true;
+      const persistedTools = await Cache.safeGet('tools');
+      expect(persistedTools).to.have.length(1);
+      expect(persistedTools[0].name).to.equal('new-tool');
     });
 
     it('should return the updated value', async () => {
@@ -280,31 +312,33 @@ describe('Cache', () => {
       expect(finalOrgs.size).to.be.greaterThan(0);
     });
 
-    it('should handle concurrent toolset operations without corruption', async () => {
-      // Create concurrent operations on the toolsets map
+    it('should handle concurrent tool operations without corruption', async () => {
+      // Create concurrent operations on the tools array
       const promises = Array.from({ length: 15 }, (_, index) =>
-        Cache.safeUpdate('toolsets', (currentToolsets) => {
-          const newToolsets = new Map(currentToolsets);
-          newToolsets.set(`concurrent-toolset-${index}`, {
+        Cache.safeUpdate('tools', (currentTools) => {
+          const mockTool = {
+            name: `concurrent-tool-${index}`,
+            enable: sandbox.stub(),
+            disable: sandbox.stub(),
             enabled: index % 2 === 0,
-            tools: [],
-          });
-          return newToolsets;
+          } as unknown as RegisteredTool;
+
+          return [...currentTools, { tool: mockTool, name: `concurrent-tool-${index}` }];
         })
       );
 
       await Promise.all(promises);
 
-      const finalToolsets = await Cache.safeGet('toolsets');
+      const finalTools = await Cache.safeGet('tools');
 
-      // Should have original toolsets plus the new ones
-      expect(finalToolsets.size).to.be.greaterThanOrEqual(15);
+      // Should have all 15 tools
+      expect(finalTools).to.have.length(15);
 
-      // Check that all concurrent toolsets were added
+      // Check that all concurrent tools were added
       for (let i = 0; i < 15; i++) {
-        const toolset = finalToolsets.get(`concurrent-toolset-${i}`);
-        expect(toolset).to.exist;
-        expect(toolset!.enabled).to.equal(i % 2 === 0);
+        const tool = finalTools.find((t) => t.name === `concurrent-tool-${i}`);
+        expect(tool).to.exist;
+        expect(tool!.name).to.equal(`concurrent-tool-${i}`);
       }
     });
 
@@ -325,11 +359,11 @@ describe('Cache', () => {
 
       // Verify the instance is properly initialized
       const allowedOrgs = firstInstance.get('allowedOrgs');
-      const toolsets = firstInstance.get('toolsets');
+      const tools = firstInstance.get('tools');
 
       expect(allowedOrgs).to.be.instanceOf(Set);
-      expect(toolsets).to.be.instanceOf(Map);
-      expect(toolsets.size).to.equal(Object.keys(TOOLSET_REGISTRY).length);
+      expect(tools).to.be.an('array');
+      expect(tools).to.have.length(0);
     });
   });
 
@@ -368,17 +402,24 @@ describe('Cache', () => {
       });
     });
 
-    it('should maintain type safety for toolsets', async () => {
-      const toolsets = new Map([['test', { enabled: true, tools: [] }]]);
-      await Cache.safeSet('toolsets', toolsets);
+    it('should maintain type safety for tools', async () => {
+      const mockTool = {
+        name: 'test-tool',
+        enable: sandbox.stub(),
+        disable: sandbox.stub(),
+        enabled: false,
+      } as unknown as RegisteredTool;
 
-      const retrieved = await Cache.safeGet('toolsets');
-      expect(retrieved).to.be.instanceOf(Map);
+      const tools: ToolInfo[] = [{ tool: mockTool, name: 'test-tool' }];
+      await Cache.safeSet('tools', tools);
 
-      const testToolset = retrieved.get('test');
-      expect(testToolset).to.exist;
-      expect(typeof testToolset!.enabled).to.equal('boolean');
-      expect(Array.isArray(testToolset!.tools)).to.be.true;
+      const retrieved = await Cache.safeGet('tools');
+      expect(retrieved).to.be.an('array');
+
+      const testTool = retrieved[0];
+      expect(testTool).to.exist;
+      expect(typeof testTool.name).to.equal('string');
+      expect(testTool.tool).to.equal(mockTool);
     });
   });
 });

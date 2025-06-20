@@ -27,7 +27,7 @@ import * as dynamic from './tools/dynamic/index.js';
 import Cache from './shared/cache.js';
 import { Telemetry } from './telemetry.js';
 import { SfMcpServer } from './sf-mcp-server.js';
-import { TOOLSETS } from './shared/toolset-registry.js';
+import { TOOLSETS } from './shared/tools.js';
 
 /**
  * Sanitizes an array of org usernames by replacing specific orgs with a placeholder.
@@ -177,9 +177,9 @@ You can also use special values to control access to orgs:
     // ************************
     if (flags['dynamic-toolsets']) {
       this.logToStderr('Registering dynamic toolsets');
-      dynamic.registerToolListAvailableToolsets(server);
-      dynamic.registerToolGetToolsetTools(server);
-      dynamic.registerToolEnableToolset(server);
+      // Individual tool management
+      dynamic.registerToolEnableTool(server);
+      dynamic.registerToolListAllTools(server);
     }
 
     // ************************

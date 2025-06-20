@@ -16,30 +16,23 @@
 
 import { SfMcpServer } from '../../sf-mcp-server.js';
 import { textResponse } from '../../shared/utils.js';
-import { listAllToolsets } from '../../shared/toolset-management.js';
+import { listAllTools } from '../../shared/tools.js';
 
-export const registerToolListAvailableToolsets = (server: SfMcpServer): void => {
+export function registerToolListAllTools(server: SfMcpServer): void {
   server.tool(
-    'sf-list-available-toolsets',
-    `List all available toolsets this Salesforce MCP server can offer, providing the enabled status of each.
+    'sf-list-all-tools',
+    `List all available tools this Salesforce MCP server can offer, providing the enabled status and description of each.
+
+AGENT INSTRUCTIONS:
 Use this when a task could be achieved with a MCP tool and the currently available tools aren't enough.
 If there's a tool that can accomplish the user's request, do not use this tool.
-Call sf-get-toolset-tools with these toolset names to discover specific tools you can call.
-Once you find the toolset you want to enable, call sf-enable-toolset with the toolset name.
-Once you have enabled the toolset, you can call the specific tool that accomplishes the user's request.`,
+Once you find the tool you want to enable, call sf-enable-tool with the tool name.
+Once you have enabled the tool, you can invoke the tool to accomplish the user's request.`,
     {
+      title: 'List all individual tools',
       readOnlyHint: true,
-      title: 'List available toolsets',
       openWorldHint: false,
     },
-    async () => {
-      const toolsets = await listAllToolsets();
-
-      const toolsetList = toolsets
-        .map((toolset) => `${toolset.name} (${toolset.enabled ? 'enabled' : 'disabled'}, ${toolset.toolCount} tools)`)
-        .join(', ');
-
-      return textResponse(`Available toolsets: ${toolsetList}`);
-    }
+    async () => textResponse(JSON.stringify(await listAllTools(), null, 2))
   );
-};
+}

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { Toolset } from './types.js';
-import { TOOLSET_REGISTRY } from './toolset-registry.js';
+import { ToolInfo } from './types.js';
 
 type CacheContents = {
   allowedOrgs: Set<string>;
-  toolsets: Map<string, Toolset>;
+  tools: ToolInfo[];
 };
 
 type ValueOf<T> = T[keyof T];
@@ -122,12 +121,6 @@ export default class Cache extends Map<keyof CacheContents, ValueOf<CacheContent
 
   private initialize(): void {
     this.set('allowedOrgs', new Set<string>());
-    this.set('toolsets', new Map<string, Toolset>());
-
-    // Initialize toolsets from TOOLSET_REGISTRY
-    const toolsetsMap = this.get('toolsets');
-    for (const toolsetName of Object.keys(TOOLSET_REGISTRY)) {
-      toolsetsMap.set(toolsetName, { enabled: false, tools: [] });
-    }
+    this.set('tools', []);
   }
 }

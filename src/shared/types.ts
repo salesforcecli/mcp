@@ -49,10 +49,7 @@ export type ToolTextResponse = {
   }>;
 };
 
-/**
- * Represents a toolset with its enabled state and associated tools
- */
-export type Toolset = {
-  enabled: boolean;
-  tools: Array<{ tool: RegisteredTool; name: string }>;
+export type ToolInfo = {
+  tool: RegisteredTool;
+  name: string;
 };
