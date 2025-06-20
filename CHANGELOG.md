@@ -1,3 +1,13 @@
+# [0.6.0](https://github.com/salesforcecli/mcp/compare/0.5.0...0.6.0) (2025-06-20)
+
+### Bug Fixes
+
+- look for 'timed out' in the error message ([62959b6](https://github.com/salesforcecli/mcp/commit/62959b64abf3c10866ee4cc78e1c9028d872f720))
+
+### Features
+
+- add a tool for resuming long running operations ([b1a1c87](https://github.com/salesforcecli/mcp/commit/b1a1c879788e7dfaa2c82c82d7fbd00ab0d06819))
+
 # [0.5.0](https://github.com/salesforcecli/mcp/compare/0.4.3...0.5.0) (2025-06-16)
 
 ### Features
