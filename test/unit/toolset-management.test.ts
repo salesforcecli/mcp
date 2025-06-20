@@ -15,8 +15,7 @@
  */
 
 import { expect } from 'chai';
-import { createSandbox, SinonSandbox } from 'sinon';
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 import { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import {
   getToolsetNameFromTool,
@@ -34,10 +33,10 @@ import { TOOLSET_REGISTRY } from '../../src/shared/toolset-registry.js';
 import Cache from '../../src/shared/cache.js';
 
 describe('Toolset Management', () => {
-  let sandbox: SinonSandbox;
+  let sandbox: sinon.SinonSandbox;
 
   beforeEach(() => {
-    sandbox = createSandbox();
+    sandbox = sinon.createSandbox();
     // Reset the singleton instance before each test
     // @ts-expect-error - accessing private static property for testing
     Cache.instance = undefined;
