@@ -25,7 +25,7 @@ type CacheContents = {
 type ValueOf<T> = T[keyof T];
 
 /**
- * Simple mutex implementation using promises for Node.js
+ * Simple mutex implementation using promises
  */
 class Mutex {
   private mutex = Promise.resolve();
@@ -59,10 +59,9 @@ class Mutex {
  */
 export default class Cache extends Map<keyof CacheContents, ValueOf<CacheContents>> {
   private static instance: Cache;
-  private static initializationMutex = new Mutex();
 
-  // Operational mutex for thread-safe cache operations
-  private static operationalMutex = new Mutex();
+  // Mutex for thread-safe cache operations
+  private static mutex = new Mutex();
 
   private constructor() {
     super();
@@ -70,18 +69,13 @@ export default class Cache extends Map<keyof CacheContents, ValueOf<CacheContent
   }
 
   /**
-   * Thread-safe singleton getter
+   * Get the singleton instance of the Cache
+   * Creates a new instance if one doesn't exist
+   *
+   * @returns The singleton Cache instance
    */
-  public static async getInstance(): Promise<Cache> {
-    if (!Cache.instance) {
-      return Cache.initializationMutex.lock(() => {
-        if (!Cache.instance) {
-          Cache.instance = new Cache();
-        }
-        return Cache.instance;
-      });
-    }
-    return Cache.instance;
+  public static getInstance(): Cache {
+    return (Cache.instance ??= new Cache());
   }
 
   /**
@@ -92,9 +86,9 @@ export default class Cache extends Map<keyof CacheContents, ValueOf<CacheContent
     key: K,
     updateFn: (currentValue: CacheContents[K]) => CacheContents[K]
   ): Promise<CacheContents[K]> {
-    const cache = await Cache.getInstance();
+    const cache = Cache.getInstance();
 
-    return Cache.operationalMutex.lock(() => {
+    return Cache.mutex.lock(() => {
       const currentValue = cache.get(key);
       const newValue = updateFn(currentValue);
       cache.set(key, newValue);
@@ -106,30 +100,20 @@ export default class Cache extends Map<keyof CacheContents, ValueOf<CacheContent
    * Thread-safe atomic read operation
    */
   public static async safeGet<K extends keyof CacheContents>(key: K): Promise<CacheContents[K]> {
-    const cache = await Cache.getInstance();
+    const cache = Cache.getInstance();
 
-    return Cache.operationalMutex.lock(() => cache.get(key));
+    return Cache.mutex.lock(() => cache.get(key));
   }
 
   /**
    * Thread-safe atomic write operation
    */
   public static async safeSet<K extends keyof CacheContents>(key: K, value: CacheContents[K]): Promise<void> {
-    const cache = await Cache.getInstance();
+    const cache = Cache.getInstance();
 
-    return Cache.operationalMutex.lock(() => {
+    return Cache.mutex.lock(() => {
       cache.set(key, value);
     });
-  }
-
-  /**
-   * Thread-safe conditional operation
-   * Execute function only if condition is met, all within mutex protection
-   */
-  public static async safeConditional<T>(conditionAndAction: () => T): Promise<T> {
-    await Cache.getInstance(); // Ensure cache is initialized
-
-    return Cache.operationalMutex.lock(() => conditionAndAction());
   }
 
   public get<K extends keyof CacheContents>(key: K): CacheContents[K] {

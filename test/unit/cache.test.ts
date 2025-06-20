@@ -33,10 +33,10 @@ describe('Cache', () => {
   });
 
   describe('Singleton Pattern', () => {
-    it('should return the same instance when getInstance is called multiple times', async () => {
-      const instance1 = await Cache.getInstance();
-      const instance2 = await Cache.getInstance();
-      const instance3 = await Cache.getInstance();
+    it('should return the same instance when getInstance is called multiple times', () => {
+      const instance1 = Cache.getInstance();
+      const instance2 = Cache.getInstance();
+      const instance3 = Cache.getInstance();
 
       expect(instance1).to.equal(instance2);
       expect(instance2).to.equal(instance3);
@@ -44,8 +44,7 @@ describe('Cache', () => {
 
     it('should handle concurrent getInstance calls safely', async () => {
       // Create multiple concurrent calls to getInstance
-      const promises = Array.from({ length: 10 }, () => Cache.getInstance());
-      const instances = await Promise.all(promises);
+      const instances = Array.from({ length: 10 }, () => Cache.getInstance());
 
       // All instances should be the same object
       const firstInstance = instances[0];
@@ -56,16 +55,16 @@ describe('Cache', () => {
   });
 
   describe('Initialization', () => {
-    it('should initialize with empty allowedOrgs set', async () => {
-      const cache = await Cache.getInstance();
+    it('should initialize with empty allowedOrgs set', () => {
+      const cache = Cache.getInstance();
       const allowedOrgs = cache.get('allowedOrgs');
 
       expect(allowedOrgs).to.be.instanceOf(Set);
       expect(allowedOrgs.size).to.equal(0);
     });
 
-    it('should initialize toolsets map with all registry toolsets disabled', async () => {
-      const cache = await Cache.getInstance();
+    it('should initialize toolsets map with all registry toolsets disabled', () => {
+      const cache = Cache.getInstance();
       const toolsets = cache.get('toolsets');
 
       expect(toolsets).to.be.instanceOf(Map);
@@ -83,7 +82,7 @@ describe('Cache', () => {
 
   describe('safeGet', () => {
     it('should retrieve allowedOrgs correctly', async () => {
-      const cache = await Cache.getInstance();
+      const cache = Cache.getInstance();
       cache.set('allowedOrgs', new Set(['org1', 'org2']));
 
       const result = await Cache.safeGet('allowedOrgs');
@@ -94,7 +93,7 @@ describe('Cache', () => {
     });
 
     it('should retrieve toolsets correctly', async () => {
-      const cache = await Cache.getInstance();
+      const cache = Cache.getInstance();
       const testToolset: Toolset = { enabled: true, tools: [] };
       const toolsets = cache.get('toolsets');
       toolsets.set('test-toolset', testToolset);
@@ -111,7 +110,7 @@ describe('Cache', () => {
       const newOrgs = new Set(['org3', 'org4']);
       await Cache.safeSet('allowedOrgs', newOrgs);
 
-      const cache = await Cache.getInstance();
+      const cache = Cache.getInstance();
       const result = cache.get('allowedOrgs');
 
       expect(result).to.equal(newOrgs);
@@ -127,7 +126,7 @@ describe('Cache', () => {
 
       await Cache.safeSet('toolsets', newToolsets);
 
-      const cache = await Cache.getInstance();
+      const cache = Cache.getInstance();
       const result = cache.get('toolsets');
 
       expect(result).to.equal(newToolsets);
@@ -181,37 +180,6 @@ describe('Cache', () => {
       });
 
       expect(result.has('test-org')).to.be.true;
-    });
-  });
-
-  describe('safeConditional', () => {
-    it('should execute conditional operations atomically', async () => {
-      // Set up initial state
-      await Cache.safeSet('allowedOrgs', new Set(['org1']));
-
-      let conditionChecked = false;
-      let actionExecuted = false;
-
-      const result = await Cache.safeConditional(() => {
-        conditionChecked = true;
-        // Simulate a condition check and action
-        actionExecuted = true;
-        return 'operation-result';
-      });
-
-      expect(conditionChecked).to.be.true;
-      expect(actionExecuted).to.be.true;
-      expect(result).to.equal('operation-result');
-    });
-
-    it('should work with async functions', async () => {
-      const result = await Cache.safeConditional(async () => {
-        // Simulate async work
-        await new Promise((resolve) => setTimeout(resolve, 10));
-        return 'async-result';
-      });
-
-      expect(result).to.equal('async-result');
     });
   });
 
@@ -383,22 +351,6 @@ describe('Cache', () => {
       const orgs = await Cache.safeGet('allowedOrgs');
       expect(orgs.has('org1')).to.be.true;
       expect(orgs.size).to.equal(1);
-    });
-
-    it('should handle errors in safeConditional gracefully', async () => {
-      try {
-        await Cache.safeConditional(() => {
-          throw new Error('Conditional operation error');
-        });
-        expect.fail('Should have thrown an error');
-      } catch (error) {
-        expect(error).to.be.instanceOf(Error);
-        expect((error as Error).message).to.equal('Conditional operation error');
-      }
-
-      // Verify cache is still accessible after error
-      const orgs = await Cache.safeGet('allowedOrgs');
-      expect(orgs).to.be.instanceOf(Set);
     });
   });
 
