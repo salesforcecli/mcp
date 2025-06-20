@@ -143,8 +143,7 @@ You can also use special values to control access to orgs:
       });
     }
 
-    const cache = Cache.getInstance();
-    cache.set('allowedOrgs', new Set(flags.orgs));
+    await Cache.safeSet('allowedOrgs', new Set(flags.orgs));
     this.logToStderr(`Allowed orgs:\n${flags.orgs.map((org) => `- ${org}`).join('\n')}`);
     const server = new SfMcpServer(
       {
