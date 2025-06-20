@@ -15,3 +15,4 @@
  */
 
 export * from './sf-list-all-orgs.js';
+export * from './sf-delete-org.js';
