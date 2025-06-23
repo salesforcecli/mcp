@@ -22,6 +22,7 @@ import * as core from './tools/core/index.js';
 import * as orgs from './tools/orgs/index.js';
 import * as data from './tools/data/index.js';
 import * as users from './tools/users/index.js';
+import * as testing from './tools/testing/index.js';
 import * as metadata from './tools/metadata/index.js';
 import * as dynamic from './tools/dynamic/index.js';
 import Cache from './shared/cache.js';
@@ -172,6 +173,7 @@ You can also use special values to control access to orgs:
     this.logToStderr('Registering core tools');
     // get username
     core.registerToolGetUsername(server);
+    core.registerToolResume(server);
 
     // DYNAMIC TOOLSETS
     // ************************
@@ -207,6 +209,15 @@ You can also use special values to control access to orgs:
       this.logToStderr('Registering user tools');
       // assign permission set
       users.registerToolAssignPermissionSet(server);
+    }
+
+    // ************************
+    // testing TOOLS
+    // ************************
+    if (flags['dynamic-toolsets'] || all || enabledToolsets.has('testing')) {
+      this.logToStderr('Registering testing tools');
+      testing.registerToolRunApexTest(server);
+      testing.registerToolRunAgentTest(server);
     }
 
     // ************************

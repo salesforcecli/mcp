@@ -18,7 +18,7 @@ import { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { ToolInfo } from './types.js';
 import Cache from './cache.js';
 
-export const TOOLSETS = ['orgs', 'data', 'users', 'metadata'] as const;
+export const TOOLSETS = ['orgs', 'data', 'users', 'metadata', 'testing'] as const;
 
 /*
  * These are tools that are always enabled at startup. They cannot be disabled and they cannot be dynamically enabled.
