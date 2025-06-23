@@ -1,3 +1,9 @@
+# [0.7.0](https://github.com/salesforcecli/mcp/compare/0.6.3...0.7.0) (2025-06-23)
+
+### Features
+
+- add apex/agent testing capabilities to MCP ([c87b802](https://github.com/salesforcecli/mcp/commit/c87b802e038494f4a536ab7a3f5a4f242508b26b))
+
 ## [0.6.3](https://github.com/salesforcecli/mcp/compare/0.6.2...0.6.3) (2025-06-22)
 
 ### Bug Fixes
