@@ -165,6 +165,7 @@ You can also use special values to control access to orgs:
     this.logToStderr('Registering core tools');
     // get username
     core.registerToolGetUsername(server);
+    core.registerToolResume(server);
 
     // ************************
     // ORG TOOLS

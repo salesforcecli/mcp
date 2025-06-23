@@ -1,3 +1,31 @@
+## [0.6.3](https://github.com/salesforcecli/mcp/compare/0.6.2...0.6.3) (2025-06-22)
+
+### Bug Fixes
+
+- **deps:** bump zod from 3.25.64 to 3.25.67 ([e2e7a42](https://github.com/salesforcecli/mcp/commit/e2e7a42a76972009ef19b95cd7768142180ab4ba))
+
+## [0.6.2](https://github.com/salesforcecli/mcp/compare/0.6.1...0.6.2) (2025-06-22)
+
+### Bug Fixes
+
+- **deps:** bump @jsforce/jsforce-node from 3.8.2 to 3.9.1 ([378d68e](https://github.com/salesforcecli/mcp/commit/378d68e6d62a3a3c683a6efad4ea36d15e081713))
+
+## [0.6.1](https://github.com/salesforcecli/mcp/compare/0.6.0...0.6.1) (2025-06-21)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-deploy-retrieve ([e4cc411](https://github.com/salesforcecli/mcp/commit/e4cc411616c12facc9ce54720fc21d6d544406f3))
+
+# [0.6.0](https://github.com/salesforcecli/mcp/compare/0.5.0...0.6.0) (2025-06-20)
+
+### Bug Fixes
+
+- look for 'timed out' in the error message ([62959b6](https://github.com/salesforcecli/mcp/commit/62959b64abf3c10866ee4cc78e1c9028d872f720))
+
+### Features
+
+- add a tool for resuming long running operations ([b1a1c87](https://github.com/salesforcecli/mcp/commit/b1a1c879788e7dfaa2c82c82d7fbd00ab0d06819))
+
 # [0.5.0](https://github.com/salesforcecli/mcp/compare/0.4.3...0.5.0) (2025-06-16)
 
 ### Features
