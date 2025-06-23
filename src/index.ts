@@ -177,7 +177,7 @@ You can also use special values to control access to orgs:
 
     // DYNAMIC TOOLSETS
     // ************************
-    if (flags['dynamic-toolsets']) {
+    if (flags['dynamic-tools']) {
       this.logToStderr('Registering dynamic toolsets');
       // Individual tool management
       dynamic.registerToolEnableTool(server);
@@ -187,7 +187,7 @@ You can also use special values to control access to orgs:
     // ************************
     // ORG TOOLS
     // ************************
-    if (flags['dynamic-toolsets'] || all || enabledToolsets.has('orgs')) {
+    if (flags['dynamic-tools'] || all || enabledToolsets.has('orgs')) {
       this.logToStderr('Registering org tools');
       // list all orgs
       orgs.registerToolListAllOrgs(server);
@@ -196,7 +196,7 @@ You can also use special values to control access to orgs:
     // ************************
     // DATA TOOLS
     // ************************
-    if (flags['dynamic-toolsets'] || all || enabledToolsets.has('data')) {
+    if (flags['dynamic-tools'] || all || enabledToolsets.has('data')) {
       this.logToStderr('Registering data tools');
       // query org
       data.registerToolQueryOrg(server);
@@ -205,7 +205,7 @@ You can also use special values to control access to orgs:
     // ************************
     // USER TOOLS
     // ************************
-    if (flags['dynamic-toolsets'] || all || enabledToolsets.has('users')) {
+    if (flags['dynamic-tools'] || all || enabledToolsets.has('users')) {
       this.logToStderr('Registering user tools');
       // assign permission set
       users.registerToolAssignPermissionSet(server);
@@ -214,7 +214,7 @@ You can also use special values to control access to orgs:
     // ************************
     // testing TOOLS
     // ************************
-    if (flags['dynamic-toolsets'] || all || enabledToolsets.has('testing')) {
+    if (flags['dynamic-tools'] || all || enabledToolsets.has('testing')) {
       this.logToStderr('Registering testing tools');
       testing.registerToolRunApexTest(server);
       testing.registerToolRunAgentTest(server);
@@ -223,7 +223,7 @@ You can also use special values to control access to orgs:
     // ************************
     // METADATA TOOLS
     // ************************
-    if (flags['dynamic-toolsets'] || all || enabledToolsets.has('metadata')) {
+    if (flags['dynamic-tools'] || all || enabledToolsets.has('metadata')) {
       this.logToStderr('Registering metadata tools');
       // deploy metadata
       metadata.registerToolDeployMetadata(server);
