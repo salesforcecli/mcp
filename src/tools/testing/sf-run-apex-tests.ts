@@ -60,7 +60,7 @@ export type ApexRunTests = z.infer<typeof runApexTestsParam>;
 export const registerToolRunApexTest = (server: SfMcpServer): void => {
   server.tool(
     'sf-run-apex-tests',
-    `Run Apex tests in an org. 
+    `Run Apex tests in an org.
 
 AGENT INSTRUCTIONS:
 If the user doesn't specify what to test, take context from the currently open file
@@ -74,6 +74,10 @@ Run the tests, find apex classes matching the pattern *.cls, that include the @i
 Run all tests in the org.
 `,
     runApexTestsParam.shape,
+    {
+      title: 'Run Apex Tests',
+      openWorldHint: false,
+    },
     async ({ testLevel, usernameOrAlias, classNames, directory }) => {
       if (testLevel !== TestLevel.RunSpecifiedTests && classNames?.length && classNames?.length >= 1) {
         return textResponse("You can't specify which tests to run without setting testLevel='RunSpecifiedTests'", true);

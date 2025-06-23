@@ -75,6 +75,10 @@ Resume job 2SR1234567890
 Resume agent tests
 `,
     resumeParamsSchema.shape,
+    {
+      title: 'Resume',
+      openWorldHint: false,
+    },
     async ({ jobId, wait, usernameOrAlias, directory }) => {
       if (!jobId) {
         return textResponse('The jobId parameter is required.', true);

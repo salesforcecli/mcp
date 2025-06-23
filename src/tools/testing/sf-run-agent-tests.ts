@@ -49,7 +49,7 @@ export type AgentRunTests = z.infer<typeof runAgentTestsParam>;
 export const registerToolRunAgentTest = (server: SfMcpServer): void => {
   server.tool(
     'sf-run-agent-tests',
-    `Run Agent tests in an org. 
+    `Run Agent tests in an org.
 
 AGENT INSTRUCTIONS:
 If the user doesn't specify what to test, take context from the currently open file
@@ -62,6 +62,10 @@ Run tests for the X agent
 Run this test
 `,
     runAgentTestsParam.shape,
+    {
+      title: 'Run Agent Tests',
+      openWorldHint: false,
+    },
     async ({ usernameOrAlias, agentApiName, directory }) => {
       if (!usernameOrAlias)
         return textResponse(
