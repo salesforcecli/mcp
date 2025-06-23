@@ -178,7 +178,7 @@ You can also use special values to control access to orgs:
     // DYNAMIC TOOLSETS
     // ************************
     if (flags['dynamic-tools']) {
-      this.logToStderr('Registering dynamic toolsets');
+      this.logToStderr('Registering dynamic tools');
       // Individual tool management
       dynamic.registerToolEnableTool(server);
       dynamic.registerToolListAllTools(server);
