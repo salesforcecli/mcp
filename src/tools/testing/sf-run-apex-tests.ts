@@ -30,7 +30,7 @@ Choose the correct value based on what tests are meant to be executed in some of
 
 RunLocalTests="Run all tests in the org, except the ones that originate from installed managed and unlocked packages."
 RunAllTestsInOrg="Run all tests in the org, including tests of managed packages"
-RunSpecifiedTests="Run the Apex tests I list in the org, these will be specified in the classNames parameter"
+RunSpecifiedTests="Run the Apex tests I specify, these will be specified in the classNames parameter"
 `
   ),
   classNames: z.array(z.string()).describe(
@@ -68,11 +68,10 @@ This will ONLY run APEX tests, NOT agent tests, lightning tests, flow tests, or 
 
 this should be chosen when a file in the 'classes' directory is mentioned
 
-
 EXAMPLE USAGE:
-Run tests A, B, C in the org.
+Run tests A, B, C.
 Run the tests, find apex classes matching the pattern *.cls, that include the @isTest decorator in the file and then join their test names together with ','
-Run this test.
+Run all tests in the org.
 `,
     runApexTestsParam.shape,
     async ({ testLevel, usernameOrAlias, classNames, directory }) => {

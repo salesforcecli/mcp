@@ -26,7 +26,7 @@ const runAgentTestsParam = z.object({
   agentApiName: z.string().describe(
     `Agent test to run
             if unsure, list all files matching the pattern *.aiEvaluationDefinition-meta.xml
-            only run test can be run at a time
+            only one test can be executed at a time
 `
   ),
   usernameOrAlias: usernameOrAliasParam,
