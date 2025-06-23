@@ -1,3 +1,9 @@
+# [0.8.0](https://github.com/salesforcecli/mcp/compare/0.7.0...0.8.0) (2025-06-23)
+
+### Features
+
+- **W-18542403:** add tool annotations ([#61](https://github.com/salesforcecli/mcp/issues/61)) ([a0f50bc](https://github.com/salesforcecli/mcp/commit/a0f50bc1716dc8b3ca1f92f8204ba0a030e2bbe5))
+
 # [0.7.0](https://github.com/salesforcecli/mcp/compare/0.6.3...0.7.0) (2025-06-23)
 
 ### Features
