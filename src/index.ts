@@ -102,7 +102,7 @@ You can also use special values to control access to orgs:
     debug: Flags.boolean({
       summary: 'Enable debug logging',
     }),
-    'dynamic-toolsets': Flags.boolean({
+    'dynamic-tools': Flags.boolean({
       summary: 'Enable dynamic toolsets',
       char: 'd',
       exclusive: ['toolsets'],
@@ -156,7 +156,7 @@ You can also use special values to control access to orgs:
       },
       {
         telemetry: this.telemetry,
-        dynamicToolsets: flags['dynamic-toolsets'] ?? false,
+        dynamicTools: flags['dynamic-tools'] ?? false,
       }
     );
 

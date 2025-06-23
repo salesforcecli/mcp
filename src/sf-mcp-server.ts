@@ -42,7 +42,7 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
   /** Optional telemetry instance for tracking server events */
   private telemetry?: Telemetry;
 
-  private dynamicToolsets: boolean;
+  private dynamicTools: boolean;
 
   /**
    * Creates a new SfMcpServer instance
@@ -52,11 +52,11 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
    */
   public constructor(
     serverInfo: Implementation,
-    options?: ServerOptions & { telemetry?: Telemetry; dynamicToolsets?: boolean }
+    options?: ServerOptions & { telemetry?: Telemetry; dynamicTools?: boolean }
   ) {
     super(serverInfo, options);
     this.telemetry = options?.telemetry;
-    this.dynamicToolsets = options?.dynamicToolsets ?? false;
+    this.dynamicTools = options?.dynamicTools ?? false;
     this.server.oninitialized = (): void => {
       const clientInfo = this.server.getClientVersion();
       if (clientInfo) {
@@ -110,7 +110,7 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
     // @ts-expect-error because we no longer know what the type of rest is
     const tool = super.tool(name, ...rest.slice(0, -1), wrappedCb);
 
-    if (this.dynamicToolsets && !CORE_TOOLS.includes(name)) {
+    if (this.dynamicTools && !CORE_TOOLS.includes(name)) {
       tool.disable();
       addTool(tool, name).catch((error) => {
         this.logger.error(`Failed to add tool ${name}:`, error);
