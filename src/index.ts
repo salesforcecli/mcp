@@ -22,12 +22,13 @@ import * as core from './tools/core/index.js';
 import * as orgs from './tools/orgs/index.js';
 import * as data from './tools/data/index.js';
 import * as users from './tools/users/index.js';
+import * as testing from './tools/testing/index.js';
 import * as metadata from './tools/metadata/index.js';
 import Cache from './shared/cache.js';
 import { Telemetry } from './telemetry.js';
 import { SfMcpServer } from './sf-mcp-server.js';
 
-const TOOLSETS = ['all', 'orgs', 'data', 'users', 'metadata'] as const;
+const TOOLSETS = ['all', 'testing', 'orgs', 'data', 'users', 'metadata'] as const;
 
 /**
  * Sanitizes an array of org usernames by replacing specific orgs with a placeholder.
@@ -191,6 +192,15 @@ You can also use special values to control access to orgs:
       this.logToStderr('Registering user tools');
       // assign permission set
       users.registerToolAssignPermissionSet(server);
+    }
+
+    // ************************
+    // testing TOOLS
+    // ************************
+    if (all || enabledToolsets.has('testing')) {
+      this.logToStderr('Registering testing tools');
+      testing.registerToolRunApexTest(server);
+      testing.registerToolRunAgentTest(server);
     }
 
     // ************************
