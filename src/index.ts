@@ -174,6 +174,7 @@ You can also use special values to control access to orgs:
       // list all orgs
       orgs.registerToolListAllOrgs(server);
       orgs.registerToolDeleteOrg(server);
+      orgs.registerToolCreateScratchOrg(server);
     }
 
     // ************************
