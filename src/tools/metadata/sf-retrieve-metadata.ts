@@ -69,6 +69,7 @@ Retrieve X metadata from my org
     {
       title: 'Retrieve Metadata',
       openWorldHint: false,
+      destructiveHint: true,
     },
     async ({ sourceDir, usernameOrAlias, directory, manifest }) => {
       if (sourceDir && manifest) {

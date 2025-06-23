@@ -50,6 +50,7 @@ export const registerToolQueryOrg = (server: SfMcpServer): void => {
     {
       title: 'Query Org',
       openWorldHint: false,
+      readOnlyHint: true,
     },
     async ({ query, usernameOrAlias, directory }) => {
       try {
