@@ -158,6 +158,7 @@ These are the available toolsets:
 - `data` - [Tools to manage the data in your org, such as listing all accounts.](README.md#data-toolset)
 - `users` - [Tools to manage org users, such as assigning a permission set.](README.md#users-toolset)
 - `metadata` - [Tools to deploy and retrieve metadata to and from your org and your DX project.](README.md#metadata-toolset)
+- `testing` - [Tools to test your code and features](README.md#testing-toolset)
 
 This example shows how to enable the `data`, `orgs`, and `metadata` toolsets when configuring the MCP server for VS Code:
 
@@ -203,6 +204,14 @@ Includes these tools:
 
 - `sf-deploy-metadata` - Deploys metadata from your DX project to an org.
 - `sf-retrieve-metadata` - Retrieves metadata from your org to your DX project.
+-
+
+#### Testing Toolset
+
+Includes these tools:
+
+- `sf-run-agent-tests` - Executes agent tests in your org.
+- `sf-run-apex-tests` - Executes apex tests in your org
 
 ## Configure Other Clients to Use the Salesforce DX MCP Server
 
