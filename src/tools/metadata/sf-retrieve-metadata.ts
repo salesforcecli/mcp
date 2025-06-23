@@ -66,6 +66,11 @@ Retrieve the metadata in the manifest
 Retrieve X metadata from my org
 `,
     retrieveMetadataParams.shape,
+    {
+      title: 'Retrieve Metadata',
+      openWorldHint: false,
+      destructiveHint: true,
+    },
     async ({ sourceDir, usernameOrAlias, directory, manifest }) => {
       if (sourceDir && manifest) {
         return textResponse("You can't specify both `sourceDir` and `manifest` parameters.", true);

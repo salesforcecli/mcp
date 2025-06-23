@@ -153,9 +153,6 @@ You can also use special values to control access to orgs:
       { telemetry: this.telemetry }
     );
 
-    // // TODO: Should we add annotations to our tools? https://modelcontextprotocol.io/docs/concepts/tools#tool-definition-structure
-    // // TODO: Move tool names into a shared file, that way if we reference them in multiple places, we can update them in one place
-
     const enabledToolsets = new Set(flags.toolsets);
     const all = enabledToolsets.has('all');
 
