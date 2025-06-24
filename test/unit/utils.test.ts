@@ -173,7 +173,6 @@ describe('utilities tests', () => {
 
     it('should handle URL-encoded sequences', () => {
       expect(sanitizePath(`${sep}path${sep}%2e%2e${sep}file`)).to.be.false;
-      // expect(sanitizePath(`${sep}valid${sep}%20path`)).to.be.true;
     });
 
     it('should handle Unicode characters', () => {
