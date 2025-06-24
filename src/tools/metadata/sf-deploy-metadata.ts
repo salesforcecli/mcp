@@ -16,8 +16,7 @@
 
 import { z } from 'zod';
 
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { Connection, Org, SfProject } from '@salesforce/core';
+import { Connection, Org, SfError, SfProject } from '@salesforce/core';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { ComponentSet, ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
 import { ensureString } from '@salesforce/ts-types';
@@ -25,6 +24,7 @@ import { Duration } from '@salesforce/kit';
 import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
 import { textResponse } from '../../shared/utils.js';
 import { getConnection } from '../../shared/auth.js';
+import { SfMcpServer } from '../../sf-mcp-server.js';
 
 const deployMetadataParams = z.object({
   sourceDir: z
@@ -49,7 +49,7 @@ NoTestRun="No tests are run"
 RunLocalTests="Run all tests in the org, except the ones that originate from installed managed and unlocked packages."
 RunAllTestsInOrg="Run all tests in the org, including tests of managed packages"
 
-Don't set this param is "apexTests" is also set.
+Don't set this param if "apexTests" is also set.
 `
     ),
   apexTests: z
@@ -81,7 +81,7 @@ export type DeployMetadata = z.infer<typeof deployMetadataParams>;
  * Returns:
  * - textResponse: Deploy result.
  */
-export const registerToolDeployMetadata = (server: McpServer): void => {
+export const registerToolDeployMetadata = (server: SfMcpServer): void => {
   server.tool(
     'sf-deploy-metadata',
     `Deploy metadata to an org from your local project.
@@ -97,6 +97,11 @@ Deploy X metadata to my org
 Deploy X to my org and run A,B and C apex tests.
 `,
     deployMetadataParams.shape,
+    {
+      title: 'Deploy Metadata',
+      destructiveHint: true,
+      openWorldHint: false,
+    },
     async ({ sourceDir, usernameOrAlias, apexTests, apexTestLevel, directory, manifest }) => {
       if (apexTests && apexTestLevel) {
         return textResponse("You can't specify both `apexTests` and `apexTestLevel` parameters.", true);
@@ -127,6 +132,7 @@ Deploy X to my org and run A,B and C apex tests.
         );
       }
 
+      let jobId: string = '';
       try {
         const stl = await SourceTracking.create({
           org,
@@ -148,18 +154,25 @@ Deploy X to my org and run A,B and C apex tests.
             ...(apexTestLevel ? { testLevel: apexTestLevel } : {}),
           },
         });
+        jobId = deploy.id ?? '';
 
-        // polling freq. is set dynamically by SDR based no the component set size.
+        // polling freq. is set dynamically by SDR based on the component set size.
         const result = await deploy.pollStatus({
           timeout: Duration.minutes(10),
         });
 
         return textResponse(`Deploy result: ${JSON.stringify(result.response)}`, !result.response.success);
       } catch (error) {
-        return textResponse(
-          `Failed to deploy metadata: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          true
-        );
+        const err = SfError.wrap(error);
+        if (err.message.includes('timed out')) {
+          return textResponse(
+            `
+YOU MUST inform the user that the deploy timed out and if they want to resume the deploy, they can use the #sf-resume tool
+and ${jobId} for the jobId parameter.`,
+            true
+          );
+        }
+        return textResponse(`Failed to deploy metadata: ${err.message}`, true);
       }
     }
   );

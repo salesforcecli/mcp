@@ -1,3 +1,73 @@
+# [0.8.0](https://github.com/salesforcecli/mcp/compare/0.7.0...0.8.0) (2025-06-23)
+
+### Features
+
+- **W-18542403:** add tool annotations ([#61](https://github.com/salesforcecli/mcp/issues/61)) ([a0f50bc](https://github.com/salesforcecli/mcp/commit/a0f50bc1716dc8b3ca1f92f8204ba0a030e2bbe5))
+
+# [0.7.0](https://github.com/salesforcecli/mcp/compare/0.6.3...0.7.0) (2025-06-23)
+
+### Features
+
+- add apex/agent testing capabilities to MCP ([c87b802](https://github.com/salesforcecli/mcp/commit/c87b802e038494f4a536ab7a3f5a4f242508b26b))
+
+## [0.6.3](https://github.com/salesforcecli/mcp/compare/0.6.2...0.6.3) (2025-06-22)
+
+### Bug Fixes
+
+- **deps:** bump zod from 3.25.64 to 3.25.67 ([e2e7a42](https://github.com/salesforcecli/mcp/commit/e2e7a42a76972009ef19b95cd7768142180ab4ba))
+
+## [0.6.2](https://github.com/salesforcecli/mcp/compare/0.6.1...0.6.2) (2025-06-22)
+
+### Bug Fixes
+
+- **deps:** bump @jsforce/jsforce-node from 3.8.2 to 3.9.1 ([378d68e](https://github.com/salesforcecli/mcp/commit/378d68e6d62a3a3c683a6efad4ea36d15e081713))
+
+## [0.6.1](https://github.com/salesforcecli/mcp/compare/0.6.0...0.6.1) (2025-06-21)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-deploy-retrieve ([e4cc411](https://github.com/salesforcecli/mcp/commit/e4cc411616c12facc9ce54720fc21d6d544406f3))
+
+# [0.6.0](https://github.com/salesforcecli/mcp/compare/0.5.0...0.6.0) (2025-06-20)
+
+### Bug Fixes
+
+- look for 'timed out' in the error message ([62959b6](https://github.com/salesforcecli/mcp/commit/62959b64abf3c10866ee4cc78e1c9028d872f720))
+
+### Features
+
+- add a tool for resuming long running operations ([b1a1c87](https://github.com/salesforcecli/mcp/commit/b1a1c879788e7dfaa2c82c82d7fbd00ab0d06819))
+
+# [0.5.0](https://github.com/salesforcecli/mcp/compare/0.4.3...0.5.0) (2025-06-16)
+
+### Features
+
+- **W-18724886:** add logging ([#52](https://github.com/salesforcecli/mcp/issues/52)) ([b5dda36](https://github.com/salesforcecli/mcp/commit/b5dda369fd5cbec252bf4e3d6444fde8bf748344))
+
+## [0.4.3](https://github.com/salesforcecli/mcp/compare/0.4.2...0.4.3) (2025-06-15)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-deploy-retrieve ([aae43cd](https://github.com/salesforcecli/mcp/commit/aae43cdcb95f85da6556685c71d29ed5411979d4))
+
+## [0.4.2](https://github.com/salesforcecli/mcp/compare/0.4.1...0.4.2) (2025-06-15)
+
+### Bug Fixes
+
+- **deps:** bump @modelcontextprotocol/sdk from 1.12.1 to 1.12.3 ([f9d75be](https://github.com/salesforcecli/mcp/commit/f9d75be88870a3afe9bd0cfb2a7af1c1b9d55bc4))
+
+## [0.4.1](https://github.com/salesforcecli/mcp/compare/0.4.0...0.4.1) (2025-06-14)
+
+### Bug Fixes
+
+- **deps:** bump zod from 3.25.42 to 3.25.64 ([483cb7a](https://github.com/salesforcecli/mcp/commit/483cb7a7b0076cb916ab35bf6a645028587c9703))
+
+# [0.4.0](https://github.com/salesforcecli/mcp/compare/0.3.0...0.4.0) (2025-06-13)
+
+### Features
+
+- **W-18699160:** add telemetry ([#50](https://github.com/salesforcecli/mcp/issues/50)) ([1ab6dff](https://github.com/salesforcecli/mcp/commit/1ab6dffc75a9235facf9600ed5dbd8c6c393e359))
+
 # [0.3.0](https://github.com/salesforcecli/mcp/compare/0.2.9...0.3.0) (2025-06-09)
 
 ### Bug Fixes

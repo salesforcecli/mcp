@@ -15,11 +15,11 @@
  */
 
 import { z } from 'zod';
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { textResponse } from '../../shared/utils.js';
 import { getDefaultTargetOrg, getDefaultTargetDevHub, suggestUsername } from '../../shared/auth.js';
 import { directoryParam } from '../../shared/params.js';
 import { type ConfigInfoWithCache, type ToolTextResponse } from '../../shared/types.js';
+import { SfMcpServer } from '../../sf-mcp-server.js';
 
 /*
  * Get username for Salesforce org
@@ -58,7 +58,7 @@ Get username for my default dev hub
 
 export type GetUsernameParamsSchema = z.infer<typeof getUsernameParamsSchema>;
 
-export const registerToolGetUsername = (server: McpServer): void => {
+export const registerToolGetUsername = (server: SfMcpServer): void => {
   server.tool(
     'sf-get-username',
     `Intelligently determines the appropriate username or alias for Salesforce operations.
@@ -81,6 +81,11 @@ EXAMPLE USAGE:
 - When user says "For my default org" → defaultTargetOrg=true
 - When user says "For my default dev hub" → defaultDevHub=true`,
     getUsernameParamsSchema.shape,
+    {
+      title: 'Get Username',
+      readOnlyHint: true,
+      openWorldHint: false,
+    },
     async ({ defaultTargetOrg, defaultDevHub, directory }) => {
       try {
         process.chdir(directory);

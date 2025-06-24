@@ -4,9 +4,9 @@ MCP Server for Interacting with Salesforce Orgs
 
 [![NPM](https://img.shields.io/npm/v/@salesforce/mcp.svg?label=@salesforce/mcp)](https://www.npmjs.com/package/@salesforce/mcp) [![License](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](https://opensource.org/license/apache-2-0)
 
-## Overview of the Salesforce MCP Server (Developer Preview)
+## Overview of the Salesforce DX MCP Server (Developer Preview)
 
-The Salesforce MCP Server is a specialized Model Context Protocol (MCP) implementation designed to facilitate seamless interaction between large language models (LLMs) and Salesforce orgs. This MCP server provides a robust set of tools and capabilities that enable LLMs to read, manage, and operate Salesforce resources securely.
+The Salesforce DX MCP Server is a specialized Model Context Protocol (MCP) implementation designed to facilitate seamless interaction between large language models (LLMs) and Salesforce orgs. This MCP server provides a robust set of tools and capabilities that enable LLMs to read, manage, and operate Salesforce resources securely.
 
 Key Features:
 
@@ -16,11 +16,11 @@ Key Features:
 - Granular access control with org allowlisting.
 - Modular tool architecture for easy extensibility.
 
-**NOTE**: The Salesforce MCP Server is available as a developer preview. The feature isn’t generally available unless or until Salesforce announces its general availability in documentation or in press releases or public statements. All commands, parameters, and other features are subject to change or deprecation at any time, with or without notice. Don't implement functionality developed with these commands or tools. As we continue to enhance and refine the implementation, the available functionality and tools may evolve. We welcome feedback and contributions to help shape the future of this project.
+**NOTE**: The Salesforce DX MCP Server is available as a developer preview. The feature isn’t generally available unless or until Salesforce announces its general availability in documentation or in press releases or public statements. All commands, parameters, and other features are subject to change or deprecation at any time, with or without notice. Don't implement functionality developed with these commands or tools. As we continue to enhance and refine the implementation, the available functionality and tools may evolve. We welcome feedback and contributions to help shape the future of this project.
 
 ### Security Features
 
-The Salesforce MCP Server was designed with security as a top priority.
+The Salesforce DX MCP Server was designed with security as a top priority.
 
 - **Uses TypeScript libraries directly**
 
@@ -47,9 +47,9 @@ The Salesforce MCP Server was designed with security as a top priority.
 
 Want to jump in and see what all the fuss is about? Read on!
 
-This example uses Visual Studio Code (VS Code) as the MCP client because it's a standard Salesforce DX development tool. After you configure it with the Salesforce MCP server, you then use GitHub Copilot and natural language to easily execute typical Salesforce DX development tasks, such as listing your authorized orgs, viewing org records, and deploying or retrieving metadata.
+This example uses Visual Studio Code (VS Code) as the MCP client because it's a standard Salesforce DX development tool. After you configure it with the Salesforce DX MCP Server, you then use GitHub Copilot and natural language to easily execute typical Salesforce DX development tasks, such as listing your authorized orgs, viewing org records, and deploying or retrieving metadata.
 
-But you're not limited to using only VS Code and Copilot! You can [configure many other clients](README.md#configure-other-clients-to-use-the-salesforce-mcp-server) to use the Salesforce MCP server, such as Cursor, Cline, Claude Desktop, Zed, Windsurf, and more.
+But you're not limited to using only VS Code and Copilot! You can [configure many other clients](README.md#configure-other-clients-to-use-the-salesforce-mcp-server) to use the Salesforce DX MCP Server, such as Cursor, Cline, Claude Desktop, Zed, Windsurf, and more.
 
 **Before You Begin**
 
@@ -104,7 +104,7 @@ For the best getting-started experience, make sure that you have a Salesforce DX
 
 ## Configure Orgs and Toolsets
 
-You configure the Salesforce MCP server by specifying at least one authorized org and an optional list of MCP toolsets.
+You configure the Salesforce DX MCP Server by specifying at least one authorized org and an optional list of MCP toolsets.
 
 ### Configure Orgs
 
@@ -147,9 +147,9 @@ This sample snippet shows how to configure access to two orgs for which you spec
 
 ### Configure Toolsets
 
-The Salesforce MCP Server supports **toolsets** - a way to selectively enable different groups of MCP tools based on your needs. This allows you to run the MCP server with only the tools you require, which in turn reduces the context.
+The Salesforce DX MCP Server supports **toolsets** - a way to selectively enable different groups of MCP tools based on your needs. This allows you to run the MCP server with only the tools you require, which in turn reduces the context.
 
-Use the `--toolsets` (or short name `-t`) argument to specify the toolsets when you configure the Salesforce MCP server. Separate multiple toolsets with commas. The `--toolsets` argument is optional; if you don't specify it, the MCP server is configured with all toolsets.
+Use the `--toolsets` (or short name `-t`) argument to specify the toolsets when you configure the Salesforce DX MCP Server. Separate multiple toolsets with commas. The `--toolsets` argument is optional; if you don't specify it, the MCP server is configured with all toolsets.
 
 These are the available toolsets:
 
@@ -158,6 +158,7 @@ These are the available toolsets:
 - `data` - [Tools to manage the data in your org, such as listing all accounts.](README.md#data-toolset)
 - `users` - [Tools to manage org users, such as assigning a permission set.](README.md#users-toolset)
 - `metadata` - [Tools to deploy and retrieve metadata to and from your org and your DX project.](README.md#metadata-toolset)
+- `testing` - [Tools to test your code and features](README.md#testing-toolset)
 
 This example shows how to enable the `data`, `orgs`, and `metadata` toolsets when configuring the MCP server for VS Code:
 
@@ -203,12 +204,20 @@ Includes these tools:
 
 - `sf-deploy-metadata` - Deploys metadata from your DX project to an org.
 - `sf-retrieve-metadata` - Retrieves metadata from your org to your DX project.
+-
 
-## Configure Other Clients to Use the Salesforce MCP Server
+#### Testing Toolset
+
+Includes these tools:
+
+- `sf-run-agent-tests` - Executes agent tests in your org.
+- `sf-run-apex-tests` - Executes apex tests in your org
+
+## Configure Other Clients to Use the Salesforce DX MCP Server
 
 **Cursor**
 
-To configure [Cursor](https://www.cursor.com/) to work with Salesforce MCP server, add this snippet to your Cursor `mcp.json` file:
+To configure [Cursor](https://www.cursor.com/) to work with Salesforce DX MCP Server, add this snippet to your Cursor `mcp.json` file:
 
 ```json
 {
