@@ -1,3 +1,9 @@
+## [0.8.1](https://github.com/salesforcecli/mcp/compare/0.8.0...0.8.1) (2025-06-25)
+
+### Bug Fixes
+
+- change apex testing tool name ([1f4d760](https://github.com/salesforcecli/mcp/commit/1f4d76032e3dca654c6e9fd13da69318669b11b7))
+
 # [0.8.0](https://github.com/salesforcecli/mcp/compare/0.7.0...0.8.0) (2025-06-23)
 
 ### Features
