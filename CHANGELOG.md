@@ -1,3 +1,9 @@
+## [0.8.2](https://github.com/salesforcecli/mcp/compare/0.8.1...0.8.2) (2025-06-25)
+
+### Bug Fixes
+
+- properly detect absolute paths ([31da000](https://github.com/salesforcecli/mcp/commit/31da000123490d893674cc9317ce497f986f3c67))
+
 ## [0.8.1](https://github.com/salesforcecli/mcp/compare/0.8.0...0.8.1) (2025-06-25)
 
 ### Bug Fixes
