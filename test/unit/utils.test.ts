@@ -142,36 +142,55 @@ describe('utilities tests', () => {
 
   describe('sanitizePath', () => {
     it('should return true for valid absolute paths', () => {
-      expect(sanitizePath(`${sep}valid${sep}path`)).to.be.true;
-      expect(sanitizePath(`${sep}another${sep}valid${sep}path`)).to.be.true;
+      if (process.platform === 'win32') {
+        expect(sanitizePath('C:\\Users\\johndoe\\projects\\ebikes-lwc')).to.be.true;
+      } else {
+        // unix-like paths
+        expect(sanitizePath('/Users/johndoe/projects/ebikes-lwc')).to.be.true;
+        expect(sanitizePath('/Users/johndoe/projects/dreamhouse')).to.be.true;
+      }
     });
 
     it('should return false for relative paths', () => {
-      expect(sanitizePath('relative/path')).to.be.false;
-      expect(sanitizePath('./relative/path')).to.be.false;
+      if (process.platform === 'win32') {
+        // drive-relative path
+        expect(sanitizePath('\\Users\\johndoe\\projects\\ebikes-lwc')).to.be.false;
+      } else {
+        expect(sanitizePath('relative/path/to/ebikes')).to.be.false;
+        expect(sanitizePath('./relative/path/to/ebikes')).to.be.false;
+      }
     });
 
     it('should detect path traversal attempts', () => {
-      expect(sanitizePath(`${sep}path${sep}..${sep}file`)).to.be.false;
-      expect(sanitizePath(`${sep}path${sep}\\..${sep}file`)).to.be.false;
-      expect(sanitizePath(`${sep}path${sep}../file`)).to.be.false;
-      expect(sanitizePath(`${sep}path${sep}..\\file`)).to.be.false;
+      if (process.platform === 'win32') {
+        expect(sanitizePath('C:\\Users\\johndoe\\projects\\ebikes-lwc\\..\\dreamhouse-lwc')).to.be.false;
+        expect(sanitizePath('C:\\Users\\johndoe\\projects\\ebikes-lwc\\..')).to.be.false;
+      } else {
+        expect(sanitizePath('/Users/johndoe/projects/ebikes-lwc/../dreamhouse')).to.be.false;
+        expect(sanitizePath('/Users/johndoe/projects/ebikes-lwc/..')).to.be.false;
+      }
     });
 
     it('should handle URL-encoded sequences', () => {
       expect(sanitizePath(`${sep}path${sep}%2e%2e${sep}file`)).to.be.false;
-      expect(sanitizePath(`${sep}valid${sep}%20path`)).to.be.true;
     });
 
     it('should handle Unicode characters', () => {
-      expect(sanitizePath(`${sep}path${sep}\u2025file`)).to.be.false;
-      expect(sanitizePath(`${sep}path${sep}\u2026file`)).to.be.false;
-      expect(sanitizePath(`${sep}valid${sep}path\u00e9`)).to.be.true;
+      if (process.platform === 'win32') {
+        expect(sanitizePath('C:\\Users\\johndoe\\projects\\ebikes-lwc\u2025')).to.be.false;
+        expect(sanitizePath('C:\\Users\\johndoe\\projects\\ebikes-lwc\u2026')).to.be.false;
+        expect(sanitizePath('C:\\Users\\johndoe\\projects\\ebikes-lwc\u00e9')).to.be.true;
+      } else {
+        expect(sanitizePath('/Users/johndoe/projects/ebikes-lwc/\u2025')).to.be.false;
+        expect(sanitizePath('/Users/johndoe/projects/ebikes-lwc/\u2026')).to.be.false;
+        expect(sanitizePath('/Users/johndoe/projects/ebikes-lwc/\u00e9')).to.be.true;
+        expect(sanitizePath(`${sep}valid${sep}path\u00e9`)).to.be.true;
+      }
     });
 
     it('should handle mixed path separators', () => {
-      expect(sanitizePath(`${sep}path\\subpath${sep}file`)).to.be.true;
-      expect(sanitizePath(`${sep}path${sep}..\\file`)).to.be.false;
+      expect(sanitizePath('/path\\subpath/file')).to.be.true;
+      expect(sanitizePath('\\path/..\\file')).to.be.false;
     });
   });
 });

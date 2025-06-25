@@ -28,7 +28,7 @@ import Cache from './shared/cache.js';
 import { Telemetry } from './telemetry.js';
 import { SfMcpServer } from './sf-mcp-server.js';
 
-const TOOLSETS = ['all', 'testing', 'orgs', 'data', 'users', 'metadata'] as const;
+const TOOLSETS = ['all', 'testing', 'orgs', 'data', 'users', 'metadata', 'experimental'] as const;
 
 /**
  * Sanitizes an array of org usernames by replacing specific orgs with a placeholder.
@@ -211,6 +211,17 @@ You can also use special values to control access to orgs:
       metadata.registerToolDeployMetadata(server);
       // retrieve metadata
       metadata.registerToolRetrieveMetadata(server);
+    }
+
+    // ************************
+    // EXPERIMENTAL TOOLS
+    //
+    // This toolset needs to be explicitly enabled ('all' will not include it)
+    // Tools don't need to be in an 'experimental' directory, only registered here
+    // ************************
+    if (enabledToolsets.has('experimental')) {
+      this.logToStderr('Registering experimental tools');
+      // Add any experimental tools here
     }
 
     const transport = new StdioServerTransport();

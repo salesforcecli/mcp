@@ -16,7 +16,7 @@
 
 /* eslint-disable no-console */
 
-import { sep } from 'node:path';
+import path from 'node:path';
 import { type ToolTextResponse } from './types.js';
 
 // TODO: break into two helpers? One for errors and one for success?
@@ -64,23 +64,24 @@ export function getEnabledToolsets(availableToolsets: string[], toolsetsInput: s
   return enabledToolsets;
 }
 
-export function sanitizePath(path: string): boolean {
+export function sanitizePath(projectPath: string): boolean {
   // Decode URL-encoded sequences
-  const decodedPath = decodeURIComponent(path);
+  const decodedProjectPath = decodeURIComponent(projectPath);
   // Normalize Unicode characters
-  const normalizedPath = decodedPath.normalize();
+  const normalizedProjectPath = decodedProjectPath.normalize();
 
   // Check for various traversal patterns
   const hasTraversal =
-    normalizedPath.includes('..') ||
-    normalizedPath.includes('\\..') ||
-    normalizedPath.includes('../') ||
-    normalizedPath.includes('..\\') ||
-    normalizedPath.includes('\u2025') || // Unicode horizontal ellipsis
-    normalizedPath.includes('\u2026'); // Unicode vertical ellipsis
+    normalizedProjectPath.includes('..') ||
+    normalizedProjectPath.includes('\u2025') || // Unicode horizontal ellipsis
+    normalizedProjectPath.includes('\u2026'); // Unicode vertical ellipsis
 
-  // Ensure path is absolute
-  const isAbsolute = path.startsWith(sep);
+  // `path.isAbsolute` doesn't cover Windows's drive-relative path:
+  // https://github.com/nodejs/node/issues/56766
+  //
+  // we can assume it's a drive-relative path if it's starts with `\`.
+  const isAbsolute =
+    path.isAbsolute(projectPath) && (process.platform === 'win32' ? !projectPath.startsWith('\\') : true);
 
   return !hasTraversal && isAbsolute;
 }
