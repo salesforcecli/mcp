@@ -68,6 +68,10 @@ export const registerToolAssignPermissionSet = (server: SfMcpServer): void => {
     'sf-assign-permission-set',
     'Assign a permission set to one or more org users.',
     assignPermissionSetParamsSchema.shape,
+    {
+      title: 'Assign Permission Set',
+      openWorldHint: false,
+    },
     async ({ permissionSetName, usernameOrAlias, onBehalfOf, directory }) => {
       try {
         if (!usernameOrAlias)

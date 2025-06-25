@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/mcp",
-  "version": "0.6.3",
+  "version": "0.8.1",
   "description": "MCP Server for interacting with Salesforce instances",
   "bin": {
     "sf-mcp-server": "bin/run.js"
@@ -43,6 +43,7 @@
     "@modelcontextprotocol/sdk": "^1.12.3",
     "@oclif/core": "^4.3.3",
     "@salesforce/agents": "^0.15.2",
+    "@salesforce/apex-node": "^8.1.32",
     "@salesforce/core": "^8.14.0",
     "@salesforce/kit": "^3.1.6",
     "@salesforce/source-deploy-retrieve": "^12.20.1",

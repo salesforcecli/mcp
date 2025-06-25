@@ -1,3 +1,21 @@
+## [0.8.1](https://github.com/salesforcecli/mcp/compare/0.8.0...0.8.1) (2025-06-25)
+
+### Bug Fixes
+
+- change apex testing tool name ([1f4d760](https://github.com/salesforcecli/mcp/commit/1f4d76032e3dca654c6e9fd13da69318669b11b7))
+
+# [0.8.0](https://github.com/salesforcecli/mcp/compare/0.7.0...0.8.0) (2025-06-23)
+
+### Features
+
+- **W-18542403:** add tool annotations ([#61](https://github.com/salesforcecli/mcp/issues/61)) ([a0f50bc](https://github.com/salesforcecli/mcp/commit/a0f50bc1716dc8b3ca1f92f8204ba0a030e2bbe5))
+
+# [0.7.0](https://github.com/salesforcecli/mcp/compare/0.6.3...0.7.0) (2025-06-23)
+
+### Features
+
+- add apex/agent testing capabilities to MCP ([c87b802](https://github.com/salesforcecli/mcp/commit/c87b802e038494f4a536ab7a3f5a4f242508b26b))
+
 ## [0.6.3](https://github.com/salesforcecli/mcp/compare/0.6.2...0.6.3) (2025-06-22)
 
 ### Bug Fixes
