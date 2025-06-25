@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './sf-run-apex-tests.js';
-export * from './sf-run-agent-tests.js';
+export * from './sf-test-apex.js';
+export * from './sf-test-agents.js';
