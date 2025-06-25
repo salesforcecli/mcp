@@ -73,9 +73,6 @@ export function sanitizePath(projectPath: string): boolean {
   // Check for various traversal patterns
   const hasTraversal =
     normalizedProjectPath.includes('..') ||
-    normalizedProjectPath.includes('\\..') ||
-    normalizedProjectPath.includes('../') ||
-    normalizedProjectPath.includes('..\\') ||
     normalizedProjectPath.includes('\u2025') || // Unicode horizontal ellipsis
     normalizedProjectPath.includes('\u2026'); // Unicode vertical ellipsis
 
