@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/mcp",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "description": "MCP Server for interacting with Salesforce instances",
   "bin": {
     "sf-mcp-server": "bin/run.js"
