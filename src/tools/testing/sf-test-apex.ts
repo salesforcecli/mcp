@@ -36,7 +36,7 @@ RunSpecifiedTests="Run the Apex tests I specify, these will be specified in the 
   classNames: z.array(z.string()).describe(
     `Apex tests classes to run.
             if Running all tests, all tests should be listed
-            if unsure, find apex classes matching the pattern *.cls, that include the @isTest decorator in the file and then join their test names together with ','
+            if unsure, find apex classes matching the pattern **/classes/*.cls, that include the @isTest decorator in the file and then join their test names together with ','
 `
   ),
   usernameOrAlias: usernameOrAliasParam,
@@ -59,7 +59,7 @@ export type ApexRunTests = z.infer<typeof runApexTestsParam>;
  */
 export const registerToolRunApexTest = (server: SfMcpServer): void => {
   server.tool(
-    'sf-run-apex-tests',
+    'sf-test-apex',
     `Run Apex tests in an org.
 
 AGENT INSTRUCTIONS:
@@ -70,12 +70,12 @@ this should be chosen when a file in the 'classes' directory is mentioned
 
 EXAMPLE USAGE:
 Run tests A, B, C.
-Run the tests, find apex classes matching the pattern *.cls, that include the @isTest decorator in the file and then join their test names together with ','
+Run the tests, find apex classes matching the pattern **/classes/*.cls, that include the @isTest decorator in the file and then join their test names together with ','
 Run all tests in the org.
 `,
     runApexTestsParam.shape,
     {
-      title: 'Run Apex Tests',
+      title: 'Apex Tests',
       openWorldHint: false,
     },
     async ({ testLevel, usernameOrAlias, classNames, directory }) => {
