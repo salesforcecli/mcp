@@ -28,7 +28,7 @@ import * as dynamic from './tools/dynamic/index.js';
 import Cache from './shared/cache.js';
 import { Telemetry } from './telemetry.js';
 import { SfMcpServer } from './sf-mcp-server.js';
-import { TOOLSETS } from './shared/tools.js';
+import { determineToolsetsToEnable, TOOLSETS } from './shared/tools.js';
 
 /**
  * Sanitizes an array of org usernames by replacing specific orgs with a placeholder.
@@ -161,11 +161,7 @@ You can also use special values to control access to orgs:
       }
     );
 
-    // // TODO: Should we add annotations to our tools? https://modelcontextprotocol.io/docs/concepts/tools#tool-definition-structure
-    // // TODO: Move tool names into a shared file, that way if we reference them in multiple places, we can update them in one place
-
-    const enabledToolsets = new Set(flags.toolsets);
-    const all = enabledToolsets.has('all');
+    const toolsetsToEnable = determineToolsetsToEnable(flags.toolsets ?? ['all'], flags['dynamic-tools'] ?? false);
 
     // ************************
     // CORE TOOLS (always on)
@@ -177,7 +173,7 @@ You can also use special values to control access to orgs:
 
     // DYNAMIC TOOLSETS
     // ************************
-    if (flags['dynamic-tools']) {
+    if (toolsetsToEnable.dynamic) {
       this.logToStderr('Registering dynamic tools');
       // Individual tool management
       dynamic.registerToolEnableTool(server);
@@ -187,7 +183,7 @@ You can also use special values to control access to orgs:
     // ************************
     // ORG TOOLS
     // ************************
-    if (flags['dynamic-tools'] || all || enabledToolsets.has('orgs')) {
+    if (toolsetsToEnable.orgs) {
       this.logToStderr('Registering org tools');
       // list all orgs
       orgs.registerToolListAllOrgs(server);
@@ -196,7 +192,7 @@ You can also use special values to control access to orgs:
     // ************************
     // DATA TOOLS
     // ************************
-    if (flags['dynamic-tools'] || all || enabledToolsets.has('data')) {
+    if (toolsetsToEnable.data) {
       this.logToStderr('Registering data tools');
       // query org
       data.registerToolQueryOrg(server);
@@ -205,7 +201,7 @@ You can also use special values to control access to orgs:
     // ************************
     // USER TOOLS
     // ************************
-    if (flags['dynamic-tools'] || all || enabledToolsets.has('users')) {
+    if (toolsetsToEnable.users) {
       this.logToStderr('Registering user tools');
       // assign permission set
       users.registerToolAssignPermissionSet(server);
@@ -214,7 +210,7 @@ You can also use special values to control access to orgs:
     // ************************
     // testing TOOLS
     // ************************
-    if (flags['dynamic-tools'] || all || enabledToolsets.has('testing')) {
+    if (toolsetsToEnable.testing) {
       this.logToStderr('Registering testing tools');
       testing.registerToolRunApexTest(server);
       testing.registerToolRunAgentTest(server);
@@ -223,12 +219,23 @@ You can also use special values to control access to orgs:
     // ************************
     // METADATA TOOLS
     // ************************
-    if (flags['dynamic-tools'] || all || enabledToolsets.has('metadata')) {
+    if (toolsetsToEnable.metadata) {
       this.logToStderr('Registering metadata tools');
       // deploy metadata
       metadata.registerToolDeployMetadata(server);
       // retrieve metadata
       metadata.registerToolRetrieveMetadata(server);
+    }
+
+    // ************************
+    // EXPERIMENTAL TOOLS
+    //
+    // This toolset needs to be explicitly enabled ('all' will not include it)
+    // Tools don't need to be in an 'experimental' directory, only registered here
+    // ************************
+    if (toolsetsToEnable.experimental) {
+      this.logToStderr('Registering experimental tools');
+      // Add any experimental tools here
     }
 
     const transport = new StdioServerTransport();

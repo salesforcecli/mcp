@@ -1,3 +1,27 @@
+# [0.9.0](https://github.com/salesforcecli/mcp/compare/0.8.2...0.9.0) (2025-06-25)
+
+### Features
+
+- add experimental toolset ([69b923e](https://github.com/salesforcecli/mcp/commit/69b923e84970c9c43223bb95d3457451ce87aff4))
+
+## [0.8.2](https://github.com/salesforcecli/mcp/compare/0.8.1...0.8.2) (2025-06-25)
+
+### Bug Fixes
+
+- properly detect absolute paths ([31da000](https://github.com/salesforcecli/mcp/commit/31da000123490d893674cc9317ce497f986f3c67))
+
+## [0.8.1](https://github.com/salesforcecli/mcp/compare/0.8.0...0.8.1) (2025-06-25)
+
+### Bug Fixes
+
+- change apex testing tool name ([1f4d760](https://github.com/salesforcecli/mcp/commit/1f4d76032e3dca654c6e9fd13da69318669b11b7))
+
+# [0.8.0](https://github.com/salesforcecli/mcp/compare/0.7.0...0.8.0) (2025-06-23)
+
+### Features
+
+- **W-18542403:** add tool annotations ([#61](https://github.com/salesforcecli/mcp/issues/61)) ([a0f50bc](https://github.com/salesforcecli/mcp/commit/a0f50bc1716dc8b3ca1f92f8204ba0a030e2bbe5))
+
 # [0.7.0](https://github.com/salesforcecli/mcp/compare/0.6.3...0.7.0) (2025-06-23)
 
 ### Features

@@ -18,12 +18,56 @@ import { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { ToolInfo } from './types.js';
 import Cache from './cache.js';
 
-export const TOOLSETS = ['orgs', 'data', 'users', 'metadata', 'testing'] as const;
+export const TOOLSETS = ['orgs', 'data', 'users', 'metadata', 'testing', 'experimental'] as const;
+
+type Toolset = (typeof TOOLSETS)[number];
 
 /*
  * These are tools that are always enabled at startup. They cannot be disabled and they cannot be dynamically enabled.
  */
 export const CORE_TOOLS = ['sf-get-username', 'sf-resume', 'sf-enable-tool', 'sf-list-all-tools'];
+
+export function determineToolsetsToEnable(
+  toolsets: Array<Toolset | 'all'>,
+  dynamicTools: boolean
+): Record<Toolset | 'dynamic' | 'core', boolean> {
+  if (dynamicTools) {
+    return {
+      core: true,
+      data: false,
+      dynamic: true,
+      experimental: false,
+      metadata: false,
+      orgs: false,
+      testing: false,
+      users: false,
+    };
+  }
+
+  if (toolsets.includes('all')) {
+    return {
+      core: true,
+      data: true,
+      dynamic: false,
+      experimental: false,
+      metadata: true,
+      orgs: true,
+      testing: true,
+      users: true,
+    };
+  }
+
+  return {
+    core: true,
+    data: toolsets.includes('data'),
+    dynamic: false,
+    experimental: toolsets.includes('experimental'),
+    metadata: toolsets.includes('metadata'),
+    orgs: toolsets.includes('orgs'),
+    testing: toolsets.includes('testing'),
+    users: toolsets.includes('users'),
+  };
+}
 
 /**
  * Add a tool to the cache
