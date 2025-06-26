@@ -165,6 +165,10 @@ You can also use special values to control access to orgs:
 
     // ************************
     // CORE TOOLS (always on)
+    // If you're adding a new tool to the core toolset, you MUST add it to the `CORE_TOOLS` array in shared/tools.ts
+    // otherwise SfMcpServer will not register it.
+    //
+    // Long term, we will want to consider a more elegant solution for registering core tools.
     // ************************
     this.logToStderr('Registering core tools');
     // get username
