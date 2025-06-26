@@ -28,6 +28,11 @@ type ToolMethodSignatures = {
   connect: McpServer['connect'];
 };
 
+type Options = ServerOptions & {
+  telemetry?: Telemetry;
+  dynamicTools?: boolean;
+};
+
 /**
  * A server implementation that extends the base MCP server with telemetry capabilities.
  *
@@ -48,12 +53,9 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
    * Creates a new SfMcpServer instance
    *
    * @param {Implementation} serverInfo - The server implementation details
-   * @param {ServerOptions & { telemetry?: Telemetry }} [options] - Optional server configuration including telemetry
+   * @param {Options} [options] - Optional server configuration including telemetry and dynamic tools support
    */
-  public constructor(
-    serverInfo: Implementation,
-    options?: ServerOptions & { telemetry?: Telemetry; dynamicTools?: boolean }
-  ) {
+  public constructor(serverInfo: Implementation, options?: Options) {
     super(serverInfo, options);
     this.telemetry = options?.telemetry;
     this.dynamicTools = options?.dynamicTools ?? false;

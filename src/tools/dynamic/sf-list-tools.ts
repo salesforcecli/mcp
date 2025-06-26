@@ -18,9 +18,9 @@ import { SfMcpServer } from '../../sf-mcp-server.js';
 import { textResponse } from '../../shared/utils.js';
 import { listAllTools } from '../../shared/tools.js';
 
-export function registerToolListAllTools(server: SfMcpServer): void {
+export function registerToolListTools(server: SfMcpServer): void {
   server.tool(
-    'sf-list-all-tools',
+    'sf-list-tools',
     `List all available tools this Salesforce MCP server can offer, providing the enabled status and description of each.
 
 AGENT INSTRUCTIONS:

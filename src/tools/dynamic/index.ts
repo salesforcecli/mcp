@@ -15,4 +15,4 @@
  */
 
 export { registerToolEnableTool } from './sf-enable-tool.js';
-export { registerToolListAllTools } from './sf-list-all-tools.js';
+export { registerToolListTools } from './sf-list-tools.js';
