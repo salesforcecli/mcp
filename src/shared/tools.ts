@@ -27,6 +27,28 @@ type Toolset = (typeof TOOLSETS)[number];
  */
 export const CORE_TOOLS = ['sf-get-username', 'sf-resume', 'sf-enable-tool', 'sf-list-all-tools'];
 
+/**
+ * Determines which toolsets should be enabled based on the provided toolsets array and dynamic tools flag.
+ *
+ * @param {Array<Toolset | 'all'>} toolsets - Array of toolsets to enable. Can include 'all' to enable all non-experimental toolsets.
+ * @param {boolean} dynamicTools - Flag indicating whether dynamic tools should be enabled. When true, only core and dynamic toolsets are enabled.
+ * @returns {Record<Toolset | 'dynamic' | 'core', boolean>} Object mapping each toolset to a boolean indicating whether it should be enabled.
+ *
+ * @example
+ * // Enable all toolsets except experimental
+ * determineToolsetsToEnable(['all'], false)
+ * // Returns: { core: true, data: true, dynamic: false, experimental: false, metadata: true, orgs: true, testing: true, users: true }
+ *
+ * @example
+ * // Enable only dynamic tools
+ * determineToolsetsToEnable([], true)
+ * // Returns: { core: true, data: false, dynamic: true, experimental: false, metadata: false, orgs: false, testing: false, users: false }
+ *
+ * @example
+ * // Enable specific toolsets
+ * determineToolsetsToEnable(['data', 'users'], false)
+ * // Returns: { core: true, data: true, dynamic: false, experimental: false, metadata: false, orgs: false, testing: false, users: true }
+ */
 export function determineToolsetsToEnable(
   toolsets: Array<Toolset | 'all'>,
   dynamicTools: boolean
