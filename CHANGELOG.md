@@ -1,3 +1,9 @@
+## [0.9.1](https://github.com/salesforcecli/mcp/compare/0.9.0...0.9.1) (2025-06-26)
+
+### Bug Fixes
+
+- don't finish process if no org is found ([bccd261](https://github.com/salesforcecli/mcp/commit/bccd261b6d649b2e39f676d8da98ec8002767199))
+
 # [0.9.0](https://github.com/salesforcecli/mcp/compare/0.8.2...0.9.0) (2025-06-25)
 
 ### Features
