@@ -43,7 +43,7 @@ describe('Tool Management', () => {
       expect(CORE_TOOLS).to.include('sf-get-username');
       expect(CORE_TOOLS).to.include('sf-enable-tool');
       expect(CORE_TOOLS).to.include('sf-resume');
-      expect(CORE_TOOLS).to.include('sf-list-all-tools');
+      expect(CORE_TOOLS).to.include('sf-list-tools');
     });
   });
 
