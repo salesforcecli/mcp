@@ -128,12 +128,6 @@ export async function getAllAllowedOrgs(): Promise<SanitizedOrgAuthorization[]> 
   // Filter out orgs that are not in ORG_ALLOWLIST
   const allowedOrgs = await filterAllowedOrgs(sanitizedOrgs, orgAllowList);
 
-  // If no orgs are found, stop the server
-  if (allowedOrgs.length === 0) {
-    console.error('No orgs found that match the allowed orgs configuration. Check MCP Server startup config.');
-    process.exit(1);
-  }
-
   return allowedOrgs;
 }
 
