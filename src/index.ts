@@ -172,7 +172,6 @@ You can also use special values to control access to orgs:
       // list all orgs
       orgs.registerToolListAllOrgs(server);
       orgs.registerToolDeleteOrg(server);
-      orgs.registerToolCreateScratchOrg(server);
     }
 
     // ************************
@@ -222,6 +221,7 @@ You can also use special values to control access to orgs:
     if (enabledToolsets.has('experimental')) {
       this.logToStderr('Registering experimental tools');
       // Add any experimental tools here
+      orgs.registerToolCreateScratchOrg(server);
     }
 
     const transport = new StdioServerTransport();

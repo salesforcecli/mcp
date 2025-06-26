@@ -36,10 +36,9 @@ import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
 
 export const createScratchOrgParams = z.object({
   directory: directoryParam,
-  usernameOrAlias: usernameOrAliasParam,
-  // release: z
-  //   .enum(['previous', 'preview'])
-  //   .describe('the release version of the scratch org you want created').optional(),
+  devHub: usernameOrAliasParam.describe(
+    'The default devhub username, use the #sf-get-username tool to get the default devhub if unsure'
+  ),
   duration: z.number().default(7).describe('number of days before the org expires'),
   edition: z
     .enum([
@@ -58,6 +57,10 @@ export const createScratchOrgParams = z.object({
     .default(join('config', 'project-scratch-def.json'))
     .describe('a normalized path to a scratch definition json file'),
   alias: z.string().describe('the alias to be used for the scratch org').optional(),
+  async: z
+    .boolean()
+    .default(false)
+    .describe('Whether to wait for the org creation process to finish (false) or just quickly return the ID (true)'),
   setDefault: z
     .boolean()
     .optional()
@@ -70,7 +73,7 @@ export const createScratchOrgParams = z.object({
     .optional(),
   username: z.string().describe('Username of the scratch org admin user').optional(),
   description: z.string().describe('a description given to the scratch org').optional(),
-  name: z.string().describe('Name of the scratch org').optional(),
+  orgName: z.string().describe('Name of the scratch org').optional(),
   adminEmail: z.string().describe("Email address that will be applied to the org's admin user.").optional(),
 });
 
@@ -86,38 +89,33 @@ AGENT INSTRUCTIONS:
 Example usage:
 Create a scratch org
 create a scratch org with the definition file myDefinition.json that lasts 3 days
-create a scratch org aliased as MyNewOrg and set as default
+create a scratch org aliased as MyNewOrg and set as default and don't wait for it to finish
 `,
     createScratchOrgParams.shape,
     async ({
       directory,
-      usernameOrAlias,
-      name,
+      devHub,
+      orgName,
       adminEmail,
       description,
-      // release,
       snapshot,
       sourceOrg,
       username,
       edition,
       setDefault,
+      async,
       duration,
       alias,
       definitionFile,
     }) => {
       try {
         process.chdir(directory);
-        const hubOrProd = await Org.create({ aliasOrUsername: usernameOrAlias });
+        const hubOrProd = await Org.create({ aliasOrUsername: devHub });
 
         const requestParams: ScratchOrgCreateOptions = {
           hubOrg: hubOrProd,
-          // clientSecret,
-          // connectedAppConsumerKey: flags['client-id'],
           durationDays: duration,
-          // nonamespace: flags['no-namespace'],
-          // noancestors: flags['no-ancestors'],
-          wait: Duration.minutes(5),
-          apiversion: await hubOrProd.retrieveMaxApiVersion(),
+          wait: async ? Duration.minutes(0) : Duration.minutes(10),
           orgConfig: {
             ...(definitionFile
               ? (JSON.parse(await fs.promises.readFile(definitionFile, 'utf-8')) as Record<string, unknown>)
@@ -126,8 +124,7 @@ create a scratch org aliased as MyNewOrg and set as default
             ...(snapshot ? { snapshot } : {}),
             ...(username ? { username } : {}),
             ...(description ? { description } : {}),
-            ...(name ? { orgName: name } : {}),
-            // ...(release ? { release } : {}),
+            ...(orgName ? { orgName } : {}),
             ...(sourceOrg ? { sourceOrg } : {}),
             ...(adminEmail ? { adminEmail } : {}),
           },
@@ -136,8 +133,15 @@ create a scratch org aliased as MyNewOrg and set as default
           tracksSource: true,
         };
         const result = await scratchOrgCreate(requestParams);
-
-        return textResponse(`Successfully created scratch org  ${JSON.stringify(result)}`);
+        if (async) {
+          return textResponse(
+            `Successfully enqueued scratch org with job Id: ${JSON.stringify(
+              result.scratchOrgInfo?.Id
+            )} use the #sf-resume tool to resume this operation`
+          );
+        } else {
+          return textResponse(`Successfully created scratch org  ${JSON.stringify(result)}`);
+        }
       } catch (e) {
         return textResponse(`Failed to create org: ${e instanceof Error ? e.message : 'Unknown error'}`, true);
       }
