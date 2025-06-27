@@ -16,6 +16,7 @@
 
 import { ConfigInfo } from '@salesforce/core';
 import { type Nullable } from '@salesforce/ts-types';
+import { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 export type ConfigInfoWithCache = {
   key: string;
@@ -46,4 +47,9 @@ export type ToolTextResponse = {
     type: 'text';
     text: string;
   }>;
+};
+
+export type ToolInfo = {
+  tool: RegisteredTool;
+  name: string;
 };
