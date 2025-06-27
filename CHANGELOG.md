@@ -1,3 +1,9 @@
+# [0.10.0](https://github.com/salesforcecli/mcp/compare/0.9.1...0.10.0) (2025-06-27)
+
+### Features
+
+- **apex-test:** add async,codecoverage,verbose,resume ([#75](https://github.com/salesforcecli/mcp/issues/75)) ([765f369](https://github.com/salesforcecli/mcp/commit/765f3690b49fe66bc3c680a937da669d94012ea8))
+
 ## [0.9.1](https://github.com/salesforcecli/mcp/compare/0.9.0...0.9.1) (2025-06-26)
 
 ### Bug Fixes
