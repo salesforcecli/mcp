@@ -25,12 +25,16 @@ import { SfMcpServer } from '../../sf-mcp-server.js';
 const runAgentTestsParam = z.object({
   agentApiName: z.string().describe(
     `Agent test to run
-            if unsure, list all files matching the pattern *.aiEvaluationDefinition-meta.xml
+            if unsure, list all files matching the pattern **/aiEvaluationDefinitions/*.aiEvaluationDefinition-meta.xml
             only one test can be executed at a time
 `
   ),
   usernameOrAlias: usernameOrAliasParam,
   directory: directoryParam,
+  async: z
+    .boolean()
+    .default(false)
+    .describe('Whether to wait for the tests to finish (false) or quickly return only the test id (true)'),
 });
 
 export type AgentRunTests = z.infer<typeof runAgentTestsParam>;
@@ -46,7 +50,7 @@ export type AgentRunTests = z.infer<typeof runAgentTestsParam>;
  * Returns:
  * - textResponse: Test result.
  */
-export const registerToolRunAgentTest = (server: SfMcpServer): void => {
+export const registerToolTestAgent = (server: SfMcpServer): void => {
   server.tool(
     'sf-test-agents',
     `Run Agent tests in an org.
@@ -60,13 +64,14 @@ this should be chosen when a file in the 'aiEvaluationDefinitions' directory is 
 EXAMPLE USAGE:
 Run tests for the X agent
 Run this test
+start myAgentTest and don't wait for results
 `,
     runAgentTestsParam.shape,
     {
       title: 'Run Agent Tests',
       openWorldHint: false,
     },
-    async ({ usernameOrAlias, agentApiName, directory }) => {
+    async ({ usernameOrAlias, agentApiName, directory, async }) => {
       if (!usernameOrAlias)
         return textResponse(
           'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
@@ -79,9 +84,15 @@ Run this test
 
       try {
         const agentTester = new AgentTester(connection);
-        const test = await agentTester.start(agentApiName);
-        const result = await agentTester.poll(test.runId, { timeout: Duration.minutes(10) });
-        return textResponse(`Test result: ${JSON.stringify(result)}`);
+
+        if (async) {
+          const startResult = await agentTester.start(agentApiName);
+          return textResponse(`Test Run: ${JSON.stringify(startResult)}`);
+        } else {
+          const test = await agentTester.start(agentApiName);
+          const result = await agentTester.poll(test.runId, { timeout: Duration.minutes(10) });
+          return textResponse(`Test result: ${JSON.stringify(result)}`);
+        }
       } catch (e) {
         return textResponse(`Failed to run Agent Tests: ${e instanceof Error ? e.message : 'Unknown error'}`, true);
       }

@@ -196,8 +196,8 @@ You can also use special values to control access to orgs:
     // ************************
     if (all || enabledToolsets.has('testing')) {
       this.logToStderr('Registering testing tools');
-      testing.registerToolRunApexTest(server);
-      testing.registerToolRunAgentTest(server);
+      testing.registerToolTestApex(server);
+      testing.registerToolTestAgent(server);
     }
 
     // ************************
