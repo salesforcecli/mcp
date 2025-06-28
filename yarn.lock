@@ -4744,12 +4744,12 @@ eslint-plugin-jsdoc@^46.10.1:
     semver "^7.5.4"
     spdx-expression-parse "^4.0.0"
 
-eslint-plugin-sf-plugin@^1.20.25:
-  version "1.20.25"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-sf-plugin/-/eslint-plugin-sf-plugin-1.20.25.tgz#943d861c73579d982a2c09eb5d8d5907cfdd7956"
-  integrity sha512-uknNSP5+CRHeA7PRGErKD5nCoehJY/UVofspAiwEmtzhNBfS1eUxORN9fU6WEjb9Mc3O6i7YrMznTYFhJYWr1Q==
+eslint-plugin-sf-plugin@^1.20.26:
+  version "1.20.26"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-sf-plugin/-/eslint-plugin-sf-plugin-1.20.26.tgz#3ffada40ee1aeab70384c16ed717769946b1473e"
+  integrity sha512-kK1Kj+PpkVaGHWR+/FGdSW4lT7nbD+g2mSLkYFFQ4X9L9VnDSGI2mbNfByCeJ0RELC2GxM0jhw/T1pgSKc7aQw==
   dependencies:
-    "@salesforce/core" "^8.12.0"
+    "@salesforce/core" "^8.14.0"
     "@typescript-eslint/utils" "^7.18.0"
 
 eslint-plugin-unicorn@^50.0.1:
