@@ -1984,10 +1984,10 @@
   resolved "https://registry.npmjs.org/@radix-ui/rect/-/rect-1.1.1.tgz"
   integrity sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw==
 
-"@salesforce/agents@^0.15.2":
-  version "0.15.2"
-  resolved "https://registry.yarnpkg.com/@salesforce/agents/-/agents-0.15.2.tgz#283b1d5e887a4c3fec4c258eccf76e716a29f31d"
-  integrity sha512-8UFbRHVmjHeGUHNW17jqGsmTgdu8SGR/D+JB5V+46cRtyLMAU2PeMF6rKxszRaWauD+pcW6nHxplX6xhmTqe+A==
+"@salesforce/agents@^0.15.4":
+  version "0.15.4"
+  resolved "https://registry.yarnpkg.com/@salesforce/agents/-/agents-0.15.4.tgz#a5c96abcf603acc7b2727902133feda7c67678c3"
+  integrity sha512-GIX36TZjbjxTHw/kLf1+JmSl7sN+f00LH1biuvwCKyKXXFyHyrykt+dXL58Xeo6NvJcj7IouC+ntxsvV3ApS9w==
   dependencies:
     "@salesforce/core" "^8.10.3"
     "@salesforce/kit" "^3.2.3"
