@@ -1,3 +1,9 @@
+## [0.10.2](https://github.com/salesforcecli/mcp/compare/0.10.1...0.10.2) (2025-06-29)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/agents from 0.15.2 to 0.15.4 ([2b1e732](https://github.com/salesforcecli/mcp/commit/2b1e732db324cc40bb0d6950fd53be5c7d3cc143))
+
 ## [0.10.1](https://github.com/salesforcecli/mcp/compare/0.10.0...0.10.1) (2025-06-28)
 
 ### Bug Fixes
