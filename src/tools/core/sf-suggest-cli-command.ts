@@ -53,14 +53,6 @@ export const registerToolSuggestCliCommand = (server: SfMcpServer): void => {
       const topCandidateIds = searchResults.labels.slice(0, 5);
       const contextCommands = topCandidateIds.map((id) => assets.commands.find((c) => c.id === id));
 
-      // eslint-disable-next-line no-console
-      console.error('top candidates');
-      for (const cmd of contextCommands) {
-        if (!cmd) continue;
-        // eslint-disable-next-line no-console
-        console.error(`- ${cmd.command}: ${searchResults.distances[contextCommands.indexOf(cmd)]}`);
-      }
-
       const prompt = `System: You are a precise expert on the Salesforce CLI (sf). Your sole purpose is to construct a single, valid sf command based on the user's request and the Command Reference provided.
 - Base your answer STRICTLY on the user's request and the Command Reference.
 - Do not use any flags or commands not listed in the reference.

@@ -154,7 +154,7 @@ You can also use special values to control access to orgs:
       { telemetry: this.telemetry }
     );
 
-    maybeBuildIndex(this.config.dataDir);
+    await maybeBuildIndex(this.config.dataDir);
 
     const enabledToolsets = new Set(flags.toolsets);
     const all = enabledToolsets.has('all');
