@@ -27,6 +27,7 @@ import * as metadata from './tools/metadata/index.js';
 import Cache from './shared/cache.js';
 import { Telemetry } from './telemetry.js';
 import { SfMcpServer } from './sf-mcp-server.js';
+import { maybeBuildIndex } from './assets.js';
 
 const TOOLSETS = ['all', 'testing', 'orgs', 'data', 'users', 'metadata', 'experimental'] as const;
 
@@ -153,6 +154,8 @@ You can also use special values to control access to orgs:
       { telemetry: this.telemetry }
     );
 
+    maybeBuildIndex(this.config.dataDir);
+
     const enabledToolsets = new Set(flags.toolsets);
     const all = enabledToolsets.has('all');
 
@@ -163,6 +166,7 @@ You can also use special values to control access to orgs:
     // get username
     core.registerToolGetUsername(server);
     core.registerToolResume(server);
+    core.registerToolSuggestCliCommand(server);
 
     // ************************
     // ORG TOOLS
