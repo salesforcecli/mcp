@@ -50,6 +50,7 @@
     "@salesforce/source-tracking": "^7.4.6",
     "@salesforce/telemetry": "^6.0.39",
     "@salesforce/ts-types": "^2.0.11",
+    "open": "^10.1.2",
     "zod": "^3.25.67"
   },
   "devDependencies": {
