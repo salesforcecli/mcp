@@ -23,7 +23,7 @@ import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
 import { SfMcpServer } from '../../sf-mcp-server.js';
 
 export const orgOpenParamsSchema = z.object({
-  filePath: z.string().optional().describe('File path of the metadata to open in the org.'),
+  filePath: z.string().optional().describe('File path of the metadata to open.'),
   usernameOrAlias: usernameOrAliasParam,
   directory: directoryParam,
 });
@@ -39,24 +39,23 @@ You can specify a metadata file you want to open.
 `,
     orgOpenParamsSchema.shape,
     {
-      title: 'Open org in browser',
-      // TODO: switch to true for prod
-      readOnlyHint: false,
+      title: 'Open Org in browser',
+      readOnlyHint: true,
       openWorldHint: false,
     },
-    async ({ usernameOrAlias, filePath: metadataFilePath, directory }) => {
+    async ({ usernameOrAlias, filePath, directory }) => {
       process.chdir(directory);
 
       const org = await Org.create({
         aliasOrUsername: usernameOrAlias,
       });
 
-      if (metadataFilePath) {
+      if (filePath) {
         const metadataResolver = new MetadataResolver();
-        const components = metadataResolver.getComponentsFromPath(metadataFilePath);
+        const components = metadataResolver.getComponentsFromPath(filePath);
         const typeName = components[0]?.type?.name;
 
-        const metadataBuilderUrl = await org.getMetadataBuilderUrl(typeName, metadataFilePath);
+        const metadataBuilderUrl = await org.getMetadataBuilderUrl(typeName, filePath);
         await open(metadataBuilderUrl);
 
         return textResponse(
