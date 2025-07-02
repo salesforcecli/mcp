@@ -21,6 +21,7 @@ import { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.j
 import { Logger } from '@salesforce/core';
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import { Telemetry } from './telemetry.js';
+import { RateLimiter, RateLimitConfig, createRateLimiter } from './shared/rate-limiter.js';
 
 type ToolMethodSignatures = {
   tool: McpServer['tool'];
@@ -28,7 +29,17 @@ type ToolMethodSignatures = {
 };
 
 /**
- * A server implementation that extends the base MCP server with telemetry capabilities.
+ * Extended server options that include telemetry and rate limiting
+ */
+export type SfMcpServerOptions = ServerOptions & {
+  /** Optional telemetry instance for tracking server events */
+  telemetry?: Telemetry;
+  /** Optional rate limiting configuration */
+  rateLimit?: Partial<RateLimitConfig>;
+};
+
+/**
+ * A server implementation that extends the base MCP server with telemetry and rate limiting capabilities.
  *
  * The method overloads for `tool` are taken directly from the source code for the original McpServer. They're
  * copied here so that the types don't get lost.
@@ -41,15 +52,24 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
   /** Optional telemetry instance for tracking server events */
   private telemetry?: Telemetry;
 
+  /** Rate limiter for controlling tool call frequency */
+  private rateLimiter?: RateLimiter;
+
   /**
    * Creates a new SfMcpServer instance
    *
    * @param {Implementation} serverInfo - The server implementation details
-   * @param {ServerOptions & { telemetry?: Telemetry }} [options] - Optional server configuration including telemetry
+   * @param {SfMcpServerOptions} [options] - Optional server configuration including telemetry and rate limiting
    */
-  public constructor(serverInfo: Implementation, options?: ServerOptions & { telemetry?: Telemetry }) {
+  public constructor(serverInfo: Implementation, options?: SfMcpServerOptions) {
     super(serverInfo, options);
     this.telemetry = options?.telemetry;
+
+    // Initialize rate limiter if configuration is provided
+    if (options?.rateLimit !== undefined) {
+      this.rateLimiter = createRateLimiter(options.rateLimit);
+      this.logger.debug('Rate limiter initialized', options.rateLimit);
+    }
     this.server.oninitialized = (): void => {
       const clientInfo = this.server.getClientVersion();
       if (clientInfo) {
@@ -84,6 +104,36 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
 
     const wrappedCb = async (args: RequestHandlerExtra<ServerRequest, ServerNotification>): Promise<CallToolResult> => {
       this.logger.debug(`Tool ${name} called`);
+
+      // Check rate limit before executing tool
+      if (this.rateLimiter) {
+        const rateLimitResult = this.rateLimiter.checkLimit();
+
+        if (!rateLimitResult.allowed) {
+          this.logger.warn(`Tool ${name} rate limited. Retry after: ${rateLimitResult.retryAfter ?? 0}ms`);
+
+          this.telemetry?.sendEvent('TOOL_RATE_LIMITED', {
+            name,
+            retryAfter: rateLimitResult.retryAfter,
+            remaining: rateLimitResult.remaining,
+          });
+
+          return {
+            isError: true,
+            content: [
+              {
+                type: 'text',
+                text: `Rate limit exceeded. Too many tool calls. Please wait ${Math.ceil(
+                  (rateLimitResult.retryAfter ?? 0) / 1000
+                )} seconds before trying again.`,
+              },
+            ],
+          };
+        }
+
+        this.logger.debug(`Tool ${name} rate check passed. Remaining: ${rateLimitResult.remaining}`);
+      }
+
       const startTime = Date.now();
       const result = await cb(args);
       const runtimeMs = Date.now() - startTime;
