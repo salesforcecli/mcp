@@ -1,3 +1,9 @@
+# [0.11.0](https://github.com/salesforcecli/mcp/compare/0.10.2...0.11.0) (2025-07-02)
+
+### Features
+
+- add rate limiting for tool calls ([e412a70](https://github.com/salesforcecli/mcp/commit/e412a70010253a7a3441902e2be4f5828c481a60))
+
 ## [0.10.2](https://github.com/salesforcecli/mcp/compare/0.10.1...0.10.2) (2025-06-29)
 
 ### Bug Fixes
