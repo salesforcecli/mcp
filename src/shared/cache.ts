@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Mutex } from '@salesforce/core';
 import { ToolInfo } from './types.js';
 
 type CacheContents = {
@@ -22,35 +23,6 @@ type CacheContents = {
 };
 
 type ValueOf<T> = T[keyof T];
-
-/**
- * Simple mutex implementation using promises
- */
-class Mutex {
-  private mutex = Promise.resolve();
-
-  public async lock<T>(fn: () => Promise<T> | T): Promise<T> {
-    const unlock = await this.acquire();
-    try {
-      return await fn();
-    } finally {
-      unlock();
-    }
-  }
-
-  private async acquire(): Promise<() => void> {
-    let release: () => void;
-    const promise = new Promise<void>((resolve) => {
-      release = resolve;
-    });
-
-    const currentMutex = this.mutex;
-    this.mutex = this.mutex.then(() => promise);
-
-    await currentMutex;
-    return release!;
-  }
-}
 
 /**
  * A thread-safe cache providing generic Map operations with mutex protection.
