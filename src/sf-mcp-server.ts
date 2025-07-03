@@ -157,8 +157,9 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
     // @ts-expect-error because we no longer know what the type of rest is
     const tool = super.tool(name, ...rest.slice(0, -1), wrappedCb);
 
-    if (this.dynamicTools && !CORE_TOOLS.includes(name)) {
-      tool.disable();
+    if (this.dynamicTools) {
+      // Only disable the tool if it's not a core tool
+      if (!CORE_TOOLS.includes(name)) tool.disable();
       addTool(tool, name).catch((error) => {
         this.logger.error(`Failed to add tool ${name}:`, error);
       });
