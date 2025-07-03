@@ -174,7 +174,7 @@ This example shows how to enable the `data`, `orgs`, and `metadata` toolsets whe
      }
 ```
 
-#### Dynamic Tools
+#### Dynamic Tools (Experimental)
 
 The `--dynamic-tools` flag enables dynamic tool discovery and loading. When this flag is set, the MCP server starts with a minimal set of core tools and will load new tools as the need arises. This is useful for reducing initial context size and improving LLM performance.
 

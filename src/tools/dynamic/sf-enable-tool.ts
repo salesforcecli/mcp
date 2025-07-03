@@ -29,7 +29,7 @@ export function registerToolEnableTool(server: SfMcpServer): void {
     `Enable one of the tools the Salesforce MCP server provides.
 
 AGENT INSTRUCTIONS:
-use sf-list-all-tools first to see what this will enable'`,
+use sf-list-all-tools first to learn what tools are available for enabling'`,
     enableToolParamsSchema.shape,
     {
       title: 'Enable an individual tool',

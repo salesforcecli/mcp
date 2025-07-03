@@ -56,13 +56,13 @@ export function determineToolsetsToEnable(
   if (dynamicTools) {
     return {
       core: true,
-      data: false,
+      data: true,
       dynamic: true,
       experimental: false,
-      metadata: false,
-      orgs: false,
-      testing: false,
-      users: false,
+      metadata: true,
+      orgs: true,
+      testing: true,
+      users: true,
     };
   }
 
