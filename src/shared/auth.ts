@@ -118,7 +118,7 @@ export async function getAllAllowedOrgs(): Promise<SanitizedOrgAuthorization[]> 
   const url = new URL(import.meta.url);
   const params = url.searchParams.get('orgs');
   const paramOrg = params ? params : undefined;
-  const orgAllowList = paramOrg ? new Set([paramOrg]) : Cache.getInstance().get('allowedOrgs') ?? new Set<string>();
+  const orgAllowList = paramOrg ? new Set([paramOrg]) : (await Cache.safeGet('allowedOrgs')) ?? new Set<string>();
   // Get all orgs on the user's machine
   const allOrgs = await AuthInfo.listAllAuthorizations();
 
