@@ -1,3 +1,10 @@
+## [0.11.1](https://github.com/salesforcecli/mcp/compare/0.11.0...0.11.1) (2025-07-03)
+
+### Bug Fixes
+
+- thread safe StateAgg ([0b0dc52](https://github.com/salesforcecli/mcp/commit/0b0dc52b60ada207fee7bc2edd8e6ddf4a13f687))
+- use thread-safe ConfigAgg.clearInstance ([9970141](https://github.com/salesforcecli/mcp/commit/9970141d52d0472cea963c2beee23d13b00af2c0))
+
 # [0.11.0](https://github.com/salesforcecli/mcp/compare/0.10.2...0.11.0) (2025-07-02)
 
 ### Features
