@@ -171,6 +171,7 @@ You can also use special values to control access to orgs:
       this.logToStderr('Registering org tools');
       // list all orgs
       orgs.registerToolListAllOrgs(server);
+      orgs.registerToolOrgOpen(server);
     }
 
     // ************************
