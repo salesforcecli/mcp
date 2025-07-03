@@ -183,9 +183,7 @@ async function getDefaultConfig(
 ): Promise<ConfigInfoWithCache | undefined> {
   // If the directory changes, the singleton instance of ConfigAggregator is not updated.
   // It continues to use the old local or global config.
-  // Note: We could update ConfigAggregator to have a clearInstance method like StateAggregator
-  // @ts-expect-error Accessing private static instance to reset singleton between directory changes
-  ConfigAggregator.instance = undefined;
+  await ConfigAggregator.clearInstance();
   const aggregator = await ConfigAggregator.create();
   const config = aggregator.getInfo(property);
 
