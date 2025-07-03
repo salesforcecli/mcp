@@ -68,9 +68,11 @@ const main = async (): Promise<void> => {
     command: normalizeCommandName(cmd.id),
     summary: cmd.summary ?? 'No summary available.',
     // Create a more descriptive text for better embedding quality
-    summaryForEmbedding: `Command: ${normalizeCommandName(cmd.id)}. Summary: ${cmd.summary ?? ''}. Description: ${
-      cmd.description ?? ''
-    }`,
+    summaryForEmbedding: `
+Command: ${normalizeCommandName(cmd.id)}.
+Summary: ${cmd.summary ?? ''}.
+Description: ${cmd.description ?? ''}
+`,
     flags: cmd.flags ?? [],
   }));
 
