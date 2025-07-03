@@ -1474,10 +1474,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@oclif/core@^4", "@oclif/core@^4.2.10", "@oclif/core@^4.3.2", "@oclif/core@^4.3.3":
-  version "4.3.3"
-  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-4.3.3.tgz#a527536b62ef202c58d2b69ce9cd1e64eb3a94b1"
-  integrity sha512-A0mk4nlVE+r34fl91OdglXVPwhhfzM59IhSxnOigqMkwxFgT8z3i2WlUgzmazzvzSccs2KM4N2HkTS3NEvW96g==
+"@oclif/core@^4", "@oclif/core@^4.3.3", "@oclif/core@^4.4.0":
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-4.4.0.tgz#82fb972822270c8e585587bd1c8a01ffbac588e2"
+  integrity sha512-wH5g3SLmbRutnr7UzQBSozRFEAZ7U9YGB/wFuBRr0ZghTgv5DE+KQaf6ZtU7iFb9pvkvoVRnT5XheNAtbjRDaQ==
   dependencies:
     ansi-escapes "^4.3.2"
     ansis "^3.17.0"
@@ -1498,27 +1498,27 @@
     wordwrap "^1.0.0"
     wrap-ansi "^7.0.0"
 
-"@oclif/plugin-help@^6.2.27":
-  version "6.2.28"
-  resolved "https://registry.npmjs.org/@oclif/plugin-help/-/plugin-help-6.2.28.tgz"
-  integrity sha512-eFLP2yjiK+xMRGcv9k9jOWV08HB+/Cgg1ND91zS4Uwgp1krMoL39Is+hIqnZOKkmiEMtiv8k5EDqCVv+DTRywg==
+"@oclif/plugin-help@^6.2.29":
+  version "6.2.29"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-help/-/plugin-help-6.2.29.tgz#6c349de65f5a7fee5f94032137fc872ac829d259"
+  integrity sha512-90DMOngEHiQw1I7oylVE1Hco991OkeDFJMx3CNJ2M3g5F1dhXgscjbaIlYHdiuNyVs0mTkKevdiMs911suD4yA==
   dependencies:
     "@oclif/core" "^4"
 
-"@oclif/plugin-not-found@^3.2.48":
-  version "3.2.55"
-  resolved "https://registry.npmjs.org/@oclif/plugin-not-found/-/plugin-not-found-3.2.55.tgz"
-  integrity sha512-+zgaRKoDsq431UyR/rOlJFDa6zdFkaNenQnLecrUWt9y9bwvw6Bs+mkQymAUJZCd9+JS4sZwqUilONXxU9g6DQ==
+"@oclif/plugin-not-found@^3.2.57":
+  version "3.2.57"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-not-found/-/plugin-not-found-3.2.57.tgz#315f032e908eb4094446866629c1bbba70be67ba"
+  integrity sha512-HtDnLIcR7ojRgdeH4G6MMUIu1Dgub/iiFEA4srZcQVKUIPA/6nF117W7rBXZMlHcbch90OCoGkSP3ty55nGKDw==
   dependencies:
     "@inquirer/prompts" "^7.5.3"
     "@oclif/core" "^4"
     ansis "^3.17.0"
     fast-levenshtein "^3.0.0"
 
-"@oclif/plugin-warn-if-update-available@^3.1.38":
-  version "3.1.40"
-  resolved "https://registry.npmjs.org/@oclif/plugin-warn-if-update-available/-/plugin-warn-if-update-available-3.1.40.tgz"
-  integrity sha512-k5FBGxjXsSj56075MFVx5I9MAJa082evyPqLUBOjXL9w91q3k/89U+kTCfFNTQga8DykxhMP/7UTuDFV+d/Dhg==
+"@oclif/plugin-warn-if-update-available@^3.1.41":
+  version "3.1.42"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-warn-if-update-available/-/plugin-warn-if-update-available-3.1.42.tgz#c03e4a9c1b4bca301524d26bf3d94bf5515a08e8"
+  integrity sha512-bcBfON81gYCx6x50HjrcL7gRiz7bEuLdQNifMsMcBtBq3IpOifyS8/l5R3REEy9kHJ1qdcSYehtopMvS4ov9lA==
   dependencies:
     "@oclif/core" "^4"
     ansis "^3.17.0"
@@ -1984,10 +1984,10 @@
   resolved "https://registry.npmjs.org/@radix-ui/rect/-/rect-1.1.1.tgz"
   integrity sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw==
 
-"@salesforce/agents@^0.15.2":
-  version "0.15.2"
-  resolved "https://registry.yarnpkg.com/@salesforce/agents/-/agents-0.15.2.tgz#283b1d5e887a4c3fec4c258eccf76e716a29f31d"
-  integrity sha512-8UFbRHVmjHeGUHNW17jqGsmTgdu8SGR/D+JB5V+46cRtyLMAU2PeMF6rKxszRaWauD+pcW6nHxplX6xhmTqe+A==
+"@salesforce/agents@^0.15.4":
+  version "0.15.4"
+  resolved "https://registry.yarnpkg.com/@salesforce/agents/-/agents-0.15.4.tgz#a5c96abcf603acc7b2727902133feda7c67678c3"
+  integrity sha512-GIX36TZjbjxTHw/kLf1+JmSl7sN+f00LH1biuvwCKyKXXFyHyrykt+dXL58Xeo6NvJcj7IouC+ntxsvV3ApS9w==
   dependencies:
     "@salesforce/core" "^8.10.3"
     "@salesforce/kit" "^3.2.3"
@@ -2106,28 +2106,7 @@
   resolved "https://registry.npmjs.org/@salesforce/schemas/-/schemas-1.9.0.tgz"
   integrity sha512-LiN37zG5ODT6z70sL1fxF7BQwtCX9JOWofSU8iliSNIM+WDEeinnoFtVqPInRSNt8I0RiJxIKCrqstsmQRBNvA==
 
-"@salesforce/source-deploy-retrieve@^12.19.5":
-  version "12.20.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-12.20.0.tgz#52256891fe101fb68aba2eaf66a51757c618ada7"
-  integrity sha512-P+UF9qNx7oJgYmXMLY8T2bJlZxTeRvFk7AlpVpGhO62YLDrX+wkLQgs+JVnxvz0nlif+qBUuTMCYW4Oj2wpy9g==
-  dependencies:
-    "@salesforce/core" "^8.12.0"
-    "@salesforce/kit" "^3.2.3"
-    "@salesforce/ts-types" "^2.0.12"
-    "@salesforce/types" "^1.3.0"
-    fast-levenshtein "^3.0.0"
-    fast-xml-parser "^4.5.3"
-    got "^11.8.6"
-    graceful-fs "^4.2.11"
-    ignore "^5.3.2"
-    isbinaryfile "^5.0.2"
-    jszip "^3.10.1"
-    mime "2.6.0"
-    minimatch "^9.0.5"
-    proxy-agent "^6.4.0"
-    yaml "^2.7.1"
-
-"@salesforce/source-deploy-retrieve@^12.19.9", "@salesforce/source-deploy-retrieve@^12.20.1":
+"@salesforce/source-deploy-retrieve@^12.19.5", "@salesforce/source-deploy-retrieve@^12.20.1":
   version "12.20.1"
   resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-12.20.1.tgz#7514d98bd5a54e7a6b992cdb30305eef8288312f"
   integrity sha512-pCGTgR90MRcpCS7WswMd7CHAgqK6DBssLuu+hL5KMiuthgfFjO8XNTGeHqZBc4xTYYzxm8h5vlN8aqElI4ppXA==
@@ -2148,15 +2127,15 @@
     proxy-agent "^6.4.0"
     yaml "^2.7.1"
 
-"@salesforce/source-tracking@^7.4.1":
-  version "7.4.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-7.4.1.tgz#83e6a140687c782ca33e81b9609295d968643dd3"
-  integrity sha512-UwouGuno36nHUVLEn47GVtA1v2bzrkccZ6ps8QYqbqpuipnkuraOmFXTlaIz8+8ZEZV0XDkBkual6qGH/Twc5A==
+"@salesforce/source-tracking@^7.4.6":
+  version "7.4.6"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-7.4.6.tgz#3a46075e334137c9337da30cbc0b0335ea63b929"
+  integrity sha512-RPbFBmldj7vR+xzfi2Xmw0V4nO+etudQ/e0W9fpWgU8RbhA3WPIp5KlTlCWoMW4ET7cmjGjXi/LWla00oYclBw==
   dependencies:
-    "@oclif/core" "^4.3.2"
-    "@salesforce/core" "^8.12.0"
+    "@oclif/core" "^4.4.0"
+    "@salesforce/core" "^8.14.0"
     "@salesforce/kit" "^3.2.3"
-    "@salesforce/source-deploy-retrieve" "^12.19.9"
+    "@salesforce/source-deploy-retrieve" "^12.20.1"
     "@salesforce/ts-types" "^2.0.12"
     fast-xml-parser "^4.5.3"
     graceful-fs "^4.2.11"
@@ -4777,12 +4756,12 @@ eslint-plugin-jsdoc@^46.10.1:
     semver "^7.5.4"
     spdx-expression-parse "^4.0.0"
 
-eslint-plugin-sf-plugin@^1.20.25:
-  version "1.20.25"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-sf-plugin/-/eslint-plugin-sf-plugin-1.20.25.tgz#943d861c73579d982a2c09eb5d8d5907cfdd7956"
-  integrity sha512-uknNSP5+CRHeA7PRGErKD5nCoehJY/UVofspAiwEmtzhNBfS1eUxORN9fU6WEjb9Mc3O6i7YrMznTYFhJYWr1Q==
+eslint-plugin-sf-plugin@^1.20.26:
+  version "1.20.26"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-sf-plugin/-/eslint-plugin-sf-plugin-1.20.26.tgz#3ffada40ee1aeab70384c16ed717769946b1473e"
+  integrity sha512-kK1Kj+PpkVaGHWR+/FGdSW4lT7nbD+g2mSLkYFFQ4X9L9VnDSGI2mbNfByCeJ0RELC2GxM0jhw/T1pgSKc7aQw==
   dependencies:
-    "@salesforce/core" "^8.12.0"
+    "@salesforce/core" "^8.14.0"
     "@typescript-eslint/utils" "^7.18.0"
 
 eslint-plugin-unicorn@^50.0.1:
@@ -7279,20 +7258,20 @@ object.values@^1.1.7:
     define-properties "^1.2.0"
     es-abstract "^1.22.1"
 
-oclif@^4.18.0:
-  version "4.18.0"
-  resolved "https://registry.npmjs.org/oclif/-/oclif-4.18.0.tgz"
-  integrity sha512-w5b35fT1tIZhJUv+GZLdEo4ZwF/wDeuNVL1cbOcgrQebcg0RMJE0ykFymVlfIPtOZqJzwfO6xeNEwqMy5fVtOw==
+oclif@^4.20.1:
+  version "4.20.1"
+  resolved "https://registry.yarnpkg.com/oclif/-/oclif-4.20.1.tgz#26caab0b2cd7c6548f3ff94abc1287b17fa04bf8"
+  integrity sha512-XsC6MaYTEtIjkq43sXIrGiq+wtuzxCYWv43gIaFAg8KszOutojqlACwrz1dgCgUAwanwv+BNBNJLnvwQ84dpjg==
   dependencies:
     "@aws-sdk/client-cloudfront" "^3.787.0"
     "@aws-sdk/client-s3" "^3.787.0"
     "@inquirer/confirm" "^3.1.22"
     "@inquirer/input" "^2.2.4"
     "@inquirer/select" "^2.5.0"
-    "@oclif/core" "^4.2.10"
-    "@oclif/plugin-help" "^6.2.27"
-    "@oclif/plugin-not-found" "^3.2.48"
-    "@oclif/plugin-warn-if-update-available" "^3.1.38"
+    "@oclif/core" "^4.4.0"
+    "@oclif/plugin-help" "^6.2.29"
+    "@oclif/plugin-not-found" "^3.2.57"
+    "@oclif/plugin-warn-if-update-available" "^3.1.41"
     ansis "^3.16.0"
     async-retry "^1.3.3"
     change-case "^4"

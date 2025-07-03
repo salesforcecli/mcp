@@ -30,7 +30,6 @@ describe('auth tests', () => {
   const sandbox = sinon.createSandbox();
   let configAggregatorCreateStub: sinon.SinonStub;
   let configAggregatorGetInfoStub: sinon.SinonStub;
-  let processExitStub: sinon.SinonStub;
 
   beforeEach(() => {
     // Reset ConfigAggregator instance before each test
@@ -40,9 +39,6 @@ describe('auth tests', () => {
     // Stub ConfigAggregator.create
     configAggregatorCreateStub = sandbox.stub(ConfigAggregator, 'create');
     configAggregatorGetInfoStub = sandbox.stub();
-
-    // Stub process.exit to prevent tests from actually exiting
-    processExitStub = sandbox.stub(process, 'exit');
 
     // Mock the ConfigAggregator instance
     const mockAggregator = {
@@ -302,7 +298,6 @@ describe('auth tests', () => {
 
   describe('getAllAllowedOrgs', () => {
     let authInfoListStub: sinon.SinonStub;
-    let consoleErrorStub: sinon.SinonStub;
 
     beforeEach(() => {
       // Set up mock org data that will be used across all tests
@@ -335,7 +330,6 @@ describe('auth tests', () => {
 
       authInfoListStub = sandbox.stub(AuthInfo, 'listAllAuthorizations');
       authInfoListStub.resolves(mockOrgs);
-      consoleErrorStub = sandbox.stub(console, 'error');
 
       // Set up default responses for config queries (empty configs)
       // This reuses the existing configAggregatorGetInfoStub from the main describe block
@@ -361,24 +355,6 @@ describe('auth tests', () => {
 
       configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(emptyTargetOrgConfig);
       configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(emptyDevHubConfig);
-    });
-
-    it('should exit on an empty org list', async () => {
-      authInfoListStub.resolves([]);
-
-      // @ts-expect-error Dynamic import with query string to control ORG_ALLOWLIST for testing
-      const authModule = (await import('../../src/shared/auth.js?orgs=NONEXISTENT_ORG')) as typeof AuthModuleType;
-      const { getAllAllowedOrgs } = authModule;
-
-      await getAllAllowedOrgs();
-
-      expect(authInfoListStub.calledOnce).to.be.true;
-      expect(processExitStub.calledWith(1)).to.be.true;
-      expect(
-        consoleErrorStub.calledWith(
-          'No orgs found that match the allowed orgs configuration. Check MCP Server startup config.'
-        )
-      ).to.be.true;
     });
 
     it('should only return orgs that exists in allowlist', async () => {

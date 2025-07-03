@@ -229,10 +229,8 @@ To configure [Cursor](https://www.cursor.com/) to work with Salesforce DX MCP Se
 {
   "mcpServers": {
     "salesforce": {
-      "command": {
-        "path": "npx",
-        "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "all"]
-      }
+      "command": "npx",
+      "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "all"]
     }
   }
 }

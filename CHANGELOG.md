@@ -1,3 +1,33 @@
+# [0.11.0](https://github.com/salesforcecli/mcp/compare/0.10.2...0.11.0) (2025-07-02)
+
+### Features
+
+- add rate limiting for tool calls ([e412a70](https://github.com/salesforcecli/mcp/commit/e412a70010253a7a3441902e2be4f5828c481a60))
+
+## [0.10.2](https://github.com/salesforcecli/mcp/compare/0.10.1...0.10.2) (2025-06-29)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/agents from 0.15.2 to 0.15.4 ([2b1e732](https://github.com/salesforcecli/mcp/commit/2b1e732db324cc40bb0d6950fd53be5c7d3cc143))
+
+## [0.10.1](https://github.com/salesforcecli/mcp/compare/0.10.0...0.10.1) (2025-06-28)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-tracking from 7.4.1 to 7.4.6 ([4aa6ea9](https://github.com/salesforcecli/mcp/commit/4aa6ea9493a6c64ae79db736e1e7c1ec75b9f360))
+
+# [0.10.0](https://github.com/salesforcecli/mcp/compare/0.9.1...0.10.0) (2025-06-27)
+
+### Features
+
+- **apex-test:** add async,codecoverage,verbose,resume ([#75](https://github.com/salesforcecli/mcp/issues/75)) ([765f369](https://github.com/salesforcecli/mcp/commit/765f3690b49fe66bc3c680a937da669d94012ea8))
+
+## [0.9.1](https://github.com/salesforcecli/mcp/compare/0.9.0...0.9.1) (2025-06-26)
+
+### Bug Fixes
+
+- don't finish process if no org is found ([bccd261](https://github.com/salesforcecli/mcp/commit/bccd261b6d649b2e39f676d8da98ec8002767199))
+
 # [0.9.0](https://github.com/salesforcecli/mcp/compare/0.8.2...0.9.0) (2025-06-25)
 
 ### Features
