@@ -39,7 +39,7 @@ You can specify a metadata file you want to open.
 `,
     orgOpenParamsSchema.shape,
     {
-      title: 'Open Org in browser',
+      title: 'Open Org in Browser',
       readOnlyHint: true,
       openWorldHint: false,
     },
@@ -55,21 +55,19 @@ You can specify a metadata file you want to open.
         const components = metadataResolver.getComponentsFromPath(filePath);
         const typeName = components[0]?.type?.name;
 
-        const metadataBuilderUrl = await org.getMetadataBuilderUrl(typeName, filePath);
+        const metadataBuilderUrl = await org.getMetadataUIURL(typeName, filePath);
         await open(metadataBuilderUrl);
 
         return textResponse(
-          `Successfully opened the org in your browser. ${
-            metadataBuilderUrl.includes('FlexiPageList')
-              ? "This metadata file doesn't have a builder UI, opened Lightning App Builder instead."
-              : ''
-          }`
+          metadataBuilderUrl.includes('FlexiPageList')
+            ? "Opened the org in your browser. This metadata file doesn't have a builder UI, opened Lightning App Builder instead."
+            : 'Opened this metadata in your browser'
         );
       }
 
       await open(await org.getFrontDoorUrl());
 
-      return textResponse('Successfully opened the org in your browser.');
+      return textResponse('Opened the org in your browser.');
     }
   );
 };
