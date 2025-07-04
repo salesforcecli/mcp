@@ -31,13 +31,14 @@ import { z } from 'zod';
 
 import { getConnection } from '../../shared/auth.js';
 import { textResponse } from '../../shared/utils.js';
-import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
+import { directoryParam, usernameOrAliasParam, useToolingApiParam } from '../../shared/params.js';
 import { SfMcpServer } from '../../sf-mcp-server.js';
 
 export const queryOrgParamsSchema = z.object({
   query: z.string().describe('SOQL query to run'),
   usernameOrAlias: usernameOrAliasParam,
   directory: directoryParam,
+  useToolingApi: useToolingApiParam,
 });
 
 export type QueryOrgOptions = z.infer<typeof queryOrgParamsSchema>;
@@ -52,7 +53,7 @@ export const registerToolQueryOrg = (server: SfMcpServer): void => {
       openWorldHint: false,
       readOnlyHint: true,
     },
-    async ({ query, usernameOrAlias, directory }) => {
+    async ({ query, usernameOrAlias, directory, useToolingApi }) => {
       try {
         if (!usernameOrAlias)
           return textResponse(
@@ -61,7 +62,9 @@ export const registerToolQueryOrg = (server: SfMcpServer): void => {
           );
         process.chdir(directory);
         const connection = await getConnection(usernameOrAlias);
-        const result = await connection.query(query);
+        const result = useToolingApi
+          ? await connection.tooling.query(query)
+          : await connection.query(query);
 
         return textResponse(`SOQL query results:\n\n${JSON.stringify(result, null, 2)}`);
       } catch (error) {

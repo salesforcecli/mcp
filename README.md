@@ -190,7 +190,7 @@ Includes this tool:
 
 Includes this tool:
 
-- `sf-query-org` - Runs a SOQL query against a Salesforce org.
+- `sf-query-org` - Runs a SOQL query against a Salesforce org. Set the optional `useToolingApi` parameter to `true` to query Tooling API objects.
 
 #### Users Toolset
 
