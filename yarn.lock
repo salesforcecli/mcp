@@ -1436,16 +1436,17 @@
     ts-node "^10.9.2"
     zod "^3.23.8"
 
-"@modelcontextprotocol/sdk@^1.12.1", "@modelcontextprotocol/sdk@^1.12.3":
-  version "1.12.3"
-  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.12.3.tgz#c1cba6434b2344d1626b5c12a5b15807e152bf6e"
-  integrity sha512-DyVYSOafBvk3/j1Oka4z5BWT8o4AFmoNyZY9pALOm7Lh3GZglR71Co4r4dEUoqDWdDazIZQHBe7J2Nwkg6gHgQ==
+"@modelcontextprotocol/sdk@^1.12.1", "@modelcontextprotocol/sdk@^1.15.0":
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.15.0.tgz#094df005f72144b0f3c7609fe6efb9137f29238b"
+  integrity sha512-67hnl/ROKdb03Vuu0YOr+baKTvf1/5YBHBm9KnZdjdAh8hjt4FRCPD5ucwxGB237sBpzlqQsLy1PFu7z/ekZ9Q==
   dependencies:
     ajv "^6.12.6"
     content-type "^1.0.5"
     cors "^2.8.5"
     cross-spawn "^7.0.5"
     eventsource "^3.0.2"
+    eventsource-parser "^3.0.0"
     express "^5.0.1"
     express-rate-limit "^7.5.0"
     pkce-challenge "^5.0.0"
@@ -4894,10 +4895,10 @@ events@^3.3.0:
   resolved "https://registry.npmjs.org/events/-/events-3.3.0.tgz"
   integrity sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==
 
-eventsource-parser@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/eventsource-parser/-/eventsource-parser-3.0.1.tgz"
-  integrity sha512-VARTJ9CYeuQYb0pZEPbzi740OWFgpHe7AYJ2WFZVnUDUQp5Dk2yJUgF36YsZ81cOyxT0QxmXD2EQpapAouzWVA==
+eventsource-parser@^3.0.0, eventsource-parser@^3.0.1:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/eventsource-parser/-/eventsource-parser-3.0.3.tgz#e9af1d40b77e6268cdcbc767321e8b9f066adea8"
+  integrity sha512-nVpZkTMM9rF6AQ9gPJpFsNAMt48wIzB5TQgiTLdHiuO8XEDhUgZEhqKlZWXbIzo9VmJ/HvysHqEaVeD5v9TPvA==
 
 eventsource@^3.0.2:
   version "3.0.6"
