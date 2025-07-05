@@ -47,7 +47,7 @@
     "@salesforce/core": "^8.16.0",
     "@salesforce/kit": "^3.1.6",
     "@salesforce/source-deploy-retrieve": "^12.20.1",
-    "@salesforce/source-tracking": "^7.4.6",
+    "@salesforce/source-tracking": "^7.4.7",
     "@salesforce/telemetry": "^6.0.39",
     "@salesforce/ts-types": "^2.0.11",
     "zod": "^3.25.67"
