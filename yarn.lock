@@ -2128,13 +2128,13 @@
     proxy-agent "^6.4.0"
     yaml "^2.7.1"
 
-"@salesforce/source-tracking@^7.4.6":
-  version "7.4.6"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-7.4.6.tgz#3a46075e334137c9337da30cbc0b0335ea63b929"
-  integrity sha512-RPbFBmldj7vR+xzfi2Xmw0V4nO+etudQ/e0W9fpWgU8RbhA3WPIp5KlTlCWoMW4ET7cmjGjXi/LWla00oYclBw==
+"@salesforce/source-tracking@^7.4.7":
+  version "7.4.7"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-7.4.7.tgz#daa44ad1eeaf9f4dff36069c47c536062ab0eeb3"
+  integrity sha512-ysv7loc8Qboi5jroKYeYFrXCuRFJT0k+g3lpefT8NfQwZNm8GyoUlKOw2AlfeE3gIorHUq3N7oWxjX8xUDDa4g==
   dependencies:
     "@oclif/core" "^4.4.0"
-    "@salesforce/core" "^8.14.0"
+    "@salesforce/core" "^8.15.0"
     "@salesforce/kit" "^3.2.3"
     "@salesforce/source-deploy-retrieve" "^12.20.1"
     "@salesforce/ts-types" "^2.0.12"
