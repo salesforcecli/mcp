@@ -62,13 +62,21 @@ export const registerToolQueryOrg = (server: SfMcpServer): void => {
           );
         process.chdir(directory);
         const connection = await getConnection(usernameOrAlias);
-        const result = useToolingApi
-          ? await connection.tooling.query(query)
-          : await connection.query(query);
+        const result = useToolingApi ? await connection.tooling.query(query) : await connection.query(query);
 
         return textResponse(`SOQL query results:\n\n${JSON.stringify(result, null, 2)}`);
       } catch (error) {
-        return textResponse(`Failed to query org: ${error instanceof Error ? error.message : 'Unknown error'}`, true);
+        let errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+        if (errorMessage.endsWith('is not supported.')) {
+          if (useToolingApi) {
+            errorMessage += '\nTry not using the Tooling API for this query.';
+          } else {
+            errorMessage += '\nTry using the Tooling API for this query.';
+          }
+        }
+
+        return textResponse(`Failed to query org: ${errorMessage}`, true);
       }
     }
   );
