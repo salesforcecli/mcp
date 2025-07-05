@@ -43,7 +43,7 @@
     "@modelcontextprotocol/sdk": "^1.12.3",
     "@oclif/core": "^4.3.3",
     "@salesforce/agents": "^0.15.4",
-    "@salesforce/apex-node": "^8.1.32",
+    "@salesforce/apex-node": "^8.2.1",
     "@salesforce/core": "^8.16.0",
     "@salesforce/kit": "^3.1.6",
     "@salesforce/source-deploy-retrieve": "^12.20.1",
