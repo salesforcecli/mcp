@@ -1,3 +1,9 @@
+## [0.11.2](https://github.com/salesforcecli/mcp/compare/0.11.1...0.11.2) (2025-07-05)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/apex-node from 8.1.32 to 8.2.1 ([3c40acb](https://github.com/salesforcecli/mcp/commit/3c40acbce956a6d82b568e8f908b05d45ec451af))
+
 ## [0.11.1](https://github.com/salesforcecli/mcp/compare/0.11.0...0.11.1) (2025-07-03)
 
 ### Bug Fixes
