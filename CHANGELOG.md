@@ -1,3 +1,9 @@
+## [0.11.4](https://github.com/salesforcecli/mcp/compare/0.11.3...0.11.4) (2025-07-06)
+
+### Bug Fixes
+
+- **deps:** bump @oclif/core from 4.4.0 to 4.4.1 ([44b0b27](https://github.com/salesforcecli/mcp/commit/44b0b277b1f3a24f274c5dbaf05697b24a338f7f))
+
 ## [0.11.3](https://github.com/salesforcecli/mcp/compare/0.11.2...0.11.3) (2025-07-05)
 
 ### Bug Fixes
