@@ -49,7 +49,7 @@ Want to jump in and see what all the fuss is about? Read on!
 
 This example uses Visual Studio Code (VS Code) as the MCP client because it's a standard Salesforce DX development tool. After you configure it with the Salesforce DX MCP Server, you then use GitHub Copilot and natural language to easily execute typical Salesforce DX development tasks, such as listing your authorized orgs, viewing org records, and deploying or retrieving metadata.
 
-But you're not limited to using only VS Code and Copilot! You can [configure many other clients](README.md#configure-other-clients-to-use-the-salesforce-mcp-server) to use the Salesforce DX MCP Server, such as Cursor, Cline, Claude Desktop, Zed, Windsurf, and more.
+But you're not limited to using only VS Code and Copilot! You can [configure many other clients](README.md#configure-other-clients-to-use-the-salesforce-dx-mcp-server) to use the Salesforce DX MCP Server, such as Cursor, Cline, Claude Desktop, Zed, Windsurf, and more.
 
 **Before You Begin**
 
@@ -174,6 +174,12 @@ This example shows how to enable the `data`, `orgs`, and `metadata` toolsets whe
      }
 ```
 
+#### Dynamic Tools (Experimental)
+
+The `--dynamic-tools` flag enables dynamic tool discovery and loading. When this flag is set, the MCP server starts with a minimal set of core tools and will load new tools as the need arises. This is useful for reducing initial context size and improving LLM performance.
+
+**NOTE:** This feature works in VSCode and Cline but may not work in other environments.
+
 #### Core Toolset (always enabled)
 
 Includes this tool:
@@ -223,10 +229,8 @@ To configure [Cursor](https://www.cursor.com/) to work with Salesforce DX MCP Se
 {
   "mcpServers": {
     "salesforce": {
-      "command": {
-        "path": "npx",
-        "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "all"]
-      }
+      "command": "npx",
+      "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "all"]
     }
   }
 }
