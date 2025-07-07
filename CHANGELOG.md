@@ -1,3 +1,47 @@
+# [0.12.0](https://github.com/salesforcecli/mcp/compare/0.11.4...0.12.0) (2025-07-07)
+
+### Bug Fixes
+
+- add core tools to cache ([0af8c10](https://github.com/salesforcecli/mcp/commit/0af8c10346298267c7640fde95e8f2c5e337600a))
+- add tests and fix bugs ([6fded7c](https://github.com/salesforcecli/mcp/commit/6fded7c01123ff8d48cd47ce8d847ac5be90d3de))
+
+### Features
+
+- dynamic toolset discovery ([076512e](https://github.com/salesforcecli/mcp/commit/076512ee00883f174c833cb298530d5f667709fc))
+- flat tool discovery ([084ad8f](https://github.com/salesforcecli/mcp/commit/084ad8f70e6d4b6fe6aa99e090e34f7a7a6921dd))
+- make Cache thread safe and reorganize ([7e8af99](https://github.com/salesforcecli/mcp/commit/7e8af99417a85d790ed2022b5d47c3239f7f2a34))
+
+## [0.11.4](https://github.com/salesforcecli/mcp/compare/0.11.3...0.11.4) (2025-07-06)
+
+### Bug Fixes
+
+- **deps:** bump @oclif/core from 4.4.0 to 4.4.1 ([44b0b27](https://github.com/salesforcecli/mcp/commit/44b0b277b1f3a24f274c5dbaf05697b24a338f7f))
+
+## [0.11.3](https://github.com/salesforcecli/mcp/compare/0.11.2...0.11.3) (2025-07-05)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-tracking from 7.4.6 to 7.4.7 ([66740f7](https://github.com/salesforcecli/mcp/commit/66740f745dfb690cfd5a38ddce4a981b87b3ef45))
+
+## [0.11.2](https://github.com/salesforcecli/mcp/compare/0.11.1...0.11.2) (2025-07-05)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/apex-node from 8.1.32 to 8.2.1 ([3c40acb](https://github.com/salesforcecli/mcp/commit/3c40acbce956a6d82b568e8f908b05d45ec451af))
+
+## [0.11.1](https://github.com/salesforcecli/mcp/compare/0.11.0...0.11.1) (2025-07-03)
+
+### Bug Fixes
+
+- thread safe StateAgg ([0b0dc52](https://github.com/salesforcecli/mcp/commit/0b0dc52b60ada207fee7bc2edd8e6ddf4a13f687))
+- use thread-safe ConfigAgg.clearInstance ([9970141](https://github.com/salesforcecli/mcp/commit/9970141d52d0472cea963c2beee23d13b00af2c0))
+
+# [0.11.0](https://github.com/salesforcecli/mcp/compare/0.10.2...0.11.0) (2025-07-02)
+
+### Features
+
+- add rate limiting for tool calls ([e412a70](https://github.com/salesforcecli/mcp/commit/e412a70010253a7a3441902e2be4f5828c481a60))
+
 ## [0.10.2](https://github.com/salesforcecli/mcp/compare/0.10.1...0.10.2) (2025-06-29)
 
 ### Bug Fixes

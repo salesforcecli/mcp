@@ -85,7 +85,7 @@ export const registerToolAssignPermissionSet = (server: SfMcpServer): void => {
 
         // We need to clear the instance so we know we have the most up to date aliases
         // If a user sets an alias after server start up, it was not getting picked up
-        StateAggregator.clearInstance();
+        await StateAggregator.clearInstanceAsync();
         // Must NOT be nullish coalescing (??) In case the LLM uses and empty string
         const assignTo = (await StateAggregator.getInstance()).aliases.resolveUsername(onBehalfOf || usernameOrAlias);
 
