@@ -1,3 +1,21 @@
+## [0.11.4](https://github.com/salesforcecli/mcp/compare/0.11.3...0.11.4) (2025-07-06)
+
+### Bug Fixes
+
+- **deps:** bump @oclif/core from 4.4.0 to 4.4.1 ([44b0b27](https://github.com/salesforcecli/mcp/commit/44b0b277b1f3a24f274c5dbaf05697b24a338f7f))
+
+## [0.11.3](https://github.com/salesforcecli/mcp/compare/0.11.2...0.11.3) (2025-07-05)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-tracking from 7.4.6 to 7.4.7 ([66740f7](https://github.com/salesforcecli/mcp/commit/66740f745dfb690cfd5a38ddce4a981b87b3ef45))
+
+## [0.11.2](https://github.com/salesforcecli/mcp/compare/0.11.1...0.11.2) (2025-07-05)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/apex-node from 8.1.32 to 8.2.1 ([3c40acb](https://github.com/salesforcecli/mcp/commit/3c40acbce956a6d82b568e8f908b05d45ec451af))
+
 ## [0.11.1](https://github.com/salesforcecli/mcp/compare/0.11.0...0.11.1) (2025-07-03)
 
 ### Bug Fixes
