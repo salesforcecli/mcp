@@ -1,3 +1,16 @@
+# [0.12.0](https://github.com/salesforcecli/mcp/compare/0.11.4...0.12.0) (2025-07-07)
+
+### Bug Fixes
+
+- add core tools to cache ([0af8c10](https://github.com/salesforcecli/mcp/commit/0af8c10346298267c7640fde95e8f2c5e337600a))
+- add tests and fix bugs ([6fded7c](https://github.com/salesforcecli/mcp/commit/6fded7c01123ff8d48cd47ce8d847ac5be90d3de))
+
+### Features
+
+- dynamic toolset discovery ([076512e](https://github.com/salesforcecli/mcp/commit/076512ee00883f174c833cb298530d5f667709fc))
+- flat tool discovery ([084ad8f](https://github.com/salesforcecli/mcp/commit/084ad8f70e6d4b6fe6aa99e090e34f7a7a6921dd))
+- make Cache thread safe and reorganize ([7e8af99](https://github.com/salesforcecli/mcp/commit/7e8af99417a85d790ed2022b5d47c3239f7f2a34))
+
 ## [0.11.4](https://github.com/salesforcecli/mcp/compare/0.11.3...0.11.4) (2025-07-06)
 
 ### Bug Fixes
