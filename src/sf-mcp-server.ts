@@ -21,6 +21,7 @@ import { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.j
 import { Logger } from '@salesforce/core';
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import { Telemetry } from './telemetry.js';
+import { addTool, CORE_TOOLS } from './shared/tools.js';
 import { RateLimiter, RateLimitConfig, createRateLimiter } from './shared/rate-limiter.js';
 
 type ToolMethodSignatures = {
@@ -36,6 +37,8 @@ export type SfMcpServerOptions = ServerOptions & {
   telemetry?: Telemetry;
   /** Optional rate limiting configuration */
   rateLimit?: Partial<RateLimitConfig>;
+  /** Enable dynamic tool loading */
+  dynamicTools?: boolean;
 };
 
 /**
@@ -52,6 +55,7 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
   /** Optional telemetry instance for tracking server events */
   private telemetry?: Telemetry;
 
+  private dynamicTools: boolean;
   /** Rate limiter for controlling tool call frequency */
   private rateLimiter?: RateLimiter;
 
@@ -64,7 +68,7 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
   public constructor(serverInfo: Implementation, options?: SfMcpServerOptions) {
     super(serverInfo, options);
     this.telemetry = options?.telemetry;
-
+    this.dynamicTools = options?.dynamicTools ?? false;
     // Initialize rate limiter if configuration is provided
     if (options?.rateLimit !== undefined) {
       this.rateLimiter = createRateLimiter(options.rateLimit);
@@ -151,6 +155,15 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
     };
 
     // @ts-expect-error because we no longer know what the type of rest is
-    return super.tool(name, ...rest.slice(0, -1), wrappedCb);
+    const tool = super.tool(name, ...rest.slice(0, -1), wrappedCb);
+
+    if (this.dynamicTools) {
+      // Only disable the tool if it's not a core tool
+      if (!CORE_TOOLS.includes(name)) tool.disable();
+      addTool(tool, name).catch((error) => {
+        this.logger.error(`Failed to add tool ${name}:`, error);
+      });
+    }
+    return tool;
   };
 }
