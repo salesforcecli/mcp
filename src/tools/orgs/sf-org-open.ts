@@ -23,7 +23,10 @@ import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
 import { SfMcpServer } from '../../sf-mcp-server.js';
 
 export const orgOpenParamsSchema = z.object({
-  filePath: z.string().optional().describe('File path of the metadata to open.'),
+  filePath: z
+    .string()
+    .optional()
+    .describe('File path of the metadata to open. This should be an existent file path in the project.'),
   usernameOrAlias: usernameOrAliasParam,
   directory: directoryParam,
 });
