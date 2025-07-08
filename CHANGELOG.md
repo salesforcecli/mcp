@@ -1,3 +1,9 @@
+# [0.13.0](https://github.com/salesforcecli/mcp/compare/0.12.0...0.13.0) (2025-07-08)
+
+### Features
+
+- sf-org-open ([b41d3bb](https://github.com/salesforcecli/mcp/commit/b41d3bbfce42083a8a018f310862372e1eed15a8))
+
 # [0.12.0](https://github.com/salesforcecli/mcp/compare/0.11.4...0.12.0) (2025-07-07)
 
 ### Bug Fixes
