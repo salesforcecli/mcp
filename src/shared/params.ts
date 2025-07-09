@@ -46,9 +46,9 @@ export const baseAbsolutePathParam = z
   .refine(sanitizePath, 'Invalid path: Must be an absolute path and cannot contain path traversal sequences');
 
 export const directoryParam = baseAbsolutePathParam.describe(`The directory to run this tool from.
-AGENT INSTRUCTIONS:
-We need to know where the user wants to run this tool from.
-Look at your current Workspace Context to determine this filepath.
-ALWAYS USE A FULL PATH TO THE DIRECTORY.
-Unless the user explicitly asks for a different directory, or a new directory is created from the action of a tool, use this same directory for future tool calls.
+Use the full absolute path to the root directory of the active project in the current IDE workspace context.
+
+This directory must be an absolute path to ensure consistent tool behavior.
+
+Unless the user explicitly specifies a different directory, or the action of another tool creates a new working directory, use the same project directory for subsequent tool calls.
 `);
