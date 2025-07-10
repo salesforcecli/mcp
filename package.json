@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/mcp",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "MCP Server for interacting with Salesforce instances",
   "bin": {
     "sf-mcp-server": "bin/run.js"
@@ -44,12 +44,13 @@
     "@oclif/core": "^4.4.1",
     "@salesforce/agents": "^0.15.4",
     "@salesforce/apex-node": "^8.2.1",
-    "@salesforce/core": "^8.17.0",
+    "@salesforce/core": "^8.18.0",
     "@salesforce/kit": "^3.1.6",
     "@salesforce/source-deploy-retrieve": "^12.20.1",
     "@salesforce/source-tracking": "^7.4.7",
     "@salesforce/telemetry": "^6.0.39",
     "@salesforce/ts-types": "^2.0.11",
+    "open": "^10.1.2",
     "zod": "^3.25.67"
   },
   "devDependencies": {
