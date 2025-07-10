@@ -28,8 +28,19 @@ import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
  *
  * Parameters:
  * - directory: directory to change to before running the command
- * - usernameOrAlias: Username or alias of the Salesforce DevHub/prod org to use to create from
- *
+ * - usernameOrAlias: Username or alias of the Salesforce DevHub org to use to create from
+ * - duration: Duration in days of the scratch org to exist, default 7
+ * - edition: Edition of the scratch org
+ * - definitionFile: path to the scratch org definition file, default config/project-scratch-def.json
+ * - alias: Alias to use for the scratch org
+ * - async: Wait for the scratch org creation process to finish, default false
+ * - setDefault: set the newly created org as default-target-org
+ * - snapshot: The snapshot name to use when creating a scratch org
+ * - sourceOrg: 15-character ID of the org shape that the new scratch org is based on
+ * - username: Username of the scratch org admin user
+ * - description: a description given to the scratch org
+ * - orgName: Name of the scratch org
+ * - adminEmail: Email address that will be applied to the org's admin user.
  * Returns:
  * - textResponse:
  */
@@ -92,6 +103,9 @@ create a scratch org with the definition file myDefinition.json that lasts 3 day
 create a scratch org aliased as MyNewOrg and set as default and don't wait for it to finish
 `,
     createScratchOrgParams.shape,
+    {
+      title: 'Create a scratch org',
+    },
     async ({
       directory,
       devHub,

@@ -191,7 +191,6 @@ You can also use special values to control access to orgs:
       this.logToStderr('Registering org tools');
       // list all orgs
       orgs.registerToolListAllOrgs(server);
-      orgs.registerToolDeleteOrg(server);
     }
 
     // ************************
@@ -242,6 +241,8 @@ You can also use special values to control access to orgs:
       this.logToStderr('Registering experimental tools');
       // Add any experimental tools here
       orgs.registerToolCreateScratchOrg(server);
+      orgs.registerToolDeleteOrg(server);
+      orgs.registerToolCreateOrgSnapshot(server);
     }
 
     const transport = new StdioServerTransport();

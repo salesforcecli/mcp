@@ -48,9 +48,13 @@ ALWAYS confirm with the user before deleting an org
 
 Example usage:
 Can you delete my org
-Can you delete my org named A
+Can you delete MyAliasedOrg
+Can you delete test-fe2n4tc8pgku@example.com
 `,
     deleteOrgParams.shape,
+    {
+      title: 'Delete an Org',
+    },
     async ({ directory, usernameOrAlias }) => {
       try {
         process.chdir(directory);
