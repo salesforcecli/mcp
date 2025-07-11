@@ -7,6 +7,7 @@ Use this guide to learn how to contribute to the Salesforce DX MCP Server.
 [One-Time Setup](#one-time-setup)</br>
 [Quick Start](#quick-start)</br>
 [Testing](#testing)</br>
+[Debugging](#debugging)</br>
 [Useful Yarn Commands](#useful-yarn-commands)</br>
 
 <hr>
@@ -58,9 +59,9 @@ Use this guide to learn how to contribute to the Salesforce DX MCP Server.
 
 All changes must have associated unit tests when possible. End-to-end tests for tools will be added in the future.
 
-For manual tool testing, use the MCP inspector to make tool calls directly from your browser or terminal. This type of testing is handy when you start working on a new tool and you want to focus on the tool logic first before optimizing the agent instructions.
+For manual tool testing, use the MCP Inspector to make tool calls directly from your browser or terminal. This type of testing is handy when you start working on a new tool and you want to focus on the tool logic first before optimizing the agent instructions.
 
-First install the MCP inspector CLI:
+First install the MCP Inspector CLI:
 
 ```
 npm i -g @modelcontextprotocol/inspector
@@ -71,7 +72,7 @@ Then follow the steps for the type of testing you want to do: from the browser o
 ### Browser
 
 1. Build the local server: `yarn build`.
-2. Start the MCP inspector server: `mcp-inspector node lib/index.js --orgs DEFAULT_TARGET_ORG`.
+2. Start the MCP Inspector server: `mcp-inspector node lib/index.js --orgs DEFAULT_TARGET_ORG`.
 3. If successful, open the specified localhost URL in your browser. In this example it's `http://127.0.0.1:6274`:
 
    ```
@@ -89,7 +90,7 @@ Then follow the steps for the type of testing you want to do: from the browser o
 ### Terminal
 
 1. Build the local server: `yarn build`.
-2. Use the MCP inspector CLI to call a specific tool with its parameters.
+2. Use the MCP Inspector CLI to call a specific tool with its parameters.
 
 This example calls the `sf-query-org` tool from the context of a Salesforce DX project:
 
@@ -113,7 +114,7 @@ ata/v63.0/sobjects/Account/001DK00001BFbHbYAL\"\n      },\n      \"Id\": \"001DK
 }
 ```
 
-Learn more about each tool argument by looking at its definition in the code, the MCP inspector browser UI, or by listing all tools using the MCP inspector CLI. For example:
+Learn more about each tool argument by looking at its definition in the code, the MCP Inspector browser UI, or by listing all tools using the MCP Inspector CLI. For example:
 
 ```shell
 mcp-inspector --cli node bin/run.js --orgs DEFAULT_TARGET_ORG --method tools/list
@@ -122,6 +123,34 @@ mcp-inspector --cli node bin/run.js --orgs DEFAULT_TARGET_ORG --method tools/lis
 ### Unit Tests
 
 Unit tests are run with `yarn test` and use the Mocha test framework. Tests are located in the `test` directory and are named with the pattern, `test/**/*.test.ts`.
+
+## Debugging
+> [!NOTE]  
+> This section assumes you're using Visual Studio Code (VS Code).
+
+You can use the VS Code debugger with the MCP Inspector CLI to step through the code of your MCP tools:
+
+1. Make a change in a tool file.
+2. Set a breakpoint.
+3. Build the local MCP server: `yarn compile`.
+4. Call the tool using the MCP Inspector CLI.
+5. In the VS Code debugger, select the `Attach to Debug Hook Process` launch config and start debugging.
+
+Here's an example of calling the `sf-query-org` tool:
+
+```shell
+MCP_SERVER_REQUEST_TIMEOUT=120000 mcp-inspector --cli node --inspect-brk bin/run.js -o DEFAULT_TARGET_ORG --no-telemetry --method tools/call \
+  --tool-name sf-query-org \
+  --tool-arg directory="/path/to/sfdx-project" \
+  --tool-arg query="select name from Property__c order by name asc" \
+  --tool-arg usernameOrAlias=dreamhouse
+```
+
+We suggest you set `MCP_SERVER_REQUEST_TIMEOUT` to 120000ms (2 minutes) to allow longer debugging sessions without having the MCP Inspector client timeout.
+For other configuration values see: https://github.com/modelcontextprotocol/inspector?tab=readme-ov-file#configuration
+
+> [!IMPORTANT]  
+> You must compile the local MCP server using `yarn compile` after every change in a TypeScript file, otherwise breakpoints in the TypeScript files might not match the running JavaScript code.
 
 ## Useful yarn Commands
 
