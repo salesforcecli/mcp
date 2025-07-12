@@ -36,10 +36,7 @@ USAGE:
 ...for my 'test@example.com' user
 ...for the 'test@example.com' org`);
 
-export const useToolingApiParam = z
-  .boolean()
-  .optional()
-  .describe('Use Tooling API to insert a record in a Tooling API object');
+export const useToolingApiParam = z.boolean().optional().describe('Use Tooling API for the operation');
 
 export const baseAbsolutePathParam = z
   .string()
