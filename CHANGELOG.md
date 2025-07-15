@@ -1,3 +1,9 @@
+# [0.14.0](https://github.com/salesforcecli/mcp/compare/0.13.2...0.14.0) (2025-07-15)
+
+### Features
+
+- Add Tooling API support to `sf-query-org` ([#95](https://github.com/salesforcecli/mcp/issues/95)) ([5b010f0](https://github.com/salesforcecli/mcp/commit/5b010f04c739be29eeafe2cf00ed6df2fc87b879))
+
 ## [0.13.2](https://github.com/salesforcecli/mcp/compare/0.13.1...0.13.2) (2025-07-13)
 
 ### Bug Fixes
