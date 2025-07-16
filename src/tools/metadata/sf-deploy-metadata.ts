@@ -27,9 +27,13 @@ import { getConnection } from '../../shared/auth.js';
 import { SfMcpServer } from '../../sf-mcp-server.js';
 
 const deployMetadataParams = z.object({
-  sourceDir: z
+  filePaths: z
     .array(z.string())
-    .describe('Path to the local source files to deploy. Leave this unset if the user is vague about what to deploy.')
+    .describe(
+      `Path to the local source files to deploy. Leave this unset if the user is vague about what to deploy.
+All file paths should be relative to the current directory.
+`
+    )
     .optional(),
   manifest: z.string().describe('Full file path for manifest (XML file) of components to deploy.').optional(),
   // `RunSpecifiedTests` is excluded on purpose because the tool sets this level when Apex tests to run are passed in.
@@ -102,12 +106,12 @@ Deploy X to my org and run A,B and C apex tests.
       destructiveHint: true,
       openWorldHint: false,
     },
-    async ({ sourceDir, usernameOrAlias, apexTests, apexTestLevel, directory, manifest }) => {
+    async ({ filePaths, usernameOrAlias, apexTests, apexTestLevel, directory, manifest }) => {
       if (apexTests && apexTestLevel) {
         return textResponse("You can't specify both `apexTests` and `apexTestLevel` parameters.", true);
       }
 
-      if (sourceDir && manifest) {
+      if (filePaths && manifest) {
         return textResponse("You can't specify both `sourceDir` and `manifest` parameters.", true);
       }
 
@@ -125,7 +129,7 @@ Deploy X to my org and run A,B and C apex tests.
 
       const org = await Org.create({ connection });
 
-      if (!sourceDir && !manifest && !(await org.tracksSource())) {
+      if (!filePaths && !manifest && !(await org.tracksSource())) {
         return textResponse(
           'This org does not have source-tracking enabled or does not support source-tracking. You should specify the files or a manifest to deploy.',
           true
@@ -140,7 +144,7 @@ Deploy X to my org and run A,B and C apex tests.
           subscribeSDREvents: true,
         });
 
-        const componentSet = await buildDeployComponentSet(connection, project, stl, sourceDir, manifest);
+        const componentSet = await buildDeployComponentSet(connection, project, stl, filePaths, manifest);
 
         if (componentSet.size === 0) {
           // STL found no changes
