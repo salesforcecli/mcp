@@ -23,6 +23,7 @@ import * as orgs from './tools/orgs/index.js';
 import * as data from './tools/data/index.js';
 import * as users from './tools/users/index.js';
 import * as testing from './tools/testing/index.js';
+import * as apex from './tools/apex/index.js';
 import * as metadata from './tools/metadata/index.js';
 import * as dynamic from './tools/dynamic/index.js';
 import Cache from './shared/cache.js';
@@ -218,6 +219,15 @@ You can also use special values to control access to orgs:
       this.logToStderr('Registering testing tools');
       testing.registerToolTestApex(server);
       testing.registerToolTestAgent(server);
+    }
+
+    // ************************
+    // APEX TOOLS
+    // ************************
+    if (toolsetsToEnable.apex) {
+      this.logToStderr('Registering apex tools');
+      // assign permission set
+      apex.registerToolApexRun(server);
     }
 
     // ************************
