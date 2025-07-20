@@ -1639,19 +1639,19 @@
   resolved "https://registry.yarnpkg.com/@microsoft/applicationinsights-web-snippet/-/applicationinsights-web-snippet-1.0.1.tgz#6bb788b2902e48bf5d460c38c6bb7fedd686ddd7"
   integrity sha512-2IHAOaLauc8qaAitvWS+U931T+ze+7MNWrDHY47IENP5y2UA0vqJDu67kWZDdpCN1fFC77sfgfB+HV7SrKshnQ==
 
-"@modelcontextprotocol/inspector-cli@^0.15.0":
-  version "0.15.0"
-  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/inspector-cli/-/inspector-cli-0.15.0.tgz#72e5087ba5786908c29b5cfcc95f7960c9fce139"
-  integrity sha512-mZxRqxYub6qFi3oypLI63yCm9TAxlTO8asE9FeAU4+HFlvKxQrujcfpckcWjqGKhZ0uVH1YUE+VwDx70nz+I5w==
+"@modelcontextprotocol/inspector-cli@^0.16.1":
+  version "0.16.1"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/inspector-cli/-/inspector-cli-0.16.1.tgz#bbfb728060b8bddf68692a553d96d0c4abbd76f8"
+  integrity sha512-Y8EKrCQz8mO6/267UpQ4y94PB/WqTIDG0jQ/puyV2LoQWQzjwTr3ORMLAgfDHoxkhqOPldzlNs4s+DzYDsp8tw==
   dependencies:
     "@modelcontextprotocol/sdk" "^1.13.1"
     commander "^13.1.0"
     spawn-rx "^5.1.2"
 
-"@modelcontextprotocol/inspector-client@^0.15.0":
-  version "0.15.0"
-  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/inspector-client/-/inspector-client-0.15.0.tgz#295332b48fe8c758e039d3409c888e14b1d58fbf"
-  integrity sha512-zIKxvp5HX1yE+kPOhI42/TVNuM9/RYEizdVmlpov7H38Mg9DeN9DptHYrsVLy8ZEJD1XFAu/eLl+ZtS3ceANNg==
+"@modelcontextprotocol/inspector-client@^0.16.1":
+  version "0.16.1"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/inspector-client/-/inspector-client-0.16.1.tgz#6bd3b5a434b2065b380a69802fb0fc520488799f"
+  integrity sha512-ysbsCsBGhceADF3wBmjM/xnZV5xuzh2GcyF1GnF5AYzhr62qSkurMFXlSLClP6fyy95NW9QLQBhNpdR+3le2Dw==
   dependencies:
     "@modelcontextprotocol/sdk" "^1.13.1"
     "@radix-ui/react-checkbox" "^1.1.4"
@@ -1679,10 +1679,10 @@
     tailwindcss-animate "^1.0.7"
     zod "^3.23.8"
 
-"@modelcontextprotocol/inspector-server@^0.15.0":
-  version "0.15.0"
-  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/inspector-server/-/inspector-server-0.15.0.tgz#c7114dc29d56e11ecd78c06c1f045df66d6ee714"
-  integrity sha512-x1qtDEUeSHURtBH1/WN30NX7O/Imb3u2IoY+T2YCf4mGiB24eo4hEudiZmnuKSDGwDs4BAj2keiFeL3/EwkH9w==
+"@modelcontextprotocol/inspector-server@^0.16.1":
+  version "0.16.1"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/inspector-server/-/inspector-server-0.16.1.tgz#bb3b8652f09e6cf1cd7fc058decb572415548380"
+  integrity sha512-niwKEZAK8jREUoioLuvCG59/7rbonlLa7qs4Bcx448m8vpTtsSRIGJum6TObZCx5/JWdngXBqoPBwjkNnf1eHQ==
   dependencies:
     "@modelcontextprotocol/sdk" "^1.13.1"
     cors "^2.8.5"
@@ -1690,14 +1690,14 @@
     ws "^8.18.0"
     zod "^3.23.8"
 
-"@modelcontextprotocol/inspector@^0.15.0":
-  version "0.15.0"
-  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/inspector/-/inspector-0.15.0.tgz#1402a8e1c1a23c081eaaa66759280593cf853565"
-  integrity sha512-PN1R7InR48Y6wU8s/vHWc0KOYAjlYQkgCpjUQsNFB078ebdv+empkMI6d1Gg+UIRx8mTrwtbBgv0A6ookGG+0w==
+"@modelcontextprotocol/inspector@^0.16.1":
+  version "0.16.1"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/inspector/-/inspector-0.16.1.tgz#9a5883e08e39e7dccddc5130cedab75ce0a91615"
+  integrity sha512-QbNAozion5x4aBbA/X75P0zOQBJHO1JIhHa0GS/6qXU3limpswRYACa8N57QmFi/D+JIx0qqfoyraPi8POwCuw==
   dependencies:
-    "@modelcontextprotocol/inspector-cli" "^0.15.0"
-    "@modelcontextprotocol/inspector-client" "^0.15.0"
-    "@modelcontextprotocol/inspector-server" "^0.15.0"
+    "@modelcontextprotocol/inspector-cli" "^0.16.1"
+    "@modelcontextprotocol/inspector-client" "^0.16.1"
+    "@modelcontextprotocol/inspector-server" "^0.16.1"
     "@modelcontextprotocol/sdk" "^1.13.1"
     concurrently "^9.0.1"
     open "^10.1.0"
