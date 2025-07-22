@@ -1,3 +1,9 @@
+## [0.14.3](https://github.com/salesforcecli/mcp/compare/0.14.2...0.14.3) (2025-07-22)
+
+### Bug Fixes
+
+- **deps:** bump form-data from 4.0.0 to 4.0.4 ([70c072e](https://github.com/salesforcecli/mcp/commit/70c072e02d7badf6cd6cfed40f78640a5ccec2f1))
+
 ## [0.14.2](https://github.com/salesforcecli/mcp/compare/0.14.1...0.14.2) (2025-07-19)
 
 ### Bug Fixes
