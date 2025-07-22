@@ -133,6 +133,11 @@ export async function enableTool(toolName: string): Promise<{ success: boolean; 
   // Enable the tool directly
   toolInfo.tool.enable();
 
+  // Verify the tool is enabled immediately after the enable call
+  if (!toolInfo.tool.enabled) {
+    return { success: false, message: `Tool ${toolName} failed to enable` };
+  }
+
   return { success: true, message: `Tool ${toolName} enabled` };
 }
 
