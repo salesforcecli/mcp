@@ -1,3 +1,107 @@
+## [0.14.3](https://github.com/salesforcecli/mcp/compare/0.14.2...0.14.3) (2025-07-22)
+
+### Bug Fixes
+
+- **deps:** bump form-data from 4.0.0 to 4.0.4 ([70c072e](https://github.com/salesforcecli/mcp/commit/70c072e02d7badf6cd6cfed40f78640a5ccec2f1))
+
+## [0.14.2](https://github.com/salesforcecli/mcp/compare/0.14.1...0.14.2) (2025-07-19)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-tracking from 7.4.7 to 7.4.8 ([b1d5097](https://github.com/salesforcecli/mcp/commit/b1d50973ee26eab27239ad15a882d44e9b992428))
+
+## [0.14.1](https://github.com/salesforcecli/mcp/compare/0.14.0...0.14.1) (2025-07-19)
+
+### Bug Fixes
+
+- **deps:** bump @oclif/core from 4.5.0 to 4.5.1 ([3a5c502](https://github.com/salesforcecli/mcp/commit/3a5c5029488cc68d3e5add9c9926118337a1e016))
+
+# [0.14.0](https://github.com/salesforcecli/mcp/compare/0.13.2...0.14.0) (2025-07-15)
+
+### Features
+
+- Add Tooling API support to `sf-query-org` ([#95](https://github.com/salesforcecli/mcp/issues/95)) ([5b010f0](https://github.com/salesforcecli/mcp/commit/5b010f04c739be29eeafe2cf00ed6df2fc87b879))
+
+## [0.13.2](https://github.com/salesforcecli/mcp/compare/0.13.1...0.13.2) (2025-07-13)
+
+### Bug Fixes
+
+- **deps:** bump @oclif/core from 4.4.1 to 4.5.0 ([6b3195a](https://github.com/salesforcecli/mcp/commit/6b3195a221fd1b56d90fb942bea2b05a31e675ec))
+
+## [0.13.1](https://github.com/salesforcecli/mcp/compare/0.13.0...0.13.1) (2025-07-12)
+
+### Bug Fixes
+
+- **deps:** bump @modelcontextprotocol/sdk from 1.15.0 to 1.15.1 ([a869afe](https://github.com/salesforcecli/mcp/commit/a869afe7069960883abea18846dfa135c3433250))
+
+# [0.13.0](https://github.com/salesforcecli/mcp/compare/0.12.0...0.13.0) (2025-07-08)
+
+### Features
+
+- sf-org-open ([b41d3bb](https://github.com/salesforcecli/mcp/commit/b41d3bbfce42083a8a018f310862372e1eed15a8))
+
+# [0.12.0](https://github.com/salesforcecli/mcp/compare/0.11.4...0.12.0) (2025-07-07)
+
+### Bug Fixes
+
+- add core tools to cache ([0af8c10](https://github.com/salesforcecli/mcp/commit/0af8c10346298267c7640fde95e8f2c5e337600a))
+- add tests and fix bugs ([6fded7c](https://github.com/salesforcecli/mcp/commit/6fded7c01123ff8d48cd47ce8d847ac5be90d3de))
+
+### Features
+
+- dynamic toolset discovery ([076512e](https://github.com/salesforcecli/mcp/commit/076512ee00883f174c833cb298530d5f667709fc))
+- flat tool discovery ([084ad8f](https://github.com/salesforcecli/mcp/commit/084ad8f70e6d4b6fe6aa99e090e34f7a7a6921dd))
+- make Cache thread safe and reorganize ([7e8af99](https://github.com/salesforcecli/mcp/commit/7e8af99417a85d790ed2022b5d47c3239f7f2a34))
+
+## [0.11.4](https://github.com/salesforcecli/mcp/compare/0.11.3...0.11.4) (2025-07-06)
+
+### Bug Fixes
+
+- **deps:** bump @oclif/core from 4.4.0 to 4.4.1 ([44b0b27](https://github.com/salesforcecli/mcp/commit/44b0b277b1f3a24f274c5dbaf05697b24a338f7f))
+
+## [0.11.3](https://github.com/salesforcecli/mcp/compare/0.11.2...0.11.3) (2025-07-05)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-tracking from 7.4.6 to 7.4.7 ([66740f7](https://github.com/salesforcecli/mcp/commit/66740f745dfb690cfd5a38ddce4a981b87b3ef45))
+
+## [0.11.2](https://github.com/salesforcecli/mcp/compare/0.11.1...0.11.2) (2025-07-05)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/apex-node from 8.1.32 to 8.2.1 ([3c40acb](https://github.com/salesforcecli/mcp/commit/3c40acbce956a6d82b568e8f908b05d45ec451af))
+
+## [0.11.1](https://github.com/salesforcecli/mcp/compare/0.11.0...0.11.1) (2025-07-03)
+
+### Bug Fixes
+
+- thread safe StateAgg ([0b0dc52](https://github.com/salesforcecli/mcp/commit/0b0dc52b60ada207fee7bc2edd8e6ddf4a13f687))
+- use thread-safe ConfigAgg.clearInstance ([9970141](https://github.com/salesforcecli/mcp/commit/9970141d52d0472cea963c2beee23d13b00af2c0))
+
+# [0.11.0](https://github.com/salesforcecli/mcp/compare/0.10.2...0.11.0) (2025-07-02)
+
+### Features
+
+- add rate limiting for tool calls ([e412a70](https://github.com/salesforcecli/mcp/commit/e412a70010253a7a3441902e2be4f5828c481a60))
+
+## [0.10.2](https://github.com/salesforcecli/mcp/compare/0.10.1...0.10.2) (2025-06-29)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/agents from 0.15.2 to 0.15.4 ([2b1e732](https://github.com/salesforcecli/mcp/commit/2b1e732db324cc40bb0d6950fd53be5c7d3cc143))
+
+## [0.10.1](https://github.com/salesforcecli/mcp/compare/0.10.0...0.10.1) (2025-06-28)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-tracking from 7.4.1 to 7.4.6 ([4aa6ea9](https://github.com/salesforcecli/mcp/commit/4aa6ea9493a6c64ae79db736e1e7c1ec75b9f360))
+
+# [0.10.0](https://github.com/salesforcecli/mcp/compare/0.9.1...0.10.0) (2025-06-27)
+
+### Features
+
+- **apex-test:** add async,codecoverage,verbose,resume ([#75](https://github.com/salesforcecli/mcp/issues/75)) ([765f369](https://github.com/salesforcecli/mcp/commit/765f3690b49fe66bc3c680a937da669d94012ea8))
+
 ## [0.9.1](https://github.com/salesforcecli/mcp/compare/0.9.0...0.9.1) (2025-06-26)
 
 ### Bug Fixes

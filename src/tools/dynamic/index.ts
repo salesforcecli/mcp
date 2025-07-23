@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from './sf-list-all-orgs.js';
-export * from './sf-org-open.js';
+export { registerToolEnableTool } from './sf-enable-tool.js';
+export { registerToolListTools } from './sf-list-tools.js';

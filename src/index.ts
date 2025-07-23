@@ -24,12 +24,12 @@ import * as data from './tools/data/index.js';
 import * as users from './tools/users/index.js';
 import * as testing from './tools/testing/index.js';
 import * as metadata from './tools/metadata/index.js';
+import * as dynamic from './tools/dynamic/index.js';
 import Cache from './shared/cache.js';
 import { Telemetry } from './telemetry.js';
 import { SfMcpServer } from './sf-mcp-server.js';
 import { maybeBuildIndex } from './assets.js';
-
-const TOOLSETS = ['all', 'testing', 'orgs', 'data', 'users', 'metadata', 'experimental'] as const;
+import { determineToolsetsToEnable, TOOLSETS } from './shared/tools.js';
 
 /**
  * Sanitizes an array of org usernames by replacing specific orgs with a placeholder.
@@ -90,12 +90,12 @@ You can also use special values to control access to orgs:
       },
     }),
     toolsets: Flags.option({
-      options: TOOLSETS,
+      options: ['all', ...TOOLSETS] as const,
       char: 't',
       summary: 'Toolset to enable',
       multiple: true,
       delimiter: ',',
-      default: ['all'],
+      exclusive: ['dynamic-toolsets'],
     })(),
     version: Flags.version(),
     'no-telemetry': Flags.boolean({
@@ -103,6 +103,11 @@ You can also use special values to control access to orgs:
     }),
     debug: Flags.boolean({
       summary: 'Enable debug logging',
+    }),
+    'dynamic-tools': Flags.boolean({
+      summary: 'Enable dynamic toolsets',
+      char: 'd',
+      exclusive: ['toolsets'],
     }),
   };
 
@@ -128,7 +133,7 @@ You can also use special values to control access to orgs:
 
     if (!flags['no-telemetry']) {
       this.telemetry = new Telemetry(this.config, {
-        toolsets: flags.toolsets.join(', '),
+        toolsets: (flags.toolsets ?? []).join(', '),
         orgs: sanitizeOrgInput(flags.orgs),
       });
 
@@ -140,7 +145,7 @@ You can also use special values to control access to orgs:
       });
     }
 
-    Cache.getInstance().set('allowedOrgs', new Set(flags.orgs));
+    await Cache.safeSet('allowedOrgs', new Set(flags.orgs));
     this.logToStderr(`Allowed orgs:\n${flags.orgs.map((org) => `- ${org}`).join('\n')}`);
     const server = new SfMcpServer(
       {
@@ -151,16 +156,21 @@ You can also use special values to control access to orgs:
           tools: {},
         },
       },
-      { telemetry: this.telemetry }
+      {
+        telemetry: this.telemetry,
+        dynamicTools: flags['dynamic-tools'] ?? false,
+      }
     );
 
     await maybeBuildIndex(this.config.dataDir);
-
-    const enabledToolsets = new Set(flags.toolsets);
-    const all = enabledToolsets.has('all');
+    const toolsetsToEnable = determineToolsetsToEnable(flags.toolsets ?? ['all'], flags['dynamic-tools'] ?? false);
 
     // ************************
     // CORE TOOLS (always on)
+    // If you're adding a new tool to the core toolset, you MUST add it to the `CORE_TOOLS` array in shared/tools.ts
+    // otherwise SfMcpServer will not register it.
+    //
+    // Long term, we will want to consider a more elegant solution for registering core tools.
     // ************************
     this.logToStderr('Registering core tools');
     // get username
@@ -168,10 +178,19 @@ You can also use special values to control access to orgs:
     core.registerToolResume(server);
     core.registerToolSuggestCliCommand(server);
 
+    // DYNAMIC TOOLSETS
+    // ************************
+    if (toolsetsToEnable.dynamic) {
+      this.logToStderr('Registering dynamic tools');
+      // Individual tool management
+      dynamic.registerToolEnableTool(server);
+      dynamic.registerToolListTools(server);
+    }
+
     // ************************
     // ORG TOOLS
     // ************************
-    if (all || enabledToolsets.has('orgs')) {
+    if (toolsetsToEnable.orgs) {
       this.logToStderr('Registering org tools');
       // list all orgs
       orgs.registerToolListAllOrgs(server);
@@ -180,7 +199,7 @@ You can also use special values to control access to orgs:
     // ************************
     // DATA TOOLS
     // ************************
-    if (all || enabledToolsets.has('data')) {
+    if (toolsetsToEnable.data) {
       this.logToStderr('Registering data tools');
       // query org
       data.registerToolQueryOrg(server);
@@ -189,7 +208,7 @@ You can also use special values to control access to orgs:
     // ************************
     // USER TOOLS
     // ************************
-    if (all || enabledToolsets.has('users')) {
+    if (toolsetsToEnable.users) {
       this.logToStderr('Registering user tools');
       // assign permission set
       users.registerToolAssignPermissionSet(server);
@@ -198,16 +217,16 @@ You can also use special values to control access to orgs:
     // ************************
     // testing TOOLS
     // ************************
-    if (all || enabledToolsets.has('testing')) {
+    if (toolsetsToEnable.testing) {
       this.logToStderr('Registering testing tools');
-      testing.registerToolRunApexTest(server);
-      testing.registerToolRunAgentTest(server);
+      testing.registerToolTestApex(server);
+      testing.registerToolTestAgent(server);
     }
 
     // ************************
     // METADATA TOOLS
     // ************************
-    if (all || enabledToolsets.has('metadata')) {
+    if (toolsetsToEnable.metadata) {
       this.logToStderr('Registering metadata tools');
       // deploy metadata
       metadata.registerToolDeployMetadata(server);
@@ -221,8 +240,9 @@ You can also use special values to control access to orgs:
     // This toolset needs to be explicitly enabled ('all' will not include it)
     // Tools don't need to be in an 'experimental' directory, only registered here
     // ************************
-    if (enabledToolsets.has('experimental')) {
+    if (toolsetsToEnable.experimental) {
       this.logToStderr('Registering experimental tools');
+      orgs.registerToolOrgOpen(server);
       // Add any experimental tools here
     }
 
