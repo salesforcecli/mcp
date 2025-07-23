@@ -17,7 +17,7 @@ import fs from 'node:fs';
 import { resolve, join } from 'node:path';
 import { spawn } from 'node:child_process';
 import faiss from 'faiss-node';
-import { pipeline, FeatureExtractionPipeline } from '@xenova/transformers';
+import { pipeline, FeatureExtractionPipeline } from '@huggingface/transformers';
 import { ux } from '@oclif/core';
 
 type CommandData = {
@@ -132,7 +132,9 @@ export async function getAssets(): Promise<Assets> {
     const commandsData = await fs.promises.readFile(commandsPath, 'utf-8');
     const commands = JSON.parse(commandsData) as CommandData[];
     const faissIndex = faiss.IndexFlatL2.read(faissIndexPath);
-    const embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+    const embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
+      dtype: 'fp32',
+    });
 
     return {
       commands,

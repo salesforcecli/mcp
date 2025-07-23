@@ -18,7 +18,7 @@ import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { Args, Parser, ux } from '@oclif/core';
-import { pipeline } from '@xenova/transformers';
+import { pipeline } from '@huggingface/transformers';
 import faiss from 'faiss-node';
 
 const normalizeCommandName = (command: string | undefined): string => (command ?? '').split(':').join(' ');
@@ -36,7 +36,7 @@ const main = async (): Promise<void> => {
   });
 
   if (!outputDir) {
-    ux.stdout('Output directory not specified. Please provide a path as the first argument.');
+    ux.stderr('Output directory not specified. Please provide a path as the first argument.');
     process.exit(1);
   }
 
@@ -44,7 +44,7 @@ const main = async (): Promise<void> => {
   const commandsPath = path.join(outputDir, 'sf-commands.json');
   const faissIndexPath = path.join(outputDir, 'faiss-index.bin');
 
-  ux.stdout('Starting offline data preparation...');
+  ux.stderr('Starting offline data preparation...');
 
   // 1. Ensure output directory exists
   if (!fs.existsSync(outputDir)) {
@@ -52,7 +52,7 @@ const main = async (): Promise<void> => {
   }
 
   // 2. Get Command Data from Salesforce CLI
-  ux.stdout('Fetching commands from sf CLI...');
+  ux.stderr('Fetching commands from sf CLI...');
   const rawCommandsJson = execSync('sf commands --json').toString();
   const rawCommands = JSON.parse(rawCommandsJson) as Array<{
     id: string;
@@ -62,7 +62,7 @@ const main = async (): Promise<void> => {
   }>;
 
   // 3. Process and Clean the Data
-  ux.stdout('Processing and cleaning command data...');
+  ux.stderr('Processing and cleaning command data...');
   const commandsData = rawCommands.map((cmd, index: number) => ({
     id: index, // Use our own sequential ID for FAISS
     command: normalizeCommandName(cmd.id),
@@ -77,18 +77,19 @@ Description: ${cmd.description ?? ''}
   }));
 
   if (commandsData.length === 0) {
-    ux.stdout('No command data could be processed. Is `sf` CLI installed and working?');
+    ux.stderr('No command data could be processed. Is `sf` CLI installed and working?');
     return;
   }
 
-  ux.stdout(`Processed ${commandsData.length} commands.`);
+  ux.stderr(`Processed ${commandsData.length} commands.`);
 
   // 4. Generate Embeddings
-  ux.stdout('Loading embedding model... (This may take a moment)');
-  // Using 'pipeline' is an easy way to handle tokenization and model inference
-  const embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+  ux.stderr('Loading embedding model... (This may take a moment)');
+  const embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
+    dtype: 'fp32',
+  });
 
-  ux.stdout('Generating embeddings for all commands...');
+  ux.stderr('Generating embeddings for all commands...');
   const embeddings = await Promise.all(
     commandsData.map((cmd) => embedder(cmd.summaryForEmbedding, { pooling: 'mean', normalize: true }))
   );
@@ -97,17 +98,12 @@ Description: ${cmd.description ?? ''}
   const embeddingDimension = embeddings[0].dims[1];
   const flattenedEmbeddings = new Float32Array(commandsData.length * embeddingDimension);
   embeddings.forEach((tensor, i) => {
-    // Convert tensor.data to Float32Array if it's not already
-    const tensorData =
-      tensor.data instanceof Float32Array
-        ? tensor.data
-        : new Float32Array(Array.from(tensor.data).map((val) => Number(val)));
-    flattenedEmbeddings.set(tensorData, i * embeddingDimension);
+    flattenedEmbeddings.set(tensor.data as Float32Array, i * embeddingDimension);
   });
-  ux.stdout(`Generated embeddings with dimension: ${embeddingDimension}`);
+  ux.stderr(`Generated embeddings with dimension: ${embeddingDimension}`);
 
   // 5. Build and Save the FAISS Index
-  ux.stdout('Building FAISS index...');
+  ux.stderr('Building FAISS index...');
   const index = new faiss.IndexFlatL2(embeddingDimension);
 
   // Convert Float32Array to regular array for faiss-node
@@ -116,16 +112,16 @@ Description: ${cmd.description ?? ''}
 
   const vectorCount = index.ntotal();
 
-  ux.stdout(`FAISS index built with ${String(vectorCount)} vectors.`);
+  ux.stderr(`FAISS index built with ${String(vectorCount)} vectors.`);
   // Use the correct method name for faiss-node
   index.write(faissIndexPath);
-  ux.stdout(`FAISS index saved to: ${faissIndexPath}`);
+  ux.stderr(`FAISS index saved to: ${faissIndexPath}`);
 
   // 6. Save the Processed Command Data
   fs.writeFileSync(commandsPath, JSON.stringify(commandsData, null, 2));
 
-  ux.stdout(`Command data saved to: ${commandsPath}`);
-  ux.stdout('Offline preparation complete!');
+  ux.stderr(`Command data saved to: ${commandsPath}`);
+  ux.stderr('Offline preparation complete!');
 };
 
 main().catch((error: unknown) => {

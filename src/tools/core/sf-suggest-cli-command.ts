@@ -45,8 +45,8 @@ export const registerToolSuggestCliCommand = (server: SfMcpServer): void => {
 
       // Perform Semantic Search (FAISS)
       const searchResults = assets.faissIndex.search(
-        // Convert the embedding to a flat array of numbers
-        Array.from(queryEmbedding.data).map((val: unknown) => Number(val)),
+        // Convert the embedding tensor data to a flat array of numbers
+        Array.from(queryEmbedding.data as Float32Array),
         5
       );
 
