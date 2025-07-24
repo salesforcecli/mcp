@@ -1,3 +1,10 @@
+# [0.15.0](https://github.com/salesforcecli/mcp/compare/0.14.3...0.15.0) (2025-07-24)
+
+### Features
+
+- add snapshot tool, add ability to monitor snapshot from resume tools ([50d54f4](https://github.com/salesforcecli/mcp/commit/50d54f4c03cbd6c05100a8352fedf7aec0fff075))
+- delete scratch/sandbox ([61fb363](https://github.com/salesforcecli/mcp/commit/61fb363c05836fceb491a9462fc63f37ed3136f3))
+
 ## [0.14.3](https://github.com/salesforcecli/mcp/compare/0.14.2...0.14.3) (2025-07-22)
 
 ### Bug Fixes
