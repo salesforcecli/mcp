@@ -20,6 +20,7 @@ import path from 'node:path';
 import { Args, Parser, ux, Interfaces } from '@oclif/core';
 import { pipeline } from '@huggingface/transformers';
 import faiss from 'faiss-node';
+import { createWeightedEmbeddingText } from './create-embedding-text.js';
 
 const normalizeCommandName = (command: string | undefined): string => (command ?? '').split(':').join(' ');
 
@@ -91,13 +92,12 @@ const main = async (): Promise<void> => {
       })),
     // Create a more descriptive text for better embedding quality
     // This will be stripped from the final output sent to the LLM to save token count
-    embeddingText: `
-Command: ${normalizeCommandName(cmd.id)}.
-Summary: ${cmd.summary ?? ''}.
-Description: ${cmd.description ?? ''}
-Examples:
-  ${cmd.examples?.join('\n  -') ?? ''}
-`,
+    embeddingText: createWeightedEmbeddingText({
+      command: normalizeCommandName(cmd.id),
+      summary: cmd.summary ?? '',
+      description: cmd.description ?? '',
+      examples: cmd.examples ?? [],
+    }),
   }));
 
   if (commandsData.length === 0) {
