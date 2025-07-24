@@ -68,7 +68,6 @@ export const registerToolSuggestCliCommand = (server: SfMcpServer): void => {
 - Base your answer STRICTLY on the user's request and the Command Reference.
 - If there is no command that matches the user's request, tell the user that you cannot find a command.
 - Do not use any flags or commands not listed in the reference.
-- Do not add any explanation. Only output the final command.
 
 User Request:
 "${query}"
