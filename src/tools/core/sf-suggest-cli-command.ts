@@ -29,7 +29,7 @@ const suggestCliCommandParamsSchema = z.object({
 export const registerToolSuggestCliCommand = (server: SfMcpServer): void => {
   server.tool(
     'sf-suggest-cli-command',
-    "Suggests an `sf` CLI command based on a natural language query. It finds relevant commands from a local index and uses an LLM to construct the final, precise command to fulfill the user's request.",
+    "Suggests an `sf` CLI command based on a natural language query. It finds relevant commands from a local index and uses an LLM to construct the final, precise command to fulfill the user's request. Use this tool whenever a user asks for guidance on how to use the Salesforce CLI (`sf` or `sfdx`), needs help with command syntax, wants to know what command to run for a specific task, or asks questions like 'how do I...', 'what command...', or 'how to...' related to Salesforce development operations.",
     suggestCliCommandParamsSchema.shape,
     {
       readOnlyHint: true,
@@ -51,10 +51,22 @@ export const registerToolSuggestCliCommand = (server: SfMcpServer): void => {
       );
 
       const topCandidateIds = searchResults.labels.slice(0, 5);
-      const contextCommands = topCandidateIds.map((id) => assets.commands.find((c) => c.id === id));
+      const contextCommands = topCandidateIds.map((id) => {
+        const command = assets.commands.find((c) => c.id === id)!;
+        // Remove the embedding text to avoid sending it to the LLM
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { embeddingText, ...commandWithoutEmbeddingText } = command;
+        return commandWithoutEmbeddingText;
+      });
+
+      contextCommands.forEach((command, index) => {
+        // eslint-disable-next-line no-console
+        console.error(`Command: ${command.command}, Score: ${searchResults.distances[index]}`);
+      });
 
       const prompt = `System: You are a precise expert on the Salesforce CLI (sf). Your sole purpose is to construct a single, valid sf command based on the user's request and the Command Reference provided.
 - Base your answer STRICTLY on the user's request and the Command Reference.
+- If there is no command that matches the user's request, tell the user that you cannot find a command.
 - Do not use any flags or commands not listed in the reference.
 - Do not add any explanation. Only output the final command.
 
@@ -63,6 +75,17 @@ User Request:
 
 Command Reference:
 ${JSON.stringify(contextCommands, null, 2)}
+
+Notes about Flag Properties:
+- multiple: Flags that support multiple values should be specified with the '--flag value1 --flag value2' syntax.
+- dependsOn: If a flag depends on another flag, ensure that the dependent flag is included in the command.
+- atLeastOne: If a flag requires at least one of a set of flags, ensure that at least one of those flags is included in the command.
+- exactlyOne: If a flag requires exactly one of a set of flags, ensure that exactly one of those flags is included in the command.
+- exclusive: If a flag is exclusive with another flag, ensure that only one of those flags is included in the command.
+- required: If a flag is required, ensure that it is included in the command unless it has a default value.
+- relationships: If a flag has relationships with other flags, ensure that those relationships are respected in the command.
+- options: If a flag has options, ensure that one of those options is used
+
 
 Synthesize the single "sf" command that best fulfills the user's request.
 `;

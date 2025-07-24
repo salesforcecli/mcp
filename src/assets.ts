@@ -24,7 +24,20 @@ type CommandData = {
   id: number;
   command: string;
   summary: string;
-  summaryForEmbedding: string;
+  description: string;
+  examples?: string[];
+  flags?: Array<{
+    name: string;
+    description: string;
+    type?: string;
+    required?: boolean;
+    options?: string[];
+    atLeastOne?: boolean;
+    exactlyOne?: boolean;
+    relationships?: string[];
+    default?: string | boolean | number | string[]; // Default value can be a string
+  }>;
+  embeddingText: string;
 };
 
 type Assets = {

@@ -17,7 +17,7 @@
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { Args, Parser, ux } from '@oclif/core';
+import { Args, Parser, ux, Interfaces } from '@oclif/core';
 import { pipeline } from '@huggingface/transformers';
 import faiss from 'faiss-node';
 
@@ -57,8 +57,9 @@ const main = async (): Promise<void> => {
   const rawCommands = JSON.parse(rawCommandsJson) as Array<{
     id: string;
     summary?: string;
-    flags?: unknown[];
+    flags?: Array<Interfaces.Flag<unknown>>;
     description?: string;
+    examples?: string[];
   }>;
 
   // 3. Process and Clean the Data
@@ -67,13 +68,36 @@ const main = async (): Promise<void> => {
     id: index, // Use our own sequential ID for FAISS
     command: normalizeCommandName(cmd.id),
     summary: cmd.summary ?? 'No summary available.',
+    description: cmd.description ?? 'No description available.',
+    examples: cmd.examples ?? [],
+    flags: Object.values(cmd.flags ?? {})
+      .filter((flag) => !flag.hidden)
+      .map((flag) => ({
+        name: flag.name,
+        summary: flag.summary ?? 'No summary available.',
+        description: flag.description ?? 'No description available.',
+        type: flag.type ?? 'string',
+        required: flag.required ?? false,
+        // @ts-expect-error because options doesn't exist on boolean flags
+        options: (flag.options ?? []) as string[],
+        // @ts-expect-error because multiple doesn't exist on boolean flags
+        multiple: !!flag.multiple,
+        dependsOn: flag.dependsOn,
+        exclusive: flag.exclusive,
+        atLeastOne: flag.atLeastOne,
+        exactlyOne: flag.exactlyOne,
+        relationships: flag.relationships,
+        default: flag.default,
+      })),
     // Create a more descriptive text for better embedding quality
-    summaryForEmbedding: `
+    // This will be stripped from the final output sent to the LLM to save token count
+    embeddingText: `
 Command: ${normalizeCommandName(cmd.id)}.
 Summary: ${cmd.summary ?? ''}.
 Description: ${cmd.description ?? ''}
+Examples:
+  ${cmd.examples?.join('\n  -') ?? ''}
 `,
-    flags: cmd.flags ?? [],
   }));
 
   if (commandsData.length === 0) {
@@ -91,7 +115,7 @@ Description: ${cmd.description ?? ''}
 
   ux.stderr('Generating embeddings for all commands...');
   const embeddings = await Promise.all(
-    commandsData.map((cmd) => embedder(cmd.summaryForEmbedding, { pooling: 'mean', normalize: true }))
+    commandsData.map((cmd) => embedder(cmd.embeddingText, { pooling: 'mean', normalize: true }))
   );
 
   // The output tensor needs to be converted to a flat Float32Array for FAISS
