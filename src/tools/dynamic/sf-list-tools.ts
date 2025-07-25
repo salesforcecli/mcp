@@ -24,10 +24,15 @@ export function registerToolListTools(server: SfMcpServer): void {
     `List all available tools this Salesforce MCP server can offer, providing the enabled status and description of each.
 
 AGENT INSTRUCTIONS:
-Use this when a task could be achieved with a MCP tool and the currently available tools aren't enough.
-If there's a tool that can accomplish the user's request, do not use this tool.
-Once you find the tool you want to enable, call sf-enable-tool with the tool name.
-Once you have enabled the tool, you can invoke the tool to accomplish the user's request.`,
+DO NOT USE THIS TOOL if you already know what tool you need - try to call the tool directly first.
+ONLY use this tool if:
+1. You tried to call a tool and got an error that it doesn't exist or isn't enabled
+2. You genuinely don't know what tools are available for a specific task
+3. You need to discover new tools for an unfamiliar use case
+
+If you find a tool you want to enable, call sf-enable-tool with the tool name.
+Once you have enabled the tool, you MUST invoke that tool to accomplish the user's original request - DO NOT USE A DIFFERENT TOOL OR THE COMMAND LINE.
+Once a tool has been enabled, you do not need to call sf-list-tools again - instead, invoke the desired tool directly.`,
     {
       title: 'List all individual tools',
       readOnlyHint: true,
