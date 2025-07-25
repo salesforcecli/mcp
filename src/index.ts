@@ -28,6 +28,7 @@ import * as dynamic from './tools/dynamic/index.js';
 import Cache from './shared/cache.js';
 import { Telemetry } from './telemetry.js';
 import { SfMcpServer } from './sf-mcp-server.js';
+import { maybeBuildIndex } from './assets.js';
 import { determineToolsetsToEnable, TOOLSETS } from './shared/tools.js';
 
 /**
@@ -161,6 +162,7 @@ You can also use special values to control access to orgs:
       }
     );
 
+    await maybeBuildIndex(this.config.dataDir);
     const toolsetsToEnable = determineToolsetsToEnable(flags.toolsets ?? ['all'], flags['dynamic-tools'] ?? false);
 
     // ************************
@@ -174,6 +176,7 @@ You can also use special values to control access to orgs:
     // get username
     core.registerToolGetUsername(server);
     core.registerToolResume(server);
+    core.registerToolSuggestCliCommand(server);
 
     // DYNAMIC TOOLSETS
     // ************************

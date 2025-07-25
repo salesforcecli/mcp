@@ -16,3 +16,4 @@
 
 export * from './sf-get-username.js';
 export * from './sf-resume.js';
+export * from './sf-suggest-cli-command.js';
