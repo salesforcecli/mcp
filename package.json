@@ -51,7 +51,7 @@
     "@salesforce/telemetry": "^6.1.0",
     "@salesforce/ts-types": "^2.0.11",
     "open": "^10.1.2",
-    "zod": "^3.25.67"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@modelcontextprotocol/inspector": "^0.15.0",
