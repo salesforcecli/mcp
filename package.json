@@ -39,7 +39,7 @@
     "messages"
   ],
   "dependencies": {
-    "@jsforce/jsforce-node": "^3.9.1",
+    "@jsforce/jsforce-node": "^3.9.4",
     "@modelcontextprotocol/sdk": "^1.15.1",
     "@oclif/core": "^4.5.1",
     "@salesforce/agents": "^0.15.4",
