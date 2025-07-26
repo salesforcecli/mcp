@@ -1,3 +1,9 @@
+## [0.15.1](https://github.com/salesforcecli/mcp/compare/0.15.0...0.15.1) (2025-07-26)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/telemetry from 6.0.39 to 6.1.0 ([0244c4a](https://github.com/salesforcecli/mcp/commit/0244c4a09942739bcbc4ba561616894bf5a3f824))
+
 # [0.15.0](https://github.com/salesforcecli/mcp/compare/0.14.3...0.15.0) (2025-07-24)
 
 ### Features
