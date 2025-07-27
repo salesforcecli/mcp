@@ -1,3 +1,9 @@
+## [0.15.4](https://github.com/salesforcecli/mcp/compare/0.15.3...0.15.4) (2025-07-27)
+
+### Bug Fixes
+
+- **deps:** bump @jsforce/jsforce-node from 3.9.1 to 3.9.4 ([08b58a6](https://github.com/salesforcecli/mcp/commit/08b58a66f64e1eab737ce8eb7b5c1616ed124d71))
+
 ## [0.15.3](https://github.com/salesforcecli/mcp/compare/0.15.2...0.15.3) (2025-07-26)
 
 ### Bug Fixes
