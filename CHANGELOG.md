@@ -1,3 +1,9 @@
+## [0.16.1](https://github.com/salesforcecli/mcp/compare/0.16.0...0.16.1) (2025-07-28)
+
+### Bug Fixes
+
+- **W-19105967:** better descriptions to prevent unneeded sf-list-tool calls ([#121](https://github.com/salesforcecli/mcp/issues/121)) ([863fec9](https://github.com/salesforcecli/mcp/commit/863fec9c667647492a9494ed0a60a8deb338d448))
+
 # [0.16.0](https://github.com/salesforcecli/mcp/compare/0.15.4...0.16.0) (2025-07-28)
 
 ### Bug Fixes
