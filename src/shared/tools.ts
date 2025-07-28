@@ -25,7 +25,7 @@ type Toolset = (typeof TOOLSETS)[number];
 /*
  * These are tools that are always enabled at startup. They cannot be disabled and they cannot be dynamically enabled.
  */
-export const CORE_TOOLS = ['sf-get-username', 'sf-resume', 'sf-enable-tool', 'sf-list-tools'];
+export const CORE_TOOLS = ['sf-get-username', 'sf-resume', 'sf-enable-tool', 'sf-list-tools', 'sf-suggest-cli-command'];
 
 /**
  * Determines which toolsets should be enabled based on the provided toolsets array and dynamic tools flag.
