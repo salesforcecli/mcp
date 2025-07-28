@@ -41,7 +41,7 @@
   "dependencies": {
     "@huggingface/transformers": "^3.7.0",
     "@jsforce/jsforce-node": "^3.9.4",
-    "@modelcontextprotocol/sdk": "^1.15.1",
+    "@modelcontextprotocol/sdk": "^1.16.0",
     "@oclif/core": "^4.5.1",
     "@salesforce/agents": "^0.15.4",
     "@salesforce/apex-node": "^8.2.1",
