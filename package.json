@@ -39,6 +39,7 @@
     "messages"
   ],
   "dependencies": {
+    "@huggingface/transformers": "^3.7.0",
     "@jsforce/jsforce-node": "^3.9.4",
     "@modelcontextprotocol/sdk": "^1.15.1",
     "@oclif/core": "^4.5.1",
@@ -50,6 +51,7 @@
     "@salesforce/source-tracking": "^7.4.8",
     "@salesforce/telemetry": "^6.1.0",
     "@salesforce/ts-types": "^2.0.11",
+    "faiss-node": "^0.5.1",
     "open": "^10.1.2",
     "zod": "^3.25.76"
   },

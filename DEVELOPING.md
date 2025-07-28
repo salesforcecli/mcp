@@ -125,6 +125,7 @@ mcp-inspector --cli node bin/run.js --orgs DEFAULT_TARGET_ORG --method tools/lis
 Unit tests are run with `yarn test` and use the Mocha test framework. Tests are located in the `test` directory and are named with the pattern, `test/**/*.test.ts`.
 
 ## Debugging
+
 > [!NOTE]  
 > This section assumes you're using Visual Studio Code (VS Code).
 
