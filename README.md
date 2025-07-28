@@ -55,6 +55,7 @@ But you're not limited to using only VS Code and Copilot! You can [configure man
 
 For the best getting-started experience, make sure that you have a Salesforce DX environment set up on your computer. In particular:
 
+- [Install Salesforce CLI](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm) on your computer.
 - [Install VS Code](https://code.visualstudio.com/docs) on your computer.
 - [Create a Salesforce DX project](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_create_new.htm) and open it in VS Code. You can also clone an example repo, such as [dreamhouse-lwc](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro_sample_repo.htm), which is a ready-to-use DX project that contains a simple Salesforce application, with metadata and test data.
 - [Authorize at least one Salesforce org](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_web_flow.htm) to use with your DX project. You can also create a scratch org.
@@ -66,7 +67,7 @@ For the best getting-started experience, make sure that you have a Salesforce DX
    ```json
    {
      "servers": {
-       "salesforce": {
+       "Salesforce DX": {
          "type": "stdio",
          "command": "npx",
          "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "all"]
@@ -83,7 +84,7 @@ For the best getting-started experience, make sure that you have a Salesforce DX
 
    TIP: You can also get to the command palette by pressing press Ctrl+Shift+P (Windows or Linux) or Command-Shift-P (macOS).
 
-1. Click `salesforce`, then **Start Server**.
+1. Click `Salesforce DX`, then **Start Server**.
 
    Check the Output tab for the server status.
 
@@ -100,7 +101,7 @@ For the best getting-started experience, make sure that you have a Salesforce DX
    - Show me all the accounts in the org with alias my-org.
    - Deploy everything in my project to the org with alias my-org.
 
-1. To stop, restart, or view the MCP server configuration, run the **MCP: List Servers** command, click `salesforce`, then click the appropriate option.
+1. To stop, restart, or view the MCP server configuration, run the **MCP: List Servers** command, click `Salesforce DX`, then click the appropriate option.
 
 ## Configure Orgs and Toolsets
 
@@ -124,7 +125,7 @@ This example shows how to specify that the MCP tools run against your default or
 ```json
      "mcp": {
        "servers": {
-         "salesforce": {
+         "Salesforce DX": {
            "type": "stdio",
            "command": "npx",
            "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG"]
@@ -165,7 +166,7 @@ This example shows how to enable the `data`, `orgs`, and `metadata` toolsets whe
 ```json
      "mcp": {
        "servers": {
-         "salesforce": {
+         "Salesforce DX": {
            "type": "stdio",
            "command": "npx",
            "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "data,orgs,metadata"]
@@ -228,7 +229,7 @@ To configure [Cursor](https://www.cursor.com/) to work with Salesforce DX MCP Se
 ```json
 {
   "mcpServers": {
-    "salesforce": {
+    "Salesforce DX": {
       "command": "npx",
       "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "all"]
     }
@@ -243,7 +244,7 @@ To configure [Cline](https://cline.bot), add this snippet to your Cline `cline_m
 ```json
 {
   "mcpServers": {
-    "salesforce": {
+    "Salesforce DX": {
       "command": "npx",
       "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "all"]
     }

@@ -15,4 +15,7 @@
  */
 
 export * from './sf-list-all-orgs.js';
+export * from './sf-delete-org.js';
+export * from './sf-create-scratch-org.js';
+export * from './sf-create-org-snapshot.js';
 export * from './sf-org-open.js';
