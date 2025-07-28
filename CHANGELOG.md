@@ -1,3 +1,34 @@
+## [0.15.4](https://github.com/salesforcecli/mcp/compare/0.15.3...0.15.4) (2025-07-27)
+
+### Bug Fixes
+
+- **deps:** bump @jsforce/jsforce-node from 3.9.1 to 3.9.4 ([08b58a6](https://github.com/salesforcecli/mcp/commit/08b58a66f64e1eab737ce8eb7b5c1616ed124d71))
+
+## [0.15.3](https://github.com/salesforcecli/mcp/compare/0.15.2...0.15.3) (2025-07-26)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-deploy-retrieve ([d85e3c0](https://github.com/salesforcecli/mcp/commit/d85e3c0499db0c14c26a5944b1d6066faaf9ffc3))
+
+## [0.15.2](https://github.com/salesforcecli/mcp/compare/0.15.1...0.15.2) (2025-07-26)
+
+### Bug Fixes
+
+- **deps:** bump zod from 3.25.67 to 3.25.76 ([221c271](https://github.com/salesforcecli/mcp/commit/221c271d3c614992d768475110663d7bd163c867))
+
+## [0.15.1](https://github.com/salesforcecli/mcp/compare/0.15.0...0.15.1) (2025-07-26)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/telemetry from 6.0.39 to 6.1.0 ([0244c4a](https://github.com/salesforcecli/mcp/commit/0244c4a09942739bcbc4ba561616894bf5a3f824))
+
+# [0.15.0](https://github.com/salesforcecli/mcp/compare/0.14.3...0.15.0) (2025-07-24)
+
+### Features
+
+- add snapshot tool, add ability to monitor snapshot from resume tools ([50d54f4](https://github.com/salesforcecli/mcp/commit/50d54f4c03cbd6c05100a8352fedf7aec0fff075))
+- delete scratch/sandbox ([61fb363](https://github.com/salesforcecli/mcp/commit/61fb363c05836fceb491a9462fc63f37ed3136f3))
+
 ## [0.14.3](https://github.com/salesforcecli/mcp/compare/0.14.2...0.14.3) (2025-07-22)
 
 ### Bug Fixes

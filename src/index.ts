@@ -241,6 +241,9 @@ You can also use special values to control access to orgs:
       this.logToStderr('Registering experimental tools');
       orgs.registerToolOrgOpen(server);
       // Add any experimental tools here
+      orgs.registerToolCreateScratchOrg(server);
+      orgs.registerToolDeleteOrg(server);
+      orgs.registerToolCreateOrgSnapshot(server);
     }
 
     const transport = new StdioServerTransport();

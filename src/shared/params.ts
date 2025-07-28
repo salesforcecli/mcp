@@ -18,7 +18,7 @@ import { z } from 'zod';
 import { sanitizePath } from './utils.js';
 
 /*
- * A collection of reuseable Tool parameters
+ * A collection of reusable Tool parameters
  */
 
 export const usernameOrAliasParam = z.string()

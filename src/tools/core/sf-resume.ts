@@ -17,7 +17,7 @@
 import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { AgentTester } from '@salesforce/agents';
-import { Connection, validateSalesforceId, scratchOrgResume } from '@salesforce/core';
+import { Connection, validateSalesforceId, scratchOrgResume, PollingClient, StatusResult } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { textResponse } from '../../shared/utils.js';
@@ -29,6 +29,7 @@ const resumableIdPrefixes = new Map<string, string>([
   ['deploy', '0Af'],
   ['scratchOrg', '2SR'],
   ['agentTest', '4KB'],
+  ['orgSnapshot', '0Oo'],
 ]);
 
 /*
@@ -73,6 +74,8 @@ Resume the deployment to my org
 Resume scratch org creation
 Resume job 2SR1234567890
 Resume agent tests
+Resume org snapshot with ID 0OoKa000000XZAbKAO
+Report on my org snapshot
 `,
     resumeParamsSchema.shape,
     {
@@ -104,6 +107,8 @@ Resume agent tests
           return resumeScratchOrg(jobId, wait);
         case resumableIdPrefixes.get('agentTest'):
           return resumeAgentTest(connection, jobId, wait);
+        case resumableIdPrefixes.get('orgSnapshot'):
+          return resumeOrgSnapshot(connection, jobId, wait);
         default:
           return textResponse(`The job id: ${jobId} is not resumeable.`, true);
       }
@@ -118,6 +123,35 @@ async function resumeDeployment(connection: Connection, jobId: string, wait: num
     return textResponse(`Deploy result: ${JSON.stringify(result.response)}`, !result.response.success);
   } catch (error) {
     return textResponse(`Resumed deployment failed: ${error instanceof Error ? error.message : 'Unknown error'}`, true);
+  }
+}
+
+async function resumeOrgSnapshot(connection: Connection, jobId: string, wait: number): Promise<ToolTextResponse> {
+  try {
+    const poller = await PollingClient.create({
+      timeout: Duration.minutes(wait),
+      frequency: Duration.seconds(30),
+      poll: async (): Promise<StatusResult> => {
+        const queryResult = await connection.singleRecordQuery<{
+          Status: 'Active' | 'Error' | 'Expired' | 'In Progress' | 'New';
+        }>(
+          `SELECT Status, Id, SnapshotName, Description, ExpirationDate, CreatedDate FROM OrgSnapshot WHERE Id = '${jobId}'`
+        );
+        if (queryResult.Status !== 'In Progress') {
+          // either done or error
+          return { completed: true, payload: queryResult };
+        } else {
+          return { completed: false };
+        }
+      },
+    });
+    const result = await poller.subscribe();
+    return textResponse(`Org snapshot: ${JSON.stringify(result)}`);
+  } catch (error) {
+    return textResponse(
+      `Resumed org snapshot failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      true
+    );
   }
 }
 
