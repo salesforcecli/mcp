@@ -1,3 +1,16 @@
+# [0.16.0](https://github.com/salesforcecli/mcp/compare/0.15.4...0.16.0) (2025-07-28)
+
+### Bug Fixes
+
+- add sf-suggest-cli-command to core tools ([4657d72](https://github.com/salesforcecli/mcp/commit/4657d720588be0aee68fee84d1dbbe202ed314c6))
+- check if index needs to be built when calling getAssets ([efb5c21](https://github.com/salesforcecli/mcp/commit/efb5c21d10a41f95b8775ba45c3f61f352acecd8))
+- improve embedding and agent instructions ([f363772](https://github.com/salesforcecli/mcp/commit/f363772548805ccc83259583a4c00d0c3b5ce0b1))
+
+### Features
+
+- create weighted embedding text ([30b5ccf](https://github.com/salesforcecli/mcp/commit/30b5ccfa82176f11bccc9efe8a34bba09ccc7fd5))
+- **W-18909741:** suggest sf command ([5ca1455](https://github.com/salesforcecli/mcp/commit/5ca1455d394a506017b5b341c64f41ef2f7706b7))
+
 ## [0.15.4](https://github.com/salesforcecli/mcp/compare/0.15.3...0.15.4) (2025-07-27)
 
 ### Bug Fixes
