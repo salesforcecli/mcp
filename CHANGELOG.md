@@ -1,3 +1,9 @@
+# [0.17.0](https://github.com/salesforcecli/mcp/compare/0.16.1...0.17.0) (2025-07-29)
+
+### Features
+
+- **W-19147516:** replace sf-enable-tool with sf-enable-tools ([#128](https://github.com/salesforcecli/mcp/issues/128)) ([5f66de9](https://github.com/salesforcecli/mcp/commit/5f66de944fdb202e34999b81ccc169393e1d1bbf))
+
 ## [0.16.1](https://github.com/salesforcecli/mcp/compare/0.16.0...0.16.1) (2025-07-28)
 
 ### Bug Fixes
