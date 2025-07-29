@@ -17,34 +17,39 @@
 import { z } from 'zod';
 import { SfMcpServer } from '../../sf-mcp-server.js';
 import { textResponse } from '../../shared/utils.js';
-import { enableTool } from '../../shared/tools.js';
+import { enableTools } from '../../shared/tools.js';
 
-const enableToolParamsSchema = z.object({
-  tool: z.string().describe('The name of the tool to enable'),
+const enableToolsParamsSchema = z.object({
+  tools: z.array(z.string()).describe('The names of the tools to enable'),
 });
 
-export function registerToolEnableTool(server: SfMcpServer): void {
+export function registerToolEnableTools(server: SfMcpServer): void {
   server.tool(
-    'sf-enable-tool',
-    `Enable one of the tools the Salesforce MCP server provides.
+    'sf-enable-tools',
+    `Enable one or more of the tools the Salesforce MCP server provides.
 
 AGENT INSTRUCTIONS:
 Use sf-list-all-tools first to learn what tools are available for enabling.
 Once you have enabled the tool, you MUST invoke that tool to accomplish the user's original request - DO NOT USE A DIFFERENT TOOL OR THE COMMAND LINE.`,
-    enableToolParamsSchema.shape,
+    enableToolsParamsSchema.shape,
     {
-      title: 'Enable an individual tool',
+      title: 'Enable Salesforce MCP tools',
       readOnlyHint: true,
       openWorldHint: false,
     },
-    async ({ tool }) => {
-      const result = await enableTool(tool);
-
-      if (result.success) {
-        server.sendToolListChanged();
+    async ({ tools }) => {
+      if (tools.length === 0) {
+        return textResponse('No tools specified to enable.', true);
       }
 
-      return textResponse(result.message, !result.success);
+      const results = await enableTools(tools);
+
+      server.sendToolListChanged();
+
+      const hasError = results.some((result) => !result.success);
+      const resultMessages = results.map((result) => result.message).join('\n');
+
+      return textResponse(resultMessages, hasError);
     }
   );
 }

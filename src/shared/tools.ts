@@ -25,7 +25,13 @@ type Toolset = (typeof TOOLSETS)[number];
 /*
  * These are tools that are always enabled at startup. They cannot be disabled and they cannot be dynamically enabled.
  */
-export const CORE_TOOLS = ['sf-get-username', 'sf-resume', 'sf-enable-tool', 'sf-list-tools', 'sf-suggest-cli-command'];
+export const CORE_TOOLS = [
+  'sf-get-username',
+  'sf-resume',
+  'sf-enable-tools',
+  'sf-list-tools',
+  'sf-suggest-cli-command',
+];
 
 /**
  * Determines which toolsets should be enabled based on the provided toolsets array and dynamic tools flag.
@@ -134,6 +140,31 @@ export async function enableTool(toolName: string): Promise<{ success: boolean; 
   toolInfo.tool.enable();
 
   return { success: true, message: `Tool ${toolName} enabled` };
+}
+
+export async function enableTools(tools: string[]): Promise<Array<{ success: boolean; message: string }>> {
+  const results: Array<{ success: boolean; message: string }> = [];
+  const cachedTools = await Cache.safeGet('tools');
+
+  for (const tool of tools) {
+    const toolInfo = cachedTools.find((t) => t.name === tool);
+    if (!toolInfo) {
+      results.push({ success: false, message: `Tool ${tool} not found` });
+      continue;
+    }
+
+    if (toolInfo.tool.enabled) {
+      results.push({ success: false, message: `Tool ${tool} is already enabled` });
+      continue;
+    }
+
+    // Enable the tool directly
+    toolInfo.tool.enable();
+
+    results.push({ success: true, message: `Tool ${tool} enabled` });
+  }
+
+  return results;
 }
 
 /**

@@ -29,7 +29,18 @@ const suggestCliCommandParamsSchema = z.object({
 export const registerToolSuggestCliCommand = (server: SfMcpServer): void => {
   server.tool(
     'sf-suggest-cli-command',
-    "Suggests an `sf` CLI command based on a natural language query. It finds relevant commands from a local index and uses an LLM to construct the final, precise command to fulfill the user's request. Use this tool whenever a user asks for guidance on how to use the Salesforce CLI (`sf` or `sfdx`), needs help with command syntax, wants to know what command to run for a specific task, or asks questions like 'how do I...', 'what command...', or 'how to...' related to Salesforce development operations.",
+    `Suggests an \`sf\` CLI command based on a natural language query. It finds relevant commands from a local index and uses an LLM to construct the final, precise command to fulfill the user's request.
+
+AGENT INSTRUCTIONS:
+Use this tool whenever a user:
+  - asks for guidance on how to use the Salesforce CLI (sf or sfdx)
+  - needs help with Salesforce CLI (sf or sfdx) command syntax
+  - wants to know what Salesforce CLI (sf or sfdx) command to run for a specific task
+  - asks questions like 'how do I...', 'what command...', or 'how to...' related to Salesforce development operations.
+NEVER use this tool for enabling Salesforce MCP tools (use sf-enable-tools instead).
+NEVER use this tool for listing available Salesforce MCP tools (use sf-list-tools instead).
+NEVER use this tool for understanding the Salesforce MCP server's capabilities.
+NEVER use this tool for understanding the input schema of a Salesforce MCP tool.`,
     suggestCliCommandParamsSchema.shape,
     {
       readOnlyHint: true,

@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { registerToolEnableTool } from './sf-enable-tool.js';
+export { registerToolEnableTools } from './sf-enable-tools.js';
 export { registerToolListTools } from './sf-list-tools.js';

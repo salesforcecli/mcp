@@ -17,7 +17,15 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { addTool, enableTool, disableTool, getToolStatus, listAllTools, CORE_TOOLS } from '../../src/shared/tools.js';
+import {
+  addTool,
+  enableTool,
+  enableTools,
+  disableTool,
+  getToolStatus,
+  listAllTools,
+  CORE_TOOLS,
+} from '../../src/shared/tools.js';
 import Cache from '../../src/shared/cache.js';
 
 describe('Tool Management', () => {
@@ -41,9 +49,10 @@ describe('Tool Management', () => {
     it('should have defined core tools', () => {
       expect(CORE_TOOLS).to.be.an('array');
       expect(CORE_TOOLS).to.include('sf-get-username');
-      expect(CORE_TOOLS).to.include('sf-enable-tool');
+      expect(CORE_TOOLS).to.include('sf-enable-tools');
       expect(CORE_TOOLS).to.include('sf-resume');
       expect(CORE_TOOLS).to.include('sf-list-tools');
+      expect(CORE_TOOLS).to.include('sf-suggest-cli-command');
     });
   });
 
@@ -127,6 +136,130 @@ describe('Tool Management', () => {
 
         expect(result.success).to.be.false;
         expect(result.message).to.equal('Tool non-existent-tool not found');
+      });
+    });
+
+    describe('enableTools', () => {
+      let mockTool2: RegisteredTool & { enabled: boolean };
+      let mockTool3: RegisteredTool & { enabled: boolean };
+
+      beforeEach(async () => {
+        // Create separate mock tools to avoid shared references
+        mockTool2 = {
+          enable: sandbox.stub().callsFake(() => {
+            mockTool2.enabled = true;
+          }),
+          disable: sandbox.stub().callsFake(() => {
+            mockTool2.enabled = false;
+          }),
+          name: 'test-tool-2',
+          description: 'Test tool description',
+          inputSchema: {},
+          handler: sandbox.stub(),
+          enabled: false,
+          callback: sandbox.stub(),
+          update: sandbox.stub(),
+          remove: sandbox.stub(),
+        } as unknown as RegisteredTool & { enabled: boolean };
+
+        mockTool3 = {
+          enable: sandbox.stub().callsFake(() => {
+            mockTool3.enabled = true;
+          }),
+          disable: sandbox.stub().callsFake(() => {
+            mockTool3.enabled = false;
+          }),
+          name: 'test-tool-3',
+          description: 'Test tool description',
+          inputSchema: {},
+          handler: sandbox.stub(),
+          enabled: false,
+          callback: sandbox.stub(),
+          update: sandbox.stub(),
+          remove: sandbox.stub(),
+        } as unknown as RegisteredTool & { enabled: boolean };
+
+        await addTool(mockTool, 'test-tool-1');
+        await addTool(mockTool2, 'test-tool-2');
+        await addTool(mockTool3, 'test-tool-3');
+      });
+
+      it('should enable multiple disabled tools', async () => {
+        const results = await enableTools(['test-tool-1', 'test-tool-2']);
+
+        expect(results).to.have.length(2);
+        results.forEach((result) => {
+          expect(result.success).to.be.true;
+          expect(result.message).to.match(/Tool test-tool-[12] enabled/);
+        });
+      });
+
+      it('should return error for non-existent tools', async () => {
+        const results = await enableTools(['non-existent-tool', 'another-missing-tool']);
+
+        expect(results).to.have.length(2);
+        results.forEach((result) => {
+          expect(result.success).to.be.false;
+          expect(result.message).to.match(/Tool (non-existent-tool|another-missing-tool) not found/);
+        });
+      });
+
+      it('should return error for already enabled tools', async () => {
+        // Enable tool first
+        await enableTool('test-tool-1');
+
+        const results = await enableTools(['test-tool-1', 'test-tool-2']);
+
+        expect(results).to.have.length(2);
+        expect(results[0].success).to.be.false;
+        expect(results[0].message).to.equal('Tool test-tool-1 is already enabled');
+        expect(results[1].success).to.be.true;
+        expect(results[1].message).to.equal('Tool test-tool-2 enabled');
+      });
+
+      it('should handle mixed scenarios with existing, non-existing, and enabled tools', async () => {
+        // Enable one tool first
+        await enableTool('test-tool-1');
+
+        const results = await enableTools(['test-tool-1', 'test-tool-2', 'non-existent-tool', 'test-tool-3']);
+
+        expect(results).to.have.length(4);
+
+        expect(results[0].success).to.be.false;
+        expect(results[0].message).to.equal('Tool test-tool-1 is already enabled');
+
+        expect(results[1].success).to.be.true;
+        expect(results[1].message).to.equal('Tool test-tool-2 enabled');
+
+        expect(results[2].success).to.be.false;
+        expect(results[2].message).to.equal('Tool non-existent-tool not found');
+
+        expect(results[3].success).to.be.true;
+        expect(results[3].message).to.equal('Tool test-tool-3 enabled');
+      });
+
+      it('should return empty array for empty input', async () => {
+        const results = await enableTools([]);
+        expect(results).to.be.an('array').that.is.empty;
+      });
+
+      it('should enable tools independently without affecting each other', async () => {
+        const results = await enableTools(['test-tool-1', 'test-tool-2', 'test-tool-3']);
+
+        expect(results).to.have.length(3);
+        results.forEach((result, index) => {
+          expect(result.success).to.be.true;
+          expect(result.message).to.equal(`Tool test-tool-${index + 1} enabled`);
+        });
+
+        // Verify all tools are enabled by checking their status
+        const tool1Status = await getToolStatus('test-tool-1');
+        const tool2Status = await getToolStatus('test-tool-2');
+        const tool3Status = await getToolStatus('test-tool-3');
+
+        expect(tool1Status?.enabled, 'Tool 1 should be enabled').to.be.true;
+        expect(tool2Status?.enabled, 'Tool 2 should be enabled').to.be.true;
+        expect(tool3Status?.enabled, 'Tool 3 should be enabled').to.be.true;
       });
     });
 
