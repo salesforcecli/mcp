@@ -39,7 +39,7 @@ Use this guide to learn how to contribute to the Salesforce DX MCP Server.
    ```json
    {
      "servers": {
-       "salesforce": {
+       "Salesforce DX": {
          "command": "node",
          "args": ["/full/path/to/mcp/bin/run.js", "--toolsets", "all", "--orgs", "ALLOW_ALL_ORGS"]
        }
