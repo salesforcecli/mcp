@@ -183,9 +183,11 @@ The `--dynamic-tools` flag enables dynamic tool discovery and loading. When this
 
 #### Core Toolset (always enabled)
 
-Includes this tool:
+Includes these tools:
 
 - `sf-get-username` - Determines the appropriate username or alias for Salesforce operations, handling both default orgs and Dev Hubs.
+- `sf-resume` - Resumes a long-running operation that wasn't completed by another tool.
+- `sf-suggest-cli-command` - Suggests an `sf` Salesforce CLI command based on a natural language query. The tool finds relevant CLI commands from a local index and uses an LLM to construct the precise command to fulfill your request.
 
 #### Orgs Toolset
 
@@ -211,14 +213,13 @@ Includes these tools:
 
 - `sf-deploy-metadata` - Deploys metadata from your DX project to an org.
 - `sf-retrieve-metadata` - Retrieves metadata from your org to your DX project.
--
 
 #### Testing Toolset
 
 Includes these tools:
 
 - `sf-test-agents` - Executes agent tests in your org.
-- `sf-test-apex` - Executes apex tests in your org
+- `sf-test-apex` - Executes apex tests in your org.
 
 ## Configure Other Clients to Use the Salesforce DX MCP Server
 
