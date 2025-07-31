@@ -221,6 +221,12 @@ Includes these tools:
 - `sf-test-agents` - Executes agent tests in your org.
 - `sf-test-apex` - Executes apex tests in your org.
 
+#### Apex Toolset
+
+Includes this tool:
+
+- `sf-apex-run` - Executes anonymous apex code against a Salesforce org.
+
 ## Configure Other Clients to Use the Salesforce DX MCP Server
 
 **Cursor**

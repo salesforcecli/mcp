@@ -18,7 +18,7 @@ import { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { ToolInfo } from './types.js';
 import Cache from './cache.js';
 
-export const TOOLSETS = ['orgs', 'data', 'users', 'metadata', 'testing', 'experimental'] as const;
+export const TOOLSETS = ['orgs', 'data', 'users', 'metadata', 'testing', 'apex', 'experimental'] as const;
 
 type Toolset = (typeof TOOLSETS)[number];
 
@@ -68,6 +68,7 @@ export function determineToolsetsToEnable(
       metadata: true,
       orgs: true,
       testing: true,
+      apex: true,
       users: true,
     };
   }
@@ -81,6 +82,7 @@ export function determineToolsetsToEnable(
       metadata: true,
       orgs: true,
       testing: true,
+      apex: true,
       users: true,
     };
   }
@@ -93,6 +95,7 @@ export function determineToolsetsToEnable(
     metadata: toolsets.includes('metadata'),
     orgs: toolsets.includes('orgs'),
     testing: toolsets.includes('testing'),
+    apex: toolsets.includes('apex'),
     users: toolsets.includes('users'),
   };
 }
