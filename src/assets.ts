@@ -19,6 +19,7 @@ import { spawn } from 'node:child_process';
 import faiss from 'faiss-node';
 import { pipeline, FeatureExtractionPipeline } from '@huggingface/transformers';
 import { ux } from '@oclif/core';
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 type CommandData = {
   id: number;
@@ -40,9 +41,23 @@ type CommandData = {
   embeddingText: string;
 };
 
-type Assets = {
+type CommandSearchAssets = {
   commands: CommandData[];
   commandNames: string[];
+  faissIndex: faiss.IndexFlatL2;
+  embedder: FeatureExtractionPipeline;
+};
+
+type ToolSearchAssets = {
+  tools: Array<{
+    id: number;
+    name: string;
+    description: string | undefined;
+    parameters: Tool['inputSchema'];
+    annotations: Tool['annotations'];
+    embeddingText: string;
+  }>;
+  toolNames: string[];
   faissIndex: faiss.IndexFlatL2;
   embedder: FeatureExtractionPipeline;
 };
@@ -118,7 +133,7 @@ function spawnBuildScript(outputDir: string, detached: boolean): Promise<void> {
   }
 }
 
-export async function getAssets(): Promise<Assets> {
+export async function getCommandSearchAssets(): Promise<CommandSearchAssets> {
   if (!CACHED_DATA_DIR) {
     throw new Error('Data directory not set. Please call maybeBuildIndex first.');
   }
@@ -158,4 +173,36 @@ export async function getAssets(): Promise<Assets> {
   } catch (error) {
     throw new Error(`Failed to load assets: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
+}
+
+export async function getToolSearchAssets(): Promise<ToolSearchAssets> {
+  const mcpToolsPath = resolve(import.meta.dirname, '..', 'assets', 'sf-mcp-tools.json');
+  const faissIndexPath = resolve(import.meta.dirname, '..', 'assets', 'faiss-tools-index.bin');
+
+  try {
+    await fs.promises.access(mcpToolsPath);
+    await fs.promises.access(faissIndexPath);
+  } catch (error) {
+    throw new Error(`Assets not found: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+
+  const toolsData = JSON.parse(await fs.promises.readFile(mcpToolsPath, 'utf-8')) as Array<{
+    id: number;
+    name: string;
+    description: string | undefined;
+    parameters: Tool['inputSchema'];
+    annotations: Tool['annotations'];
+    embeddingText: string;
+  }>;
+  const faissIndex = faiss.IndexFlatL2.read(faissIndexPath);
+  const embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
+    dtype: 'fp32',
+  });
+
+  return {
+    tools: toolsData,
+    toolNames: toolsData.map((tool) => tool.name),
+    faissIndex,
+    embedder,
+  };
 }

@@ -49,3 +49,5 @@ node_modules
 
 .cursor
 src/tools/test.ts
+
+assets/

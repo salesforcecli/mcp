@@ -10,6 +10,7 @@
   "type": "module",
   "scripts": {
     "build": "wireit",
+    "build:tool-index": "node --loader ts-node/esm --no-warnings=ExperimentalWarning ./scripts/build-tool-index.ts",
     "build:watch": "yarn build --watch",
     "clean": "sf-clean",
     "clean-all": "sf-clean all",
@@ -36,7 +37,8 @@
     "bin",
     "lib",
     "!lib/**/*.map",
-    "messages"
+    "messages",
+    "assets/"
   ],
   "dependencies": {
     "@huggingface/transformers": "^3.7.0",
@@ -82,7 +84,8 @@
     "build": {
       "dependencies": [
         "compile",
-        "lint"
+        "lint",
+        "build:tool-index"
       ]
     },
     "compile": {

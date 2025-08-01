@@ -4,6 +4,13 @@
     "@types/node"
   ],
   "wireit": {
+    "build": {
+      "dependencies": [
+        "compile",
+        "lint",
+        "build:tool-index"
+      ]
+    },
     "test": {
       "dependencies": [
         "test:only",
