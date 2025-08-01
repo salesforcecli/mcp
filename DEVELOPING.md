@@ -124,9 +124,59 @@ mcp-inspector --cli node bin/run.js --orgs DEFAULT_TARGET_ORG --method tools/lis
 
 Unit tests are run with `yarn test` and use the Mocha test framework. Tests are located in the `test` directory and are named with the pattern, `test/**/*.test.ts`.
 
+### Confidence Tests
+
+Confidence tests validate that the MCP server tools are accurately invoked by various LLM models through the Salesforce LLM Gateway API. These tests ensure that natural language prompts correctly trigger the expected tools with appropriate parameters, maintaining the quality of the AI-powered tool selection.
+
+#### Running Confidence Tests Locally
+
+1. **Set up API access**: Follow this [documentation](https://developer.salesforce.com/docs/einstein/genai/guide/access-models-api-with-rest.html) to setup an External Client App that will give you access to the Models API. Once you have the consumer key and secret from the External Client App, you'll need to add these to environment variables:
+
+   ```shell
+   export SF_MCP_CONFIDENCE_CONSUMER_KEY=your_client_id_here
+   export SF_MCP_CONFIDENCE_CONSUMER_SECRET=your_client_secret_here
+   export SF_MCP_CONFIDENCE_INSTANCE_URL=https://your_instance.salesforce.com
+   ```
+
+   These environment variables are used to generate a JWT token that will be used to authenticate with the Models API.
+
+2. **Run a confidence test**:
+   ```shell
+   yarn test:confidence --file test/confidence/sf-deploy-metadata.yml
+   ```
+
+#### Test Structure
+
+Confidence tests are defined in YAML files located in `test/confidence/`. Each test file specifies:
+
+- **Models**: Which LLM models to test against. See the Agentforce Developer Guide for [available models](https://developer.salesforce.com/docs/einstein/genai/guide/supported-models.html).
+- **Initial Context**: Background information provided to the model
+- **Test Cases**: Natural language utterances with expected tool invocations and confidence thresholds
+
+The tests run multiple iterations (default: 5) to calculate confidence levels and ensure consistent tool selection across different model runs. This can be adjusted by passing the `--runs` flag when running the tests, like this:
+
+```shell
+yarn test:confidence test/confidence/sf-deploy-metadata.yml --runs 2
+```
+
+#### Understanding Test Results
+
+Tests measure two types of confidence:
+
+- **Tool Confidence**: Whether the correct tool was invoked
+- **Parameter Confidence**: Whether the tool was called with the expected parameters
+
+Failed tests indicate that either:
+
+1. The model selected the wrong tool for a given prompt
+2. The model selected the correct tool but with incorrect parameters
+3. The confidence level fell below the specified threshold
+
+These failures help identify areas where tool descriptions or agent instructions need improvement.
+
 ## Debugging
 
-> [!NOTE]  
+> [!NOTE]
 > This section assumes you're using Visual Studio Code (VS Code).
 
 You can use the VS Code debugger with the MCP Inspector CLI to step through the code of your MCP tools:
@@ -150,7 +200,7 @@ MCP_SERVER_REQUEST_TIMEOUT=120000 mcp-inspector --cli node --inspect-brk bin/run
 We suggest you set `MCP_SERVER_REQUEST_TIMEOUT` to 120000ms (2 minutes) to allow longer debugging sessions without having the MCP Inspector client timeout.
 For other configuration values see: https://github.com/modelcontextprotocol/inspector?tab=readme-ov-file#configuration
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > You must compile the local MCP server using `yarn compile` after every change in a TypeScript file, otherwise breakpoints in the TypeScript files might not match the running JavaScript code.
 
 ## Useful yarn Commands

@@ -7,6 +7,23 @@ on:
 jobs:
   yarn-lockfile-check:
     uses: salesforcecli/github-workflows/.github/workflows/lockFileCheck.yml@main
+
+  # Detect which files have changed to determine what tests to run
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      confidence-changed: ${{ steps.changes.outputs.confidence }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            confidence:
+              - 'confidence/**'
+              - 'test/confidence/**'
+              - 'src/tools/**'
+
   # Since the Windows unit tests take much longer, we run the linux unit tests first and then run the windows unit tests in parallel with NUTs
   linux-unit-tests:
     needs: yarn-lockfile-check
@@ -14,6 +31,31 @@ jobs:
   windows-unit-tests:
     needs: linux-unit-tests
     uses: salesforcecli/github-workflows/.github/workflows/unitTestsWindows.yml@main
+
+  # Run the confidence tests after the unit tests
+  confidence-tests:
+    needs: [linux-unit-tests, changes]
+    runs-on: ubuntu-latest
+    if: ${{ needs.changes.outputs.confidence-changed == 'true'}}
+    env:
+      SF_MCP_CONFIDENCE_CONSUMER_KEY: ${{ secrets.SF_MCP_CONFIDENCE_CONSUMER_KEY }}
+      SF_MCP_CONFIDENCE_CONSUMER_SECRET: ${{ secrets.SF_MCP_CONFIDENCE_CONSUMER_SECRET }}
+      SF_MCP_CONFIDENCE_INSTANCE_URL: ${{ secrets.SF_MCP_CONFIDENCE_INSTANCE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      # Note: we cannot parallelize confidence tests since we don't have the rate limits to support it
+      # the test runner has rate limiting built-in to prevent hitting the API limits within that test run
+      - name: Run confidence tests
+        run: |
+          for file in test/confidence/*.yml; do
+            echo "Running confidence test for $file"
+            yarn test:confidence --file "$file"
+          done
 
   # Uncomment to enable NUT testing in Github Actions
   # nuts:
