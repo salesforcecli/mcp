@@ -16,7 +16,7 @@
 
 import { SfMcpServer } from '../../sf-mcp-server.js';
 import { textResponse } from '../../shared/utils.js';
-import { listAllTools } from '../../shared/tools.js';
+import { listAllTools } from './utils/tools.js';
 
 export function registerToolListTools(server: SfMcpServer): void {
   server.tool(

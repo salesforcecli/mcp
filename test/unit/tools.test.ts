@@ -24,9 +24,9 @@ import {
   disableTool,
   getToolStatus,
   listAllTools,
-  CORE_TOOLS,
-} from '../../src/shared/tools.js';
+} from '../../src/modules/platform-cli/utils/tools.js';
 import Cache from '../../src/shared/cache.js';
+import { CORE_TOOLS } from '../../src/registry.js';
 
 describe('Tool Management', () => {
   let sandbox: sinon.SinonSandbox;

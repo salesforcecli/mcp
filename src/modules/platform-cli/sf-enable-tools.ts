@@ -17,7 +17,7 @@
 import { z } from 'zod';
 import { SfMcpServer } from '../../sf-mcp-server.js';
 import { textResponse } from '../../shared/utils.js';
-import { enableTools } from '../../shared/tools.js';
+import { enableTools } from './utils/tools.js';
 
 const enableToolsParamsSchema = z.object({
   tools: z.array(z.string()).describe('The names of the tools to enable'),
