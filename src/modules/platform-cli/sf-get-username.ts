@@ -58,7 +58,7 @@ Get username for my default dev hub
 
 export type GetUsernameParamsSchema = z.infer<typeof getUsernameParamsSchema>;
 
-export const registerToolGetUsername = (server: SfMcpServer): void => {
+export const getUsername = (server: SfMcpServer): void => {
   server.tool(
     'sf-get-username',
     `Intelligently determines the appropriate username or alias for Salesforce operations.

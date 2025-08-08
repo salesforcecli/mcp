@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-export { registerToolAssignPermissionSet } from './sf-assign-permission-set.js';
-export { registerToolCreateOrgSnapshot } from './sf-create-org-snapshot.js';
-export { registerToolCreateScratchOrg } from './sf-create-scratch-org.js';
-export { registerToolDeleteOrg } from './sf-delete-org.js';
-export { registerToolDeployMetadata } from './sf-deploy-metadata.js';
-export { registerToolEnableTools } from './sf-enable-tools.js';
-export { registerToolGetUsername } from './sf-get-username.js';
-export { registerToolListAllOrgs } from './sf-list-all-orgs.js';
-export { registerToolListTools } from './sf-list-tools.js';
-export { registerToolOrgOpen } from './sf-org-open.js';
-export { registerToolQueryOrg } from './sf-query-org.js';
-export { registerToolResume } from './sf-resume.js';
-export { registerToolRetrieveMetadata } from './sf-retrieve-metadata.js';
-export { registerToolSuggestCliCommand } from './sf-suggest-cli-command.js';
-export { registerToolTestAgent } from './sf-test-agents.js';
-export { registerToolTestApex } from './sf-test-apex.js';
+export { assignPermissionSet } from './sf-assign-permission-set.js';
+export { createOrgSnapshot } from './sf-create-org-snapshot.js';
+export { createScratchOrg } from './sf-create-scratch-org.js';
+export { deleteOrg } from './sf-delete-org.js';
+export { deployMetadata } from './sf-deploy-metadata.js';
+export { enableTools } from './sf-enable-tools.js';
+export { getUsername } from './sf-get-username.js';
+export { listAllOrgs } from './sf-list-all-orgs.js';
+export { listTools } from './sf-list-tools.js';
+export { orgOpen } from './sf-org-open.js';
+export { queryOrg } from './sf-query-org.js';
+export { resume } from './sf-resume.js';
+export { retrieveMetadata } from './sf-retrieve-metadata.js';
+export { suggestCliCommand } from './sf-suggest-cli-command.js';
+export { testAgent } from './sf-test-agents.js';
+export { testApex } from './sf-test-apex.js';

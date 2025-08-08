@@ -84,7 +84,7 @@ export type ApexRunTests = z.infer<typeof runApexTestsParam>;
  * Returns:
  * - textResponse: Test result.
  */
-export const registerToolTestApex = (server: SfMcpServer): void => {
+export const testApex = (server: SfMcpServer): void => {
   server.tool(
     'sf-test-apex',
     `Run Apex tests in an org.

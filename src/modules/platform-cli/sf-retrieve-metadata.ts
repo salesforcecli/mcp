@@ -50,7 +50,7 @@ const retrieveMetadataParams = z.object({
  * Returns:
  * - textResponse: Retrieve result.
  */
-export const registerToolRetrieveMetadata = (server: SfMcpServer): void => {
+export const retrieveMetadata = (server: SfMcpServer): void => {
   server.tool(
     'sf-retrieve-metadata',
     `Retrieve metadata from an org to your local project.

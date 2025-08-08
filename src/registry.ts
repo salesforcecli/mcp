@@ -41,22 +41,18 @@ export const CORE_TOOLS = [
  * When adding a new tool, you must add it to the appropriate toolset in this registry.
  */
 const TOOL_REGISTRY: Record<Toolset | 'core' | 'dynamic', Array<(server: SfMcpServer) => void>> = {
-  core: [
-    platformCli.registerToolGetUsername,
-    platformCli.registerToolResume,
-    platformCli.registerToolSuggestCliCommand,
-  ],
-  dynamic: [platformCli.registerToolEnableTools, platformCli.registerToolListTools],
-  orgs: [platformCli.registerToolListAllOrgs],
-  data: [platformCli.registerToolQueryOrg],
-  users: [platformCli.registerToolAssignPermissionSet],
-  testing: [platformCli.registerToolTestAgent, platformCli.registerToolTestApex],
-  metadata: [platformCli.registerToolDeployMetadata, platformCli.registerToolRetrieveMetadata],
+  core: [platformCli.getUsername, platformCli.resume, platformCli.suggestCliCommand],
+  dynamic: [platformCli.enableTools, platformCli.listTools],
+  orgs: [platformCli.listAllOrgs],
+  data: [platformCli.queryOrg],
+  users: [platformCli.assignPermissionSet],
+  testing: [platformCli.testAgent, platformCli.testApex],
+  metadata: [platformCli.deployMetadata, platformCli.retrieveMetadata],
   experimental: [
-    platformCli.registerToolOrgOpen,
-    platformCli.registerToolCreateScratchOrg,
-    platformCli.registerToolDeleteOrg,
-    platformCli.registerToolCreateOrgSnapshot,
+    platformCli.orgOpen,
+    platformCli.createScratchOrg,
+    platformCli.deleteOrg,
+    platformCli.createOrgSnapshot,
   ],
 };
 

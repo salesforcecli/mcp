@@ -39,7 +39,7 @@ export const listAllOrgsParamsSchema = z.object({
 
 export type ListAllOrgsOptions = z.infer<typeof listAllOrgsParamsSchema>;
 
-export const registerToolListAllOrgs = (server: McpServer): void => {
+export const listAllOrgs = (server: McpServer): void => {
   server.tool(
     'sf-list-all-orgs',
     `Lists all configured Salesforce orgs.

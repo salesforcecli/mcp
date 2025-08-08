@@ -38,7 +38,7 @@ export const deleteOrgParams = z.object({
 
 export type DeleteOrgOptions = z.infer<typeof deleteOrgParams>;
 
-export const registerToolDeleteOrg = (server: McpServer): void => {
+export const deleteOrg = (server: McpServer): void => {
   server.tool(
     'sf-delete-org',
     `Deletes specified salesforce org.

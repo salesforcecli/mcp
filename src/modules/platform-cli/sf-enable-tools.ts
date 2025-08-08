@@ -17,13 +17,13 @@
 import { z } from 'zod';
 import { SfMcpServer } from '../../sf-mcp-server.js';
 import { textResponse } from '../../shared/utils.js';
-import { enableTools } from './utils/tools.js';
+import { enableTools as utilEnableTools } from './utils/tools.js';
 
 const enableToolsParamsSchema = z.object({
   tools: z.array(z.string()).describe('The names of the tools to enable'),
 });
 
-export function registerToolEnableTools(server: SfMcpServer): void {
+export function enableTools(server: SfMcpServer): void {
   server.tool(
     'sf-enable-tools',
     `Enable one or more of the tools the Salesforce MCP server provides.
@@ -42,7 +42,7 @@ Once you have enabled the tool, you MUST invoke that tool to accomplish the user
         return textResponse('No tools specified to enable.', true);
       }
 
-      const results = await enableTools(tools);
+      const results = await utilEnableTools(tools);
 
       server.sendToolListChanged();
 

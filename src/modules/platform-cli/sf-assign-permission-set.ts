@@ -63,7 +63,7 @@ Set the permission set MyPermSet on behalf of my-alias.`),
 
 export type AssignPermissionSetOptions = z.infer<typeof assignPermissionSetParamsSchema>;
 
-export const registerToolAssignPermissionSet = (server: SfMcpServer): void => {
+export const assignPermissionSet = (server: SfMcpServer): void => {
   server.tool(
     'sf-assign-permission-set',
     'Assign a permission set to one or more org users.',

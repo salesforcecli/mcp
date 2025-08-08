@@ -33,7 +33,7 @@ export const orgOpenParamsSchema = z.object({
 
 export type OrgOpenParamsSchema = z.infer<typeof orgOpenParamsSchema>;
 
-export const registerToolOrgOpen = (server: SfMcpServer): void => {
+export const orgOpen = (server: SfMcpServer): void => {
   server.tool(
     'sf-org-open',
     `Open a Salesforce org in the browser.

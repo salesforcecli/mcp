@@ -59,7 +59,7 @@ export const resumeParamsSchema = z.object({
 
 export type ResumeParamsSchema = z.infer<typeof resumeParamsSchema>;
 
-export const registerToolResume = (server: McpServer): void => {
+export const resume = (server: McpServer): void => {
   server.tool(
     'sf-resume',
     `Resume a long running operation that was not completed by another tool.
