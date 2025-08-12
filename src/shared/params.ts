@@ -36,7 +36,11 @@ USAGE:
 ...for my 'test@example.com' user
 ...for the 'test@example.com' org`);
 
-export const useToolingApiParam = z.boolean().optional().describe('Use Tooling API for the operation');
+export const useToolingApiParam = z
+  .boolean()
+  .optional()
+  .default(false)
+  .describe('Use Tooling API for the operation (default is false).');
 
 export const baseAbsolutePathParam = z
   .string()

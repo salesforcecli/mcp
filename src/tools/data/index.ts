@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from './sf-query-org.js';
+export * from './sf-query-org-using-external.js';
