@@ -71,7 +71,7 @@ function myNewTool(server: SfMcpServer): void {
 }
 ```
 
-Once you're written your tool, you can register it in the `TOOL_REGISTRY` by adding the register function to the appropriate toolset array. For example, if your tool is part of the `orgs` toolset, you would add it to the `orgs` array.
+Once you're written your tool, you can register it in the `TOOL_REGISTRY` ([registry.ts](./src/registry.ts)) by adding the exported tool function to the appropriate toolset array. For example, if your tool is part of the `orgs` toolset, you would add it to the `orgs` array.
 
 ## Testing
 
