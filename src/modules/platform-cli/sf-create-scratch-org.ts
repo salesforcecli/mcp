@@ -90,7 +90,7 @@ export const createScratchOrgParams = z.object({
 
 export type CreateScratchOrgOptions = z.infer<typeof createScratchOrgParams>;
 
-export const registerToolCreateScratchOrg = (server: McpServer): void => {
+export const createScratchOrg = (server: McpServer): void => {
   server.tool(
     'sf-create-scratch-org',
     `Creates a scratch org with the specified parameters.

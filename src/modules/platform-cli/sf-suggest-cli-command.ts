@@ -26,7 +26,7 @@ const suggestCliCommandParamsSchema = z.object({
 /**
  * Suggest a Salesforce CLI (sf) command based on user input.
  */
-export const registerToolSuggestCliCommand = (server: SfMcpServer): void => {
+export const suggestCliCommand = (server: SfMcpServer): void => {
   server.tool(
     'sf-suggest-cli-command',
     `Suggests an \`sf\` CLI command based on a natural language query. It finds relevant commands from a local index and uses an LLM to construct the final, precise command to fulfill the user's request.

@@ -81,7 +81,7 @@ export type DeployMetadata = z.infer<typeof deployMetadataParams>;
  * Returns:
  * - textResponse: Deploy result.
  */
-export const registerToolDeployMetadata = (server: SfMcpServer): void => {
+export const deployMetadata = (server: SfMcpServer): void => {
   server.tool(
     'sf-deploy-metadata',
     `Deploy metadata to an org from your local project.

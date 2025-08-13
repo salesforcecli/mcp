@@ -48,7 +48,7 @@ export const createOrgSnapshotParams = z.object({
 
 export type CreateOrgSnapshotOptions = z.infer<typeof createOrgSnapshotParams>;
 
-export const registerToolCreateOrgSnapshot = (server: McpServer): void => {
+export const createOrgSnapshot = (server: McpServer): void => {
   server.tool(
     'sf-create-org-snapshot',
     `Creates a new snapshot of an org

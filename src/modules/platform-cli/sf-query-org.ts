@@ -43,7 +43,7 @@ export const queryOrgParamsSchema = z.object({
 
 export type QueryOrgOptions = z.infer<typeof queryOrgParamsSchema>;
 
-export const registerToolQueryOrg = (server: SfMcpServer): void => {
+export const queryOrg = (server: SfMcpServer): void => {
   server.tool(
     'sf-query-org',
     'Run a SOQL query against a Salesforce org.',

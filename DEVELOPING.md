@@ -55,6 +55,24 @@ Use this guide to learn how to contribute to the Salesforce DX MCP Server.
 1. Push commit(s) to remote: `git push -u origin <branch_name>`.
 1. Create a pull request (PR) using the [GitHub UI](https://github.com/salesforcecli/mcp).
 
+## Registering New Tools
+
+When you create a new tool, you must register it in the `TOOL_REGISTRY` in `src/registry.ts`. This allows the MCP server to recognize and use your tool.
+
+The basic structure of tool registration function is
+
+```typescript
+function myNewTool(server: SfMcpServer): void {
+  server.tool({
+    name: 'sf-my-new-tool',
+    description: 'A brief description of what the tool does.',
+    // Other tool properties...
+  });
+}
+```
+
+Once you're written your tool, you can register it in the `TOOL_REGISTRY` ([registry.ts](./src/registry.ts)) by adding the exported tool function to the appropriate toolset array. For example, if your tool is part of the `orgs` toolset, you would add it to the `orgs` array.
+
 ## Testing
 
 All changes must have associated unit tests when possible. End-to-end tests for tools will be added in the future.
@@ -126,7 +144,7 @@ Unit tests are run with `yarn test` and use the Mocha test framework. Tests are 
 
 ## Debugging
 
-> [!NOTE]  
+> [!NOTE]
 > This section assumes you're using Visual Studio Code (VS Code).
 
 You can use the VS Code debugger with the MCP Inspector CLI to step through the code of your MCP tools:
@@ -150,7 +168,7 @@ MCP_SERVER_REQUEST_TIMEOUT=120000 mcp-inspector --cli node --inspect-brk bin/run
 We suggest you set `MCP_SERVER_REQUEST_TIMEOUT` to 120000ms (2 minutes) to allow longer debugging sessions without having the MCP Inspector client timeout.
 For other configuration values see: https://github.com/modelcontextprotocol/inspector?tab=readme-ov-file#configuration
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > You must compile the local MCP server using `yarn compile` after every change in a TypeScript file, otherwise breakpoints in the TypeScript files might not match the running JavaScript code.
 
 ## Useful yarn Commands

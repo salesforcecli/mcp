@@ -21,8 +21,9 @@ import { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.j
 import { Logger } from '@salesforce/core';
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import { Telemetry } from './telemetry.js';
-import { addTool, CORE_TOOLS } from './shared/tools.js';
+import { addTool } from './modules/platform-cli/utils/tools.js';
 import { RateLimiter, RateLimitConfig, createRateLimiter } from './shared/rate-limiter.js';
+import { CORE_TOOLS } from './registry.js';
 
 type ToolMethodSignatures = {
   tool: McpServer['tool'];

@@ -18,18 +18,11 @@
 
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { Command, Flags, ux } from '@oclif/core';
-import * as core from './tools/core/index.js';
-import * as orgs from './tools/orgs/index.js';
-import * as data from './tools/data/index.js';
-import * as users from './tools/users/index.js';
-import * as testing from './tools/testing/index.js';
-import * as metadata from './tools/metadata/index.js';
-import * as dynamic from './tools/dynamic/index.js';
 import Cache from './shared/cache.js';
 import { Telemetry } from './telemetry.js';
 import { SfMcpServer } from './sf-mcp-server.js';
 import { maybeBuildIndex } from './assets.js';
-import { determineToolsetsToEnable, TOOLSETS } from './shared/tools.js';
+import { TOOLSETS, registerToolsets } from './registry.js';
 
 /**
  * Sanitizes an array of org usernames by replacing specific orgs with a placeholder.
@@ -163,91 +156,8 @@ You can also use special values to control access to orgs:
     );
 
     await maybeBuildIndex(this.config.dataDir);
-    const toolsetsToEnable = determineToolsetsToEnable(flags.toolsets ?? ['all'], flags['dynamic-tools'] ?? false);
 
-    // ************************
-    // CORE TOOLS (always on)
-    // If you're adding a new tool to the core toolset, you MUST add it to the `CORE_TOOLS` array in shared/tools.ts
-    // otherwise SfMcpServer will not register it.
-    //
-    // Long term, we will want to consider a more elegant solution for registering core tools.
-    // ************************
-    this.logToStderr('Registering core tools');
-    // get username
-    core.registerToolGetUsername(server);
-    core.registerToolResume(server);
-    core.registerToolSuggestCliCommand(server);
-
-    // DYNAMIC TOOLSETS
-    // ************************
-    if (toolsetsToEnable.dynamic) {
-      this.logToStderr('Registering dynamic tools');
-      // Individual tool management
-      dynamic.registerToolEnableTools(server);
-      dynamic.registerToolListTools(server);
-    }
-
-    // ************************
-    // ORG TOOLS
-    // ************************
-    if (toolsetsToEnable.orgs) {
-      this.logToStderr('Registering org tools');
-      // list all orgs
-      orgs.registerToolListAllOrgs(server);
-    }
-
-    // ************************
-    // DATA TOOLS
-    // ************************
-    if (toolsetsToEnable.data) {
-      this.logToStderr('Registering data tools');
-      // query org
-      data.registerToolQueryOrg(server);
-    }
-
-    // ************************
-    // USER TOOLS
-    // ************************
-    if (toolsetsToEnable.users) {
-      this.logToStderr('Registering user tools');
-      // assign permission set
-      users.registerToolAssignPermissionSet(server);
-    }
-
-    // ************************
-    // testing TOOLS
-    // ************************
-    if (toolsetsToEnable.testing) {
-      this.logToStderr('Registering testing tools');
-      testing.registerToolTestApex(server);
-      testing.registerToolTestAgent(server);
-    }
-
-    // ************************
-    // METADATA TOOLS
-    // ************************
-    if (toolsetsToEnable.metadata) {
-      this.logToStderr('Registering metadata tools');
-      // deploy metadata
-      metadata.registerToolDeployMetadata(server);
-      // retrieve metadata
-      metadata.registerToolRetrieveMetadata(server);
-    }
-
-    // ************************
-    // EXPERIMENTAL TOOLS
-    //
-    // This toolset needs to be explicitly enabled ('all' will not include it)
-    // Tools don't need to be in an 'experimental' directory, only registered here
-    // ************************
-    if (toolsetsToEnable.experimental) {
-      this.logToStderr('Registering experimental tools');
-      orgs.registerToolOrgOpen(server);
-      // Add any experimental tools here
-      orgs.registerToolCreateScratchOrg(server);
-      orgs.registerToolDeleteOrg(server);
-      orgs.registerToolCreateOrgSnapshot(server);
-    }
+    registerToolsets(flags.toolsets ?? ['all'], flags['dynamic-tools'] ?? false, server);
 
     const transport = new StdioServerTransport();
     await server.connect(transport);

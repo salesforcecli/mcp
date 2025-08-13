@@ -50,7 +50,7 @@ export type AgentRunTests = z.infer<typeof runAgentTestsParam>;
  * Returns:
  * - textResponse: Test result.
  */
-export const registerToolTestAgent = (server: SfMcpServer): void => {
+export const testAgent = (server: SfMcpServer): void => {
   server.tool(
     'sf-test-agents',
     `Run Agent tests in an org.

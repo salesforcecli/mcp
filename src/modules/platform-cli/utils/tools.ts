@@ -15,87 +15,8 @@
  */
 
 import { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { ToolInfo } from './types.js';
-import Cache from './cache.js';
-
-export const TOOLSETS = ['orgs', 'data', 'users', 'metadata', 'testing', 'experimental'] as const;
-
-type Toolset = (typeof TOOLSETS)[number];
-
-/*
- * These are tools that are always enabled at startup. They cannot be disabled and they cannot be dynamically enabled.
- */
-export const CORE_TOOLS = [
-  'sf-get-username',
-  'sf-resume',
-  'sf-enable-tools',
-  'sf-list-tools',
-  'sf-suggest-cli-command',
-];
-
-/**
- * Determines which toolsets should be enabled based on the provided toolsets array and dynamic tools flag.
- *
- * @param {Array<Toolset | 'all'>} toolsets - Array of toolsets to enable. Can include 'all' to enable all non-experimental toolsets.
- * @param {boolean} dynamicTools - Flag indicating whether dynamic tools should be enabled. When true, only core and dynamic toolsets are enabled.
- * @returns {Record<Toolset | 'dynamic' | 'core', boolean>} Object mapping each toolset to a boolean indicating whether it should be enabled.
- *
- * @example
- * // Enable all toolsets except experimental
- * determineToolsetsToEnable(['all'], false)
- * // Returns: { core: true, data: true, dynamic: false, experimental: false, metadata: true, orgs: true, testing: true, users: true }
- *
- * @example
- * // Enable only dynamic tools
- * determineToolsetsToEnable([], true)
- * // Returns: { core: true, data: false, dynamic: true, experimental: false, metadata: false, orgs: false, testing: false, users: false }
- *
- * @example
- * // Enable specific toolsets
- * determineToolsetsToEnable(['data', 'users'], false)
- * // Returns: { core: true, data: true, dynamic: false, experimental: false, metadata: false, orgs: false, testing: false, users: true }
- */
-export function determineToolsetsToEnable(
-  toolsets: Array<Toolset | 'all'>,
-  dynamicTools: boolean
-): Record<Toolset | 'dynamic' | 'core', boolean> {
-  if (dynamicTools) {
-    return {
-      core: true,
-      data: true,
-      dynamic: true,
-      experimental: false,
-      metadata: true,
-      orgs: true,
-      testing: true,
-      users: true,
-    };
-  }
-
-  if (toolsets.includes('all')) {
-    return {
-      core: true,
-      data: true,
-      dynamic: false,
-      experimental: false,
-      metadata: true,
-      orgs: true,
-      testing: true,
-      users: true,
-    };
-  }
-
-  return {
-    core: true,
-    data: toolsets.includes('data'),
-    dynamic: false,
-    experimental: toolsets.includes('experimental'),
-    metadata: toolsets.includes('metadata'),
-    orgs: toolsets.includes('orgs'),
-    testing: toolsets.includes('testing'),
-    users: toolsets.includes('users'),
-  };
-}
+import { ToolInfo } from '../../../shared/types.js';
+import Cache from '../../../shared/cache.js';
 
 /**
  * Add a tool to the cache
