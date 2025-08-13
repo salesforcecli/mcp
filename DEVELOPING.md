@@ -62,7 +62,7 @@ When you create a new tool, you must register it in the `TOOL_REGISTRY` in `src/
 The basic structure of tool registration function is
 
 ```typescript
-function registerTool(server: SfMcpServer): void {
+function myNewTool(server: SfMcpServer): void {
   server.tool({
     name: 'my-new-tool',
     description: 'A brief description of what the tool does.',
