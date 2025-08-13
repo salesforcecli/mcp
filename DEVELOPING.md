@@ -64,7 +64,7 @@ The basic structure of tool registration function is
 ```typescript
 function myNewTool(server: SfMcpServer): void {
   server.tool({
-    name: 'my-new-tool',
+    name: 'sf-my-new-tool',
     description: 'A brief description of what the tool does.',
     // Other tool properties...
   });
