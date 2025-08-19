@@ -20,6 +20,7 @@
     "link-check": "wireit",
     "lint": "wireit",
     "lint-fix": "yarn sf-lint --fix",
+    "package": "yarn pack",
     "postpack": "sf-clean --ignore-signing-artifacts",
     "prepack": "sf-prepack",
     "prepare": "sf-install",
@@ -36,7 +37,9 @@
     "bin",
     "lib",
     "!lib/**/*.map",
-    "messages"
+    "messages",
+    "LICENSE.txt",
+    "package.json"
   ],
   "dependencies": {
     "@huggingface/transformers": "^3.7.0",

@@ -1655,7 +1655,7 @@
     ts-node "^10.9.2"
     zod "^3.23.8"
 
-"@modelcontextprotocol/sdk@^1.13.1", "@modelcontextprotocol/sdk@^1.16.0":
+"@modelcontextprotocol/sdk@^1.13.1", "@modelcontextprotocol/sdk@^1.16.0", "@modelcontextprotocol/sdk@^1.17.3":
   version "1.17.3"
   resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.17.3.tgz#cf92354220f0183d28179e96a9bf3a8f6d3211ae"
   integrity sha512-JPwUKWSsbzx+DLFznf/QZ32Qa+ptfbUlHhRLrBQBAFu9iI1iYvizM4p+zhhRDceSsPutXp4z+R/HPVphlIiclg==
