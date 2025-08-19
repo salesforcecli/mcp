@@ -2,7 +2,14 @@
   "servers": {
     "salesforce": {
       "command": "node",
-      "args": ["${workspaceFolder}/bin/run.js", "--toolsets", "all", "--orgs", "DEFAULT_TARGET_ORG", "--no-telemetry"]
+      "args": [
+        "${workspaceFolder}/packages/mcp/bin/run.js",
+        "--toolsets",
+        "all",
+        "--orgs",
+        "DEFAULT_TARGET_ORG",
+        "--no-telemetry"
+      ]
     }
   }
 }

@@ -26,7 +26,7 @@
       "name": "Attach to Debug Hook Process",
       "skipFiles": ["<node_internals>/**"],
       "sourceMaps": true,
-      "outFiles": ["${workspaceFolder}/lib/**/*.js"]
+      "outFiles": ["${workspaceFolder}/packages/mcp/lib/**/*.js"]
     }
   ]
 }
