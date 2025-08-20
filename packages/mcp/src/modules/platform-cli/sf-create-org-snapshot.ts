@@ -48,10 +48,10 @@ const createOrgSnapshotParams = z.object({
 });
 
 type InputArgs = z.infer<typeof createOrgSnapshotParams>;
-type InputArgsZod = typeof createOrgSnapshotParams.shape;
-type OutputArgsZod = z.ZodRawShape;
+type InputArgsShape = typeof createOrgSnapshotParams.shape;
+type OutputArgsShape = z.ZodRawShape;
 
-export class CreateOrgSnapshotMcpTool extends McpTool<InputArgsZod, OutputArgsZod> {
+export class CreateOrgSnapshotMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
   public getToolsets(): Toolset[] {
     return [Toolset.EXPERIMENTAL];
   }
@@ -60,7 +60,7 @@ export class CreateOrgSnapshotMcpTool extends McpTool<InputArgsZod, OutputArgsZo
     return 'sf-create-org-snapshot';
   }
   
-  public getConfig(): McpToolConfig<InputArgsZod, OutputArgsZod> {
+  public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: 'Create a new snapshot',
       description: `Creates a new snapshot of an org

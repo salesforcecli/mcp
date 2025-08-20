@@ -81,10 +81,10 @@ Set this param if the user ask an Apex test to be run during deployment.
 });
 
 type InputArgs = z.infer<typeof deployMetadataParams>;
-type InputArgsZod = typeof deployMetadataParams.shape;
-type OutputArgsZod = z.ZodRawShape;
+type InputArgsShape = typeof deployMetadataParams.shape;
+type OutputArgsShape = z.ZodRawShape;
 
-export class DeployMetadataMcpTool extends McpTool<InputArgsZod, OutputArgsZod> {
+export class DeployMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
   public getToolsets(): Toolset[] {
     return [Toolset.METADATA];
   }
@@ -93,7 +93,7 @@ export class DeployMetadataMcpTool extends McpTool<InputArgsZod, OutputArgsZod> 
     return 'sf-deploy-metadata';
   }
 
-  public getConfig(): McpToolConfig<InputArgsZod, OutputArgsZod> {
+  public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: 'Deploy Metadata',
       description: `Deploy metadata to an org from your local project.

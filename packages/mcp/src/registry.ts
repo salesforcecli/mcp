@@ -119,7 +119,7 @@ function registerTools_old(tools: Array<(server: SfMcpServer) => void>, server: 
 function registerTools(tools: McpTool[], server: SfMcpServer): void {
   for (const tool of tools) {
     // TODO: registerTool isn't overridden by the SfMcpServer yet, so we reroute everything through the server.tool for now.
-    // in the future this could look like: server.registerTool(tool.getName(), tool.getConfig(), tool.exec);
+    // In the future this could look like: server.registerTool(tool.getName(), tool.getConfig(), (...args) => tool.exec(...args));
     const toolConfig: McpToolConfig = tool.getConfig();
     server.tool(tool.getName(), toolConfig.description ?? '', toolConfig.inputSchema ?? {},
       {title: toolConfig.title, ...toolConfig.annotations}, (...args) => tool.exec(...args));

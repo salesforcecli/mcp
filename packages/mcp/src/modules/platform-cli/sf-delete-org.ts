@@ -38,10 +38,10 @@ const deleteOrgParams = z.object({
 });
 
 type InputArgs = z.infer<typeof deleteOrgParams>;
-type InputArgsZod = typeof deleteOrgParams.shape;
-type OutputArgsZod = z.ZodRawShape;
+type InputArgsShape = typeof deleteOrgParams.shape;
+type OutputArgsShape = z.ZodRawShape;
 
-export class DeleteOrgMcpTool extends McpTool<InputArgsZod, OutputArgsZod> {
+export class DeleteOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
   public getToolsets(): Toolset[] {
     return [Toolset.EXPERIMENTAL];
   }
@@ -50,7 +50,7 @@ export class DeleteOrgMcpTool extends McpTool<InputArgsZod, OutputArgsZod> {
     return 'sf-delete-org';
   }
 
-  public getConfig(): McpToolConfig<InputArgsZod, OutputArgsZod> {
+  public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: 'Delete an Org',
       description: `Deletes specified salesforce org.

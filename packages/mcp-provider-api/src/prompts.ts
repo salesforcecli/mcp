@@ -3,13 +3,13 @@ import { GetPromptResult, ServerNotification, ServerRequest } from "@modelcontex
 import { z } from "zod";
 import { MCP_PROVIDER_API_VERSION } from "./constants.js";
 
-export abstract class McpPrompt<Args extends PromptArgsRawShape = PromptArgsRawShape> {
+export abstract class McpPrompt<ArgsShape extends PromptArgsRawShape = PromptArgsRawShape> {
     abstract getName(): string
     
-    abstract getConfig(): McpPromptConfig<Args>
+    abstract getConfig(): McpPromptConfig<ArgsShape>
 
-    abstract prompt(...args: Args extends PromptArgsRawShape
-        ? [args: z.objectOutputType<Args, z.ZodTypeAny>, extra: RequestHandlerExtra<ServerRequest, ServerNotification>]
+    abstract prompt(...args: ArgsShape extends PromptArgsRawShape
+        ? [args: z.objectOutputType<ArgsShape, z.ZodTypeAny>, extra: RequestHandlerExtra<ServerRequest, ServerNotification>]
         : [extra: RequestHandlerExtra<ServerRequest, ServerNotification>]
     ): GetPromptResult | Promise<GetPromptResult>;
 
@@ -22,10 +22,10 @@ export abstract class McpPrompt<Args extends PromptArgsRawShape = PromptArgsRawS
     }
 }
 
-export type McpPromptConfig<Args extends PromptArgsRawShape = PromptArgsRawShape> = {
+export type McpPromptConfig<ArgsShape extends PromptArgsRawShape = PromptArgsRawShape> = {
     title?: string;
     description?: string;
-    argsSchema?: Args;
+    argsSchema?: ArgsShape;
 }
 
 // For some reason PromptArgsRawShape isn't exported from "@modelcontextprotocol/sdk/server/mcp.js" so we define it here

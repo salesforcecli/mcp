@@ -3,15 +3,15 @@ import { CallToolResult, ServerNotification, ServerRequest, ToolAnnotations } fr
 import { z } from "zod"
 import { MCP_PROVIDER_API_VERSION } from "./constants.js";
 
-export abstract class McpTool<InputArgs extends z.ZodRawShape = z.ZodRawShape, OutputArgs extends z.ZodRawShape = z.ZodRawShape> {
+export abstract class McpTool<InputArgsShape extends z.ZodRawShape = z.ZodRawShape, OutputArgsShape extends z.ZodRawShape = z.ZodRawShape> {
     abstract getToolsets(): Toolset[]
 
     abstract getName(): string
 
-    abstract getConfig(): McpToolConfig<InputArgs, OutputArgs>
+    abstract getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape>
 
-    abstract exec(...args: InputArgs extends z.ZodRawShape
-        ? [args: z.objectOutputType<InputArgs, z.ZodTypeAny>, extra: RequestHandlerExtra<ServerRequest, ServerNotification>]
+    abstract exec(...args: InputArgsShape extends z.ZodRawShape
+        ? [args: z.objectOutputType<InputArgsShape, z.ZodTypeAny>, extra: RequestHandlerExtra<ServerRequest, ServerNotification>]
         : [extra: RequestHandlerExtra<ServerRequest, ServerNotification>]
     ): CallToolResult | Promise<CallToolResult>;
 
@@ -24,11 +24,11 @@ export abstract class McpTool<InputArgs extends z.ZodRawShape = z.ZodRawShape, O
     }
 }
 
-export type McpToolConfig<InputArgs extends z.ZodRawShape = z.ZodRawShape, OutputArgs extends z.ZodRawShape = z.ZodRawShape> = {
+export type McpToolConfig<InputArgsShape extends z.ZodRawShape = z.ZodRawShape, OutputArgsShape extends z.ZodRawShape = z.ZodRawShape> = {
     title?: string;
     description?: string;
-    inputSchema?: InputArgs;
-    outputSchema?: OutputArgs;
+    inputSchema?: InputArgsShape;
+    outputSchema?: OutputArgsShape;
     annotations?: ToolAnnotations;
 }
 

@@ -90,10 +90,10 @@ const createScratchOrgParams = z.object({
 });
 
 type InputArgs = z.infer<typeof createScratchOrgParams>;
-type InputArgsZod = typeof createScratchOrgParams.shape;
-type OutputArgsZod = z.ZodRawShape;
+type InputArgsShape = typeof createScratchOrgParams.shape;
+type OutputArgsShape = z.ZodRawShape;
 
-export class CreateScratchOrgMcpTool extends McpTool<InputArgsZod, OutputArgsZod> {
+export class CreateScratchOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
   public getToolsets(): Toolset[] {
     return [Toolset.EXPERIMENTAL];
   }
@@ -102,7 +102,7 @@ export class CreateScratchOrgMcpTool extends McpTool<InputArgsZod, OutputArgsZod
     return 'sf-create-scratch-org';
   }
 
-  public getConfig(): McpToolConfig<InputArgsZod, OutputArgsZod> {
+  public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: 'Create a scratch org',
       description: `Creates a scratch org with the specified parameters.

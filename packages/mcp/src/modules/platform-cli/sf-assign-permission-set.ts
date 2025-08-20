@@ -63,10 +63,10 @@ Set the permission set MyPermSet on behalf of my-alias.`),
 });
 
 type InputArgs = z.infer<typeof assignPermissionSetParamsSchema>;
-type InputArgsZod = typeof assignPermissionSetParamsSchema.shape;
-type OutputArgsZod = z.ZodRawShape;
+type InputArgsShape = typeof assignPermissionSetParamsSchema.shape;
+type OutputArgsShape = z.ZodRawShape;
 
-export class AssignPermissionSetMcpTool extends McpTool<InputArgsZod, OutputArgsZod> {
+export class AssignPermissionSetMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
   public getToolsets(): Toolset[] {
     return [Toolset.USERS];
   }
@@ -75,7 +75,7 @@ export class AssignPermissionSetMcpTool extends McpTool<InputArgsZod, OutputArgs
     return 'sf-assign-permission-set';
   }
 
-  public getConfig(): McpToolConfig<InputArgsZod, OutputArgsZod> {
+  public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: 'Assign Permission Set',
       description: 'Assign a permission set to one or more org users.',
