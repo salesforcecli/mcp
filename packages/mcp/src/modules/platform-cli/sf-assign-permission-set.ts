@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { Org, StateAggregator, User } from '@salesforce/core';
 import { z } from 'zod';
+import { Org, StateAggregator, User } from '@salesforce/core';
+import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
 import { textResponse } from '../../shared/utils.js';
 import { getConnection } from '../../shared/auth.js';
-import { SfMcpServer } from '../../sf-mcp-server.js';
 
 /*
  * Assign permission set
@@ -61,53 +62,63 @@ Set the permission set MyPermSet on behalf of my-alias.`),
   directory: directoryParam,
 });
 
-export type AssignPermissionSetOptions = z.infer<typeof assignPermissionSetParamsSchema>;
+export class AssignPermissionSetMcpTool implements McpTool {
+  public getToolsets(): Toolset[] {
+    return [Toolset.USERS];
+  }
 
-export const assignPermissionSet = (server: SfMcpServer): void => {
-  server.tool(
-    'sf-assign-permission-set',
-    'Assign a permission set to one or more org users.',
-    assignPermissionSetParamsSchema.shape,
-    {
+  public getName(): string {
+    return 'sf-assign-permission-set';
+  }
+
+  public getConfig(): McpToolConfig {
+    const config: McpToolConfig = {
       title: 'Assign Permission Set',
-      openWorldHint: false,
-    },
-    async ({ permissionSetName, usernameOrAlias, onBehalfOf, directory }) => {
-      try {
-        if (!usernameOrAlias)
-          return textResponse(
-            'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
-            true
-          );
-        process.chdir(directory);
-        // We build the connection from the usernameOrAlias
-        const connection = await getConnection(usernameOrAlias);
+      description: 'Assign a permission set to one or more org users.',
+      inputSchema: assignPermissionSetParamsSchema.shape,
+      outputSchema: undefined,
+      annotations: {
+        openWorldHint: true
+      }
+    };
+    return config;
+  }
 
-        // We need to clear the instance so we know we have the most up to date aliases
-        // If a user sets an alias after server start up, it was not getting picked up
-        await StateAggregator.clearInstanceAsync();
-        // Must NOT be nullish coalescing (??) In case the LLM uses and empty string
-        const assignTo = (await StateAggregator.getInstance()).aliases.resolveUsername(onBehalfOf || usernameOrAlias);
-
-        if (!assignTo.includes('@')) {
-          return textResponse('Unable to resolve the username for alias. Make sure it is correct', true);
-        }
-
-        const org = await Org.create({ connection });
-        const user = await User.create({ org });
-        const queryResult = await connection.singleRecordQuery<{ Id: string }>(
-          `SELECT Id FROM User WHERE Username='${assignTo}'`
-        );
-
-        await user.assignPermissionSets(queryResult.Id, [permissionSetName]);
-
-        return textResponse(`Assigned ${permissionSetName} to ${assignTo}`);
-      } catch (error) {
+  public async exec(input: Record<string, string>): Promise<CallToolResult> {
+    try {
+      if (!input.usernameOrAlias)
         return textResponse(
-          `Failed to assign permission set: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
           true
         );
+      process.chdir(input.directory);
+      // We build the connection from the usernameOrAlias
+      const connection = await getConnection(input.usernameOrAlias);
+
+      // We need to clear the instance so we know we have the most up to date aliases
+      // If a user sets an alias after server start up, it was not getting picked up
+      await StateAggregator.clearInstanceAsync();
+      // Must NOT be nullish coalescing (??) In case the LLM uses and empty string
+      const assignTo = (await StateAggregator.getInstance()).aliases.resolveUsername(input.onBehalfOf || input.usernameOrAlias);
+
+      if (!assignTo.includes('@')) {
+        return textResponse('Unable to resolve the username for alias. Make sure it is correct', true);
       }
+
+      const org = await Org.create({ connection });
+      const user = await User.create({ org });
+      const queryResult = await connection.singleRecordQuery<{ Id: string }>(
+        `SELECT Id FROM User WHERE Username='${assignTo}'`
+      );
+
+      await user.assignPermissionSets(queryResult.Id, [input.permissionSetName]);
+
+      return textResponse(`Assigned ${input.permissionSetName} to ${assignTo}`);
+    } catch (error) {
+      return textResponse(
+        `Failed to assign permission set: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        true
+      );
     }
-  );
-};
+  }
+}

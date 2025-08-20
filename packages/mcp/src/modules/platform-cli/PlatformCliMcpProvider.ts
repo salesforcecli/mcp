@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-module.exports = {
-  extends: ['eslint-config-salesforce-typescript', 'eslint-config-salesforce-license', 'plugin:sf-plugin/library'],
-  rules: {
-    camelcase: 'off',
-    'class-methods-use-this': 'off',
-    '@typescript-eslint/prefer-nullish-coalescing': 'warn',
-    '@typescript-eslint/no-unused-vars': ['error', {
-      'argsIgnorePattern': '^_',
-      'varsIgnorePattern': '^_',
-      'caughtErrorsIgnorePattern': '^_'
-    }]
-  },
-};
+import { McpProvider, McpTool, Services } from '@salesforce/mcp-provider-api';
+import { AssignPermissionSetMcpTool } from './sf-assign-permission-set.js';
+
+export class PlatformCliMcpProvider extends McpProvider {
+    public provideTools(_services: Services): McpTool[] {
+        return [
+            new AssignPermissionSetMcpTool()
+        ];
+    }
+}

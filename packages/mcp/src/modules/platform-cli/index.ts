@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-export { assignPermissionSet } from './sf-assign-permission-set.js';
 export { createOrgSnapshot } from './sf-create-org-snapshot.js';
 export { createScratchOrg } from './sf-create-scratch-org.js';
 export { deleteOrg } from './sf-delete-org.js';
@@ -30,3 +29,5 @@ export { retrieveMetadata } from './sf-retrieve-metadata.js';
 export { suggestCliCommand } from './sf-suggest-cli-command.js';
 export { testAgent } from './sf-test-agents.js';
 export { testApex } from './sf-test-apex.js';
+
+export { PlatformCliMcpProvider } from './PlatformCliMcpProvider.js';

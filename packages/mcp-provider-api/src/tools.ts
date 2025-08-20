@@ -3,7 +3,7 @@ import { ToolAnnotations } from "@modelcontextprotocol/sdk/types.js";
 import { ZodRawShape } from "zod"
 
 export interface McpTool<InputArgs extends ZodRawShape = ZodRawShape, OutputArgs extends ZodRawShape = ZodRawShape> {
-    getToolset(): Toolset
+    getToolsets(): Toolset[]
 
     getName(): string
     

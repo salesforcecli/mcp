@@ -55,7 +55,7 @@ Use this guide to learn how to contribute to the Salesforce DX MCP Server.
 1. Push commit(s) to remote: `git push -u origin <branch_name>`.
 1. Create a pull request (PR) using the [GitHub UI](https://github.com/salesforcecli/mcp).
 
-## Registering New Tools
+## Registering New Tools (OUTDATED - NEEDS TO BE UPDATED SOON)
 
 When you create a new tool, you must register it in the `TOOL_REGISTRY` in `src/registry.ts`. This allows the MCP server to recognize and use your tool.
 
