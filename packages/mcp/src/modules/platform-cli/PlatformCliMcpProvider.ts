@@ -18,6 +18,8 @@ import { McpProvider, McpTool, Services } from '@salesforce/mcp-provider-api';
 import { AssignPermissionSetMcpTool } from './sf-assign-permission-set.js';
 import { CreateOrgSnapshotMcpTool } from './sf-create-org-snapshot.js';
 import { CreateScratchOrgMcpTool } from './sf-create-scratch-org.js';
+import { DeleteOrgMcpTool } from './sf-delete-org.js';
+import { DeployMetadataMcpTool } from './sf-deploy-metadata.js';
 
 export class PlatformCliMcpProvider extends McpProvider {
     public getName(): string {
@@ -28,7 +30,9 @@ export class PlatformCliMcpProvider extends McpProvider {
         return [
             new AssignPermissionSetMcpTool(),
             new CreateOrgSnapshotMcpTool(),
-            new CreateScratchOrgMcpTool()
+            new CreateScratchOrgMcpTool(),
+            new DeleteOrgMcpTool(),
+            new DeployMetadataMcpTool()
         ];
     }
 }

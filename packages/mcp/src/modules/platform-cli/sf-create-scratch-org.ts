@@ -93,8 +93,6 @@ type InputArgs = z.infer<typeof createScratchOrgParams>;
 type InputArgsZod = typeof createScratchOrgParams.shape;
 type OutputArgsZod = z.ZodRawShape;
 
-
-
 export class CreateScratchOrgMcpTool extends McpTool<InputArgsZod, OutputArgsZod> {
   public getToolsets(): Toolset[] {
     return [Toolset.EXPERIMENTAL];

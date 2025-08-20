@@ -15,8 +15,9 @@
  */
 
 import { z } from 'zod';
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { AuthRemover, Org } from '@salesforce/core';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
 import { textResponse } from '../../shared/utils.js';
 import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
 
@@ -31,17 +32,28 @@ import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
  * - textResponse: Deletion request response
  */
 
-export const deleteOrgParams = z.object({
+const deleteOrgParams = z.object({
   directory: directoryParam,
   usernameOrAlias: usernameOrAliasParam,
 });
 
-export type DeleteOrgOptions = z.infer<typeof deleteOrgParams>;
+type InputArgs = z.infer<typeof deleteOrgParams>;
+type InputArgsZod = typeof deleteOrgParams.shape;
+type OutputArgsZod = z.ZodRawShape;
 
-export const deleteOrg = (server: McpServer): void => {
-  server.tool(
-    'sf-delete-org',
-    `Deletes specified salesforce org.
+export class DeleteOrgMcpTool extends McpTool<InputArgsZod, OutputArgsZod> {
+  public getToolsets(): Toolset[] {
+    return [Toolset.EXPERIMENTAL];
+  }
+
+  public getName(): string {
+    return 'sf-delete-org';
+  }
+
+  public getConfig(): McpToolConfig<InputArgsZod, OutputArgsZod> {
+    return {
+      title: 'Delete an Org',
+      description: `Deletes specified salesforce org.
 
 AGENT INSTRUCTIONS:
 ALWAYS confirm with the user before deleting an org
@@ -49,28 +61,28 @@ ALWAYS confirm with the user before deleting an org
 Example usage:
 Can you delete my org
 Can you delete MyAliasedOrg
-Can you delete test-fe2n4tc8pgku@example.com
-`,
-    deleteOrgParams.shape,
-    {
-      title: 'Delete an Org',
-    },
-    async ({ directory, usernameOrAlias }) => {
-      try {
-        process.chdir(directory);
-        const org = await Org.create({ aliasOrUsername: usernameOrAlias });
-        await org.delete();
-        return textResponse(`Successfully deleted ${usernameOrAlias}`);
-      } catch (e) {
-        if (e instanceof Error && e.name === 'DomainNotFoundError') {
-          // the org has expired, so remote operations won't work
-          // let's clean up the files locally
-          const authRemover = await AuthRemover.create();
-          await authRemover.removeAuth(usernameOrAlias);
-          return textResponse(`Successfully deleted ${usernameOrAlias}`);
-        }
-        return textResponse(`Failed to delete org: ${e instanceof Error ? e.message : 'Unknown error'}`, true);
-      }
+Can you delete test-fe2n4tc8pgku@example.com`,
+      inputSchema: deleteOrgParams.shape,
+      outputSchema: undefined,
+      annotations: {}
     }
-  );
-};
+  }
+
+  public async exec(input: InputArgs): Promise<CallToolResult> {
+    try {
+      process.chdir(input.directory);
+      const org = await Org.create({ aliasOrUsername: input.usernameOrAlias });
+      await org.delete();
+      return textResponse(`Successfully deleted ${input.usernameOrAlias}`);
+    } catch (e) {
+      if (e instanceof Error && e.name === 'DomainNotFoundError') {
+        // the org has expired, so remote operations won't work
+        // let's clean up the files locally
+        const authRemover = await AuthRemover.create();
+        await authRemover.removeAuth(input.usernameOrAlias);
+        return textResponse(`Successfully deleted ${input.usernameOrAlias}`);
+      }
+      return textResponse(`Failed to delete org: ${e instanceof Error ? e.message : 'Unknown error'}`, true);
+    }
+  }
+}

@@ -73,12 +73,10 @@ const OLD_TOOL_REGISTRY: Record<Toolset, Array<(server: SfMcpServer) => void>> =
     platformCli.testApex
   ],
   [Toolset.METADATA]: [
-    platformCli.deployMetadata,
     platformCli.retrieveMetadata
   ],
   [Toolset.EXPERIMENTAL]: [
     platformCli.orgOpen,
-    platformCli.deleteOrg,
   ],
 };
 

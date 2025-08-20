@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-export { deleteOrg } from './sf-delete-org.js';
-export { deployMetadata } from './sf-deploy-metadata.js';
 export { getUsername } from './sf-get-username.js';
 export { listAllOrgs } from './sf-list-all-orgs.js';
 export { orgOpen } from './sf-org-open.js';
