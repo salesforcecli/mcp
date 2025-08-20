@@ -17,9 +17,10 @@
 import { join } from 'node:path';
 import * as fs from 'node:fs';
 import { z } from 'zod';
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { Org, scratchOrgCreate, ScratchOrgCreateOptions } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
 import { textResponse } from '../../shared/utils.js';
 import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
 
@@ -45,7 +46,7 @@ import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
  * - textResponse:
  */
 
-export const createScratchOrgParams = z.object({
+const createScratchOrgParams = z.object({
   directory: directoryParam,
   devHub: usernameOrAliasParam.describe(
     'The default devhub username, use the #sf-get-username tool to get the default devhub if unsure'
@@ -88,77 +89,75 @@ export const createScratchOrgParams = z.object({
   adminEmail: z.string().describe("Email address that will be applied to the org's admin user.").optional(),
 });
 
-export type CreateScratchOrgOptions = z.infer<typeof createScratchOrgParams>;
+type InputArgs = z.infer<typeof createScratchOrgParams>;
+type InputArgsZod = typeof createScratchOrgParams.shape;
+type OutputArgsZod = z.ZodRawShape;
 
-export const createScratchOrg = (server: McpServer): void => {
-  server.tool(
-    'sf-create-scratch-org',
-    `Creates a scratch org with the specified parameters.
+
+
+export class CreateScratchOrgMcpTool extends McpTool<InputArgsZod, OutputArgsZod> {
+  public getToolsets(): Toolset[] {
+    return [Toolset.EXPERIMENTAL];
+  }
+
+  public getName(): string {
+    return 'sf-create-scratch-org';
+  }
+
+  public getConfig(): McpToolConfig<InputArgsZod, OutputArgsZod> {
+    return {
+      title: 'Create a scratch org',
+      description: `Creates a scratch org with the specified parameters.
 
 AGENT INSTRUCTIONS:
 
 Example usage:
 Create a scratch org
 create a scratch org with the definition file myDefinition.json that lasts 3 days
-create a scratch org aliased as MyNewOrg and set as default and don't wait for it to finish
-`,
-    createScratchOrgParams.shape,
-    {
-      title: 'Create a scratch org',
-    },
-    async ({
-      directory,
-      devHub,
-      orgName,
-      adminEmail,
-      description,
-      snapshot,
-      sourceOrg,
-      username,
-      edition,
-      setDefault,
-      async,
-      duration,
-      alias,
-      definitionFile,
-    }) => {
-      try {
-        process.chdir(directory);
-        const hubOrProd = await Org.create({ aliasOrUsername: devHub });
+create a scratch org aliased as MyNewOrg and set as default and don't wait for it to finish`,
+      inputSchema: createScratchOrgParams.shape,
+      outputSchema: undefined,
+      annotations: {}
+    };
+  }
 
-        const requestParams: ScratchOrgCreateOptions = {
-          hubOrg: hubOrProd,
-          durationDays: duration,
-          wait: async ? Duration.minutes(0) : Duration.minutes(10),
-          orgConfig: {
-            ...(definitionFile
-              ? (JSON.parse(await fs.promises.readFile(definitionFile, 'utf-8')) as Record<string, unknown>)
-              : {}),
-            ...(edition ? { edition } : {}),
-            ...(snapshot ? { snapshot } : {}),
-            ...(username ? { username } : {}),
-            ...(description ? { description } : {}),
-            ...(orgName ? { orgName } : {}),
-            ...(sourceOrg ? { sourceOrg } : {}),
-            ...(adminEmail ? { adminEmail } : {}),
-          },
-          alias,
-          setDefault,
-          tracksSource: true,
-        };
-        const result = await scratchOrgCreate(requestParams);
-        if (async) {
-          return textResponse(
-            `Successfully enqueued scratch org with job Id: ${JSON.stringify(
-              result.scratchOrgInfo?.Id
-            )} use the #sf-resume tool to resume this operation`
-          );
-        } else {
-          return textResponse(`Successfully created scratch org  ${JSON.stringify(result)}`);
-        }
-      } catch (e) {
-        return textResponse(`Failed to create org: ${e instanceof Error ? e.message : 'Unknown error'}`, true);
+  public async exec(input: InputArgs): Promise<CallToolResult> {
+    try {
+      process.chdir(input.directory);
+      const hubOrProd = await Org.create({ aliasOrUsername: input.devHub });
+
+      const requestParams: ScratchOrgCreateOptions = {
+        hubOrg: hubOrProd,
+        durationDays: input.duration,
+        wait: input.async ? Duration.minutes(0) : Duration.minutes(10),
+        orgConfig: {
+          ...(input.definitionFile
+            ? (JSON.parse(await fs.promises.readFile(input.definitionFile, 'utf-8')) as Record<string, unknown>)
+            : {}),
+          ...(input.edition ? { edition: input.edition } : {}),
+          ...(input.snapshot ? { snapshot: input.snapshot } : {}),
+          ...(input.username ? { username: input.username } : {}),
+          ...(input.description ? { description: input.description } : {}),
+          ...(input.orgName ? { orgName: input.orgName } : {}),
+          ...(input.sourceOrg ? { sourceOrg: input.sourceOrg } : {}),
+          ...(input.adminEmail ? { adminEmail: input.adminEmail } : {}),
+        },
+        alias: input.alias,
+        setDefault: input.setDefault,
+        tracksSource: true,
+      };
+      const result = await scratchOrgCreate(requestParams);
+      if (input.async) {
+        return textResponse(
+          `Successfully enqueued scratch org with job Id: ${JSON.stringify(
+            result.scratchOrgInfo?.Id
+          )} use the #sf-resume tool to resume this operation`
+        );
+      } else {
+        return textResponse(`Successfully created scratch org  ${JSON.stringify(result)}`);
       }
+    } catch (e) {
+      return textResponse(`Failed to create org: ${e instanceof Error ? e.message : 'Unknown error'}`, true);
     }
-  );
-};
+  }
+}

@@ -15,8 +15,9 @@
  */
 
 import { z } from 'zod';
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { Org } from '@salesforce/core';
+import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { textResponse } from '../../shared/utils.js';
 import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
 import { getConnection } from '../../shared/auth.js';
@@ -34,7 +35,7 @@ import { getConnection } from '../../shared/auth.js';
  * - textResponse:
  */
 
-export const createOrgSnapshotParams = z.object({
+const createOrgSnapshotParams = z.object({
   directory: directoryParam,
   devHub: usernameOrAliasParam.describe(
     'The default devhub username, use the #sf-get-username tool to get the default devhub if unsure'
@@ -46,34 +47,46 @@ export const createOrgSnapshotParams = z.object({
   name: z.string().describe('Unique name of snapshot').max(15).default(Date.now().toString().substring(0, 15)),
 });
 
-export type CreateOrgSnapshotOptions = z.infer<typeof createOrgSnapshotParams>;
+type InputArgs = z.infer<typeof createOrgSnapshotParams>;
+type InputArgsZod = typeof createOrgSnapshotParams.shape;
+type OutputArgsZod = z.ZodRawShape;
 
-export const createOrgSnapshot = (server: McpServer): void => {
-  server.tool(
-    'sf-create-org-snapshot',
-    `Creates a new snapshot of an org
+export class CreateOrgSnapshotMcpTool extends McpTool<InputArgsZod, OutputArgsZod> {
+  public getToolsets(): Toolset[] {
+    return [Toolset.EXPERIMENTAL];
+  }
+
+  public getName(): string {
+    return 'sf-create-org-snapshot';
+  }
+  
+  public getConfig(): McpToolConfig<InputArgsZod, OutputArgsZod> {
+    return {
+      title: 'Create a new snapshot',
+      description: `Creates a new snapshot of an org
 
 AGENT INSTRUCTIONS:
 
 Example usage:
 Create a snapshot called 07042025
 create a snapshot called 07042025 with the description, "this is a snapshot for commit 5b1a09b1743 - new login flow working"
-create a snapshot of my MyScratch in myDevHub
-`,
-    createOrgSnapshotParams.shape,
-    {
-      title: 'Create a new snapshot',
-    },
-    async ({ directory, devHub, description, name, sourceOrg }) => {
-      try {
-        process.chdir(directory);
+create a snapshot of my MyScratch in myDevHub`,
+      inputSchema: createOrgSnapshotParams.shape,
+      outputSchema: undefined,
+      annotations: {}
+    }
+  }
 
-        const sourceOrgId = (await Org.create({ aliasOrUsername: sourceOrg })).getOrgId();
-        const devHubConnection = await getConnection(devHub);
+  public async exec(input: InputArgs): Promise<CallToolResult> {
+      try {
+        process.chdir(input.directory);
+
+        const sourceOrgId = (await Org.create({ aliasOrUsername: input.sourceOrg })).getOrgId();
+        const devHubConnection = await getConnection(input.devHub);
         const createResponse = await devHubConnection.sobject('OrgSnapshot').create({
           SourceOrg: sourceOrgId,
-          Description: description,
-          SnapshotName: name,
+          Description: input.description,
+          SnapshotName: input.name,
           Content: 'metadatadata',
         });
 
@@ -100,6 +113,5 @@ create a snapshot of my MyScratch in myDevHub
           return textResponse(`Error: ${e.name} : ${e.message}`, true);
         }
       }
-    }
-  );
-};
+  }
+}

@@ -40,7 +40,7 @@ import { getConnection } from '../../shared/auth.js';
  * - textResponse: Permission set assignment result
  */
 
-export const assignPermissionSetParamsSchema = z.object({
+const assignPermissionSetParamsSchema = z.object({
   permissionSetName: z.string().describe(`A single permission set to assign
 
 EXAMPLE USAGE:

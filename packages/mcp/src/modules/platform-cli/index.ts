@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-export { createOrgSnapshot } from './sf-create-org-snapshot.js';
-export { createScratchOrg } from './sf-create-scratch-org.js';
 export { deleteOrg } from './sf-delete-org.js';
 export { deployMetadata } from './sf-deploy-metadata.js';
 export { getUsername } from './sf-get-username.js';

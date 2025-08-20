@@ -78,9 +78,7 @@ const OLD_TOOL_REGISTRY: Record<Toolset, Array<(server: SfMcpServer) => void>> =
   ],
   [Toolset.EXPERIMENTAL]: [
     platformCli.orgOpen,
-    platformCli.createScratchOrg,
     platformCli.deleteOrg,
-    platformCli.createOrgSnapshot,
   ],
 };
 
