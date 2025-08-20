@@ -1,0 +1,1 @@
+export const MCP_PROVIDER_API_VERSION: string = '1.0';

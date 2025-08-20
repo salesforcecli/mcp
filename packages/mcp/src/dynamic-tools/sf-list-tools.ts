@@ -14,14 +14,25 @@
  * limitations under the License.
  */
 
-import { SfMcpServer } from '../../sf-mcp-server.js';
-import { textResponse } from '../../shared/utils.js';
+import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { textResponse } from '../shared/utils.js';
 import { listAllTools } from './utils/tools.js';
 
-export function listTools(server: SfMcpServer): void {
-  server.tool(
-    'sf-list-tools',
-    `List all available tools this Salesforce MCP server can offer, providing the enabled status and description of each.
+export class ListToolsMcpTool extends McpTool {
+  public getToolsets(): Toolset[] {
+    // Dynamic tools are special and aren't in a toolset. Instead they are added via the 'dynamic-toolsets' flag.
+    return [];
+  }
+
+  public getName(): string {
+    return 'sf-list-tool';
+  }
+
+  public getConfig(): McpToolConfig {
+    return {
+      title: 'List all individual tools',
+      description: `List all available tools this Salesforce MCP server can offer, providing the enabled status and description of each.
 
 AGENT INSTRUCTIONS:
 DO NOT USE THIS TOOL if you already know what tool you need - try to call the tool directly first.
@@ -33,11 +44,16 @@ ONLY use this tool if:
 If you find one or more tools you want to enable, call sf-enable-tools with all the tool names.
 Once you have enabled a tool, you MUST invoke the tool to accomplish the user's original request - DO NOT USE A DIFFERENT TOOL OR THE COMMAND LINE.
 Once a tool has been enabled, you do not need to call sf-list-tools again - instead, invoke the desired tool directly.`,
-    {
-      title: 'List all individual tools',
-      readOnlyHint: true,
-      openWorldHint: false,
-    },
-    async () => textResponse(JSON.stringify(await listAllTools(), null, 2))
-  );
+      inputSchema: undefined,
+      outputSchema: undefined,
+      annotations: {
+        readOnlyHint: true,
+        openWorldHint: false,
+      }
+    };
+  }
+
+  public async exec(): Promise<CallToolResult> {
+    return textResponse(JSON.stringify(await listAllTools(), null, 2));
+  }
 }

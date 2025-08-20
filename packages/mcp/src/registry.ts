@@ -15,9 +15,10 @@
  */
 
 import { ux } from '@oclif/core';
-import { McpProvider, McpTool, McpToolConfig, Services, TelemetryEvent, TelemetryService, Toolset } from '@salesforce/mcp-provider-api';
+import { MCP_PROVIDER_API_VERSION, McpProvider, McpTool, McpToolConfig, Services, TelemetryEvent, TelemetryService, Toolset } from '@salesforce/mcp-provider-api';
 import * as platformCli from './modules/platform-cli/index.js';
 import { SfMcpServer } from './sf-mcp-server.js';
+import { createDynamicServerTools } from './dynamic-tools/index.js';
 
 /**
  * All teams should instantiate their McpProvider instance here:
@@ -38,6 +39,9 @@ export const TOOLSETS: Toolset[] = Object.values(Toolset);
  * These are tools that are always enabled at startup. They cannot be disabled and they cannot be dynamically enabled.
  *
  * If you are added a new core tool, please add it to this list so that the SfMcpServer knows about it.
+ * 
+ * TODO: This list shouldn't be hard coded but instead should be constructed dynamically from the tools provided
+ *       from the providers.
  */
 export const CORE_TOOLS = [
   'sf-get-username',
@@ -47,14 +51,7 @@ export const CORE_TOOLS = [
   'sf-suggest-cli-command',
 ];
 
-// These 'dynamic' tools are special and are tied to the server
-const oldDynamicTools: Array<(server: SfMcpServer) => void> = [platformCli.enableTools, platformCli.listTools];
-
-/**
- * The tool registry maps toolsets to functions that register tools with the server.
- *
- * When adding a new tool, you must add it to the appropriate toolset in this registry.
- */
+// TODO: Convert all tools so we can remove this old tool registry
 const OLD_TOOL_REGISTRY: Record<Toolset, Array<(server: SfMcpServer) => void>> = {
   // Note that 'core' tools are always enabled
   [Toolset.CORE]: [
@@ -89,8 +86,9 @@ const OLD_TOOL_REGISTRY: Record<Toolset, Array<(server: SfMcpServer) => void>> =
 
 export function registerToolsets(toolsets: Array<Toolset | 'all'>, useDynamicTools: boolean, server: SfMcpServer): void {
   if (useDynamicTools) {
+    const dynamicTools: McpTool[] = createDynamicServerTools(server);
     ux.stderr('Registering dynamic tools');
-    registerTools_old(oldDynamicTools, server); // TODO: rework this to use the new registerTools
+    registerTools(dynamicTools, server);
   } else {
     ux.stderr('Skipping registration of dynamic tools');
   }
@@ -128,7 +126,7 @@ function registerTools(tools: McpTool[], server: SfMcpServer): void {
     // in the future this could look like: server.registerTool(tool.getName(), tool.getConfig(), tool.exec);
     const toolConfig: McpToolConfig = tool.getConfig();
     server.tool(tool.getName(), toolConfig.description ?? '', toolConfig.inputSchema ?? {},
-      {title: toolConfig.title, ...toolConfig.annotations}, tool.exec);
+      {title: toolConfig.title, ...toolConfig.annotations}, (...args) => tool.exec(...args));
   }
 }
 
@@ -139,7 +137,11 @@ function createToolRegistryFromProviders(providers: McpProvider[], services: Ser
 
   // Fill in the registry
   for (const provider of providers) {
+    validateVersion(provider.getVersion(), `McpProvider:${provider.getName()}`);
+
     for (const tool of provider.provideTools(services)) {
+      validateVersion(tool.getVersion(), `McpTool:${tool.getName()}`);
+
       for (const toolset of tool.getToolsets()) {
         registry[toolset].push(tool);
       }
@@ -157,5 +159,14 @@ class NoOpServices implements Services {
 class NoOpTelemetryService implements TelemetryService {
   public sendTelemetryEvent(_eventName: string, _event: TelemetryEvent): void {
     // no-op
+  }
+}
+
+/**
+ * Validation function to confirm that providers, tools, etc are at the expected version.
+ */
+function validateVersion(version: string, entityName: string): void {
+  if (version !== MCP_PROVIDER_API_VERSION) {
+    throw new Error(`The version of '${entityName}' must be '${MCP_PROVIDER_API_VERSION}' but is '${version}'.`);
   }
 }

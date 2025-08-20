@@ -21,9 +21,9 @@ import { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.j
 import { Logger } from '@salesforce/core';
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import { Telemetry } from './telemetry.js';
-import { addTool } from './modules/platform-cli/utils/tools.js';
 import { RateLimiter, RateLimitConfig, createRateLimiter } from './shared/rate-limiter.js';
 import { CORE_TOOLS } from './registry.js';
+import { addTool } from './dynamic-tools/utils/tools.js';
 
 type ToolMethodSignatures = {
   tool: McpServer['tool'];
@@ -160,7 +160,9 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
 
     if (this.dynamicTools) {
       // Only disable the tool if it's not a core tool
-      if (!CORE_TOOLS.includes(name)) tool.disable();
+      if (!CORE_TOOLS.includes(name)) {
+        tool.disable();
+      }
       addTool(tool, name).catch((error) => {
         this.logger.error(`Failed to add tool ${name}:`, error);
       });

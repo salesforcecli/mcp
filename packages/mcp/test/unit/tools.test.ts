@@ -24,7 +24,7 @@ import {
   disableTool,
   getToolStatus,
   listAllTools,
-} from '../../src/modules/platform-cli/utils/tools.js';
+} from '../../src/dynamic-tools/utils/tools.js';
 import Cache from '../../src/shared/cache.js';
 import { CORE_TOOLS } from '../../src/registry.js';
 

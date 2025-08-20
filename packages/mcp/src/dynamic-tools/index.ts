@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import { McpProvider, McpTool, Services } from '@salesforce/mcp-provider-api';
-import { AssignPermissionSetMcpTool } from './sf-assign-permission-set.js';
+import { McpTool } from '@salesforce/mcp-provider-api';
+import { SfMcpServer } from '../sf-mcp-server.js';
+import { EnableToolsMcpTool } from './sf-enable-tools.js';
+import { ListToolsMcpTool } from './sf-list-tools.js';
 
-export class PlatformCliMcpProvider extends McpProvider {
-    public getName(): string {
-        return 'PlatformCliMcpProvider';
-    }
-
-    public provideTools(_services: Services): McpTool[] {
-        return [
-            new AssignPermissionSetMcpTool()
-        ];
-    }
+export function createDynamicServerTools(server: SfMcpServer): McpTool[] {
+    return [
+        new EnableToolsMcpTool(server),
+        new ListToolsMcpTool()
+    ];
 }

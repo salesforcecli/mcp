@@ -1,5 +1,9 @@
 export {
-    type McpPrompt,
+    MCP_PROVIDER_API_VERSION
+} from "./constants.js"
+
+export {
+    McpPrompt,
     type McpPromptConfig
 } from "./prompts.js"
 
@@ -8,12 +12,12 @@ export {
 } from "./provider.js"
 
 export {
-    type McpResource,
-    type McpResourceTemplate
+    McpResource,
+    McpResourceTemplate
 } from "./resources.js"
 
 export {
-    type McpTool,
+    McpTool,
     type McpToolConfig,
     Toolset
 } from "./tools.js"

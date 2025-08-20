@@ -62,7 +62,11 @@ Set the permission set MyPermSet on behalf of my-alias.`),
   directory: directoryParam,
 });
 
-export class AssignPermissionSetMcpTool implements McpTool {
+type InputArgs = z.infer<typeof assignPermissionSetParamsSchema>;
+type InputArgsZod = typeof assignPermissionSetParamsSchema.shape;
+type OutputArgsZod = z.ZodRawShape;
+
+export class AssignPermissionSetMcpTool extends McpTool<InputArgsZod, OutputArgsZod> {
   public getToolsets(): Toolset[] {
     return [Toolset.USERS];
   }
@@ -71,8 +75,8 @@ export class AssignPermissionSetMcpTool implements McpTool {
     return 'sf-assign-permission-set';
   }
 
-  public getConfig(): McpToolConfig {
-    const config: McpToolConfig = {
+  public getConfig(): McpToolConfig<InputArgsZod, OutputArgsZod> {
+    return {
       title: 'Assign Permission Set',
       description: 'Assign a permission set to one or more org users.',
       inputSchema: assignPermissionSetParamsSchema.shape,
@@ -81,10 +85,9 @@ export class AssignPermissionSetMcpTool implements McpTool {
         openWorldHint: true
       }
     };
-    return config;
   }
 
-  public async exec(input: Record<string, string>): Promise<CallToolResult> {
+  public async exec(input: InputArgs): Promise<CallToolResult> {
     try {
       if (!input.usernameOrAlias)
         return textResponse(

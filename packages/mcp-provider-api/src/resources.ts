@@ -1,25 +1,51 @@
-import { ReadResourceCallback, ReadResourceTemplateCallback, ResourceMetadata, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { ResourceMetadata, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.js";
+import { Variables } from "@modelcontextprotocol/sdk/shared/uriTemplate.js";
+import { ReadResourceResult, ServerNotification, ServerRequest } from "@modelcontextprotocol/sdk/types.js";
+import { MCP_PROVIDER_API_VERSION } from "./constants.js";
 
-export interface McpResource {
-    kind: 'McpResource'
+export abstract class McpResource {
+    kind: 'McpResource' = 'McpResource'
 
-    getName(): string
+    abstract getName(): string
     
-    getUri(): string
+    abstract getUri(): string
 
-    getConfig(): ResourceMetadata
+    abstract getConfig(): ResourceMetadata
     
-    read: ReadResourceCallback
+    abstract read(
+        uri: URL, extra: RequestHandlerExtra<ServerRequest, ServerNotification>
+    ): ReadResourceResult | Promise<ReadResourceResult>;
+
+    /**
+     * This method allows the server to check that this instance is compatible and is able to be registered.
+     * Subclasses should not override this method.
+     */
+    public getVersion(): string {
+        return MCP_PROVIDER_API_VERSION;
+    }
 }
 
-export interface McpResourceTemplate {
-    kind: 'McpResourceTemplate'
+export abstract class McpResourceTemplate {
+    kind: 'McpResourceTemplate' = 'McpResourceTemplate'
 
-    getName(): string
+    abstract getName(): string
     
-    getTemplate(): ResourceTemplate
+    abstract getTemplate(): ResourceTemplate
 
-    getConfig(): ResourceMetadata
+    abstract getConfig(): ResourceMetadata
     
-    read: ReadResourceTemplateCallback
+    abstract read(
+        uri: URL,
+        variables: Variables,
+        extra: RequestHandlerExtra<ServerRequest, ServerNotification>
+    ): ReadResourceResult | Promise<ReadResourceResult>;
+
+    /**
+     * This method allows the server to check that this instance is compatible and is able to be registered.
+     * Subclasses should not override this method.
+     */
+    public getVersion(): string {
+        return '1';
+    }
 }
