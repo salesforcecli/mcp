@@ -15,12 +15,11 @@
  */
 
 import { ux } from '@oclif/core';
+import { Toolset } from '@salesforce/mcp-provider-api';
 import * as platformCli from './modules/platform-cli/index.js';
 import { SfMcpServer } from './sf-mcp-server.js';
 
-export const TOOLSETS = ['orgs', 'data', 'users', 'metadata', 'testing', 'experimental'] as const;
-
-type Toolset = (typeof TOOLSETS)[number];
+export const TOOLSETS: Toolset[] = Object.values(Toolset)
 
 /*
  * These are tools that are always enabled at startup. They cannot be disabled and they cannot be dynamically enabled.
@@ -35,19 +34,40 @@ export const CORE_TOOLS = [
   'sf-suggest-cli-command',
 ];
 
+// These 'dynamic' tools are special and are tied to the server
+const dynamicTools: Array<(server: SfMcpServer) => void> = [platformCli.enableTools, platformCli.listTools];
+
 /**
  * The tool registry maps toolsets to functions that register tools with the server.
  *
  * When adding a new tool, you must add it to the appropriate toolset in this registry.
  */
-const TOOL_REGISTRY: Record<Toolset | 'core' | 'dynamic', Array<(server: SfMcpServer) => void>> = {
-  core: [platformCli.getUsername, platformCli.resume, platformCli.suggestCliCommand],
-  dynamic: [platformCli.enableTools, platformCli.listTools],
-  orgs: [platformCli.listAllOrgs],
-  data: [platformCli.queryOrg],
-  users: [platformCli.assignPermissionSet],
-  testing: [platformCli.testAgent, platformCli.testApex],
-  metadata: [platformCli.deployMetadata, platformCli.retrieveMetadata],
+const TOOL_REGISTRY: Record<Toolset, Array<(server: SfMcpServer) => void>> = {
+
+  // Note that 'core' tools are always enabled
+  core: [
+    platformCli.getUsername,
+    platformCli.resume,
+    platformCli.suggestCliCommand
+  ],
+  
+  orgs: [
+    platformCli.listAllOrgs
+  ],
+  data: [
+    platformCli.queryOrg
+  ],
+  users: [
+    platformCli.assignPermissionSet
+  ],
+  testing: [
+    platformCli.testAgent,
+    platformCli.testApex
+  ],
+  metadata: [
+    platformCli.deployMetadata,
+    platformCli.retrieveMetadata
+  ],
   experimental: [
     platformCli.orgOpen,
     platformCli.createScratchOrg,
@@ -56,90 +76,30 @@ const TOOL_REGISTRY: Record<Toolset | 'core' | 'dynamic', Array<(server: SfMcpSe
   ],
 };
 
-/**
- * Determines which toolsets should be enabled based on the provided toolsets array and dynamic tools flag.
- *
- * @param {Array<Toolset | 'all'>} toolsets - Array of toolsets to enable. Can include 'all' to enable all non-experimental toolsets.
- * @param {boolean} dynamicTools - Flag indicating whether dynamic tools should be enabled. When true, only core and dynamic toolsets are enabled.
- * @returns {Record<Toolset | 'dynamic' | 'core', boolean>} Object mapping each toolset to a boolean indicating whether it should be enabled.
- *
- * @example
- * // Enable all toolsets except experimental
- * determineToolsetsToEnable(['all'], false)
- * // Returns: { core: true, data: true, dynamic: false, experimental: false, metadata: true, orgs: true, testing: true, users: true }
- *
- * @example
- * // Enable only dynamic tools
- * determineToolsetsToEnable([], true)
- * // Returns: { core: true, data: false, dynamic: true, experimental: false, metadata: false, orgs: false, testing: false, users: false }
- *
- * @example
- * // Enable specific toolsets
- * determineToolsetsToEnable(['data', 'users'], false)
- * // Returns: { core: true, data: true, dynamic: false, experimental: false, metadata: false, orgs: false, testing: false, users: true }
- */
-export function determineToolsetsToEnable(
-  toolsets: Array<Toolset | 'all'>,
-  dynamicTools: boolean
-): Record<Toolset | 'dynamic' | 'core', boolean> {
-  if (dynamicTools) {
-    return {
-      core: true,
-      data: true,
-      dynamic: true,
-      experimental: false,
-      metadata: true,
-      orgs: true,
-      testing: true,
-      users: true,
-    };
-  }
-
-  if (toolsets.includes('all')) {
-    return {
-      core: true,
-      data: true,
-      dynamic: false,
-      experimental: false,
-      metadata: true,
-      orgs: true,
-      testing: true,
-      users: true,
-    };
-  }
-
-  return {
-    core: true,
-    data: toolsets.includes('data'),
-    dynamic: false,
-    experimental: toolsets.includes('experimental'),
-    metadata: toolsets.includes('metadata'),
-    orgs: toolsets.includes('orgs'),
-    testing: toolsets.includes('testing'),
-    users: toolsets.includes('users'),
-  };
-}
-
-function registerToolset(toolset: Toolset | 'core' | 'dynamic', server: SfMcpServer): void {
-  if (TOOL_REGISTRY[toolset]) {
-    for (const tool of TOOL_REGISTRY[toolset]) {
-      tool(server);
-    }
+export function registerToolsets(toolsets: Array<Toolset | 'all'>, useDynamicTools: boolean, server: SfMcpServer): void {
+  if (useDynamicTools) {
+    ux.stderr('Registering dynamic tools');
+    registerTools(dynamicTools, server);
   } else {
-    throw new Error(`Failed to register toolset ${toolset}.`);
+    ux.stderr('Skipping registration of dynamic tools');
+  }
+  
+  const toolsetsToEnable: Set<Toolset> = toolsets.includes('all') ? 
+    new Set(TOOLSETS.filter(ts => ts !== Toolset.EXPERIMENTAL)) :
+    new Set([Toolset.CORE, ...(toolsets as Toolset[])]);
+
+  for (const toolset of TOOLSETS) {
+    if (toolsetsToEnable.has(toolset)) {
+      ux.stderr(`Registering ${toolset} tools`);
+      registerTools(TOOL_REGISTRY[toolset], server);
+    } else {
+      ux.stderr(`Skipping registration of ${toolset} tools`);
+    }
   }
 }
 
-export function registerToolsets(toolsets: Array<Toolset | 'all'>, dynamicTools: boolean, server: SfMcpServer): void {
-  const toolsetsToEnable = determineToolsetsToEnable(toolsets, dynamicTools);
-
-  for (const toolset of ['core', 'dynamic', ...TOOLSETS] as Toolset[]) {
-    if (!toolsetsToEnable[toolset]) {
-      ux.stderr(`Skipping registration of ${toolset} tools`);
-      continue;
+function registerTools(tools: Array<(server: SfMcpServer) => void>, server: SfMcpServer): void {
+    for (const registerToolFcn of tools) {
+      registerToolFcn(server);
     }
-
-    ux.stderr(`Registering ${toolset} tools`);
-    registerToolset(toolset, server);
-  }
 }

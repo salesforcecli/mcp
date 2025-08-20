@@ -1,10 +1,16 @@
 {
   "extends": "@salesforce/dev-config/tsconfig-strict",
   "compilerOptions": {
+    "composite": true,
     "outDir": "./lib",
     "strictNullChecks": true,
     "plugins": [{ "transform": "@salesforce/core/lib/messageTransformer", "import": "messageTransformer" }],
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "references": [
+    {
+      "path": "../mcp-provider-api/tsconfig.json"
+    }
+  ]
 }

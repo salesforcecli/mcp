@@ -22,10 +22,11 @@ export type McpToolConfig<InputArgs extends ZodRawShape = ZodRawShape, OutputArg
 
 // Toolset that a tool should live under
 export enum Toolset {
-    ORGS = 'orgs',
+    CORE = 'core',
     DATA = 'data',
-    USERS = 'users',
+    ORGS = 'orgs',
     METADATA = 'metadata',
     TESTING = 'testing',
+    USERS = 'users',
     EXPERIMENTAL = 'experimental'
 }
