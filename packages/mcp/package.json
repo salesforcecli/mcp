@@ -69,8 +69,7 @@
     "oclif": "^4.21.0",
     "ts-node": "^10.9.2",
     "ts-patch": "^3.3.0",
-    "typescript": "^5.8.3",
-    "wireit": "^0.14.12"
+    "typescript": "^5.8.3"
   },
   "publishConfig": {
     "access": "public"
