@@ -15,28 +15,16 @@
  */
 
 import { z } from 'zod';
-
 import { Connection, Org, SfProject } from '@salesforce/core';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { ComponentSet, ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
 import { ensureString } from '@salesforce/ts-types';
 import { Duration } from '@salesforce/kit';
+import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
 import { textResponse } from '../../shared/utils.js';
 import { getConnection } from '../../shared/auth.js';
-import { SfMcpServer } from '../../sf-mcp-server.js';
-
-const retrieveMetadataParams = z.object({
-  sourceDir: z
-    .array(z.string())
-    .describe(
-      'Path to the local source files to retrieve. Leave this unset if the user is vague about what to retrieve.'
-    )
-    .optional(),
-  manifest: z.string().describe('Full file path for manifest (XML file) of components to retrieve.').optional(),
-  usernameOrAlias: usernameOrAliasParam,
-  directory: directoryParam,
-});
 
 /*
  * Retrieve metadata from an org to your local project.
@@ -50,10 +38,36 @@ const retrieveMetadataParams = z.object({
  * Returns:
  * - textResponse: Retrieve result.
  */
-export const retrieveMetadata = (server: SfMcpServer): void => {
-  server.tool(
-    'sf-retrieve-metadata',
-    `Retrieve metadata from an org to your local project.
+
+const retrieveMetadataParams = z.object({
+  sourceDir: z
+    .array(z.string())
+    .describe(
+      'Path to the local source files to retrieve. Leave this unset if the user is vague about what to retrieve.'
+    )
+    .optional(),
+  manifest: z.string().describe('Full file path for manifest (XML file) of components to retrieve.').optional(),
+  usernameOrAlias: usernameOrAliasParam,
+  directory: directoryParam,
+});
+
+type InputArgs = z.infer<typeof retrieveMetadataParams>;
+type InputArgsShape = typeof retrieveMetadataParams.shape;
+type OutputArgsShape = z.ZodRawShape;
+
+export class RetrieveMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public getToolsets(): Toolset[] {
+    return [Toolset.METADATA];
+  }
+
+  public getName(): string {
+    return 'sf-retrieve-metadata';
+  }
+
+  public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
+    return {
+      title: 'Retrieve Metadata',
+      description: `Retrieve metadata from an org to your local project.
 
 AGENT INSTRUCTIONS:
 If the user doesn't specify what to retrieve exactly ("retrieve my changes"), leave the "sourceDir" and "manifest" params empty so the tool calculates which files to retrieve.
@@ -63,80 +77,81 @@ Retrieve changes
 Retrieve changes from my org
 Retrieve this file from my org
 Retrieve the metadata in the manifest
-Retrieve X metadata from my org
-`,
-    retrieveMetadataParams.shape,
-    {
-      title: 'Retrieve Metadata',
-      openWorldHint: false,
-      destructiveHint: true,
-    },
-    async ({ sourceDir, usernameOrAlias, directory, manifest }) => {
-      if (sourceDir && manifest) {
-        return textResponse("You can't specify both `sourceDir` and `manifest` parameters.", true);
+Retrieve X metadata from my org`,
+      inputSchema: retrieveMetadataParams.shape,
+      outputSchema: undefined,
+      annotations: {
+        openWorldHint: false,
+        destructiveHint: true
       }
+    };
+  }
 
-      if (!usernameOrAlias)
-        return textResponse(
-          'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
-          true
-        );
-
-      // needed for org allowlist to work
-      process.chdir(directory);
-
-      const connection = await getConnection(usernameOrAlias);
-      const project = await SfProject.resolve(directory);
-
-      const org = await Org.create({ connection });
-
-      if (!sourceDir && !manifest && !(await org.tracksSource())) {
-        return textResponse(
-          'This org does not have source-tracking enabled or does not support source-tracking. You should specify the files or a manifest to retrieve.',
-          true
-        );
-      }
-
-      try {
-        const stl = await SourceTracking.create({
-          org,
-          project,
-          subscribeSDREvents: true,
-        });
-
-        const componentSet = await buildRetrieveComponentSet(connection, project, stl, sourceDir, manifest);
-
-        if (componentSet.size === 0) {
-          // STL found no changes
-          return textResponse('No remote changes to retrieve were found.');
-        }
-
-        const retrieve = await componentSet.retrieve({
-          usernameOrConnection: connection,
-          merge: true,
-          format: 'source',
-          output: project.getDefaultPackage().fullPath,
-        });
-
-        // polling freq. is set dynamically by SDR based no the component set size.
-        const result = await retrieve.pollStatus({
-          timeout: Duration.minutes(10),
-        });
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { zipFile, ...retrieveResult } = result.response;
-
-        return textResponse(`Retrieve result: ${JSON.stringify(retrieveResult)}`, !retrieveResult.success);
-        // }
-      } catch (error) {
-        return textResponse(
-          `Failed to retrieve metadata: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          true
-        );
-      }
+  public async exec(input: InputArgs): Promise<CallToolResult> {
+    if (input.sourceDir && input.manifest) {
+      return textResponse("You can't specify both `sourceDir` and `manifest` parameters.", true);
     }
-  );
-};
+
+    if (!input.usernameOrAlias)
+      return textResponse(
+        'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
+        true
+      );
+
+    // needed for org allowlist to work
+    process.chdir(input.directory);
+
+    const connection = await getConnection(input.usernameOrAlias);
+    const project = await SfProject.resolve(input.directory);
+
+    const org = await Org.create({ connection });
+
+    if (!input.sourceDir && !input.manifest && !(await org.tracksSource())) {
+      return textResponse(
+        'This org does not have source-tracking enabled or does not support source-tracking. You should specify the files or a manifest to retrieve.',
+        true
+      );
+    }
+
+    try {
+      const stl = await SourceTracking.create({
+        org,
+        project,
+        subscribeSDREvents: true,
+      });
+
+      const componentSet = await buildRetrieveComponentSet(connection, project, stl, input.sourceDir, input.manifest);
+
+      if (componentSet.size === 0) {
+        // STL found no changes
+        return textResponse('No remote changes to retrieve were found.');
+      }
+
+      const retrieve = await componentSet.retrieve({
+        usernameOrConnection: connection,
+        merge: true,
+        format: 'source',
+        output: project.getDefaultPackage().fullPath,
+      });
+
+      // polling freq. is set dynamically by SDR based no the component set size.
+      const result = await retrieve.pollStatus({
+        timeout: Duration.minutes(10),
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { zipFile, ...retrieveResult } = result.response;
+
+      return textResponse(`Retrieve result: ${JSON.stringify(retrieveResult)}`, !retrieveResult.success);
+      // }
+    } catch (error) {
+      return textResponse(
+        `Failed to retrieve metadata: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        true
+      );
+    }
+  }
+}
 
 async function buildRetrieveComponentSet(
   connection: Connection,

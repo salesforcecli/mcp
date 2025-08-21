@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-export { resume } from './sf-resume.js';
-export { retrieveMetadata } from './sf-retrieve-metadata.js';
 export { suggestCliCommand } from './sf-suggest-cli-command.js';
 export { testAgent } from './sf-test-agents.js';
 export { testApex } from './sf-test-apex.js';

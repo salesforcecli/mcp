@@ -55,7 +55,6 @@ export const CORE_TOOLS = [
 const OLD_TOOL_REGISTRY: Record<Toolset, Array<(server: SfMcpServer) => void>> = {
   // Note that 'core' tools are always enabled
   [Toolset.CORE]: [
-    platformCli.resume,
     platformCli.suggestCliCommand
   ],
   
@@ -70,7 +69,6 @@ const OLD_TOOL_REGISTRY: Record<Toolset, Array<(server: SfMcpServer) => void>> =
     platformCli.testApex
   ],
   [Toolset.METADATA]: [
-    platformCli.retrieveMetadata
   ],
   [Toolset.EXPERIMENTAL]: [
   ],

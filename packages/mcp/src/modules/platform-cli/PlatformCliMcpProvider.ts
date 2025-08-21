@@ -24,6 +24,8 @@ import { GetUsernameMcpTool } from './sf-get-username.js';
 import { ListAllOrgsMcpTool } from './sf-list-all-orgs.js';
 import { OrgOpenMcpTool } from './sf-org-open.js';
 import { QueryOrgMcpTool } from './sf-query-org.js';
+import { ResumeMcpTool } from './sf-resume.js';
+import { RetrieveMetadataMcpTool } from './sf-retrieve-metadata.js';
 
 export class PlatformCliMcpProvider extends McpProvider {
     public getName(): string {
@@ -40,7 +42,9 @@ export class PlatformCliMcpProvider extends McpProvider {
             new GetUsernameMcpTool(),
             new ListAllOrgsMcpTool(),
             new OrgOpenMcpTool(),
-            new QueryOrgMcpTool()
+            new QueryOrgMcpTool(),
+            new ResumeMcpTool(),
+            new RetrieveMetadataMcpTool()
         ];
     }
 }

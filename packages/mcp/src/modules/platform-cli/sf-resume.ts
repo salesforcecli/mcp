@@ -15,11 +15,12 @@
  */
 
 import { z } from 'zod';
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { AgentTester } from '@salesforce/agents';
 import { Connection, validateSalesforceId, scratchOrgResume, PollingClient, StatusResult } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { textResponse } from '../../shared/utils.js';
 import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
 import { getConnection } from '../../shared/auth.js';
@@ -46,7 +47,7 @@ const resumableIdPrefixes = new Map<string, string>([
  * Returns:
  * - textResponse: Username/alias and org configuration
  */
-export const resumeParamsSchema = z.object({
+const resumeParamsSchema = z.object({
   jobId: z.string().describe('The job id of the long running operation to resume (required)'),
   wait: z
     .number()
@@ -57,12 +58,23 @@ export const resumeParamsSchema = z.object({
   directory: directoryParam,
 });
 
-export type ResumeParamsSchema = z.infer<typeof resumeParamsSchema>;
+type InputArgs = z.infer<typeof resumeParamsSchema>;
+type InputArgsShape = typeof resumeParamsSchema.shape;
+type OutputArgsShape = z.ZodRawShape;
 
-export const resume = (server: McpServer): void => {
-  server.tool(
-    'sf-resume',
-    `Resume a long running operation that was not completed by another tool.
+export class ResumeMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public getToolsets(): Toolset[] {
+    return [Toolset.CORE];
+  }
+
+  public getName(): string {
+    return 'sf-resume';
+  }
+
+  public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
+    return {
+      title: 'Resume',
+      description: `Resume a long running operation that was not completed by another tool.
 
 AGENT INSTRUCTIONS:
 Use this tool to resume a long running operation.
@@ -75,46 +87,47 @@ Resume scratch org creation
 Resume job 2SR1234567890
 Resume agent tests
 Resume org snapshot with ID 0OoKa000000XZAbKAO
-Report on my org snapshot
-`,
-    resumeParamsSchema.shape,
-    {
-      title: 'Resume',
-      openWorldHint: false,
-    },
-    async ({ jobId, wait, usernameOrAlias, directory }) => {
-      if (!jobId) {
-        return textResponse('The jobId parameter is required.', true);
+Report on my org snapshot`,
+      inputSchema: resumeParamsSchema.shape,
+      outputSchema: undefined,
+      annotations: {
+        openWorldHint: false
       }
+    };
+  }
 
-      if (!validateSalesforceId(jobId)) {
-        return textResponse('The jobId parameter is not a valid Salesforce id.', true);
-      }
-
-      if (!usernameOrAlias)
-        return textResponse(
-          'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
-          true
-        );
-
-      process.chdir(directory);
-      const connection = await getConnection(usernameOrAlias);
-
-      switch (jobId.substring(0, 3)) {
-        case resumableIdPrefixes.get('deploy'):
-          return resumeDeployment(connection, jobId, wait);
-        case resumableIdPrefixes.get('scratchOrg'):
-          return resumeScratchOrg(jobId, wait);
-        case resumableIdPrefixes.get('agentTest'):
-          return resumeAgentTest(connection, jobId, wait);
-        case resumableIdPrefixes.get('orgSnapshot'):
-          return resumeOrgSnapshot(connection, jobId, wait);
-        default:
-          return textResponse(`The job id: ${jobId} is not resumeable.`, true);
-      }
+  public async exec(input: InputArgs): Promise<CallToolResult> {
+    if (!input.jobId) {
+      return textResponse('The jobId parameter is required.', true);
     }
-  );
-};
+
+    if (!validateSalesforceId(input.jobId)) {
+      return textResponse('The jobId parameter is not a valid Salesforce id.', true);
+    }
+
+    if (!input.usernameOrAlias)
+      return textResponse(
+        'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
+        true
+      );
+
+    process.chdir(input.directory);
+    const connection = await getConnection(input.usernameOrAlias);
+
+    switch (input.jobId.substring(0, 3)) {
+      case resumableIdPrefixes.get('deploy'):
+        return resumeDeployment(connection, input.jobId, input.wait);
+      case resumableIdPrefixes.get('scratchOrg'):
+        return resumeScratchOrg(input.jobId, input.wait);
+      case resumableIdPrefixes.get('agentTest'):
+        return resumeAgentTest(connection, input.jobId, input.wait);
+      case resumableIdPrefixes.get('orgSnapshot'):
+        return resumeOrgSnapshot(connection, input.jobId, input.wait);
+      default:
+        return textResponse(`The job id: ${input.jobId} is not resumeable.`, true);
+    }
+  }
+}
 
 async function resumeDeployment(connection: Connection, jobId: string, wait: number): Promise<ToolTextResponse> {
   try {
