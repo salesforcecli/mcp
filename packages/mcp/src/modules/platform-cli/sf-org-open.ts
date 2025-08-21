@@ -18,11 +18,12 @@ import { z } from 'zod';
 import { Org } from '@salesforce/core';
 import { MetadataResolver } from '@salesforce/source-deploy-retrieve';
 import open from 'open';
+import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { textResponse } from '../../shared/utils.js';
 import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
-import { SfMcpServer } from '../../sf-mcp-server.js';
 
-export const orgOpenParamsSchema = z.object({
+const orgOpenParamsSchema = z.object({
   filePath: z
     .string()
     .optional()
@@ -31,46 +32,58 @@ export const orgOpenParamsSchema = z.object({
   directory: directoryParam,
 });
 
-export type OrgOpenParamsSchema = z.infer<typeof orgOpenParamsSchema>;
+type InputArgs = z.infer<typeof orgOpenParamsSchema>;
+type InputArgsShape = typeof orgOpenParamsSchema.shape;
+type OutputArgsShape = z.ZodRawShape;
 
-export const orgOpen = (server: SfMcpServer): void => {
-  server.tool(
-    'sf-org-open',
-    `Open a Salesforce org in the browser.
+export class OrgOpenMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public getToolsets(): Toolset[] {
+    return [Toolset.EXPERIMENTAL];
+  }
 
-You can specify a metadata file you want to open.
-`,
-    orgOpenParamsSchema.shape,
-    {
+  public getName(): string {
+    return 'sf-org-open';
+  }
+
+  public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
+    return {
       title: 'Open Org in Browser',
-      readOnlyHint: true,
-      openWorldHint: false,
-    },
-    async ({ usernameOrAlias, filePath, directory }) => {
-      process.chdir(directory);
+      description: `Open a Salesforce org in the browser.
 
-      const org = await Org.create({
-        aliasOrUsername: usernameOrAlias,
-      });
-
-      if (filePath) {
-        const metadataResolver = new MetadataResolver();
-        const components = metadataResolver.getComponentsFromPath(filePath);
-        const typeName = components[0]?.type?.name;
-
-        const metadataBuilderUrl = await org.getMetadataUIURL(typeName, filePath);
-        await open(metadataBuilderUrl);
-
-        return textResponse(
-          metadataBuilderUrl.includes('FlexiPageList')
-            ? "Opened the org in your browser. This metadata file doesn't have a builder UI, opened Lightning App Builder instead."
-            : 'Opened this metadata in your browser'
-        );
+You can specify a metadata file you want to open.`,
+      inputSchema: orgOpenParamsSchema.shape,
+      outputSchema: undefined,
+      annotations: {
+        readOnlyHint: true,
+        openWorldHint: false
       }
+    };
+  }
 
-      await open(await org.getFrontDoorUrl());
+  public async exec(input: InputArgs): Promise<CallToolResult> {
+    process.chdir(input.directory);
 
-      return textResponse('Opened the org in your browser.');
+    const org = await Org.create({
+      aliasOrUsername: input.usernameOrAlias,
+    });
+
+    if (input.filePath) {
+      const metadataResolver = new MetadataResolver();
+      const components = metadataResolver.getComponentsFromPath(input.filePath);
+      const typeName = components[0]?.type?.name;
+
+      const metadataBuilderUrl = await org.getMetadataUIURL(typeName, input.filePath);
+      await open(metadataBuilderUrl);
+
+      return textResponse(
+        metadataBuilderUrl.includes('FlexiPageList')
+          ? "Opened the org in your browser. This metadata file doesn't have a builder UI, opened Lightning App Builder instead."
+          : 'Opened this metadata in your browser'
+      );
     }
-  );
-};
+
+    await open(await org.getFrontDoorUrl());
+
+    return textResponse('Opened the org in your browser.');
+  }
+}

@@ -22,6 +22,8 @@ import { DeleteOrgMcpTool } from './sf-delete-org.js';
 import { DeployMetadataMcpTool } from './sf-deploy-metadata.js';
 import { GetUsernameMcpTool } from './sf-get-username.js';
 import { ListAllOrgsMcpTool } from './sf-list-all-orgs.js';
+import { OrgOpenMcpTool } from './sf-org-open.js';
+import { QueryOrgMcpTool } from './sf-query-org.js';
 
 export class PlatformCliMcpProvider extends McpProvider {
     public getName(): string {
@@ -36,7 +38,9 @@ export class PlatformCliMcpProvider extends McpProvider {
             new DeleteOrgMcpTool(),
             new DeployMetadataMcpTool(),
             new GetUsernameMcpTool(),
-            new ListAllOrgsMcpTool()
+            new ListAllOrgsMcpTool(),
+            new OrgOpenMcpTool(),
+            new QueryOrgMcpTool()
         ];
     }
 }

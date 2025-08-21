@@ -62,7 +62,6 @@ const OLD_TOOL_REGISTRY: Record<Toolset, Array<(server: SfMcpServer) => void>> =
   [Toolset.ORGS]: [
   ],
   [Toolset.DATA]: [
-    platformCli.queryOrg
   ],
   [Toolset.USERS]: [
   ],
@@ -74,7 +73,6 @@ const OLD_TOOL_REGISTRY: Record<Toolset, Array<(server: SfMcpServer) => void>> =
     platformCli.retrieveMetadata
   ],
   [Toolset.EXPERIMENTAL]: [
-    platformCli.orgOpen,
   ],
 };
 

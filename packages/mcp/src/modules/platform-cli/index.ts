@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-export { orgOpen } from './sf-org-open.js';
-export { queryOrg } from './sf-query-org.js';
 export { resume } from './sf-resume.js';
 export { retrieveMetadata } from './sf-retrieve-metadata.js';
 export { suggestCliCommand } from './sf-suggest-cli-command.js';
