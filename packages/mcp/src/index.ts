@@ -19,11 +19,11 @@
 import { Toolset, TOOLSETS } from '@salesforce/mcp-provider-api';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { Command, Flags, ux } from '@oclif/core';
-import Cache from './shared/cache.js';
+import Cache from './utils/cache.js';
 import { Telemetry } from './telemetry.js';
 import { SfMcpServer } from './sf-mcp-server.js';
-import { maybeBuildIndex } from './assets.js';
-import { registerToolsets } from './registry-utils.js';
+import { maybeBuildIndex } from './utils/assets.js';
+import { registerToolsets } from './utils/registry-utils.js';
 import { Services } from './services.js';
 
 // At some point we can use these description to generate help text
@@ -190,7 +190,7 @@ You can also use special values to control access to orgs:
 
     await maybeBuildIndex(this.config.dataDir);
 
-    const services = new Services({ server, telemetry: this.telemetry });
+    const services = new Services({ server, telemetry: this.telemetry, dataDir: this.config.dataDir });
 
     await registerToolsets(flags.toolsets ?? ['all'], flags['dynamic-tools'] ?? false, server, services);
 

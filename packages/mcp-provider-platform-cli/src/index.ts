@@ -1,0 +1,60 @@
+/*
+ * Copyright 2025, Salesforce, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { McpProvider, McpTool, Services } from '@salesforce/mcp-provider-api';
+import { AssignPermissionSetMcpTool } from './tools/sf-assign-permission-set.js';
+import { CreateOrgSnapshotMcpTool } from './tools/sf-create-org-snapshot.js';
+import { CreateScratchOrgMcpTool } from './tools/sf-create-scratch-org.js';
+import { DeleteOrgMcpTool } from './tools/sf-delete-org.js';
+import { DeployMetadataMcpTool } from './tools/sf-deploy-metadata.js';
+import { GetUsernameMcpTool } from './tools/sf-get-username.js';
+import { ListAllOrgsMcpTool } from './tools/sf-list-all-orgs.js';
+import { OrgOpenMcpTool } from './tools/sf-org-open.js';
+import { QueryOrgMcpTool } from './tools/sf-query-org.js';
+import { ResumeMcpTool } from './tools/sf-resume.js';
+import { RetrieveMetadataMcpTool } from './tools/sf-retrieve-metadata.js';
+import { SuggestCliCommandMcpTool } from './tools/sf-suggest-cli-command.js';
+import { TestAgentsMcpTool } from './tools/sf-test-agents.js';
+import { TestApexMcpTool } from './tools/sf-test-apex.js';
+import { EnableToolsMcpTool } from './tools/sf-enable-tools.js';
+import { ListToolsMcpTool } from './tools/sf-list-tools.js';
+
+export class PlatformCliMcpProvider extends McpProvider {
+  public getName(): string {
+    return 'PlatformCliMcpProvider';
+  }
+
+  public provideTools(services: Services): Promise<McpTool[]> {
+    return Promise.resolve([
+      new AssignPermissionSetMcpTool(),
+      new CreateOrgSnapshotMcpTool(),
+      new CreateScratchOrgMcpTool(),
+      new DeleteOrgMcpTool(),
+      new DeployMetadataMcpTool(),
+      new EnableToolsMcpTool(services),
+      new GetUsernameMcpTool(),
+      new ListAllOrgsMcpTool(),
+      new ListToolsMcpTool(),
+      new OrgOpenMcpTool(),
+      new QueryOrgMcpTool(),
+      new ResumeMcpTool(),
+      new RetrieveMetadataMcpTool(),
+      new SuggestCliCommandMcpTool(services),
+      new TestAgentsMcpTool(),
+      new TestApexMcpTool(),
+    ]);
+  }
+}

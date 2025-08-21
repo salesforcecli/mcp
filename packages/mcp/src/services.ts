@@ -18,16 +18,20 @@ import {
   TelemetryService,
   ApprovedServerMethods,
   TelemetryEvent,
+  RagAssetService,
 } from '@salesforce/mcp-provider-api';
 import { SfMcpServer } from './sf-mcp-server.js';
+import { getAssets } from './utils/assets.js';
 
 export class Services implements IServices {
   private telemetry: TelemetryService;
   private server: SfMcpServer;
+  private dataDir: string;
 
-  public constructor(opts: { telemetry: TelemetryService | undefined; server: SfMcpServer }) {
+  public constructor(opts: { telemetry: TelemetryService | undefined; server: SfMcpServer; dataDir: string }) {
     this.telemetry = opts.telemetry ? opts.telemetry : new NoopTelemetryService();
     this.server = opts.server;
+    this.dataDir = opts.dataDir;
   }
 
   public getTelemetryService(): TelemetryService {
@@ -37,6 +41,13 @@ export class Services implements IServices {
   public getApprovedServerMethods(): ApprovedServerMethods {
     return {
       sendToolListChanged: this.server.sendToolListChanged.bind(this.server),
+    };
+  }
+
+  public getRagAssetService<D, E, I>(): RagAssetService<D, E, I> {
+    return {
+      getDataDir: () => this.dataDir,
+      getAssets,
     };
   }
 }
