@@ -11,12 +11,10 @@ jobs:
   # Since the Windows unit tests take much longer, we run the linux unit tests first and then run the windows unit tests in parallel with NUTs
   linux-unit-tests:
     needs: yarn-lockfile-check
-#    uses: salesforcecli/github-workflows/.github/workflows/unitTestsLinux.yml@main
-    uses: ./.github/workflows/tempUnitTestsLinux.yml # temporary replacement
+    uses: salesforcecli/github-workflows/.github/workflows/unitTestsLinux.yml@cd/remove-wireit-workaround
   windows-unit-tests:
     needs: linux-unit-tests
-#    uses: salesforcecli/github-workflows/.github/workflows/unitTestsWindows.yml@main
-    uses: ./.github/workflows/tempUnitTestsWindows.yml # temporary replacement
+    uses: salesforcecli/github-workflows/.github/workflows/unitTestsWindows.yml@cd/remove-wireit-workaround
 
   # Uncomment to enable NUT testing in Github Actions
   # nuts:
