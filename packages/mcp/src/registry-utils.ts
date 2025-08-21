@@ -19,7 +19,6 @@ import {
   MCP_PROVIDER_API_VERSION,
   McpProvider,
   McpTool,
-  McpToolConfig,
   Services,
   TelemetryEvent,
   TelemetryService,
@@ -30,6 +29,7 @@ import {
 import { SfMcpServer } from './sf-mcp-server.js';
 import { createDynamicServerTools } from './dynamic-tools/index.js';
 import { MCP_PROVIDER_REGISTRY } from './registry.js';
+import { addTool } from './dynamic-tools/utils/tools.js';
 
 export async function registerToolsets(
   toolsets: Array<Toolset | 'all'>,
@@ -39,12 +39,17 @@ export async function registerToolsets(
   if (useDynamicTools) {
     const dynamicTools: McpTool[] = createDynamicServerTools(server);
     ux.stderr('Registering dynamic tools');
-    registerTools(dynamicTools, server);
+    await registerTools(dynamicTools, server, useDynamicTools);
   } else {
     ux.stderr('Skipping registration of dynamic tools');
   }
 
-  const toolsetsToEnable: Set<Toolset> = toolsets.includes('all')
+  // If dynamic tools are being used -> only enable core
+  // If 'all' is specified, enable all non-experimental toolsets
+  // Otherwise, enable the specified toolsets and the core toolset
+  const toolsetsToEnable: Set<Toolset> = useDynamicTools
+    ? new Set([Toolset.CORE])
+    : toolsets.includes('all')
     ? new Set(TOOLSETS.filter((ts) => ts !== Toolset.EXPERIMENTAL))
     : new Set([Toolset.CORE, ...(toolsets as Toolset[])]);
 
@@ -60,25 +65,23 @@ export async function registerToolsets(
   for (const toolset of TOOLSETS) {
     if (toolsetsToEnable.has(toolset)) {
       ux.stderr(`Registering ${toolset} tools`);
-      registerTools(newToolRegistry[toolset], server);
+      // eslint-disable-next-line no-await-in-loop
+      await registerTools(newToolRegistry[toolset], server, useDynamicTools);
     } else {
       ux.stderr(`Skipping registration of ${toolset} tools`);
     }
   }
 }
 
-function registerTools(tools: McpTool[], server: SfMcpServer): void {
+async function registerTools(tools: McpTool[], server: SfMcpServer, useDynamicTools: boolean): Promise<void> {
   for (const tool of tools) {
-    // TODO: registerTool isn't overridden by the SfMcpServer yet, so we reroute everything through the server.tool for now.
-    // In the future this could look like: server.registerTool(tool.getName(), tool.getConfig(), (...args) => tool.exec(...args));
-    const toolConfig: McpToolConfig = tool.getConfig();
-    server.tool(
-      tool.getName(),
-      toolConfig.description ?? '',
-      toolConfig.inputSchema ?? {},
-      { title: toolConfig.title, ...toolConfig.annotations },
-      (...args) => tool.exec(...args)
-    );
+    const registeredTool = server.registerTool(tool.getName(), tool.getConfig(), (...args) => tool.exec(...args));
+    const toolsets = tool.getToolsets();
+    if (useDynamicTools && !toolsets.includes(Toolset.CORE)) {
+      registeredTool.disable();
+    }
+    // eslint-disable-next-line no-await-in-loop
+    await addTool(registeredTool, tool.getName());
   }
 }
 

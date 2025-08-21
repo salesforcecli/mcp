@@ -152,7 +152,6 @@ You can also use special values to control access to orgs:
       },
       {
         telemetry: this.telemetry,
-        dynamicTools: flags['dynamic-tools'] ?? false,
       }
     );
 
