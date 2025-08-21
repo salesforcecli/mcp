@@ -46,35 +46,35 @@ export class EnableToolsMcpTool extends McpTool<InputArgsShapeType, OutputArgsSh
   }
 
   public getConfig(): McpToolConfig<InputArgsShapeType, OutputArgsShapeType> {
-        return {
-          title: 'Enable Salesforce MCP tools',
-          description: `Enable one or more of the tools the Salesforce MCP server provides.
+    return {
+      title: 'Enable Salesforce MCP tools',
+      description: `Enable one or more of the tools the Salesforce MCP server provides.
 
 AGENT INSTRUCTIONS:
 Use sf-list-all-tools first to learn what tools are available for enabling.
 Once you have enabled the tool, you MUST invoke that tool to accomplish the user's original request - DO NOT USE A DIFFERENT TOOL OR THE COMMAND LINE.`,
-          inputSchema: enableToolsParamsSchema.shape,
-          outputSchema: undefined,
-          annotations: {
-            title: 'Enable Salesforce MCP tools',
-            readOnlyHint: true,
-            openWorldHint: false,
-          }
-        };
+      inputSchema: enableToolsParamsSchema.shape,
+      outputSchema: undefined,
+      annotations: {
+        title: 'Enable Salesforce MCP tools',
+        readOnlyHint: true,
+        openWorldHint: false,
+      },
+    };
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
     if (input.tools.length === 0) {
-        return textResponse('No tools specified to enable.', true);
-      }
+      return textResponse('No tools specified to enable.', true);
+    }
 
-      const results = await utilEnableTools(input.tools);
+    const results = await utilEnableTools(input.tools);
 
-      this.server.sendToolListChanged();
+    this.server.sendToolListChanged();
 
-      const hasError = results.some((result) => !result.success);
-      const resultMessages = results.map((result) => result.message).join('\n');
+    const hasError = results.some((result) => !result.success);
+    const resultMessages = results.map((result) => result.message).join('\n');
 
-      return textResponse(resultMessages, hasError);
+    return textResponse(resultMessages, hasError);
   }
-};
+}

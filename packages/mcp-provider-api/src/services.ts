@@ -1,11 +1,11 @@
 export interface Services {
-    getTelemetryService(): TelemetryService
+  getTelemetryService(): TelemetryService;
 }
 
 export interface TelemetryService {
-    sendTelemetryEvent(eventName: string, event: TelemetryEvent): void;
+  sendTelemetryEvent(eventName: string, event: TelemetryEvent): void;
 }
 
 export type TelemetryEvent = {
-    [key: string]: string | number | boolean | null | undefined;
-}
+  [key: string]: string | number | boolean | null | undefined;
+};

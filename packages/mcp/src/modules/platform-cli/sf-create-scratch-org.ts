@@ -115,7 +115,7 @@ create a scratch org with the definition file myDefinition.json that lasts 3 day
 create a scratch org aliased as MyNewOrg and set as default and don't wait for it to finish`,
       inputSchema: createScratchOrgParams.shape,
       outputSchema: undefined,
-      annotations: {}
+      annotations: {},
     };
   }
 

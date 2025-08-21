@@ -59,7 +59,7 @@ export class CreateOrgSnapshotMcpTool extends McpTool<InputArgsShape, OutputArgs
   public getName(): string {
     return 'sf-create-org-snapshot';
   }
-  
+
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: 'Create a new snapshot',
@@ -73,27 +73,27 @@ create a snapshot called 07042025 with the description, "this is a snapshot for 
 create a snapshot of my MyScratch in myDevHub`,
       inputSchema: createOrgSnapshotParams.shape,
       outputSchema: undefined,
-      annotations: {}
-    }
+      annotations: {},
+    };
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
-      try {
-        process.chdir(input.directory);
+    try {
+      process.chdir(input.directory);
 
-        const sourceOrgId = (await Org.create({ aliasOrUsername: input.sourceOrg })).getOrgId();
-        const devHubConnection = await getConnection(input.devHub);
-        const createResponse = await devHubConnection.sobject('OrgSnapshot').create({
-          SourceOrg: sourceOrgId,
-          Description: input.description,
-          SnapshotName: input.name,
-          Content: 'metadatadata',
-        });
+      const sourceOrgId = (await Org.create({ aliasOrUsername: input.sourceOrg })).getOrgId();
+      const devHubConnection = await getConnection(input.devHub);
+      const createResponse = await devHubConnection.sobject('OrgSnapshot').create({
+        SourceOrg: sourceOrgId,
+        Description: input.description,
+        SnapshotName: input.name,
+        Content: 'metadatadata',
+      });
 
-        if (createResponse.success === false) {
-          return textResponse(`An error while created the org snapshot: ${JSON.stringify(createResponse)}`, true);
-        }
-        const result = await devHubConnection.singleRecordQuery(`SELECT Id,
+      if (createResponse.success === false) {
+        return textResponse(`An error while created the org snapshot: ${JSON.stringify(createResponse)}`, true);
+      }
+      const result = await devHubConnection.singleRecordQuery(`SELECT Id,
               SnapshotName,
               Description,
               Status,
@@ -103,15 +103,15 @@ create a snapshot of my MyScratch in myDevHub`,
               ExpirationDate,
               Error FROM OrgSnapshot WHERE Id = '${createResponse.id}'`);
 
-        return textResponse(`Successfully created the org snapshot: ${JSON.stringify(result)}`);
-      } catch (error) {
-        const e = error as Error;
-        // dev hub does not have snapshot pref enabled
-        if (e.name === 'NOT_FOUND') {
-          return textResponse("Scratch Org Snapshots isn't enabled for your Dev Hub.", true);
-        } else {
-          return textResponse(`Error: ${e.name} : ${e.message}`, true);
-        }
+      return textResponse(`Successfully created the org snapshot: ${JSON.stringify(result)}`);
+    } catch (error) {
+      const e = error as Error;
+      // dev hub does not have snapshot pref enabled
+      if (e.name === 'NOT_FOUND') {
+        return textResponse("Scratch Org Snapshots isn't enabled for your Dev Hub.", true);
+      } else {
+        return textResponse(`Error: ${e.name} : ${e.message}`, true);
       }
+    }
   }
 }

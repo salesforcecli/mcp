@@ -15,14 +15,26 @@
  */
 
 import { ux } from '@oclif/core';
-import { MCP_PROVIDER_API_VERSION, McpProvider, McpTool, McpToolConfig, Services, TelemetryEvent, TelemetryService, Toolset, TOOLSETS, Versioned } from '@salesforce/mcp-provider-api';
+import {
+  MCP_PROVIDER_API_VERSION,
+  McpProvider,
+  McpTool,
+  McpToolConfig,
+  Services,
+  TelemetryEvent,
+  TelemetryService,
+  Toolset,
+  TOOLSETS,
+  Versioned,
+} from '@salesforce/mcp-provider-api';
 import { SfMcpServer } from './sf-mcp-server.js';
 import { createDynamicServerTools } from './dynamic-tools/index.js';
 import { MCP_PROVIDER_REGISTRY } from './registry.js';
 
 export async function registerToolsets(
   toolsets: Array<Toolset | 'all'>,
-  useDynamicTools: boolean, server: SfMcpServer
+  useDynamicTools: boolean,
+  server: SfMcpServer
 ): Promise<void> {
   if (useDynamicTools) {
     const dynamicTools: McpTool[] = createDynamicServerTools(server);
@@ -31,16 +43,19 @@ export async function registerToolsets(
   } else {
     ux.stderr('Skipping registration of dynamic tools');
   }
-  
-  const toolsetsToEnable: Set<Toolset> = toolsets.includes('all') ? 
-    new Set(TOOLSETS.filter(ts => ts !== Toolset.EXPERIMENTAL)) :
-    new Set([Toolset.CORE, ...(toolsets as Toolset[])]);
+
+  const toolsetsToEnable: Set<Toolset> = toolsets.includes('all')
+    ? new Set(TOOLSETS.filter((ts) => ts !== Toolset.EXPERIMENTAL))
+    : new Set([Toolset.CORE, ...(toolsets as Toolset[])]);
 
   // TODO: This is temporary... we should implement this soon and ideally
   // it should be passed in.
   const services: Services = new NoOpServices();
 
-  const newToolRegistry: Record<Toolset, McpTool[]> = await createToolRegistryFromProviders(MCP_PROVIDER_REGISTRY, services);
+  const newToolRegistry: Record<Toolset, McpTool[]> = await createToolRegistryFromProviders(
+    MCP_PROVIDER_REGISTRY,
+    services
+  );
 
   for (const toolset of TOOLSETS) {
     if (toolsetsToEnable.has(toolset)) {
@@ -57,15 +72,24 @@ function registerTools(tools: McpTool[], server: SfMcpServer): void {
     // TODO: registerTool isn't overridden by the SfMcpServer yet, so we reroute everything through the server.tool for now.
     // In the future this could look like: server.registerTool(tool.getName(), tool.getConfig(), (...args) => tool.exec(...args));
     const toolConfig: McpToolConfig = tool.getConfig();
-    server.tool(tool.getName(), toolConfig.description ?? '', toolConfig.inputSchema ?? {},
-      {title: toolConfig.title, ...toolConfig.annotations}, (...args) => tool.exec(...args));
+    server.tool(
+      tool.getName(),
+      toolConfig.description ?? '',
+      toolConfig.inputSchema ?? {},
+      { title: toolConfig.title, ...toolConfig.annotations },
+      (...args) => tool.exec(...args)
+    );
   }
 }
 
-async function createToolRegistryFromProviders(providers: McpProvider[], services: Services): Promise<Record<Toolset, McpTool[]>> {
+async function createToolRegistryFromProviders(
+  providers: McpProvider[],
+  services: Services
+): Promise<Record<Toolset, McpTool[]>> {
   // Initialize an empty registry
-  const registry: Record<Toolset, McpTool[]> = Object.fromEntries(Object.values(Toolset)
-    .map(key => [key, [] as McpTool[]])) as Record<Toolset, McpTool[]>;
+  const registry: Record<Toolset, McpTool[]> = Object.fromEntries(
+    Object.values(Toolset).map((key) => [key, [] as McpTool[]])
+  ) as Record<Toolset, McpTool[]>;
 
   // Avoid calling await in a loop by first getting all the promises
   const toolPromises: Array<Promise<McpTool[]>> = [];
@@ -102,7 +126,11 @@ class NoOpTelemetryService implements TelemetryService {
  */
 function validateMcpProviderVersion(provider: Versioned): void {
   if (provider.getVersion().major !== MCP_PROVIDER_API_VERSION.major) {
-    throw new Error(`The version '${provider.getVersion().toString()}' for '${provider.getName()}' is incompatible with this MCP Server.\n` +
-        `Expected the major version to be '${MCP_PROVIDER_API_VERSION.major}'.`);
+    throw new Error(
+      `The version '${provider
+        .getVersion()
+        .toString()}' for '${provider.getName()}' is incompatible with this MCP Server.\n` +
+        `Expected the major version to be '${MCP_PROVIDER_API_VERSION.major}'.`
+    );
   }
 }

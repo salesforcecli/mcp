@@ -172,7 +172,7 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
 
 /*
  * These are tools that are always enabled at startup. They cannot be disabled and they cannot be dynamically enabled.
- * 
+ *
  * TODO: This list shouldn't be hard coded but instead should be constructed dynamically from the tools provided
  *       from the providers. PLEASE DO THIS TODO ASAP OR ELSE IT WILL GET OUT OF SYNC QUICKLY.
  */

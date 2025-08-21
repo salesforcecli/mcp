@@ -20,8 +20,5 @@ import { EnableToolsMcpTool } from './sf-enable-tools.js';
 import { ListToolsMcpTool } from './sf-list-tools.js';
 
 export function createDynamicServerTools(server: SfMcpServer): McpTool[] {
-    return [
-        new EnableToolsMcpTool(server),
-        new ListToolsMcpTool()
-    ];
+  return [new EnableToolsMcpTool(server), new ListToolsMcpTool()];
 }

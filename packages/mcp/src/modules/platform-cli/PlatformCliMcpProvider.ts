@@ -31,26 +31,26 @@ import { TestAgentsMcpTool } from './sf-test-agents.js';
 import { TestApexMcpTool } from './sf-test-apex.js';
 
 export class PlatformCliMcpProvider extends McpProvider {
-    public getName(): string {
-        return 'PlatformCliMcpProvider';
-    }
+  public getName(): string {
+    return 'PlatformCliMcpProvider';
+  }
 
-    public provideTools(_services: Services): Promise<McpTool[]> {
-        return Promise.resolve([
-            new AssignPermissionSetMcpTool(),
-            new CreateOrgSnapshotMcpTool(),
-            new CreateScratchOrgMcpTool(),
-            new DeleteOrgMcpTool(),
-            new DeployMetadataMcpTool(),
-            new GetUsernameMcpTool(),
-            new ListAllOrgsMcpTool(),
-            new OrgOpenMcpTool(),
-            new QueryOrgMcpTool(),
-            new ResumeMcpTool(),
-            new RetrieveMetadataMcpTool(),
-            new SuggestCliCommandMcpTool(),
-            new TestAgentsMcpTool(),
-            new TestApexMcpTool()
-        ]);
-    }
+  public provideTools(_services: Services): Promise<McpTool[]> {
+    return Promise.resolve([
+      new AssignPermissionSetMcpTool(),
+      new CreateOrgSnapshotMcpTool(),
+      new CreateScratchOrgMcpTool(),
+      new DeleteOrgMcpTool(),
+      new DeployMetadataMcpTool(),
+      new GetUsernameMcpTool(),
+      new ListAllOrgsMcpTool(),
+      new OrgOpenMcpTool(),
+      new QueryOrgMcpTool(),
+      new ResumeMcpTool(),
+      new RetrieveMetadataMcpTool(),
+      new SuggestCliCommandMcpTool(),
+      new TestAgentsMcpTool(),
+      new TestApexMcpTool(),
+    ]);
+  }
 }

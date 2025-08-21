@@ -17,10 +17,9 @@
 import { McpProvider } from '@salesforce/mcp-provider-api';
 import { PlatformCliMcpProvider } from './modules/platform-cli/index.js';
 
-
 /** -------- ADD McpProvider INSTANCES HERE ------------------------------------------------------------------------- */
 
 export const MCP_PROVIDER_REGISTRY: McpProvider[] = [
   new PlatformCliMcpProvider(),
   // Add new instances here
-]
+];

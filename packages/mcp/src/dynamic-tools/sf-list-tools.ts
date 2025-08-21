@@ -48,7 +48,7 @@ Once a tool has been enabled, you do not need to call sf-list-tools again - inst
       annotations: {
         readOnlyHint: true,
         openWorldHint: false,
-      }
+      },
     };
   }
 

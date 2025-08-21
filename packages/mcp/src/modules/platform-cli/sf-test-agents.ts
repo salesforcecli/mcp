@@ -81,8 +81,8 @@ start myAgentTest and don't wait for results`,
       inputSchema: runAgentTestsParam.shape,
       outputSchema: undefined,
       annotations: {
-        openWorldHint: false
-      }
+        openWorldHint: false,
+      },
     };
   }
 
