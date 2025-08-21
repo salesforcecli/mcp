@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-export { getUsername } from './sf-get-username.js';
-export { listAllOrgs } from './sf-list-all-orgs.js';
 export { orgOpen } from './sf-org-open.js';
 export { queryOrg } from './sf-query-org.js';
 export { resume } from './sf-resume.js';

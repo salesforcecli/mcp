@@ -20,6 +20,8 @@ import { CreateOrgSnapshotMcpTool } from './sf-create-org-snapshot.js';
 import { CreateScratchOrgMcpTool } from './sf-create-scratch-org.js';
 import { DeleteOrgMcpTool } from './sf-delete-org.js';
 import { DeployMetadataMcpTool } from './sf-deploy-metadata.js';
+import { GetUsernameMcpTool } from './sf-get-username.js';
+import { ListAllOrgsMcpTool } from './sf-list-all-orgs.js';
 
 export class PlatformCliMcpProvider extends McpProvider {
     public getName(): string {
@@ -32,7 +34,9 @@ export class PlatformCliMcpProvider extends McpProvider {
             new CreateOrgSnapshotMcpTool(),
             new CreateScratchOrgMcpTool(),
             new DeleteOrgMcpTool(),
-            new DeployMetadataMcpTool()
+            new DeployMetadataMcpTool(),
+            new GetUsernameMcpTool(),
+            new ListAllOrgsMcpTool()
         ];
     }
 }

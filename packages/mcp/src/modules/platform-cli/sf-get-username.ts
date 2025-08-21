@@ -15,11 +15,12 @@
  */
 
 import { z } from 'zod';
+import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { textResponse } from '../../shared/utils.js';
 import { getDefaultTargetOrg, getDefaultTargetDevHub, suggestUsername } from '../../shared/auth.js';
 import { directoryParam } from '../../shared/params.js';
 import { type ConfigInfoWithCache, type ToolTextResponse } from '../../shared/types.js';
-import { SfMcpServer } from '../../sf-mcp-server.js';
 
 /*
  * Get username for Salesforce org
@@ -56,12 +57,23 @@ Get username for my default dev hub
   directory: directoryParam,
 });
 
-export type GetUsernameParamsSchema = z.infer<typeof getUsernameParamsSchema>;
+type InputArgs = z.infer<typeof getUsernameParamsSchema>;
+type InputArgsShape = typeof getUsernameParamsSchema.shape;
+type OutputArgsShape = z.ZodRawShape;
 
-export const getUsername = (server: SfMcpServer): void => {
-  server.tool(
-    'sf-get-username',
-    `Intelligently determines the appropriate username or alias for Salesforce operations.
+export class GetUsernameMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public getToolsets(): Toolset[] {
+    return [Toolset.CORE];
+  }
+
+  public getName(): string {
+    return 'sf-get-username';
+  }
+
+  public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
+    return {
+      title: 'Get Username',
+      description: `Intelligently determines the appropriate username or alias for Salesforce operations.
 
 AGENT/LLM INSTRUCTIONS:
 Use this tool when uncertain which username/org a user wants for Salesforce operations.
@@ -80,18 +92,21 @@ EXAMPLE USAGE:
 - When user says "Do X for my org" → defaultTargetOrg=false, defaultDevHub=false
 - When user says "For my default org" → defaultTargetOrg=true
 - When user says "For my default dev hub" → defaultDevHub=true`,
-    getUsernameParamsSchema.shape,
-    {
-      title: 'Get Username',
-      readOnlyHint: true,
-      openWorldHint: false,
-    },
-    async ({ defaultTargetOrg, defaultDevHub, directory }) => {
-      try {
-        process.chdir(directory);
+      inputSchema: getUsernameParamsSchema.shape,
+      outputSchema: undefined,
+      annotations: {
+        readOnlyHint: true,
+        openWorldHint: false
+      }
+    };
+  }
 
-        const generateResponse = (defaultFromConfig: ConfigInfoWithCache | undefined): ToolTextResponse =>
-          textResponse(`ALWAYS notify the user the following 3 (maybe 4) pieces of information:
+  public async exec(input: InputArgs): Promise<CallToolResult> {
+    try {
+      process.chdir(input.directory);
+
+      const generateResponse = (defaultFromConfig: ConfigInfoWithCache | undefined): ToolTextResponse =>
+        textResponse(`ALWAYS notify the user the following 3 (maybe 4) pieces of information:
 1. If it is default target-org or target-dev-hub ('.key' on the config)
 2. The value of '.location' on the config
 3. The value of '.value' on the config
@@ -101,34 +116,33 @@ EXAMPLE USAGE:
 
 UNLESS THE USER SPECIFIES OTHERWISE, use this username for the "usernameOrAlias" parameter in future Tool calls.`);
 
-        // Case 1: User explicitly asked for default target org
-        if (defaultTargetOrg) return generateResponse(await getDefaultTargetOrg());
+      // Case 1: User explicitly asked for default target org
+      if (input.defaultTargetOrg) return generateResponse(await getDefaultTargetOrg());
 
-        // Case 2: User explicitly asked for default dev hub
-        if (defaultDevHub) return generateResponse(await getDefaultTargetDevHub());
+      // Case 2: User explicitly asked for default dev hub
+      if (input.defaultDevHub) return generateResponse(await getDefaultTargetDevHub());
 
-        // Case 3: User was vague, so suggest a username
-        const { aliasForReference, suggestedUsername, reasoning } = await suggestUsername();
+      // Case 3: User was vague, so suggest a username
+      const { aliasForReference, suggestedUsername, reasoning } = await suggestUsername();
 
-        if (!suggestedUsername) {
-          return textResponse(
-            "No suggested username found. Please specify a username or alias explicitly. Also check the MCP server's startup args for allowlisting orgs.",
-            true
-          );
-        }
-
-        return textResponse(`
-YOU MUST inform the user that we are going to use "${suggestedUsername}" ${
-          aliasForReference ? `(Alias: ${aliasForReference}) ` : ''
-        }for the "usernameOrAlias" parameter.
-YOU MUST explain the reasoning for selecting this org, which is: "${reasoning}"
-UNLESS THE USER SPECIFIES OTHERWISE, use this username for the "usernameOrAlias" parameter in future Tool calls.`);
-      } catch (error) {
+      if (!suggestedUsername) {
         return textResponse(
-          `Failed to determine appropriate username: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          "No suggested username found. Please specify a username or alias explicitly. Also check the MCP server's startup args for allowlisting orgs.",
           true
         );
       }
+
+      return textResponse(`
+YOU MUST inform the user that we are going to use "${suggestedUsername}" ${
+        aliasForReference ? `(Alias: ${aliasForReference}) ` : ''
+      }for the "usernameOrAlias" parameter.
+YOU MUST explain the reasoning for selecting this org, which is: "${reasoning}"
+UNLESS THE USER SPECIFIES OTHERWISE, use this username for the "usernameOrAlias" parameter in future Tool calls.`);
+    } catch (error) {
+      return textResponse(
+        `Failed to determine appropriate username: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        true
+      );
     }
-  );
-};
+  }
+}

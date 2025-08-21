@@ -55,13 +55,11 @@ export const CORE_TOOLS = [
 const OLD_TOOL_REGISTRY: Record<Toolset, Array<(server: SfMcpServer) => void>> = {
   // Note that 'core' tools are always enabled
   [Toolset.CORE]: [
-    platformCli.getUsername,
     platformCli.resume,
     platformCli.suggestCliCommand
   ],
   
   [Toolset.ORGS]: [
-    platformCli.listAllOrgs
   ],
   [Toolset.DATA]: [
     platformCli.queryOrg
