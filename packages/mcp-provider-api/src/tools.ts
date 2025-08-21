@@ -3,6 +3,9 @@ import { CallToolResult, ServerNotification, ServerRequest, ToolAnnotations } fr
 import { z } from "zod"
 import { Toolset } from "./toolset.js";
 
+/**
+ * Defines an tool that can be registered with an MCP Server.
+ */
 export abstract class McpTool<InputArgsShape extends z.ZodRawShape = z.ZodRawShape, OutputArgsShape extends z.ZodRawShape = z.ZodRawShape> {
     abstract getToolsets(): Toolset[]
 

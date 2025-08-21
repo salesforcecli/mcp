@@ -55,23 +55,11 @@ Use this guide to learn how to contribute to the Salesforce DX MCP Server.
 1. Push commit(s) to remote: `git push -u origin <branch_name>`.
 1. Create a pull request (PR) using the [GitHub UI](https://github.com/salesforcecli/mcp).
 
-## Registering New Tools (OUTDATED - NEEDS TO BE UPDATED SOON)
+## Registering New Tools
 
-When you create a new tool, you must register it in the `TOOL_REGISTRY` in `src/registry.ts`. This allows the MCP server to recognize and use your tool.
+When you create a new tool, it must be provided by an McpProvider instance that registered in the `MCP_PROVIDER_REGISTRY` array in `src/registry.ts`. This allows the MCP server to recognize and use your tools.
 
-The basic structure of tool registration function is
-
-```typescript
-function myNewTool(server: SfMcpServer): void {
-  server.tool({
-    name: 'sf-my-new-tool',
-    description: 'A brief description of what the tool does.',
-    // Other tool properties...
-  });
-}
-```
-
-Once you're written your tool, you can register it in the `TOOL_REGISTRY` ([registry.ts](./src/registry.ts)) by adding the exported tool function to the appropriate toolset array. For example, if your tool is part of the `orgs` toolset, you would add it to the `orgs` array.
+MORE DOCUMENTATION COMING SOON...
 
 ## Testing
 

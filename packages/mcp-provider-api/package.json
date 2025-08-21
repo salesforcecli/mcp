@@ -22,6 +22,6 @@
         "lint": "echo 'no lint script available yet'",
         "postclean": "rimraf dist && rimraf ./*.tgz",
         "package": "yarn pack",
-        "test": "echo 'need to add test framework script here'"
+        "test": "echo 'No unit tests are needed for this api module'"
     }
 }

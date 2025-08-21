@@ -2,6 +2,11 @@ import { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.j
 import { GetPromptResult, ServerNotification, ServerRequest } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 
+/**
+ * NOTE - CURRENTLY THE MAIN MCP SERVER DOES NOT CONSUME THIS YET.
+ * 
+ * TODO: Update this documentation when the main server registered provided McpPrompt instances.
+ */
 export abstract class McpPrompt<ArgsShape extends PromptArgsRawShape = PromptArgsRawShape> {
     abstract getName(): string
     
