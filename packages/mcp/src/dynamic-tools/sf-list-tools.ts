@@ -25,7 +25,7 @@ export class ListToolsMcpTool extends McpTool {
   }
 
   public getName(): string {
-    return 'sf-list-tool';
+    return 'sf-list-tools';
   }
 
   public getConfig(): McpToolConfig {
