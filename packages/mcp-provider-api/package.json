@@ -1,7 +1,9 @@
 {
   "name": "@salesforce/mcp-provider-api",
+  "description": "(For Internal Use Only) API to implement a McpProvider that provides prompts, resources, and tools to be registered by an MCP server",
   "version": "0.0.1-alpha.1",
   "type": "module",
+  "license": "Apache-2.0",
   "main": "lib/src/index.js",
   "types": "lib/src/index.d.ts",
   "dependencies": {
@@ -10,7 +12,12 @@
     "semver": "^7.7.2"
   },
   "devDependencies": {
-    "@types/node": "^22.16.5"
+    "@eslint/js": "^9.32.0",
+    "@types/node": "^22.16.5",
+    "eslint": "^9.32.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.37.0"
   },
   "files": [
     "lib",
@@ -24,6 +31,7 @@
     "lint": "echo 'no lint script available yet'",
     "postclean": "rimraf dist && rimraf ./*.tgz",
     "package": "yarn pack",
+    "scrub": "yarn clean && rimraf node_modules",
     "test": "echo 'No unit tests are needed for this api module'"
   }
 }
