@@ -38,8 +38,7 @@ export class EnableToolsMcpTool extends McpTool<InputArgsShapeType, OutputArgsSh
   }
 
   public getToolsets(): Toolset[] {
-    // Dynamic tools are special and aren't in a toolset. Instead they are added via the 'dynamic-toolsets' flag.
-    return [];
+    return [Toolset.CORE];
   }
 
   public getName(): string {

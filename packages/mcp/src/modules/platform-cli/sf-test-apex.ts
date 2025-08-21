@@ -18,10 +18,24 @@ import { z } from 'zod';
 import { TestLevel, TestResult, TestRunIdResult, TestService } from '@salesforce/apex-node';
 import { ApexTestResultOutcome } from '@salesforce/apex-node/lib/src/tests/types.js';
 import { Duration, ensureArray } from '@salesforce/kit';
+import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { directoryParam, usernameOrAliasParam } from '../../shared/params.js';
 import { textResponse } from '../../shared/utils.js';
 import { getConnection } from '../../shared/auth.js';
-import { SfMcpServer } from '../../sf-mcp-server.js';
+
+/*
+ * Run Apex tests in a Salesforce org.
+ *
+ * Parameters:
+ * - testLevel: 'RunSpecifiedTests', 'RunLocalTests', 'RunAllTestsInOrg', used to specify the specific test-level.
+ * - classNames: if testLevel='RunSpecifiedTests', this will be the specified tests to run
+ * - usernameOrAlias: Username or alias of the Salesforce org to run tests in.
+ * - directory: Directory of the local project.
+ *
+ * Returns:
+ * - textResponse: Test result.
+ */
 
 const runApexTestsParam = z.object({
   testLevel: z.enum([TestLevel.RunLocalTests, TestLevel.RunAllTestsInOrg, TestLevel.RunSpecifiedTests]).describe(
@@ -70,24 +84,23 @@ RunSpecifiedTests="Run the Apex tests I specify, these will be specified in the 
   directory: directoryParam,
 });
 
-export type ApexRunTests = z.infer<typeof runApexTestsParam>;
+type InputArgs = z.infer<typeof runApexTestsParam>;
+type InputArgsShape = typeof runApexTestsParam.shape;
+type OutputArgsShape = z.ZodRawShape;
 
-/*
- * Run Apex tests in a Salesforce org.
- *
- * Parameters:
- * - testLevel: 'RunSpecifiedTests', 'RunLocalTests', 'RunAllTestsInOrg', used to specify the specific test-level.
- * - classNames: if testLevel='RunSpecifiedTests', this will be the specified tests to run
- * - usernameOrAlias: Username or alias of the Salesforce org to run tests in.
- * - directory: Directory of the local project.
- *
- * Returns:
- * - textResponse: Test result.
- */
-export const testApex = (server: SfMcpServer): void => {
-  server.tool(
-    'sf-test-apex',
-    `Run Apex tests in an org.
+export class TestApexMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public getToolsets(): Toolset[] {
+    return [Toolset.TESTING];
+  }
+
+  public getName(): string {
+    return 'sf-test-apex';
+  }
+
+  public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
+    return {
+      title: 'Apex Tests',
+      description: `Run Apex tests in an org.
 
 AGENT INSTRUCTIONS:
 If the user doesn't specify what to test, take context from the currently open file
@@ -102,83 +115,73 @@ Run this test and include success and failures
 Run all tests in the org.
 Test the "mySuite" suite asynchronously. I’ll check results later.
 Run tests for this file and include coverage
-What are the results for 707XXXXXXXXXXXX
-`,
-    runApexTestsParam.shape,
-    {
-      title: 'Apex Tests',
-      openWorldHint: false,
-    },
-    async ({
-      testLevel,
-      usernameOrAlias,
-      classNames,
-      directory,
-      methodNames,
-      suiteName,
-      async,
-      testRunId,
-      verbose,
-      codeCoverage,
-    }) => {
-      if (
-        (ensureArray(suiteName).length > 1 ||
-          ensureArray(methodNames).length > 1 ||
-          ensureArray(classNames).length > 1) &&
-        testLevel !== TestLevel.RunSpecifiedTests
-      ) {
-        return textResponse("You can't specify which tests to run without setting testLevel='RunSpecifiedTests'", true);
+What are the results for 707XXXXXXXXXXXX`,
+      inputSchema: runApexTestsParam.shape,
+      outputSchema: undefined,
+      annotations: {
+        openWorldHint: false
       }
+    };
+  }
 
-      if (!usernameOrAlias)
-        return textResponse(
-          'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
-          true
-        );
-
-      // needed for org allowlist to work
-      process.chdir(directory);
-
-      const connection = await getConnection(usernameOrAlias);
-      try {
-        const testService = new TestService(connection);
-        let result: TestResult | TestRunIdResult;
-
-        if (testRunId) {
-          // we just need to get the test results
-          result = await testService.reportAsyncResults(testRunId, codeCoverage);
-        } else {
-          // we need to run tests
-          const payload = await testService.buildAsyncPayload(
-            testLevel,
-            methodNames?.join(','),
-            classNames?.join(','),
-            suiteName
-          );
-          result = await testService.runTestAsynchronous(
-            payload,
-            codeCoverage,
-            async,
-            undefined,
-            undefined,
-            Duration.minutes(10)
-          );
-          if (async) {
-            return textResponse(`Test Run Id: ${JSON.stringify(result)}`);
-          }
-          // the user waited for the full results, we know they're TestResult
-          result = result as TestResult;
-        }
-
-        if (!verbose) {
-          // aka concise, filter out passing tests
-          result.tests = result.tests.filter((test) => test.outcome === ApexTestResultOutcome.Fail);
-        }
-
-        return textResponse(`Test result: ${JSON.stringify(result)}`);
-      } catch (e) {
-        return textResponse(`Failed to run Apex Tests: ${e instanceof Error ? e.message : 'Unknown error'}`, true);
-      }
+  public async exec(input: InputArgs): Promise<CallToolResult> {
+    if (
+      (ensureArray(input.suiteName).length > 1 ||
+        ensureArray(input.methodNames).length > 1 ||
+        ensureArray(input.classNames).length > 1) &&
+      input.testLevel !== TestLevel.RunSpecifiedTests
+    ) {
+      return textResponse("You can't specify which tests to run without setting testLevel='RunSpecifiedTests'", true);
     }
-  );
-};
+
+    if (!input.usernameOrAlias)
+      return textResponse(
+        'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
+        true
+      );
+
+    // needed for org allowlist to work
+    process.chdir(input.directory);
+
+    const connection = await getConnection(input.usernameOrAlias);
+    try {
+      const testService = new TestService(connection);
+      let result: TestResult | TestRunIdResult;
+
+      if (input.testRunId) {
+        // we just need to get the test results
+        result = await testService.reportAsyncResults(input.testRunId, input.codeCoverage);
+      } else {
+        // we need to run tests
+        const payload = await testService.buildAsyncPayload(
+          input.testLevel,
+          input.methodNames?.join(','),
+          input.classNames?.join(','),
+          input.suiteName
+        );
+        result = await testService.runTestAsynchronous(
+          payload,
+          input.codeCoverage,
+          input.async,
+          undefined,
+          undefined,
+          Duration.minutes(10)
+        );
+        if (input.async) {
+          return textResponse(`Test Run Id: ${JSON.stringify(result)}`);
+        }
+        // the user waited for the full results, we know they're TestResult
+        result = result as TestResult;
+      }
+
+      if (!input.verbose) {
+        // aka concise, filter out passing tests
+        result.tests = result.tests.filter((test) => test.outcome === ApexTestResultOutcome.Fail);
+      }
+
+      return textResponse(`Test result: ${JSON.stringify(result)}`);
+    } catch (e) {
+      return textResponse(`Failed to run Apex Tests: ${e instanceof Error ? e.message : 'Unknown error'}`, true);
+    }
+  }
+}

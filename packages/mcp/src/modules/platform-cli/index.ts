@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 
-export { testApex } from './sf-test-apex.js';
 
 export { PlatformCliMcpProvider } from './PlatformCliMcpProvider.js';

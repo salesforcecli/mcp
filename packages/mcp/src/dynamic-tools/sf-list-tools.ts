@@ -21,8 +21,7 @@ import { listAllTools } from './utils/tools.js';
 
 export class ListToolsMcpTool extends McpTool {
   public getToolsets(): Toolset[] {
-    // Dynamic tools are special and aren't in a toolset. Instead they are added via the 'dynamic-toolsets' flag.
-    return [];
+    return [Toolset.CORE];
   }
 
   public getName(): string {

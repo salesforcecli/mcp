@@ -20,9 +20,8 @@ import * as platformCli from './modules/platform-cli/index.js';
 import { SfMcpServer } from './sf-mcp-server.js';
 import { createDynamicServerTools } from './dynamic-tools/index.js';
 
-/**
- * All teams should instantiate their McpProvider instance here:
- */
+
+/** -------- ADD McpProvider INSTANCES HERE ------------------------------------------------------------------------- */
 
 const MCP_PROVIDER_REGISTRY: McpProvider[] = [
   new platformCli.PlatformCliMcpProvider(),
@@ -31,46 +30,14 @@ const MCP_PROVIDER_REGISTRY: McpProvider[] = [
 
 
 
+
+
+
+
 /** ----------------- ONLY THE CLI TEAM SHOULD MODIFY THE CODE BELOW THIS LINE -------------------------------------- */
 
 export const TOOLSETS: Toolset[] = Object.values(Toolset);
 
-/*
- * These are tools that are always enabled at startup. They cannot be disabled and they cannot be dynamically enabled.
- *
- * If you are added a new core tool, please add it to this list so that the SfMcpServer knows about it.
- * 
- * TODO: This list shouldn't be hard coded but instead should be constructed dynamically from the tools provided
- *       from the providers.
- */
-export const CORE_TOOLS = [
-  'sf-get-username',
-  'sf-resume',
-  'sf-enable-tools',
-  'sf-list-tools',
-  'sf-suggest-cli-command',
-];
-
-// TODO: Convert all tools so we can remove this old tool registry
-const OLD_TOOL_REGISTRY: Record<Toolset, Array<(server: SfMcpServer) => void>> = {
-  // Note that 'core' tools are always enabled
-  [Toolset.CORE]: [
-  ],
-  
-  [Toolset.ORGS]: [
-  ],
-  [Toolset.DATA]: [
-  ],
-  [Toolset.USERS]: [
-  ],
-  [Toolset.TESTING]: [
-    platformCli.testApex
-  ],
-  [Toolset.METADATA]: [
-  ],
-  [Toolset.EXPERIMENTAL]: [
-  ],
-};
 
 export function registerToolsets(toolsets: Array<Toolset | 'all'>, useDynamicTools: boolean, server: SfMcpServer): void {
   if (useDynamicTools) {
@@ -94,17 +61,10 @@ export function registerToolsets(toolsets: Array<Toolset | 'all'>, useDynamicToo
   for (const toolset of TOOLSETS) {
     if (toolsetsToEnable.has(toolset)) {
       ux.stderr(`Registering ${toolset} tools`);
-      registerTools_old(OLD_TOOL_REGISTRY[toolset], server); // TODO: Eventually we should get rid of this
       registerTools(newToolRegistry[toolset], server);
     } else {
       ux.stderr(`Skipping registration of ${toolset} tools`);
     }
-  }
-}
-
-function registerTools_old(tools: Array<(server: SfMcpServer) => void>, server: SfMcpServer): void {
-  for (const registerToolFcn of tools) {
-    registerToolFcn(server);
   }
 }
 

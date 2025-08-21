@@ -28,6 +28,7 @@ import { ResumeMcpTool } from './sf-resume.js';
 import { RetrieveMetadataMcpTool } from './sf-retrieve-metadata.js';
 import { SuggestCliCommandMcpTool } from './sf-suggest-cli-command.js';
 import { TestAgentsMcpTool } from './sf-test-agents.js';
+import { TestApexMcpTool } from './sf-test-apex.js';
 
 export class PlatformCliMcpProvider extends McpProvider {
     public getName(): string {
@@ -48,7 +49,8 @@ export class PlatformCliMcpProvider extends McpProvider {
             new ResumeMcpTool(),
             new RetrieveMetadataMcpTool(),
             new SuggestCliCommandMcpTool(),
-            new TestAgentsMcpTool()
+            new TestAgentsMcpTool(),
+            new TestApexMcpTool()
         ];
     }
 }

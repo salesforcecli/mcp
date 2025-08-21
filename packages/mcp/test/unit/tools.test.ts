@@ -26,7 +26,6 @@ import {
   listAllTools,
 } from '../../src/dynamic-tools/utils/tools.js';
 import Cache from '../../src/shared/cache.js';
-import { CORE_TOOLS } from '../../src/registry.js';
 
 describe('Tool Management', () => {
   let sandbox: sinon.SinonSandbox;
@@ -43,17 +42,6 @@ describe('Tool Management', () => {
     // Clean up singleton instance after each test
     // @ts-expect-error - accessing private static property for testing
     Cache.instance = undefined;
-  });
-
-  describe('Core Tools', () => {
-    it('should have defined core tools', () => {
-      expect(CORE_TOOLS).to.be.an('array');
-      expect(CORE_TOOLS).to.include('sf-get-username');
-      expect(CORE_TOOLS).to.include('sf-enable-tools');
-      expect(CORE_TOOLS).to.include('sf-resume');
-      expect(CORE_TOOLS).to.include('sf-list-tools');
-      expect(CORE_TOOLS).to.include('sf-suggest-cli-command');
-    });
   });
 
   describe('Tool Operations', () => {

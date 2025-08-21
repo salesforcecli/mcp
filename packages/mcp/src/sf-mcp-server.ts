@@ -22,7 +22,6 @@ import { Logger } from '@salesforce/core';
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import { Telemetry } from './telemetry.js';
 import { RateLimiter, RateLimitConfig, createRateLimiter } from './shared/rate-limiter.js';
-import { CORE_TOOLS } from './registry.js';
 import { addTool } from './dynamic-tools/utils/tools.js';
 
 type ToolMethodSignatures = {
@@ -170,3 +169,20 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
     return tool;
   };
 }
+
+/*
+ * These are tools that are always enabled at startup. They cannot be disabled and they cannot be dynamically enabled.
+ * 
+ * TODO: This list shouldn't be hard coded but instead should be constructed dynamically from the tools provided
+ *       from the providers. PLEASE DO THIS TODO ASAP OR ELSE IT WILL GET OUT OF SYNC QUICKLY.
+ */
+const CORE_TOOLS = [
+  // CORE TOOLS
+  'sf-get-username',
+  'sf-resume',
+  'sf-suggest-cli-command',
+
+  // DYNAMIC CORE TOOLS
+  'sf-enable-tools',
+  'sf-list-tools',
+];
