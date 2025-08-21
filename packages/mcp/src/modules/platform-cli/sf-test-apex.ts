@@ -119,8 +119,8 @@ What are the results for 707XXXXXXXXXXXX`,
       inputSchema: runApexTestsParam.shape,
       outputSchema: undefined,
       annotations: {
-        openWorldHint: false
-      }
+        openWorldHint: false,
+      },
     };
   }
 

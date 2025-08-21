@@ -15,57 +15,70 @@
  */
 
 import { ux } from '@oclif/core';
-import { MCP_PROVIDER_API_VERSION, McpProvider, McpTool, McpToolConfig, Services, TelemetryEvent, TelemetryService, Toolset, TOOLSETS, Versioned } from '@salesforce/mcp-provider-api';
+import {
+  MCP_PROVIDER_API_VERSION,
+  McpProvider,
+  McpTool,
+  Toolset,
+  TOOLSETS,
+  Versioned,
+} from '@salesforce/mcp-provider-api';
 import { SfMcpServer } from './sf-mcp-server.js';
-import { createDynamicServerTools } from './dynamic-tools/index.js';
 import { MCP_PROVIDER_REGISTRY } from './registry.js';
+import { addTool } from './shared/tools.js';
+import { Services } from './services.js';
 
 export async function registerToolsets(
   toolsets: Array<Toolset | 'all'>,
-  useDynamicTools: boolean, server: SfMcpServer
+  useDynamicTools: boolean,
+  server: SfMcpServer,
+  services: Services
 ): Promise<void> {
-  if (useDynamicTools) {
-    const dynamicTools: McpTool[] = createDynamicServerTools(server);
-    ux.stderr('Registering dynamic tools');
-    registerTools(dynamicTools, server);
-  } else {
-    ux.stderr('Skipping registration of dynamic tools');
-  }
-  
-  const toolsetsToEnable: Set<Toolset> = toolsets.includes('all') ? 
-    new Set(TOOLSETS.filter(ts => ts !== Toolset.EXPERIMENTAL)) :
-    new Set([Toolset.CORE, ...(toolsets as Toolset[])]);
+  // If dynamic tools are being used -> only enable core and dynamic
+  // If 'all' is specified, enable all non-experimental and non-dynamic toolsets
+  // Otherwise, enable the specified toolsets and the core toolset
+  const toolsetsToEnable: Set<Toolset> = useDynamicTools
+    ? new Set([Toolset.CORE, Toolset.DYNAMIC])
+    : toolsets.includes('all')
+    ? new Set(TOOLSETS.filter((ts) => ts !== Toolset.EXPERIMENTAL && ts !== Toolset.DYNAMIC))
+    : new Set([Toolset.CORE, ...(toolsets as Toolset[])]);
 
-  // TODO: This is temporary... we should implement this soon and ideally
-  // it should be passed in.
-  const services: Services = new NoOpServices();
-
-  const newToolRegistry: Record<Toolset, McpTool[]> = await createToolRegistryFromProviders(MCP_PROVIDER_REGISTRY, services);
+  const newToolRegistry: Record<Toolset, McpTool[]> = await createToolRegistryFromProviders(
+    MCP_PROVIDER_REGISTRY,
+    services
+  );
 
   for (const toolset of TOOLSETS) {
     if (toolsetsToEnable.has(toolset)) {
       ux.stderr(`Registering ${toolset} tools`);
-      registerTools(newToolRegistry[toolset], server);
+      // eslint-disable-next-line no-await-in-loop
+      await registerTools(newToolRegistry[toolset], server, useDynamicTools);
     } else {
       ux.stderr(`Skipping registration of ${toolset} tools`);
     }
   }
 }
 
-function registerTools(tools: McpTool[], server: SfMcpServer): void {
+async function registerTools(tools: McpTool[], server: SfMcpServer, useDynamicTools: boolean): Promise<void> {
   for (const tool of tools) {
-    // TODO: registerTool isn't overridden by the SfMcpServer yet, so we reroute everything through the server.tool for now.
-    // In the future this could look like: server.registerTool(tool.getName(), tool.getConfig(), (...args) => tool.exec(...args));
-    const toolConfig: McpToolConfig = tool.getConfig();
-    server.tool(tool.getName(), toolConfig.description ?? '', toolConfig.inputSchema ?? {},
-      {title: toolConfig.title, ...toolConfig.annotations}, (...args) => tool.exec(...args));
+    const registeredTool = server.registerTool(tool.getName(), tool.getConfig(), (...args) => tool.exec(...args));
+    const toolsets = tool.getToolsets();
+    if (useDynamicTools && !toolsets.includes(Toolset.CORE) && !toolsets.includes(Toolset.DYNAMIC)) {
+      registeredTool.disable();
+    }
+    // eslint-disable-next-line no-await-in-loop
+    await addTool(registeredTool, tool.getName());
   }
 }
 
-async function createToolRegistryFromProviders(providers: McpProvider[], services: Services): Promise<Record<Toolset, McpTool[]>> {
+async function createToolRegistryFromProviders(
+  providers: McpProvider[],
+  services: Services
+): Promise<Record<Toolset, McpTool[]>> {
   // Initialize an empty registry
-  const registry: Record<Toolset, McpTool[]> = Object.fromEntries(Object.values(Toolset)
-    .map(key => [key, [] as McpTool[]])) as Record<Toolset, McpTool[]>;
+  const registry: Record<Toolset, McpTool[]> = Object.fromEntries(
+    Object.values(Toolset).map((key) => [key, [] as McpTool[]])
+  ) as Record<Toolset, McpTool[]>;
 
   // Avoid calling await in a loop by first getting all the promises
   const toolPromises: Array<Promise<McpTool[]>> = [];
@@ -85,24 +98,16 @@ async function createToolRegistryFromProviders(providers: McpProvider[], service
   return registry;
 }
 
-class NoOpServices implements Services {
-  public getTelemetryService(): TelemetryService {
-    return new NoOpTelemetryService();
-  }
-}
-
-class NoOpTelemetryService implements TelemetryService {
-  public sendTelemetryEvent(_eventName: string, _event: TelemetryEvent): void {
-    // no-op
-  }
-}
-
 /**
  * Validation function to confirm that providers are at the expected major version.
  */
 function validateMcpProviderVersion(provider: Versioned): void {
   if (provider.getVersion().major !== MCP_PROVIDER_API_VERSION.major) {
-    throw new Error(`The version '${provider.getVersion().toString()}' for '${provider.getName()}' is incompatible with this MCP Server.\n` +
-        `Expected the major version to be '${MCP_PROVIDER_API_VERSION.major}'.`);
+    throw new Error(
+      `The version '${provider
+        .getVersion()
+        .toString()}' for '${provider.getName()}' is incompatible with this MCP Server.\n` +
+        `Expected the major version to be '${MCP_PROVIDER_API_VERSION.major}'.`
+    );
   }
 }

@@ -111,8 +111,8 @@ Deploy X to my org and run A,B and C apex tests.`,
       outputSchema: undefined,
       annotations: {
         destructiveHint: true,
-        openWorldHint: false
-      }
+        openWorldHint: false,
+      },
     };
   }
 

@@ -7,8 +7,8 @@
   "scripts": {
     "build": "yarn workspaces run build",
     "clean": "yarn workspaces run clean",
+    "lint": "yarn workspaces run lint",
     "package": "yarn workspaces run package",
-    "test": "yarn workspaces run test",
-    "lint": "yarn workspaces run lint"
+    "test": "yarn workspaces run test"
   }
 }

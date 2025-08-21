@@ -1,27 +1,29 @@
 {
-    "name": "@salesforce/mcp-provider-api",
-    "version": "0.0.1-alpha.1",
-    "type": "module",
-    "main": "dist/index.js",
-    "dependencies": {
-        "@modelcontextprotocol/sdk": "^1.17.3",
-        "zod": "^3.23.8",
-        "semver": "^7.7.2"
-    },
-    "devDependencies": {
-        "@types/node": "^22.16.5"
-    },
-    "files": [
-        "dist",
-        "LICENSE.txt",
-        "package.json"
-    ],
-    "scripts": {
-        "build": "tsc --build tsconfig.json --verbose",
-        "clean": "tsc --build tsconfig.json --clean",
-        "lint": "echo 'no lint script available yet'",
-        "postclean": "rimraf dist && rimraf ./*.tgz",
-        "package": "yarn pack",
-        "test": "echo 'No unit tests are needed for this api module'"
-    }
+  "name": "@salesforce/mcp-provider-api",
+  "version": "0.0.1-alpha.1",
+  "type": "module",
+  "main": "lib/src/index.js",
+  "types": "lib/src/index.d.ts",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.3",
+    "zod": "^3.23.8",
+    "semver": "^7.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.16.5"
+  },
+  "files": [
+    "lib",
+    "LICENSE.txt",
+    "package.json"
+  ],
+  "scripts": {
+    "build": "tsc --build tsconfig.json --verbose",
+    "clean": "tsc --build tsconfig.json --clean",
+    "format": "prettier --write .",
+    "lint": "echo 'no lint script available yet'",
+    "postclean": "rimraf dist && rimraf ./*.tgz",
+    "package": "yarn pack",
+    "test": "echo 'No unit tests are needed for this api module'"
+  }
 }

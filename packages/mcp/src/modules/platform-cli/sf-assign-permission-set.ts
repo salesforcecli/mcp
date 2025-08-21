@@ -82,8 +82,8 @@ export class AssignPermissionSetMcpTool extends McpTool<InputArgsShape, OutputAr
       inputSchema: assignPermissionSetParamsSchema.shape,
       outputSchema: undefined,
       annotations: {
-        openWorldHint: true
-      }
+        openWorldHint: true,
+      },
     };
   }
 
@@ -102,7 +102,9 @@ export class AssignPermissionSetMcpTool extends McpTool<InputArgsShape, OutputAr
       // If a user sets an alias after server start up, it was not getting picked up
       await StateAggregator.clearInstanceAsync();
       // Must NOT be nullish coalescing (??) In case the LLM uses and empty string
-      const assignTo = (await StateAggregator.getInstance()).aliases.resolveUsername(input.onBehalfOf || input.usernameOrAlias);
+      const assignTo = (await StateAggregator.getInstance()).aliases.resolveUsername(
+        input.onBehalfOf || input.usernameOrAlias
+      );
 
       if (!assignTo.includes('@')) {
         return textResponse('Unable to resolve the username for alias. Make sure it is correct', true);
