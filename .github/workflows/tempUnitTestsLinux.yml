@@ -1,0 +1,72 @@
+# THIS FILE IS A MODIFIED VERSION OF https://github.com/salesforcecli/github-workflows/blob/main/.github/workflows/unitTestsLinux.yml
+# THIS SHOULD BE TEMPORARILY USED JUST UNTIL WE CAN GET THINGS WORKING AGAIN
+
+on:
+  workflow_call:
+    inputs:
+      skipTsDepCheck:
+        type: boolean
+        required: false
+        default: false
+        description: skip `prevent-typescript-dependency`. Use it for devDeps that ship TS
+
+jobs:
+  determine-node-versions:
+    outputs:
+      nodeVersions: ${{ steps.determine-node-versions.outputs.nodeVersions }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: salesforcecli/github-workflows/.github/actions/determineNodeVersions@main
+        id: determine-node-versions
+        with:
+          nodeVersionOverride: ${{ vars.NODE_VERSION_OVERRIDE }} # default is 'lts/*'
+          nodeDisableVersions: ${{ vars.NODE_DISABLE_VERSIONS }}
+
+  prevent-typescript-dependency:
+    if: ${{ inputs.skipTsDepCheck == false }}
+    uses: salesforcecli/github-workflows/.github/workflows/preventTypescriptDep.yml@main
+
+  linux-unit-tests:
+    needs: determine-node-versions
+    strategy:
+      matrix:
+        node_version: ${{ fromJSON(needs.determine-node-versions.outputs.nodeVersions) }}
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node_version }}
+          cache: yarn
+
+#      - uses: google/wireit@setup-github-actions-caching/v2
+#        continue-on-error: true
+
+      - name: Cache node modules
+        id: cache-nodemodules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: salesforcecli/github-workflows/.github/actions/yarnInstallWithRetries@main
+        if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
+
+#      # This is a temporary workaround to ensure wireit is >= 0.14.12
+#      # Once all plugins/libraries that use this workflow are updated, this can be removed
+#      # See: https://github.com/google/wireit/issues/1297#issuecomment-2794737569
+#      - name: Install wireit
+#        run: yarn add wireit@^0.14.12
+
+      - run: yarn build
+
+      - name: yarn test
+        uses: salesforcecli/github-workflows/.github/actions/retry@main
+        with:
+          command: yarn test
+        env:
+          SF_DISABLE_TELEMETRY: true

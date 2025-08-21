@@ -1,19 +1,19 @@
 # -- CLEAN
+tmp/
 
 # use yarn by default, so ignore npm
 package-lock.json
+npm-shrinkwrap.json
 
-# never check in npm config
+# never checkin npm config
 .npmrc
 
 # debug logs
-npm-error.log
-yarn-error.log
-lerna-debug.log
+*-error.log
+*-debug.log
 
 # compile source
 lib
-
 dist
 
 # test artifacts
@@ -22,31 +22,24 @@ dist
 *unitcoverage
 .nyc_output
 coverage
+test_session*
 
 # generated docs
 docs
 
-
-npm-shrinkwrap.json
+# oclif files
 oclif.manifest.json
 oclif.lock
 
 # -- CLEAN ALL
 node_modules
-
-
-.eslintcache
 .wireit
+.eslintcache
 *.tsbuildinfo
 
 # --
 # put files here you don't want cleaned with sf-clean
 
-.sfdx
-
 # os specific files
 .DS_Store
 .idea
-/Library
-
-.cursor
