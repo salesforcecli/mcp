@@ -8,4 +8,4 @@ export { McpTool, type McpToolConfig } from './tools.js';
 
 export { Toolset, TOOLSETS } from './toolset.js';
 
-export { type Services, type TelemetryService, type TelemetryEvent } from './services.js';
+export { type Services, type TelemetryService, type TelemetryEvent, type ApprovedServerMethods } from './services.js';

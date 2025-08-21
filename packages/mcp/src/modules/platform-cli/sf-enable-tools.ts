@@ -15,11 +15,10 @@
  */
 
 import { z } from 'zod';
-import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { SfMcpServer } from '../sf-mcp-server.js';
-import { textResponse } from '../shared/utils.js';
-import { enableTools as utilEnableTools } from './utils/tools.js';
+import { textResponse } from '../../shared/utils.js';
+import { enableTools as utilEnableTools } from '../../shared/tools.js';
 
 const enableToolsParamsSchema = z.object({
   tools: z.array(z.string()).describe('The names of the tools to enable'),
@@ -30,15 +29,12 @@ type InputArgsShapeType = typeof enableToolsParamsSchema.shape;
 type OutputArgsShapeType = z.ZodRawShape;
 
 export class EnableToolsMcpTool extends McpTool<InputArgsShapeType, OutputArgsShapeType> {
-  private readonly server: SfMcpServer;
-
-  public constructor(server: SfMcpServer) {
+  public constructor(private readonly services: Services) {
     super();
-    this.server = server;
   }
 
   public getToolsets(): Toolset[] {
-    return [Toolset.CORE];
+    return [Toolset.DYNAMIC];
   }
 
   public getName(): string {
@@ -70,7 +66,7 @@ Once you have enabled the tool, you MUST invoke that tool to accomplish the user
 
     const results = await utilEnableTools(input.tools);
 
-    this.server.sendToolListChanged();
+    this.services.getApprovedServerMethods().sendToolListChanged();
 
     const hasError = results.some((result) => !result.success);
     const resultMessages = results.map((result) => result.message).join('\n');

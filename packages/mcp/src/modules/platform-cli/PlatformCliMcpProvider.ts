@@ -29,21 +29,25 @@ import { RetrieveMetadataMcpTool } from './sf-retrieve-metadata.js';
 import { SuggestCliCommandMcpTool } from './sf-suggest-cli-command.js';
 import { TestAgentsMcpTool } from './sf-test-agents.js';
 import { TestApexMcpTool } from './sf-test-apex.js';
+import { EnableToolsMcpTool } from './sf-enable-tools.js';
+import { ListToolsMcpTool } from './sf-list-tools.js';
 
 export class PlatformCliMcpProvider extends McpProvider {
   public getName(): string {
     return 'PlatformCliMcpProvider';
   }
 
-  public provideTools(_services: Services): Promise<McpTool[]> {
+  public provideTools(services: Services): Promise<McpTool[]> {
     return Promise.resolve([
       new AssignPermissionSetMcpTool(),
       new CreateOrgSnapshotMcpTool(),
       new CreateScratchOrgMcpTool(),
       new DeleteOrgMcpTool(),
       new DeployMetadataMcpTool(),
+      new EnableToolsMcpTool(services),
       new GetUsernameMcpTool(),
       new ListAllOrgsMcpTool(),
+      new ListToolsMcpTool(),
       new OrgOpenMcpTool(),
       new QueryOrgMcpTool(),
       new ResumeMcpTool(),

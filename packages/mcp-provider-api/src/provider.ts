@@ -6,7 +6,7 @@ import { McpTool } from './tools.js';
 import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
-const packageJson: { version: string } = require('../package.json');
+const packageJson: { version: string } = require('../../package.json');
 export const MCP_PROVIDER_API_VERSION: SemVer = new SemVer(packageJson.version);
 
 export abstract class McpProvider implements Versioned {

@@ -85,12 +85,16 @@
   "wireit": {
     "build": {
       "dependencies": [
+        "../mcp-provider-api:build",
         "compile",
         "lint"
       ]
     },
     "compile": {
       "command": "tsc -p . --pretty --incremental",
+      "dependencies": [
+        "../mcp-provider-api:build"
+      ],
       "files": [
         "src/**/*.ts",
         "**/tsconfig.json",

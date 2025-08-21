@@ -19,43 +19,29 @@ import {
   MCP_PROVIDER_API_VERSION,
   McpProvider,
   McpTool,
-  Services,
-  TelemetryEvent,
-  TelemetryService,
   Toolset,
   TOOLSETS,
   Versioned,
 } from '@salesforce/mcp-provider-api';
 import { SfMcpServer } from './sf-mcp-server.js';
-import { createDynamicServerTools } from './dynamic-tools/index.js';
 import { MCP_PROVIDER_REGISTRY } from './registry.js';
-import { addTool } from './dynamic-tools/utils/tools.js';
+import { addTool } from './shared/tools.js';
+import { Services } from './services.js';
 
 export async function registerToolsets(
   toolsets: Array<Toolset | 'all'>,
   useDynamicTools: boolean,
-  server: SfMcpServer
+  server: SfMcpServer,
+  services: Services
 ): Promise<void> {
-  if (useDynamicTools) {
-    const dynamicTools: McpTool[] = createDynamicServerTools(server);
-    ux.stderr('Registering dynamic tools');
-    await registerTools(dynamicTools, server, useDynamicTools);
-  } else {
-    ux.stderr('Skipping registration of dynamic tools');
-  }
-
-  // If dynamic tools are being used -> only enable core
-  // If 'all' is specified, enable all non-experimental toolsets
+  // If dynamic tools are being used -> only enable core and dynamic
+  // If 'all' is specified, enable all non-experimental and non-dynamic toolsets
   // Otherwise, enable the specified toolsets and the core toolset
   const toolsetsToEnable: Set<Toolset> = useDynamicTools
-    ? new Set([Toolset.CORE])
+    ? new Set([Toolset.CORE, Toolset.DYNAMIC])
     : toolsets.includes('all')
-    ? new Set(TOOLSETS.filter((ts) => ts !== Toolset.EXPERIMENTAL))
+    ? new Set(TOOLSETS.filter((ts) => ts !== Toolset.EXPERIMENTAL && ts !== Toolset.DYNAMIC))
     : new Set([Toolset.CORE, ...(toolsets as Toolset[])]);
-
-  // TODO: This is temporary... we should implement this soon and ideally
-  // it should be passed in.
-  const services: Services = new NoOpServices();
 
   const newToolRegistry: Record<Toolset, McpTool[]> = await createToolRegistryFromProviders(
     MCP_PROVIDER_REGISTRY,
@@ -77,7 +63,7 @@ async function registerTools(tools: McpTool[], server: SfMcpServer, useDynamicTo
   for (const tool of tools) {
     const registeredTool = server.registerTool(tool.getName(), tool.getConfig(), (...args) => tool.exec(...args));
     const toolsets = tool.getToolsets();
-    if (useDynamicTools && !toolsets.includes(Toolset.CORE)) {
+    if (useDynamicTools && !toolsets.includes(Toolset.CORE) && !toolsets.includes(Toolset.DYNAMIC)) {
       registeredTool.disable();
     }
     // eslint-disable-next-line no-await-in-loop
@@ -110,18 +96,6 @@ async function createToolRegistryFromProviders(
     }
   }
   return registry;
-}
-
-class NoOpServices implements Services {
-  public getTelemetryService(): TelemetryService {
-    return new NoOpTelemetryService();
-  }
-}
-
-class NoOpTelemetryService implements TelemetryService {
-  public sendTelemetryEvent(_eventName: string, _event: TelemetryEvent): void {
-    // no-op
-  }
 }
 
 /**
