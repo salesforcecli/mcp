@@ -14,15 +14,14 @@ export abstract class McpProvider implements Versioned {
      */
     abstract getName(): string;
 
-
     /**
      * Provides prompts to be registered with the MCP Server.
      * 
      * NOTE - CURRENTLY THE MAIN MCP SERVER DOES NOT CONSUME THIS YET.
      * TODO: Update this documentation when the main server registered provided McpPrompt instances.
      */
-    providePrompts(services: Services): McpPrompt[] { // Question: Should we return Promise<McpPrompt[]> instead to allow providers to perform async functionality?
-        return [];
+    providePrompts(services: Services): Promise<McpPrompt[]> {
+        return Promise.resolve([]);
     }
 
     /**
@@ -31,8 +30,8 @@ export abstract class McpProvider implements Versioned {
      * NOTE - CURRENTLY THE MAIN MCP SERVER DOES NOT CONSUME THIS YET.
      * TODO: Update this documentation when the main server registered provided McpResource/McpResourceTemplate instances.
      */
-    provideResources(services: Services): (McpResource | McpResourceTemplate)[] { // Question: Should we return Promise<(McpResource | McpResourceTemplate)[]> instead to allow providers to perform async functionality?
-        return [];
+    provideResources(services: Services): Promise<(McpResource | McpResourceTemplate)[]> {
+        return Promise.resolve([]);
     }
 
     /**
@@ -40,8 +39,8 @@ export abstract class McpProvider implements Versioned {
      * @param services Provides a list of services that are available to tool authors
      * @returns An array of McpTool instances
      */
-    provideTools(services: Services): McpTool[] { // Question: Should we return Promise<McpTool[]> instead to allow providers to perform async functionality?
-        return [];
+    provideTools(services: Services): Promise<McpTool[]> {
+        return Promise.resolve([]);
     }
 
     /**

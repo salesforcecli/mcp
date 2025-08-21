@@ -20,7 +20,10 @@ import { SfMcpServer } from './sf-mcp-server.js';
 import { createDynamicServerTools } from './dynamic-tools/index.js';
 import { MCP_PROVIDER_REGISTRY } from './registry.js';
 
-export function registerToolsets(toolsets: Array<Toolset | 'all'>, useDynamicTools: boolean, server: SfMcpServer): void {
+export async function registerToolsets(
+  toolsets: Array<Toolset | 'all'>,
+  useDynamicTools: boolean, server: SfMcpServer
+): Promise<void> {
   if (useDynamicTools) {
     const dynamicTools: McpTool[] = createDynamicServerTools(server);
     ux.stderr('Registering dynamic tools');
@@ -37,7 +40,7 @@ export function registerToolsets(toolsets: Array<Toolset | 'all'>, useDynamicToo
   // it should be passed in.
   const services: Services = new NoOpServices();
 
-  const newToolRegistry: Record<Toolset, McpTool[]> = createToolRegistryFromProviders(MCP_PROVIDER_REGISTRY, services);
+  const newToolRegistry: Record<Toolset, McpTool[]> = await createToolRegistryFromProviders(MCP_PROVIDER_REGISTRY, services);
 
   for (const toolset of TOOLSETS) {
     if (toolsetsToEnable.has(toolset)) {
@@ -59,18 +62,24 @@ function registerTools(tools: McpTool[], server: SfMcpServer): void {
   }
 }
 
-function createToolRegistryFromProviders(providers: McpProvider[], services: Services): Record<Toolset, McpTool[]> {
+async function createToolRegistryFromProviders(providers: McpProvider[], services: Services): Promise<Record<Toolset, McpTool[]>> {
   // Initialize an empty registry
   const registry: Record<Toolset, McpTool[]> = Object.fromEntries(Object.values(Toolset)
     .map(key => [key, [] as McpTool[]])) as Record<Toolset, McpTool[]>;
 
-  // Fill in the registry
+  // Avoid calling await in a loop by first getting all the promises
+  const toolPromises: Array<Promise<McpTool[]>> = [];
   for (const provider of providers) {
     validateMcpProviderVersion(provider);
-    for (const tool of provider.provideTools(services)) {
-      for (const toolset of tool.getToolsets()) {
-        registry[toolset].push(tool);
-      }
+    const toolsPromise: Promise<McpTool[]> = provider.provideTools(services);
+    toolPromises.push(toolsPromise);
+  }
+
+  // Get all the tools from the promises and then add them to the registry
+  const tools: McpTool[] = (await Promise.all(toolPromises)).flat();
+  for (const tool of tools) {
+    for (const toolset of tool.getToolsets()) {
+      registry[toolset].push(tool);
     }
   }
   return registry;

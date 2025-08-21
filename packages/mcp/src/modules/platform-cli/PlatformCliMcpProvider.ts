@@ -35,8 +35,8 @@ export class PlatformCliMcpProvider extends McpProvider {
         return 'PlatformCliMcpProvider';
     }
 
-    public provideTools(_services: Services): McpTool[] {
-        return [
+    public provideTools(_services: Services): Promise<McpTool[]> {
+        return Promise.resolve([
             new AssignPermissionSetMcpTool(),
             new CreateOrgSnapshotMcpTool(),
             new CreateScratchOrgMcpTool(),
@@ -51,6 +51,6 @@ export class PlatformCliMcpProvider extends McpProvider {
             new SuggestCliCommandMcpTool(),
             new TestAgentsMcpTool(),
             new TestApexMcpTool()
-        ];
+        ]);
     }
 }

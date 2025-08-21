@@ -158,7 +158,7 @@ You can also use special values to control access to orgs:
 
     await maybeBuildIndex(this.config.dataDir);
 
-    registerToolsets(flags.toolsets ?? ['all'], flags['dynamic-tools'] ?? false, server);
+    await registerToolsets(flags.toolsets ?? ['all'], flags['dynamic-tools'] ?? false, server);
 
     const transport = new StdioServerTransport();
     await server.connect(transport);
