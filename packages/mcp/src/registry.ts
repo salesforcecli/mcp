@@ -14,107 +14,13 @@
  * limitations under the License.
  */
 
-import { ux } from '@oclif/core';
-import { MCP_PROVIDER_API_VERSION, McpProvider, McpTool, McpToolConfig, Services, TelemetryEvent, TelemetryService, Toolset } from '@salesforce/mcp-provider-api';
-import * as platformCli from './modules/platform-cli/index.js';
-import { SfMcpServer } from './sf-mcp-server.js';
-import { createDynamicServerTools } from './dynamic-tools/index.js';
+import { McpProvider } from '@salesforce/mcp-provider-api';
+import { PlatformCliMcpProvider } from './modules/platform-cli/index.js';
 
 
 /** -------- ADD McpProvider INSTANCES HERE ------------------------------------------------------------------------- */
 
-const MCP_PROVIDER_REGISTRY: McpProvider[] = [
-  new platformCli.PlatformCliMcpProvider(),
+export const MCP_PROVIDER_REGISTRY: McpProvider[] = [
+  new PlatformCliMcpProvider(),
   // Add new instances here
 ]
-
-
-
-
-
-
-
-/** ----------------- ONLY THE CLI TEAM SHOULD MODIFY THE CODE BELOW THIS LINE -------------------------------------- */
-
-export const TOOLSETS: Toolset[] = Object.values(Toolset);
-
-
-export function registerToolsets(toolsets: Array<Toolset | 'all'>, useDynamicTools: boolean, server: SfMcpServer): void {
-  if (useDynamicTools) {
-    const dynamicTools: McpTool[] = createDynamicServerTools(server);
-    ux.stderr('Registering dynamic tools');
-    registerTools(dynamicTools, server);
-  } else {
-    ux.stderr('Skipping registration of dynamic tools');
-  }
-  
-  const toolsetsToEnable: Set<Toolset> = toolsets.includes('all') ? 
-    new Set(TOOLSETS.filter(ts => ts !== Toolset.EXPERIMENTAL)) :
-    new Set([Toolset.CORE, ...(toolsets as Toolset[])]);
-
-  // TODO: This is temporary... we should implement this soon and ideally
-  // it should be passed in.
-  const services: Services = new NoOpServices();
-
-  const newToolRegistry: Record<Toolset, McpTool[]> = createToolRegistryFromProviders(MCP_PROVIDER_REGISTRY, services);
-
-  for (const toolset of TOOLSETS) {
-    if (toolsetsToEnable.has(toolset)) {
-      ux.stderr(`Registering ${toolset} tools`);
-      registerTools(newToolRegistry[toolset], server);
-    } else {
-      ux.stderr(`Skipping registration of ${toolset} tools`);
-    }
-  }
-}
-
-function registerTools(tools: McpTool[], server: SfMcpServer): void {
-  for (const tool of tools) {
-    // TODO: registerTool isn't overridden by the SfMcpServer yet, so we reroute everything through the server.tool for now.
-    // In the future this could look like: server.registerTool(tool.getName(), tool.getConfig(), (...args) => tool.exec(...args));
-    const toolConfig: McpToolConfig = tool.getConfig();
-    server.tool(tool.getName(), toolConfig.description ?? '', toolConfig.inputSchema ?? {},
-      {title: toolConfig.title, ...toolConfig.annotations}, (...args) => tool.exec(...args));
-  }
-}
-
-function createToolRegistryFromProviders(providers: McpProvider[], services: Services): Record<Toolset, McpTool[]> {
-  // Initialize an empty registry
-  const registry: Record<Toolset, McpTool[]> = Object.fromEntries(Object.values(Toolset)
-    .map(key => [key, [] as McpTool[]])) as Record<Toolset, McpTool[]>;
-
-  // Fill in the registry
-  for (const provider of providers) {
-    validateVersion(provider.getVersion(), `McpProvider:${provider.getName()}`);
-
-    for (const tool of provider.provideTools(services)) {
-      validateVersion(tool.getVersion(), `McpTool:${tool.getName()}`);
-
-      for (const toolset of tool.getToolsets()) {
-        registry[toolset].push(tool);
-      }
-    }
-  }
-  return registry;
-}
-
-class NoOpServices implements Services {
-  public getTelemetryService(): TelemetryService {
-    return new NoOpTelemetryService();
-  }
-}
-
-class NoOpTelemetryService implements TelemetryService {
-  public sendTelemetryEvent(_eventName: string, _event: TelemetryEvent): void {
-    // no-op
-  }
-}
-
-/**
- * Validation function to confirm that providers, tools, etc are at the expected version.
- */
-function validateVersion(version: string, entityName: string): void {
-  if (version !== MCP_PROVIDER_API_VERSION) {
-    throw new Error(`The version of '${entityName}' must be '${MCP_PROVIDER_API_VERSION}' but is '${version}'.`);
-  }
-}

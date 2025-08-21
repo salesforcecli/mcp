@@ -1,10 +1,20 @@
+import { SemVer } from 'semver';
 import { McpPrompt } from "./prompts.js";
 import { McpResource, McpResourceTemplate } from "./resources.js";
 import { Services } from "./services.js";
 import { McpTool } from "./tools.js";
-import { MCP_PROVIDER_API_VERSION } from "./constants.js";
+import pkg from '../package.json' with { type: 'json' };
 
-export abstract class McpProvider {
+const packageJson: {version: string} = pkg as {version: string};
+export const MCP_PROVIDER_API_VERSION: SemVer =  new SemVer(packageJson.version);
+
+export interface Versioned {
+    getName(): string;
+
+    getVersion(): SemVer;
+}
+
+export abstract class McpProvider implements Versioned {
     /**
      * Returns the name given to this provider instance.
      */
@@ -26,7 +36,7 @@ export abstract class McpProvider {
      * This method allows the server to check that this instance is compatible and is able to be registered.
      * Subclasses should not override this method.
      */
-    public getVersion(): string {
+    public getVersion(): SemVer {
         return MCP_PROVIDER_API_VERSION;
     }
 }

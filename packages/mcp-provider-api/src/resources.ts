@@ -2,7 +2,6 @@ import { ResourceMetadata, ResourceTemplate } from "@modelcontextprotocol/sdk/se
 import { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.js";
 import { Variables } from "@modelcontextprotocol/sdk/shared/uriTemplate.js";
 import { ReadResourceResult, ServerNotification, ServerRequest } from "@modelcontextprotocol/sdk/types.js";
-import { MCP_PROVIDER_API_VERSION } from "./constants.js";
 
 export abstract class McpResource {
     kind: 'McpResource' = 'McpResource'
@@ -16,14 +15,6 @@ export abstract class McpResource {
     abstract read(
         uri: URL, extra: RequestHandlerExtra<ServerRequest, ServerNotification>
     ): ReadResourceResult | Promise<ReadResourceResult>;
-
-    /**
-     * This method allows the server to check that this instance is compatible and is able to be registered.
-     * Subclasses should not override this method.
-     */
-    public getVersion(): string {
-        return MCP_PROVIDER_API_VERSION;
-    }
 }
 
 export abstract class McpResourceTemplate {
@@ -40,12 +31,4 @@ export abstract class McpResourceTemplate {
         variables: Variables,
         extra: RequestHandlerExtra<ServerRequest, ServerNotification>
     ): ReadResourceResult | Promise<ReadResourceResult>;
-
-    /**
-     * This method allows the server to check that this instance is compatible and is able to be registered.
-     * Subclasses should not override this method.
-     */
-    public getVersion(): string {
-        return '1';
-    }
 }

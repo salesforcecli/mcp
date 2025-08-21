@@ -5,7 +5,8 @@
     "main": "dist/index.js",
     "dependencies": {
         "@modelcontextprotocol/sdk": "^1.17.3",
-        "zod": "^3.23.8"
+        "zod": "^3.23.8",
+        "semver": "^7.7.2"
     },
     "devDependencies": {
         "@types/node": "^22.16.5"

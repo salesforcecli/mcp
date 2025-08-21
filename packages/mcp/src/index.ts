@@ -16,13 +16,14 @@
 
 /* eslint-disable no-console */
 
+import { TOOLSETS } from '@salesforce/mcp-provider-api';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { Command, Flags, ux } from '@oclif/core';
 import Cache from './shared/cache.js';
 import { Telemetry } from './telemetry.js';
 import { SfMcpServer } from './sf-mcp-server.js';
 import { maybeBuildIndex } from './assets.js';
-import { TOOLSETS, registerToolsets } from './registry.js';
+import { registerToolsets } from './registry-utils.js';
 
 /**
  * Sanitizes an array of org usernames by replacing specific orgs with a placeholder.
