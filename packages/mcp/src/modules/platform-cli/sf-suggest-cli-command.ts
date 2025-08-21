@@ -15,21 +15,36 @@
  */
 
 import { z } from 'zod';
-import { SfMcpServer } from '../../sf-mcp-server.js';
+import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { getAssets } from '../../assets.js';
 import { textResponse } from '../../shared/utils.js';
+
+/**
+ * Suggest a Salesforce CLI (sf) command based on user input.
+ */
 
 const suggestCliCommandParamsSchema = z.object({
   query: z.string().describe('The natural language query to suggest an `sf` command'),
 });
 
-/**
- * Suggest a Salesforce CLI (sf) command based on user input.
- */
-export const suggestCliCommand = (server: SfMcpServer): void => {
-  server.tool(
-    'sf-suggest-cli-command',
-    `Suggests an \`sf\` CLI command based on a natural language query. It finds relevant commands from a local index and uses an LLM to construct the final, precise command to fulfill the user's request.
+type InputArgs = z.infer<typeof suggestCliCommandParamsSchema>;
+type InputArgsShape = typeof suggestCliCommandParamsSchema.shape;
+type OutputArgsShape = z.ZodRawShape;
+
+export class SuggestCliCommandMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public getToolsets(): Toolset[] {
+    return [Toolset.CORE];
+  }
+
+  public getName(): string {
+    return 'sf-suggest-cli-command';
+  }
+
+  public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
+    return {
+      title: 'Suggest CLI Command',
+      description: `Suggests an \`sf\` CLI command based on a natural language query. It finds relevant commands from a local index and uses an LLM to construct the final, precise command to fulfill the user's request.
 
 AGENT INSTRUCTIONS:
 Use this tool whenever a user:
@@ -41,47 +56,51 @@ NEVER use this tool for enabling Salesforce MCP tools (use sf-enable-tools inste
 NEVER use this tool for listing available Salesforce MCP tools (use sf-list-tools instead).
 NEVER use this tool for understanding the Salesforce MCP server's capabilities.
 NEVER use this tool for understanding the input schema of a Salesforce MCP tool.`,
-    suggestCliCommandParamsSchema.shape,
-    {
-      readOnlyHint: true,
-    },
-    async ({ query }) => {
-      const assets = await getAssets();
+      inputSchema: suggestCliCommandParamsSchema.shape,
+      outputSchema: undefined,
+      annotations: {
+        readOnlyHint: true
+      }
+    };
+  }
 
-      // Embed the user query
-      const queryEmbedding = await assets.embedder(query, {
-        pooling: 'mean',
-        normalize: true,
-      });
+  public async exec(input: InputArgs): Promise<CallToolResult> {
+    const assets = await getAssets();
 
-      // Perform Semantic Search (FAISS)
-      const searchResults = assets.faissIndex.search(
-        // Convert the embedding tensor data to a flat array of numbers
-        Array.from(queryEmbedding.data as Float32Array),
-        5
-      );
+    // Embed the user query
+    const queryEmbedding = await assets.embedder(input.query, {
+      pooling: 'mean',
+      normalize: true,
+    });
 
-      const topCandidateIds = searchResults.labels.slice(0, 5);
-      const contextCommands = topCandidateIds.map((id) => {
-        const command = assets.commands.find((c) => c.id === id)!;
-        // Remove the embedding text to avoid sending it to the LLM
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { embeddingText, ...commandWithoutEmbeddingText } = command;
-        return commandWithoutEmbeddingText;
-      });
+    // Perform Semantic Search (FAISS)
+    const searchResults = assets.faissIndex.search(
+      // Convert the embedding tensor data to a flat array of numbers
+      Array.from(queryEmbedding.data as Float32Array),
+      5
+    );
 
-      contextCommands.forEach((command, index) => {
-        // eslint-disable-next-line no-console
-        console.error(`Command: ${command.command}, Score: ${searchResults.distances[index]}`);
-      });
+    const topCandidateIds = searchResults.labels.slice(0, 5);
+    const contextCommands = topCandidateIds.map((id) => {
+      const command = assets.commands.find((c) => c.id === id)!;
+      // Remove the embedding text to avoid sending it to the LLM
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { embeddingText, ...commandWithoutEmbeddingText } = command;
+      return commandWithoutEmbeddingText;
+    });
 
-      const prompt = `System: You are a precise expert on the Salesforce CLI (sf). Your sole purpose is to construct a single, valid sf command based on the user's request and the Command Reference provided.
+    contextCommands.forEach((command, index) => {
+      // eslint-disable-next-line no-console
+      console.error(`Command: ${command.command}, Score: ${searchResults.distances[index]}`);
+    });
+
+    const prompt = `System: You are a precise expert on the Salesforce CLI (sf). Your sole purpose is to construct a single, valid sf command based on the user's request and the Command Reference provided.
 - Base your answer STRICTLY on the user's request and the Command Reference.
 - If there is no command that matches the user's request, tell the user that you cannot find a command.
 - Do not use any flags or commands not listed in the reference.
 
 User Request:
-"${query}"
+"${input.query}"
 
 Command Reference:
 ${JSON.stringify(contextCommands, null, 2)}
@@ -100,7 +119,6 @@ Notes about Flag Properties:
 Synthesize the single "sf" command that best fulfills the user's request.
 `;
 
-      return textResponse(prompt);
-    }
-  );
-};
+    return textResponse(prompt);
+  }
+}

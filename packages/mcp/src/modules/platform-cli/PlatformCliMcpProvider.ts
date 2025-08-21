@@ -26,6 +26,8 @@ import { OrgOpenMcpTool } from './sf-org-open.js';
 import { QueryOrgMcpTool } from './sf-query-org.js';
 import { ResumeMcpTool } from './sf-resume.js';
 import { RetrieveMetadataMcpTool } from './sf-retrieve-metadata.js';
+import { SuggestCliCommandMcpTool } from './sf-suggest-cli-command.js';
+import { TestAgentsMcpTool } from './sf-test-agents.js';
 
 export class PlatformCliMcpProvider extends McpProvider {
     public getName(): string {
@@ -44,7 +46,9 @@ export class PlatformCliMcpProvider extends McpProvider {
             new OrgOpenMcpTool(),
             new QueryOrgMcpTool(),
             new ResumeMcpTool(),
-            new RetrieveMetadataMcpTool()
+            new RetrieveMetadataMcpTool(),
+            new SuggestCliCommandMcpTool(),
+            new TestAgentsMcpTool()
         ];
     }
 }

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-export { suggestCliCommand } from './sf-suggest-cli-command.js';
-export { testAgent } from './sf-test-agents.js';
 export { testApex } from './sf-test-apex.js';
 
 export { PlatformCliMcpProvider } from './PlatformCliMcpProvider.js';
