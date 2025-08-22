@@ -15,9 +15,8 @@
  */
 
 import { z } from 'zod';
-import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { getConnection } from '../shared/auth.js';
 import { textResponse } from '../shared/utils.js';
 import { directoryParam, usernameOrAliasParam, useToolingApiParam } from '../shared/params.js';
 
@@ -46,6 +45,10 @@ type InputArgsShape = typeof queryOrgParamsSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class QueryOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public constructor(private readonly services: Services) {
+    super();
+  }
+
   public getToolsets(): Toolset[] {
     return [Toolset.DATA];
   }
@@ -75,7 +78,7 @@ export class QueryOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
           true
         );
       process.chdir(input.directory);
-      const connection = await getConnection(input.usernameOrAlias);
+      const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
       const result = input.useToolingApi
         ? await connection.tooling.query(input.query)
         : await connection.query(input.query);

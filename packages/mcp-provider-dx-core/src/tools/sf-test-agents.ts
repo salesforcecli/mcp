@@ -17,11 +17,10 @@
 import { z } from 'zod';
 import { AgentTester } from '@salesforce/agents';
 import { Duration } from '@salesforce/kit';
-import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
 import { textResponse } from '../shared/utils.js';
-import { getConnection } from '../shared/auth.js';
 
 /*
  * Run Agent tests in a Salesforce org.
@@ -55,6 +54,10 @@ type InputArgsShape = typeof runAgentTestsParam.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class TestAgentsMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public constructor(private readonly services: Services) {
+    super();
+  }
+
   public getToolsets(): Toolset[] {
     return [Toolset.TESTING];
   }
@@ -95,7 +98,7 @@ start myAgentTest and don't wait for results`,
 
     // needed for org allowlist to work
     process.chdir(input.directory);
-    const connection = await getConnection(input.usernameOrAlias);
+    const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
 
     try {
       const agentTester = new AgentTester(connection);

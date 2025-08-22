@@ -15,10 +15,10 @@
  */
 
 import { z } from 'zod';
-import { McpTool, McpToolConfig, Services, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { textResponse } from '../shared/utils.js';
-import { enableTools as utilEnableTools } from '../shared/tools.js';
+import { enableTools as utilEnableTools } from '../utils/tools.js';
+import { SfMcpServer } from '../sf-mcp-server.js';
 
 const enableToolsParamsSchema = z.object({
   tools: z.array(z.string()).describe('The names of the tools to enable'),
@@ -29,12 +29,12 @@ type InputArgsShapeType = typeof enableToolsParamsSchema.shape;
 type OutputArgsShapeType = z.ZodRawShape;
 
 export class EnableToolsMcpTool extends McpTool<InputArgsShapeType, OutputArgsShapeType> {
-  public constructor(private readonly services: Services) {
+  public constructor(private readonly server: SfMcpServer) {
     super();
   }
 
   public getToolsets(): Toolset[] {
-    return [Toolset.DYNAMIC];
+    return [Toolset.CORE];
   }
 
   public getName(): string {
@@ -61,16 +61,30 @@ Once you have enabled the tool, you MUST invoke that tool to accomplish the user
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
     if (input.tools.length === 0) {
-      return textResponse('No tools specified to enable.', true);
+      return {
+        isError: true,
+        content: [
+          {
+            type: 'text',
+            text: 'No tools specified to enable.',
+          },
+        ],
+      };
     }
 
     const results = await utilEnableTools(input.tools);
 
-    this.services.getApprovedServerMethods().sendToolListChanged();
+    this.server.sendToolListChanged();
 
-    const hasError = results.some((result) => !result.success);
-    const resultMessages = results.map((result) => result.message).join('\n');
-
-    return textResponse(resultMessages, hasError);
+    const isError = results.some((result) => !result.success);
+    return {
+      isError,
+      content: [
+        {
+          type: 'text',
+          text: results.map((result) => result.message).join('\n'),
+        },
+      ],
+    };
   }
 }

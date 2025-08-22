@@ -18,11 +18,10 @@ import { z } from 'zod';
 import { TestLevel, TestResult, TestRunIdResult, TestService } from '@salesforce/apex-node';
 import { ApexTestResultOutcome } from '@salesforce/apex-node/lib/src/tests/types.js';
 import { Duration, ensureArray } from '@salesforce/kit';
-import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
 import { textResponse } from '../shared/utils.js';
-import { getConnection } from '../shared/auth.js';
 
 /*
  * Run Apex tests in a Salesforce org.
@@ -89,6 +88,10 @@ type InputArgsShape = typeof runApexTestsParam.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class TestApexMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public constructor(private readonly services: Services) {
+    super();
+  }
+
   public getToolsets(): Toolset[] {
     return [Toolset.TESTING];
   }
@@ -143,7 +146,7 @@ What are the results for 707XXXXXXXXXXXX`,
     // needed for org allowlist to work
     process.chdir(input.directory);
 
-    const connection = await getConnection(input.usernameOrAlias);
+    const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
     try {
       const testService = new TestService(connection);
       let result: TestResult | TestRunIdResult;

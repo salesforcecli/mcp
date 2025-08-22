@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { McpProvider } from '@salesforce/mcp-provider-api';
-import { DxCoreMcpProvider } from '@salesforce/mcp-provider-dx-core';
+import { McpTool } from '@salesforce/mcp-provider-api';
+import { SfMcpServer } from './sf-mcp-server.js';
+import { EnableToolsMcpTool } from './tools/sf-enable-tools.js';
+import { ListToolsMcpTool } from './tools/sf-list-tools.js';
 
-/** -------- ADD McpProvider INSTANCES HERE ------------------------------------------------------------------------- */
-
-export const MCP_PROVIDER_REGISTRY: McpProvider[] = [
-  new DxCoreMcpProvider(),
-  // Add new instances here
-];
+export function createDynamicServerTools(server: SfMcpServer): McpTool[] {
+  return [new EnableToolsMcpTool(server), new ListToolsMcpTool()];
+}

@@ -1,7 +1,7 @@
 {
-  "name": "@salesforce/mcp-provider-platform-cli",
+  "name": "@salesforce/mcp-provider-dx-core",
   "version": "0.0.1-alpha.1",
-  "description": "MCP Server for interacting with Salesforce instances",
+  "description": "MCP provider for core Salesforce DX functionality",
   "types": "lib/index.d.ts",
   "license": "Apache-2.0",
   "type": "module",
@@ -30,6 +30,12 @@
     "url": "https://github.com/salesforcecli/mcp/issues"
   },
   "homepage": "https://github.com/salesforcecli/mcp",
+  "exports": {
+    ".": {
+      "import": "./lib/index.js",
+      "types": "./lib/index.d.ts"
+    }
+  },
   "files": [
     "lib",
     "!lib/**/*.map",

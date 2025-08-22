@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-import { ConfigInfo } from '@salesforce/core';
+import { type ConfigInfo } from '@salesforce/core';
 import { type Nullable } from '@salesforce/ts-types';
-import { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-export type ConfigInfoWithCache = {
+export type OrgConfigInfo = {
   key: string;
   location?: ConfigInfo['location'];
   value: string;
-  cached?: boolean;
   path: string;
 };
 
-// AUTH TYPES
 export type SanitizedOrgAuthorization = {
   aliases?: Nullable<string[]>;
   configs?: Nullable<string[]>;
@@ -38,18 +35,4 @@ export type SanitizedOrgAuthorization = {
   orgId?: string;
   oauthMethod?: string;
   isExpired?: boolean | 'unknown';
-};
-
-// TOOL RESPONSES
-export type ToolTextResponse = {
-  isError: boolean;
-  content: Array<{
-    type: 'text';
-    text: string;
-  }>;
-};
-
-export type ToolInfo = {
-  tool: RegisteredTool;
-  name: string;
 };

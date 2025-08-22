@@ -15,9 +15,8 @@
  */
 
 import { z } from 'zod';
-import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { getAllAllowedOrgs } from '../shared/auth.js';
 import { textResponse } from '../shared/utils.js';
 import { directoryParam } from '../shared/params.js';
 
@@ -42,6 +41,10 @@ type InputArgsShape = typeof listAllOrgsParamsSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class ListAllOrgsMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public constructor(private readonly services: Services) {
+    super();
+  }
+
   public getToolsets(): Toolset[] {
     return [Toolset.ORGS];
   }
@@ -74,7 +77,7 @@ List all orgs`,
   public async exec(input: InputArgs): Promise<CallToolResult> {
     try {
       process.chdir(input.directory);
-      const orgs = await getAllAllowedOrgs();
+      const orgs = await this.services.getOrgService().getAllowedOrgs();
       return textResponse(`List of configured Salesforce orgs:\n\n${JSON.stringify(orgs, null, 2)}`);
     } catch (error) {
       return textResponse(`Failed to list orgs: ${error instanceof Error ? error.message : 'Unknown error'}`, true);

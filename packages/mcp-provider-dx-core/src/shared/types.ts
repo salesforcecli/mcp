@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { McpProvider } from '@salesforce/mcp-provider-api';
-import { DxCoreMcpProvider } from '@salesforce/mcp-provider-dx-core';
-
-/** -------- ADD McpProvider INSTANCES HERE ------------------------------------------------------------------------- */
-
-export const MCP_PROVIDER_REGISTRY: McpProvider[] = [
-  new DxCoreMcpProvider(),
-  // Add new instances here
-];
+export type ToolTextResponse = {
+  isError: boolean;
+  content: Array<{
+    type: 'text';
+    text: string;
+  }>;
+};

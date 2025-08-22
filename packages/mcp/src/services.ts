@@ -19,9 +19,19 @@ import {
   ApprovedServerMethods,
   TelemetryEvent,
   RagAssetService,
+  OrgService,
+  SanitizedOrgAuthorization,
 } from '@salesforce/mcp-provider-api';
 import { SfMcpServer } from './sf-mcp-server.js';
 import { getAssets } from './utils/assets.js';
+import Cache from './utils/cache.js';
+import {
+  getConnection,
+  getDefaultTargetOrg,
+  getDefaultTargetDevHub,
+  getAllAllowedOrgs,
+  findOrgByUsernameOrAlias,
+} from './utils/auth.js';
 
 export class Services implements IServices {
   private telemetry: TelemetryService;
@@ -48,6 +58,18 @@ export class Services implements IServices {
     return {
       getDataDir: () => this.dataDir,
       getAssets,
+    };
+  }
+
+  public getOrgService(): OrgService {
+    return {
+      getAllowedOrgUsernames: async () => Cache.safeGet('allowedOrgs'),
+      getAllowedOrgs: () => getAllAllowedOrgs(),
+      getConnection: (username: string) => getConnection(username),
+      getDefaultTargetOrg: () => getDefaultTargetOrg(),
+      getDefaultTargetDevHub: () => getDefaultTargetDevHub(),
+      findOrgByUsernameOrAlias: (allOrgs: SanitizedOrgAuthorization[], usernameOrAlias: string) =>
+        findOrgByUsernameOrAlias(allOrgs, usernameOrAlias),
     };
   }
 }

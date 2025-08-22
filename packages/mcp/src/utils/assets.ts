@@ -53,7 +53,7 @@ export async function maybeBuildIndex(indexPath: string, detached = true): Promi
 }
 
 function spawnBuildScript(outputDir: string, detached: boolean): Promise<void> {
-  const scriptPath = resolve(import.meta.dirname, 'scripts', 'build-index.js');
+  const scriptPath = resolve(import.meta.dirname, '..', 'scripts', 'build-index.js');
   const args = [scriptPath, outputDir];
 
   if (detached) {

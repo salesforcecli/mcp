@@ -16,11 +16,10 @@
 
 import { z } from 'zod';
 import { Org } from '@salesforce/core';
-import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { textResponse } from '../shared/utils.js';
 import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
-import { getConnection } from '../shared/auth.js';
 
 /*
  * Create a new scratch org snapshot
@@ -52,6 +51,10 @@ type InputArgsShape = typeof createOrgSnapshotParams.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class CreateOrgSnapshotMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public constructor(private readonly services: Services) {
+    super();
+  }
+
   public getToolsets(): Toolset[] {
     return [Toolset.EXPERIMENTAL];
   }
@@ -82,7 +85,7 @@ create a snapshot of my MyScratch in myDevHub`,
       process.chdir(input.directory);
 
       const sourceOrgId = (await Org.create({ aliasOrUsername: input.sourceOrg })).getOrgId();
-      const devHubConnection = await getConnection(input.devHub);
+      const devHubConnection = await this.services.getOrgService().getConnection(input.devHub);
       const createResponse = await devHubConnection.sobject('OrgSnapshot').create({
         SourceOrg: sourceOrgId,
         Description: input.description,

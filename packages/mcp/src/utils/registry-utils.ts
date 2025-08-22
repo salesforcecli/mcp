@@ -23,10 +23,11 @@ import {
   TOOLSETS,
   Versioned,
 } from '@salesforce/mcp-provider-api';
-import { SfMcpServer } from './sf-mcp-server.js';
-import { MCP_PROVIDER_REGISTRY } from './registry.js';
-import { addTool } from './utils/tools.js';
-import { Services } from './services.js';
+import { SfMcpServer } from '../sf-mcp-server.js';
+import { MCP_PROVIDER_REGISTRY } from '../registry.js';
+import { addTool } from '../utils/tools.js';
+import { Services } from '../services.js';
+import { createDynamicServerTools } from '../dynamic-tool-provider.js';
 
 export async function registerToolsets(
   toolsets: Array<Toolset | 'all'>,
@@ -34,13 +35,17 @@ export async function registerToolsets(
   server: SfMcpServer,
   services: Services
 ): Promise<void> {
-  // If dynamic tools are being used -> only enable core and dynamic
-  // If 'all' is specified, enable all non-experimental and non-dynamic toolsets
-  // Otherwise, enable the specified toolsets and the core toolset
-  const toolsetsToEnable: Set<Toolset> = useDynamicTools
-    ? new Set([Toolset.CORE, Toolset.DYNAMIC])
-    : toolsets.includes('all')
-    ? new Set(TOOLSETS.filter((ts) => ts !== Toolset.EXPERIMENTAL && ts !== Toolset.DYNAMIC))
+  if (useDynamicTools) {
+    const dynamicTools = createDynamicServerTools(server);
+    ux.stderr('Registering dynamic tools');
+    // eslint-disable-next-line no-await-in-loop
+    await registerTools(dynamicTools, server, useDynamicTools);
+  } else {
+    ux.stderr('Skipping registration of dynamic tools');
+  }
+
+  const toolsetsToEnable: Set<Toolset> = toolsets.includes('all')
+    ? new Set(TOOLSETS.filter((ts) => ts !== Toolset.EXPERIMENTAL))
     : new Set([Toolset.CORE, ...(toolsets as Toolset[])]);
 
   const newToolRegistry: Record<Toolset, McpTool[]> = await createToolRegistryFromProviders(
@@ -63,7 +68,7 @@ async function registerTools(tools: McpTool[], server: SfMcpServer, useDynamicTo
   for (const tool of tools) {
     const registeredTool = server.registerTool(tool.getName(), tool.getConfig(), (...args) => tool.exec(...args));
     const toolsets = tool.getToolsets();
-    if (useDynamicTools && !toolsets.includes(Toolset.CORE) && !toolsets.includes(Toolset.DYNAMIC)) {
+    if (useDynamicTools && !toolsets.includes(Toolset.CORE)) {
       registeredTool.disable();
     }
     // eslint-disable-next-line no-await-in-loop

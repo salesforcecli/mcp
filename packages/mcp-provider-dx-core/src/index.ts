@@ -29,32 +29,28 @@ import { RetrieveMetadataMcpTool } from './tools/sf-retrieve-metadata.js';
 import { SuggestCliCommandMcpTool } from './tools/sf-suggest-cli-command.js';
 import { TestAgentsMcpTool } from './tools/sf-test-agents.js';
 import { TestApexMcpTool } from './tools/sf-test-apex.js';
-import { EnableToolsMcpTool } from './tools/sf-enable-tools.js';
-import { ListToolsMcpTool } from './tools/sf-list-tools.js';
 
-export class PlatformCliMcpProvider extends McpProvider {
+export class DxCoreMcpProvider extends McpProvider {
   public getName(): string {
-    return 'PlatformCliMcpProvider';
+    return 'DxCoreMcpProvider';
   }
 
   public provideTools(services: Services): Promise<McpTool[]> {
     return Promise.resolve([
-      new AssignPermissionSetMcpTool(),
-      new CreateOrgSnapshotMcpTool(),
+      new AssignPermissionSetMcpTool(services),
+      new CreateOrgSnapshotMcpTool(services),
       new CreateScratchOrgMcpTool(),
       new DeleteOrgMcpTool(),
-      new DeployMetadataMcpTool(),
-      new EnableToolsMcpTool(services),
-      new GetUsernameMcpTool(),
-      new ListAllOrgsMcpTool(),
-      new ListToolsMcpTool(),
+      new DeployMetadataMcpTool(services),
+      new GetUsernameMcpTool(services),
+      new ListAllOrgsMcpTool(services),
       new OrgOpenMcpTool(),
-      new QueryOrgMcpTool(),
-      new ResumeMcpTool(),
-      new RetrieveMetadataMcpTool(),
+      new QueryOrgMcpTool(services),
+      new ResumeMcpTool(services),
+      new RetrieveMetadataMcpTool(services),
       new SuggestCliCommandMcpTool(services),
-      new TestAgentsMcpTool(),
-      new TestApexMcpTool(),
+      new TestAgentsMcpTool(services),
+      new TestApexMcpTool(services),
     ]);
   }
 }

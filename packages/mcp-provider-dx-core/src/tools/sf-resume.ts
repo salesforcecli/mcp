@@ -19,11 +19,10 @@ import { AgentTester } from '@salesforce/agents';
 import { Connection, validateSalesforceId, scratchOrgResume, PollingClient, StatusResult } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
-import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { textResponse } from '../shared/utils.js';
 import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
-import { getConnection } from '../shared/auth.js';
 import { type ToolTextResponse } from '../shared/types.js';
 
 const resumableIdPrefixes = new Map<string, string>([
@@ -63,6 +62,10 @@ type InputArgsShape = typeof resumeParamsSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class ResumeMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public constructor(private readonly services: Services) {
+    super();
+  }
+
   public getToolsets(): Toolset[] {
     return [Toolset.CORE];
   }
@@ -112,7 +115,7 @@ Report on my org snapshot`,
       );
 
     process.chdir(input.directory);
-    const connection = await getConnection(input.usernameOrAlias);
+    const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
 
     switch (input.jobId.substring(0, 3)) {
       case resumableIdPrefixes.get('deploy'):

@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-/* eslint-disable no-console */
-
 import { AuthInfo, Connection, ConfigAggregator, OrgConfigProperties, type OrgAuthorization } from '@salesforce/core';
-import { type ConfigInfoWithCache, type SanitizedOrgAuthorization } from './types.js';
+import { type OrgConfigInfo, type SanitizedOrgAuthorization } from '@salesforce/mcp-provider-api';
 import Cache from './cache.js';
 
 /**
@@ -26,7 +24,7 @@ import Cache from './cache.js';
  * @param orgs - Array of OrgAuthorization objects
  * @returns Array of sanitized org authorization objects with only allowed fields
  */
-export function sanitizeOrgs(orgs: OrgAuthorization[]): SanitizedOrgAuthorization[] {
+function sanitizeOrgs(orgs: OrgAuthorization[]): SanitizedOrgAuthorization[] {
   return orgs.map((org) => ({
     aliases: org.aliases,
     configs: org.configs,
@@ -39,47 +37,6 @@ export function sanitizeOrgs(orgs: OrgAuthorization[]): SanitizedOrgAuthorizatio
     oauthMethod: org.oauthMethod,
     isExpired: org.isExpired,
   }));
-}
-
-export async function suggestUsername(): Promise<{
-  suggestedUsername: string | undefined;
-  reasoning: string;
-  aliasForReference?: string;
-}> {
-  let reasoning: string;
-  let suggestedUsername: string | undefined;
-  let aliasForReference: string | undefined;
-
-  const allAllowedOrgs = await getAllAllowedOrgs();
-  const defaultTargetOrg = await getDefaultTargetOrg();
-  const defaultTargetDevHub = await getDefaultTargetDevHub();
-
-  const targetOrgLocation = defaultTargetOrg?.location ? `(${defaultTargetOrg.location}) ` : '';
-  const targetDevHubLocation = defaultTargetDevHub?.location ? `(${defaultTargetDevHub.location}) ` : '';
-
-  if (allAllowedOrgs.length === 1) {
-    suggestedUsername = allAllowedOrgs[0].username;
-    aliasForReference = allAllowedOrgs[0].aliases?.[0];
-    reasoning = 'it was the only org found in the MCP Servers allowlisted orgs';
-  } else if (defaultTargetOrg?.value) {
-    const foundOrg = findOrgByUsernameOrAlias(allAllowedOrgs, defaultTargetOrg.value);
-    suggestedUsername = foundOrg?.username;
-    aliasForReference = foundOrg?.aliases?.[0];
-    reasoning = `it is the default ${targetOrgLocation}target org`;
-  } else if (defaultTargetDevHub?.value) {
-    const foundOrg = findOrgByUsernameOrAlias(allAllowedOrgs, defaultTargetDevHub.value);
-    suggestedUsername = foundOrg?.username;
-    aliasForReference = foundOrg?.aliases?.[0];
-    reasoning = `it is the default ${targetDevHubLocation}dev hub org`;
-  } else {
-    reasoning = 'Error: no org was inferred. Ask the user to specify one';
-  }
-
-  return {
-    suggestedUsername,
-    aliasForReference,
-    reasoning,
-  };
 }
 
 // This function is the main entry point for Tools to get an allowlisted Connection
@@ -132,7 +89,7 @@ export async function getAllAllowedOrgs(): Promise<SanitizedOrgAuthorization[]> 
 }
 
 // Function to filter orgs based on ORG_ALLOWLIST configuration
-export async function filterAllowedOrgs(
+async function filterAllowedOrgs(
   orgs: SanitizedOrgAuthorization[],
   allowList: Set<string>
 ): Promise<SanitizedOrgAuthorization[]> {
@@ -171,8 +128,8 @@ export async function filterAllowedOrgs(
 }
 
 const defaultOrgMaps = {
-  [OrgConfigProperties.TARGET_ORG]: new Map<string, ConfigInfoWithCache>(),
-  [OrgConfigProperties.TARGET_DEV_HUB]: new Map<string, ConfigInfoWithCache>(),
+  [OrgConfigProperties.TARGET_ORG]: new Map<string, OrgConfigInfo>(),
+  [OrgConfigProperties.TARGET_DEV_HUB]: new Map<string, OrgConfigInfo>(),
 };
 
 // Helper function to get default config for a property
@@ -180,7 +137,7 @@ const defaultOrgMaps = {
 // This is to prevent manipulation of the config file after server start
 async function getDefaultConfig(
   property: OrgConfigProperties.TARGET_ORG | OrgConfigProperties.TARGET_DEV_HUB
-): Promise<ConfigInfoWithCache | undefined> {
+): Promise<OrgConfigInfo | undefined> {
   // If the directory changes, the singleton instance of ConfigAggregator is not updated.
   // It continues to use the old local or global config.
   await ConfigAggregator.clearInstance();
@@ -193,22 +150,22 @@ async function getDefaultConfig(
 
   // Create a typed config object with the necessary properties
   // This reduces assertions and lowers context returned to the LLM
-  const typedConfig: ConfigInfoWithCache = { key, location, value, path };
+  const typedConfig = { key, location, value, path } as OrgConfigInfo;
 
   if (defaultOrgMaps[property].has(path)) {
     // If the cache has the config's path set, use the cached config
     const cachedConfig = defaultOrgMaps[property].get(path)!;
-    return { ...cachedConfig, cached: true };
+    return cachedConfig;
   } else {
     defaultOrgMaps[property].set(path, typedConfig);
     return typedConfig;
   }
 }
 
-export async function getDefaultTargetOrg(): Promise<ConfigInfoWithCache | undefined> {
+export async function getDefaultTargetOrg(): Promise<OrgConfigInfo | undefined> {
   return getDefaultConfig(OrgConfigProperties.TARGET_ORG);
 }
 
-export async function getDefaultTargetDevHub(): Promise<ConfigInfoWithCache | undefined> {
+export async function getDefaultTargetDevHub(): Promise<OrgConfigInfo | undefined> {
   return getDefaultConfig(OrgConfigProperties.TARGET_DEV_HUB);
 }

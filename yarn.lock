@@ -2306,10 +2306,10 @@
     strip-ansi "6.0.1"
     ts-retry-promise "^0.8.1"
 
-"@salesforce/core@^8.10.3", "@salesforce/core@^8.18.0", "@salesforce/core@^8.18.1", "@salesforce/core@^8.19.1", "@salesforce/core@^8.8.0":
-  version "8.20.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.20.0.tgz#3a63ae04a9fd70ac10123013d3cbf7488a798033"
-  integrity sha512-WZoab9aHDbYXUh4nO+91PNLHpiPfK408qjn3l6Sbgck2d0bzYkW5wOmuv5D5yWrEybs9kGosrW/e9liKPGmgng==
+"@salesforce/core@^8", "@salesforce/core@^8.10.3", "@salesforce/core@^8.18.0", "@salesforce/core@^8.18.1", "@salesforce/core@^8.19.1", "@salesforce/core@^8.8.0":
+  version "8.21.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.21.1.tgz#6cb62257a7fea3e6094ff8639b83d3993725534a"
+  integrity sha512-JKGCKHNquCWz9zySmRHLIwqkdu3u+IwlxrxqRSHDMPEPQxLXVEiMHJXuicjsnethU203b1IUviiMRsJBH9hmPA==
   dependencies:
     "@jsforce/jsforce-node" "^3.10.1"
     "@salesforce/kit" "^3.2.2"
@@ -2318,7 +2318,7 @@
     ajv "^8.17.1"
     change-case "^4.1.2"
     fast-levenshtein "^3.0.0"
-    faye "^1.4.0"
+    faye "^1.4.1"
     form-data "^4.0.4"
     js2xmlparser "^4.0.1"
     jsonwebtoken "9.0.2"
@@ -2440,7 +2440,7 @@
     got "^11"
     proxy-agent "^6.5.0"
 
-"@salesforce/ts-types@^2.0.11", "@salesforce/ts-types@^2.0.12":
+"@salesforce/ts-types@^2", "@salesforce/ts-types@^2.0.11", "@salesforce/ts-types@^2.0.12":
   version "2.0.12"
   resolved "https://registry.yarnpkg.com/@salesforce/ts-types/-/ts-types-2.0.12.tgz#60420622812a7ec7e46d220667bc29b42dc247ff"
   integrity sha512-BIJyduJC18Kc8z+arUm5AZ9VkPRyw1KKAm+Tk+9LT99eOzhNilyfKzhZ4t+tG2lIGgnJpmytZfVDZ0e2kFul8g==
@@ -5477,7 +5477,7 @@ faye-websocket@>=0.9.1:
   dependencies:
     websocket-driver ">=0.5.1"
 
-faye@1.4.1, faye@^1.4.0:
+faye@1.4.1, faye@^1.4.0, faye@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/faye/-/faye-1.4.1.tgz#fd2f84e21d62b1cced1bd34968925b466d44a381"
   integrity sha512-Cg/khikhqlvumHO3efwx2tps2ZgQRjUMrO24G0quz7MMzRYYaEjU224YFXOeuPIvanRegIchVxj6pmHK1W0ikA==

@@ -26,10 +26,7 @@ function getTsConfigPaths() {
 
   if (isMonorepoRoot) {
     // Running from monorepo root (e.g., yarn lint from root)
-    return [
-      './packages/mcp-provider-platform-cli/tsconfig.json',
-      './packages/mcp-provider-platform-cli/test/tsconfig.json',
-    ];
+    return ['./packages/mcp-provider-dx-core/tsconfig.json', './packages/mcp-provider-dx-core/test/tsconfig.json'];
   } else {
     // Running from package directory (e.g., yarn lint from within package)
     return ['./tsconfig.json', './test/tsconfig.json'];

@@ -8,6 +8,8 @@ export { McpTool, type McpToolConfig } from './tools.js';
 
 export { Toolset, TOOLSETS } from './toolset.js';
 
+export { type OrgConfigInfo, type SanitizedOrgAuthorization } from './types.js';
+
 export {
   type Services,
   type TelemetryService,
@@ -15,4 +17,5 @@ export {
   type ApprovedServerMethods,
   type RagAssets,
   type RagAssetService,
+  type OrgService,
 } from './services.js';

@@ -20,11 +20,10 @@ import { SourceTracking } from '@salesforce/source-tracking';
 import { ComponentSet, ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
 import { ensureString } from '@salesforce/ts-types';
 import { Duration } from '@salesforce/kit';
-import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
 import { textResponse } from '../shared/utils.js';
-import { getConnection } from '../shared/auth.js';
 
 /*
  * Deploy metadata to a Salesforce org.
@@ -85,6 +84,10 @@ type InputArgsShape = typeof deployMetadataParams.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class DeployMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public constructor(private readonly services: Services) {
+    super();
+  }
+
   public getToolsets(): Toolset[] {
     return [Toolset.METADATA];
   }
@@ -134,7 +137,7 @@ Deploy X to my org and run A,B and C apex tests.`,
     // needed for org allowlist to work
     process.chdir(input.directory);
 
-    const connection = await getConnection(input.usernameOrAlias);
+    const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
     const project = await SfProject.resolve(input.directory);
 
     const org = await Org.create({ connection });

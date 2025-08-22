@@ -16,11 +16,10 @@
 
 import { z } from 'zod';
 import { Org, StateAggregator, User } from '@salesforce/core';
-import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
 import { textResponse } from '../shared/utils.js';
-import { getConnection } from '../shared/auth.js';
 
 /*
  * Assign permission set
@@ -67,6 +66,10 @@ type InputArgsShape = typeof assignPermissionSetParamsSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class AssignPermissionSetMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public constructor(private readonly services: Services) {
+    super();
+  }
+
   public getToolsets(): Toolset[] {
     return [Toolset.USERS];
   }
@@ -96,7 +99,7 @@ export class AssignPermissionSetMcpTool extends McpTool<InputArgsShape, OutputAr
         );
       process.chdir(input.directory);
       // We build the connection from the usernameOrAlias
-      const connection = await getConnection(input.usernameOrAlias);
+      const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
 
       // We need to clear the instance so we know we have the most up to date aliases
       // If a user sets an alias after server start up, it was not getting picked up

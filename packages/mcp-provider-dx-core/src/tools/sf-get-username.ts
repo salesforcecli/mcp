@@ -15,12 +15,53 @@
  */
 
 import { z } from 'zod';
-import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, OrgConfigInfo, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { type OrgService } from '@salesforce/mcp-provider-api';
 import { textResponse } from '../shared/utils.js';
-import { getDefaultTargetOrg, getDefaultTargetDevHub, suggestUsername } from '../shared/auth.js';
 import { directoryParam } from '../shared/params.js';
-import { type ConfigInfoWithCache, type ToolTextResponse } from '../shared/types.js';
+import { type ToolTextResponse } from '../shared/types.js';
+
+export async function suggestUsername(orgService: OrgService): Promise<{
+  suggestedUsername: string | undefined;
+  reasoning: string;
+  aliasForReference?: string;
+}> {
+  let reasoning: string;
+  let suggestedUsername: string | undefined;
+  let aliasForReference: string | undefined;
+
+  const allAllowedOrgs = await orgService.getAllowedOrgs();
+  const defaultTargetOrg = await orgService.getDefaultTargetOrg();
+  const defaultTargetDevHub = await orgService.getDefaultTargetDevHub();
+
+  const targetOrgLocation = defaultTargetOrg?.location ? `(${defaultTargetOrg.location}) ` : '';
+  const targetDevHubLocation = defaultTargetDevHub?.location ? `(${defaultTargetDevHub.location}) ` : '';
+
+  if (allAllowedOrgs.length === 1) {
+    suggestedUsername = allAllowedOrgs[0].username;
+    aliasForReference = allAllowedOrgs[0].aliases?.[0];
+    reasoning = 'it was the only org found in the MCP Servers allowlisted orgs';
+  } else if (defaultTargetOrg?.value) {
+    const foundOrg = orgService.findOrgByUsernameOrAlias(allAllowedOrgs, defaultTargetOrg.value);
+    suggestedUsername = foundOrg?.username;
+    aliasForReference = foundOrg?.aliases?.[0];
+    reasoning = `it is the default ${targetOrgLocation}target org`;
+  } else if (defaultTargetDevHub?.value) {
+    const foundOrg = orgService.findOrgByUsernameOrAlias(allAllowedOrgs, defaultTargetDevHub.value);
+    suggestedUsername = foundOrg?.username;
+    aliasForReference = foundOrg?.aliases?.[0];
+    reasoning = `it is the default ${targetDevHubLocation}dev hub org`;
+  } else {
+    reasoning = 'Error: no org was inferred. Ask the user to specify one';
+  }
+
+  return {
+    suggestedUsername,
+    aliasForReference,
+    reasoning,
+  };
+}
 
 /*
  * Get username for Salesforce org
@@ -62,6 +103,9 @@ type InputArgsShape = typeof getUsernameParamsSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class GetUsernameMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public constructor(private readonly services: Services) {
+    super();
+  }
   public getToolsets(): Toolset[] {
     return [Toolset.CORE];
   }
@@ -105,7 +149,7 @@ EXAMPLE USAGE:
     try {
       process.chdir(input.directory);
 
-      const generateResponse = (defaultFromConfig: ConfigInfoWithCache | undefined): ToolTextResponse =>
+      const generateResponse = (defaultFromConfig: OrgConfigInfo | undefined): ToolTextResponse =>
         textResponse(`ALWAYS notify the user the following 3 (maybe 4) pieces of information:
 1. If it is default target-org or target-dev-hub ('.key' on the config)
 2. The value of '.location' on the config
@@ -116,14 +160,15 @@ EXAMPLE USAGE:
 
 UNLESS THE USER SPECIFIES OTHERWISE, use this username for the "usernameOrAlias" parameter in future Tool calls.`);
 
+      const orgService = this.services.getOrgService();
       // Case 1: User explicitly asked for default target org
-      if (input.defaultTargetOrg) return generateResponse(await getDefaultTargetOrg());
+      if (input.defaultTargetOrg) return generateResponse(await orgService.getDefaultTargetOrg());
 
       // Case 2: User explicitly asked for default dev hub
-      if (input.defaultDevHub) return generateResponse(await getDefaultTargetDevHub());
+      if (input.defaultDevHub) return generateResponse(await orgService.getDefaultTargetDevHub());
 
       // Case 3: User was vague, so suggest a username
-      const { aliasForReference, suggestedUsername, reasoning } = await suggestUsername();
+      const { aliasForReference, suggestedUsername, reasoning } = await suggestUsername(orgService);
 
       if (!suggestedUsername) {
         return textResponse(
