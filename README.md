@@ -8,6 +8,11 @@ MCP Server for Interacting with Salesforce Orgs
 
 The Salesforce DX MCP Server is a specialized Model Context Protocol (MCP) implementation designed to facilitate seamless interaction between large language models (LLMs) and Salesforce orgs. This MCP server provides a robust set of tools and capabilities that enable LLMs to read, manage, and operate Salesforce resources securely.
 
+## Feedback
+
+Please report bugs and issues [here](https://github.com/forcedotcom/mcp/issues).
+For feature requests and other related topics, please start a Discussion [here](https://github.com/forcedotcom/mcp/discussions).
+
 Key Features:
 
 - Direct interaction with Salesforce orgs through LLM-driven tools.

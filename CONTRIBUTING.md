@@ -1,7 +1,7 @@
 ## Contributing
 
 1. The [DEVELOPING](DEVELOPING.md) doc has details on how to set up your environment.
-1. Create a new issue [here](https://github.com/forcedotcom/cli/issues) before starting your project so that we can keep track of
+1. Create a new issue [here](https://github.com/forcedotcom/mcp/issues) before starting your project so that we can keep track of
    what you are trying to add/fix. That way, we can also offer suggestions or
    let you know if there is already an effort in progress.
 1. Fork this repository (external contributors) or branch off main (committers).
