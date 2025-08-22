@@ -34,13 +34,13 @@ import {
 } from './utils/auth.js';
 
 export class Services implements IServices {
-  private telemetry: TelemetryService;
-  private server: SfMcpServer;
-  private dataDir: string;
+  private readonly telemetry: TelemetryService;
+  private readonly serverWrapper: ApprovedServerMethods;
+  private readonly dataDir: string;
 
   public constructor(opts: { telemetry: TelemetryService | undefined; server: SfMcpServer; dataDir: string }) {
     this.telemetry = opts.telemetry ? opts.telemetry : new NoopTelemetryService();
-    this.server = opts.server;
+    this.serverWrapper = new ServerWrapper(opts.server);
     this.dataDir = opts.dataDir;
   }
 
@@ -49,9 +49,7 @@ export class Services implements IServices {
   }
 
   public getApprovedServerMethods(): ApprovedServerMethods {
-    return {
-      sendToolListChanged: this.server.sendToolListChanged.bind(this.server),
-    };
+    return this.serverWrapper;
   }
 
   public getRagAssetService<D, E, I>(): RagAssetService<D, E, I> {
@@ -77,5 +75,17 @@ export class Services implements IServices {
 class NoopTelemetryService implements TelemetryService {
   public sendEvent(_eventName: string, _event: TelemetryEvent): void {
     // no-op
+  }
+}
+
+class ServerWrapper implements ApprovedServerMethods {
+  private readonly server: SfMcpServer;
+
+  public constructor(server: SfMcpServer) {
+    this.server = server;
+  }
+
+  public sendToolListChanged(): void {
+    this.server.sendToolListChanged();
   }
 }

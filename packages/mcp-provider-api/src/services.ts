@@ -17,7 +17,7 @@ export type TelemetryEvent = {
 };
 
 export interface ApprovedServerMethods {
-  sendToolListChanged: () => void;
+  sendToolListChanged(): void;
 }
 
 export type RagAssets<D, E, I> = {

@@ -1,12 +1,17 @@
 {
-  "name": "monorepo-this-name-is-not-used",
+  "name": "monorepo-for-salesforce-mcp-server-and-providers",
   "private": true,
+  "license": "Apache-2.0",
   "workspaces": [
     "packages/*"
   ],
+  "devDependencies": {
+    "rimraf": "^6.0.1"
+  },
   "scripts": {
     "build": "yarn workspaces run build",
     "clean": "yarn workspaces run clean",
+    "clean-all": "yarn workspaces run clean-all && rimraf node_modules",
     "lint": "yarn workspaces run lint",
     "package": "yarn workspaces run package",
     "test": "yarn workspaces run test"
