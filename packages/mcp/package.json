@@ -24,7 +24,6 @@
     "postpack": "sf-clean --ignore-signing-artifacts",
     "prepack": "sf-prepack",
     "prepare": "sf-install",
-    "scrub": "yarn clean && rimraf node_modules",
     "start": "yarn build && npm link && mcp-inspector sf-mcp-server",
     "test": "wireit",
     "test:only": "wireit"

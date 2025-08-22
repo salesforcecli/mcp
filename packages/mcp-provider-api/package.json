@@ -27,11 +27,11 @@
   "scripts": {
     "build": "tsc --build tsconfig.json --verbose",
     "clean": "tsc --build tsconfig.json --clean",
+    "clean-all": "yarn clean && rimraf node_modules",
     "format": "prettier --write .",
     "lint": "echo 'no lint script available yet'",
     "postclean": "rimraf dist && rimraf ./*.tgz",
     "package": "yarn pack",
-    "scrub": "yarn clean && rimraf node_modules",
     "test": "echo 'No unit tests are needed for this api module'"
   }
 }

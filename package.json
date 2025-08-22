@@ -11,9 +11,9 @@
   "scripts": {
     "build": "yarn workspaces run build",
     "clean": "yarn workspaces run clean",
+    "clean-all": "yarn workspaces run clean-all && rimraf node_modules",
     "lint": "yarn workspaces run lint",
     "package": "yarn workspaces run package",
-    "scrub": "yarn workspaces run scrub && rimraf node_modules",
     "test": "yarn workspaces run test"
   }
 }

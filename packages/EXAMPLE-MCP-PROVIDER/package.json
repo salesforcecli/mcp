@@ -35,10 +35,10 @@
     "scripts": {
         "build": "tsc --build tsconfig.build.json --verbose",
         "clean": "tsc --build tsconfig.build.json --clean",
+        "clean-all": "yarn clean && rimraf node_modules",
         "lint": "eslint **/*.ts",
         "postclean": "rimraf dist && rimraf ./*.tgz",
         "package": "yarn pack",
-        "scrub": "yarn clean && rimraf node_modules",
         "test": "vitest run --coverage"
     }
 }
