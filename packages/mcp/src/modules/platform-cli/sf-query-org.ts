@@ -62,8 +62,8 @@ export class QueryOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
       outputSchema: undefined,
       annotations: {
         openWorldHint: false,
-        readOnlyHint: true
-      }
+        readOnlyHint: true,
+      },
     };
   }
 
@@ -76,7 +76,9 @@ export class QueryOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
         );
       process.chdir(input.directory);
       const connection = await getConnection(input.usernameOrAlias);
-      const result = input.useToolingApi ? await connection.tooling.query(input.query) : await connection.query(input.query);
+      const result = input.useToolingApi
+        ? await connection.tooling.query(input.query)
+        : await connection.query(input.query);
 
       return textResponse(`SOQL query results:\n\n${JSON.stringify(result, null, 2)}`);
     } catch (error) {

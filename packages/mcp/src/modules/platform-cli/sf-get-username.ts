@@ -96,8 +96,8 @@ EXAMPLE USAGE:
       outputSchema: undefined,
       annotations: {
         readOnlyHint: true,
-        openWorldHint: false
-      }
+        openWorldHint: false,
+      },
     };
   }
 

@@ -15,8 +15,8 @@
  */
 
 import { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { ToolInfo } from '../../shared/types.js';
-import Cache from '../../shared/cache.js';
+import { ToolInfo } from './types.js';
+import Cache from './cache.js';
 
 /**
  * Add a tool to the cache

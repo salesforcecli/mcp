@@ -59,8 +59,8 @@ NEVER use this tool for understanding the input schema of a Salesforce MCP tool.
       inputSchema: suggestCliCommandParamsSchema.shape,
       outputSchema: undefined,
       annotations: {
-        readOnlyHint: true
-      }
+        readOnlyHint: true,
+      },
     };
   }
 

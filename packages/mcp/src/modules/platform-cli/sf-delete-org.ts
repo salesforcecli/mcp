@@ -64,8 +64,8 @@ Can you delete MyAliasedOrg
 Can you delete test-fe2n4tc8pgku@example.com`,
       inputSchema: deleteOrgParams.shape,
       outputSchema: undefined,
-      annotations: {}
-    }
+      annotations: {},
+    };
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {

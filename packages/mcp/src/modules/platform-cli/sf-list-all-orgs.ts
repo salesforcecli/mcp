@@ -66,8 +66,8 @@ List all orgs`,
       outputSchema: undefined,
       annotations: {
         readOnlyHint: true,
-        openWorldHint: false
-      }
+        openWorldHint: false,
+      },
     };
   }
 

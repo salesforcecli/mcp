@@ -82,8 +82,8 @@ Retrieve X metadata from my org`,
       outputSchema: undefined,
       annotations: {
         openWorldHint: false,
-        destructiveHint: true
-      }
+        destructiveHint: true,
+      },
     };
   }
 

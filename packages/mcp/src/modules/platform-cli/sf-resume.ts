@@ -91,8 +91,8 @@ Report on my org snapshot`,
       inputSchema: resumeParamsSchema.shape,
       outputSchema: undefined,
       annotations: {
-        openWorldHint: false
-      }
+        openWorldHint: false,
+      },
     };
   }
 

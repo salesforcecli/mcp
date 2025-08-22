@@ -20,6 +20,7 @@ import { join } from 'node:path';
 import { Attributes, TelemetryReporter } from '@salesforce/telemetry';
 import { warn } from '@oclif/core/ux';
 import { Config } from '@oclif/core';
+import { TelemetryService } from '@salesforce/mcp-provider-api/src/index.js';
 
 const PROJECT = 'salesforce-mcp-server';
 const APP_INSIGHTS_KEY =
@@ -60,7 +61,7 @@ class McpTelemetryReporter extends TelemetryReporter {
   }
 }
 
-export class Telemetry {
+export class Telemetry implements TelemetryService {
   /**
    * A unique identifier for the session.
    */

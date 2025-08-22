@@ -55,8 +55,8 @@ You can specify a metadata file you want to open.`,
       outputSchema: undefined,
       annotations: {
         readOnlyHint: true,
-        openWorldHint: false
-      }
+        openWorldHint: false,
+      },
     };
   }
 

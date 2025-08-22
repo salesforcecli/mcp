@@ -16,12 +16,12 @@
 
 import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { textResponse } from '../shared/utils.js';
-import { listAllTools } from './utils/tools.js';
+import { textResponse } from '../../shared/utils.js';
+import { listAllTools } from '../../shared/tools.js';
 
 export class ListToolsMcpTool extends McpTool {
   public getToolsets(): Toolset[] {
-    return [Toolset.CORE];
+    return [Toolset.DYNAMIC];
   }
 
   public getName(): string {
@@ -48,7 +48,7 @@ Once a tool has been enabled, you do not need to call sf-list-tools again - inst
       annotations: {
         readOnlyHint: true,
         openWorldHint: false,
-      }
+      },
     };
   }
 

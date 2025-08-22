@@ -16,7 +16,7 @@
 
 /* eslint-disable no-console */
 
-import { TOOLSETS } from '@salesforce/mcp-provider-api';
+import { Toolset, TOOLSETS } from '@salesforce/mcp-provider-api';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { Command, Flags, ux } from '@oclif/core';
 import Cache from './shared/cache.js';
@@ -24,6 +24,39 @@ import { Telemetry } from './telemetry.js';
 import { SfMcpServer } from './sf-mcp-server.js';
 import { maybeBuildIndex } from './assets.js';
 import { registerToolsets } from './registry-utils.js';
+import { Services } from './services.js';
+
+// At some point we can use these description to generate help text
+export const TOOLSET_CONFIG: Record<Toolset, { description?: string; hidden?: boolean }> = {
+  [Toolset.CORE]: {
+    description: 'Core tools for Salesforce development. These are always enabled, regardless of selected toolsets.',
+  },
+  [Toolset.DATA]: {
+    description: 'Tools for working with Salesforce data',
+  },
+  [Toolset.ORGS]: {
+    description: 'Tools for managing Salesforce orgs.',
+  },
+  [Toolset.METADATA]: {
+    description: 'Tools for working with Salesforce metadata.',
+  },
+  [Toolset.TESTING]: {
+    description: 'Tools for testing Salesforce applications.',
+  },
+  [Toolset.USERS]: {
+    description: 'Tools for managing Salesforce users.',
+  },
+  [Toolset.DYNAMIC]: {
+    hidden: true,
+  },
+  [Toolset.EXPERIMENTAL]: {
+    description: 'Experimental tools for working with Salesforce, subject to change.',
+  },
+};
+
+function getToolsetOptions(): Array<Toolset | 'all'> {
+  return ['all', ...TOOLSETS.filter((toolset) => !TOOLSET_CONFIG[toolset].hidden)] as const;
+}
 
 /**
  * Sanitizes an array of org usernames by replacing specific orgs with a placeholder.
@@ -84,7 +117,7 @@ You can also use special values to control access to orgs:
       },
     }),
     toolsets: Flags.option({
-      options: ['all', ...TOOLSETS] as const,
+      options: getToolsetOptions(),
       char: 't',
       summary: 'Toolset to enable',
       multiple: true,
@@ -152,13 +185,14 @@ You can also use special values to control access to orgs:
       },
       {
         telemetry: this.telemetry,
-        dynamicTools: flags['dynamic-tools'] ?? false,
       }
     );
 
     await maybeBuildIndex(this.config.dataDir);
 
-    await registerToolsets(flags.toolsets ?? ['all'], flags['dynamic-tools'] ?? false, server);
+    const services = new Services({ server, telemetry: this.telemetry });
+
+    await registerToolsets(flags.toolsets ?? ['all'], flags['dynamic-tools'] ?? false, server, services);
 
     const transport = new StdioServerTransport();
     await server.connect(transport);

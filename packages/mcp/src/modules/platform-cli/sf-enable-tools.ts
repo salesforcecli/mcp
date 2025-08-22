@@ -15,11 +15,10 @@
  */
 
 import { z } from 'zod';
-import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { SfMcpServer } from '../sf-mcp-server.js';
-import { textResponse } from '../shared/utils.js';
-import { enableTools as utilEnableTools } from './utils/tools.js';
+import { textResponse } from '../../shared/utils.js';
+import { enableTools as utilEnableTools } from '../../shared/tools.js';
 
 const enableToolsParamsSchema = z.object({
   tools: z.array(z.string()).describe('The names of the tools to enable'),
@@ -30,15 +29,12 @@ type InputArgsShapeType = typeof enableToolsParamsSchema.shape;
 type OutputArgsShapeType = z.ZodRawShape;
 
 export class EnableToolsMcpTool extends McpTool<InputArgsShapeType, OutputArgsShapeType> {
-  private readonly server: SfMcpServer;
-
-  public constructor(server: SfMcpServer) {
+  public constructor(private readonly services: Services) {
     super();
-    this.server = server;
   }
 
   public getToolsets(): Toolset[] {
-    return [Toolset.CORE];
+    return [Toolset.DYNAMIC];
   }
 
   public getName(): string {
@@ -46,35 +42,35 @@ export class EnableToolsMcpTool extends McpTool<InputArgsShapeType, OutputArgsSh
   }
 
   public getConfig(): McpToolConfig<InputArgsShapeType, OutputArgsShapeType> {
-        return {
-          title: 'Enable Salesforce MCP tools',
-          description: `Enable one or more of the tools the Salesforce MCP server provides.
+    return {
+      title: 'Enable Salesforce MCP tools',
+      description: `Enable one or more of the tools the Salesforce MCP server provides.
 
 AGENT INSTRUCTIONS:
 Use sf-list-all-tools first to learn what tools are available for enabling.
 Once you have enabled the tool, you MUST invoke that tool to accomplish the user's original request - DO NOT USE A DIFFERENT TOOL OR THE COMMAND LINE.`,
-          inputSchema: enableToolsParamsSchema.shape,
-          outputSchema: undefined,
-          annotations: {
-            title: 'Enable Salesforce MCP tools',
-            readOnlyHint: true,
-            openWorldHint: false,
-          }
-        };
+      inputSchema: enableToolsParamsSchema.shape,
+      outputSchema: undefined,
+      annotations: {
+        title: 'Enable Salesforce MCP tools',
+        readOnlyHint: true,
+        openWorldHint: false,
+      },
+    };
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
     if (input.tools.length === 0) {
-        return textResponse('No tools specified to enable.', true);
-      }
+      return textResponse('No tools specified to enable.', true);
+    }
 
-      const results = await utilEnableTools(input.tools);
+    const results = await utilEnableTools(input.tools);
 
-      this.server.sendToolListChanged();
+    this.services.getApprovedServerMethods().sendToolListChanged();
 
-      const hasError = results.some((result) => !result.success);
-      const resultMessages = results.map((result) => result.message).join('\n');
+    const hasError = results.some((result) => !result.success);
+    const resultMessages = results.map((result) => result.message).join('\n');
 
-      return textResponse(resultMessages, hasError);
+    return textResponse(resultMessages, hasError);
   }
-};
+}

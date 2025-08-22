@@ -15,18 +15,25 @@
  */
 
 import { McpServer, RegisteredTool, ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { CallToolResult, Implementation, ServerNotification, ServerRequest } from '@modelcontextprotocol/sdk/types.js';
+import {
+  CallToolResult,
+  Implementation,
+  ServerNotification,
+  ServerRequest,
+  ToolAnnotations,
+} from '@modelcontextprotocol/sdk/types.js';
 import { ServerOptions } from '@modelcontextprotocol/sdk/server/index.js';
 import { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js';
 import { Logger } from '@salesforce/core';
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
+import { ZodRawShape } from 'zod';
 import { Telemetry } from './telemetry.js';
 import { RateLimiter, RateLimitConfig, createRateLimiter } from './shared/rate-limiter.js';
-import { addTool } from './dynamic-tools/utils/tools.js';
 
 type ToolMethodSignatures = {
   tool: McpServer['tool'];
   connect: McpServer['connect'];
+  registerTool: McpServer['registerTool'];
 };
 
 /**
@@ -55,7 +62,6 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
   /** Optional telemetry instance for tracking server events */
   private telemetry?: Telemetry;
 
-  private dynamicTools: boolean;
   /** Rate limiter for controlling tool call frequency */
   private rateLimiter?: RateLimiter;
 
@@ -68,7 +74,6 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
   public constructor(serverInfo: Implementation, options?: SfMcpServerOptions) {
     super(serverInfo, options);
     this.telemetry = options?.telemetry;
-    this.dynamicTools = options?.dynamicTools ?? false;
     // Initialize rate limiter if configuration is provided
     if (options?.rateLimit !== undefined) {
       this.rateLimiter = createRateLimiter(options.rateLimit);
@@ -102,11 +107,21 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
     }
   };
 
-  public tool: McpServer['tool'] = (name: string, ...rest: unknown[]): RegisteredTool => {
-    // Given the signature of the tool function, the last argument is always the callback
-    const cb = rest[rest.length - 1] as ToolCallback;
-
-    const wrappedCb = async (args: RequestHandlerExtra<ServerRequest, ServerNotification>): Promise<CallToolResult> => {
+  public registerTool<InputArgs extends ZodRawShape, OutputArgs extends ZodRawShape>(
+    name: string,
+    config: {
+      title?: string;
+      description?: string;
+      inputSchema?: InputArgs;
+      outputSchema?: OutputArgs;
+      annotations?: ToolAnnotations;
+    },
+    cb: ToolCallback<InputArgs>
+  ): RegisteredTool {
+    const wrappedCb = async (
+      args: InputArgs,
+      extra: RequestHandlerExtra<ServerRequest, ServerNotification>
+    ): Promise<CallToolResult> => {
       this.logger.debug(`Tool ${name} called`);
 
       // Check rate limit before executing tool
@@ -139,7 +154,7 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
       }
 
       const startTime = Date.now();
-      const result = await cb(args);
+      const result = await cb(args, extra);
       const runtimeMs = Date.now() - startTime;
 
       this.logger.debug(`Tool ${name} completed in ${runtimeMs}ms`);
@@ -154,35 +169,7 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
       return result;
     };
 
-    // @ts-expect-error because we no longer know what the type of rest is
-    const tool = super.tool(name, ...rest.slice(0, -1), wrappedCb);
-
-    if (this.dynamicTools) {
-      // Only disable the tool if it's not a core tool
-      if (!CORE_TOOLS.includes(name)) {
-        tool.disable();
-      }
-      addTool(tool, name).catch((error) => {
-        this.logger.error(`Failed to add tool ${name}:`, error);
-      });
-    }
+    const tool = super.registerTool(name, config, wrappedCb as ToolCallback<InputArgs>);
     return tool;
-  };
+  }
 }
-
-/*
- * These are tools that are always enabled at startup. They cannot be disabled and they cannot be dynamically enabled.
- * 
- * TODO: This list shouldn't be hard coded but instead should be constructed dynamically from the tools provided
- *       from the providers. PLEASE DO THIS TODO ASAP OR ELSE IT WILL GET OUT OF SYNC QUICKLY.
- */
-const CORE_TOOLS = [
-  // CORE TOOLS
-  'sf-get-username',
-  'sf-resume',
-  'sf-suggest-cli-command',
-
-  // DYNAMIC CORE TOOLS
-  'sf-enable-tools',
-  'sf-list-tools',
-];
