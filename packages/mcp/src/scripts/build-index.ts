@@ -43,7 +43,7 @@ const main = async (): Promise<void> => {
 
   // Define the output file paths
   const commandsPath = path.join(outputDir, 'sf-commands.json');
-  const faissIndexPath = path.join(outputDir, 'faiss-index.bin');
+  const faissIndexPath = path.join(outputDir, 'commands-index.bin');
 
   ux.stderr('Starting offline data preparation...');
 

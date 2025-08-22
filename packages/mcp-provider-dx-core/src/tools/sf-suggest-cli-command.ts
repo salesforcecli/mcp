@@ -96,7 +96,11 @@ NEVER use this tool for understanding the input schema of a Salesforce MCP tool.
       faiss.IndexFlatL2
     >();
 
-    const assets = await ragAssetService.getAssets(ragAssetService.getDataDir(), 'commands.json', 'faiss-index.bin');
+    const assets = await ragAssetService.getAssets(
+      ragAssetService.getDataDir(),
+      'sf-commands.json',
+      'commands-index.bin'
+    );
 
     // Embed the user query
     const queryEmbedding = await assets.embedder(input.query, {

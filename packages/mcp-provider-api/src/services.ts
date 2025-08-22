@@ -26,6 +26,11 @@ export type RagAssets<D, E, I> = {
   index: I;
 };
 
+/**
+ * The RagAssetService was built with sf-suggest-cli-command as the only use case.
+ * So any additional use cases will almost certainly require changes to this service and
+ * would likely require us to develop a fully featured, tool-agnostic RAG system.
+ */
 export interface RagAssetService<D, E, I> {
   getAssets(dataDir: string, dataPath: string, indexPath: string): Promise<RagAssets<D, E, I>>;
   getDataDir(): string;
