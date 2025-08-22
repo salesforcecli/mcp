@@ -43,7 +43,6 @@
   ],
   "dependencies": {
     "@huggingface/transformers": "^3.7.0",
-    "@jsforce/jsforce-node": "^3.9.4",
     "@modelcontextprotocol/sdk": "^1.16.0",
     "@oclif/core": "^4.5.1",
     "@salesforce/agents": "^0.15.4",
@@ -57,7 +56,6 @@
     "@salesforce/telemetry": "^6.1.0",
     "@salesforce/ts-types": "^2.0.11",
     "faiss-node": "^0.5.1",
-    "open": "^10.1.2",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -88,6 +86,7 @@
     "build": {
       "dependencies": [
         "../mcp-provider-api:build",
+        "../mcp-provider-dx-core:build",
         "compile",
         "lint"
       ]
@@ -95,7 +94,8 @@
     "compile": {
       "command": "tsc -p . --pretty --incremental",
       "dependencies": [
-        "../mcp-provider-api:build"
+        "../mcp-provider-api:build",
+        "../mcp-provider-dx-core:build"
       ],
       "files": [
         "src/**/*.ts",

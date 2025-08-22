@@ -21,7 +21,6 @@
     "postpack": "sf-clean --ignore-signing-artifacts",
     "prepack": "sf-prepack",
     "prepare": "sf-install",
-    "start": "yarn build && npm link && mcp-inspector sf-mcp-server",
     "test": "wireit",
     "test:only": "wireit"
   },
@@ -45,7 +44,6 @@
   ],
   "dependencies": {
     "@huggingface/transformers": "^3.7.0",
-    "@jsforce/jsforce-node": "^3.9.4",
     "@modelcontextprotocol/sdk": "^1.16.0",
     "@salesforce/agents": "^0.15.4",
     "@salesforce/apex-node": "^8.2.1",
@@ -54,7 +52,6 @@
     "@salesforce/mcp-provider-api": "0.0.1-alpha.1",
     "@salesforce/source-deploy-retrieve": "^12.22.0",
     "@salesforce/source-tracking": "^7.4.8",
-    "@salesforce/telemetry": "^6.1.0",
     "@salesforce/ts-types": "^2.0.11",
     "faiss-node": "^0.5.1",
     "open": "^10.1.2",
@@ -74,14 +71,6 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "oclif": {
-    "bin": "sf-mcp-server",
-    "dirname": "sf-mcp-server",
-    "commands": {
-      "strategy": "single",
-      "target": "./lib/index.js"
-    }
   },
   "wireit": {
     "build": {
@@ -140,8 +129,7 @@
     "test": {
       "dependencies": [
         "test:only",
-        "test:compile",
-        "link-check"
+        "test:compile"
       ]
     },
     "test:only": {
@@ -156,44 +144,6 @@
         ".mocha*",
         "!*.nut.ts",
         ".nycrc"
-      ],
-      "output": []
-    },
-    "link-check": {
-      "command": "node -e \"process.exit(process.env.CI ? 0 : 1)\" || linkinator \"**/*.md\" --skip \"CHANGELOG.md|node_modules|test/|confluence.internal.salesforce.com|my.salesforce.com|localhost|%s\" --markdown --retry --directory-listing --verbosity error",
-      "files": [
-        "./*.md",
-        "./!(CHANGELOG).md",
-        "messages/**/*.md"
-      ],
-      "output": []
-    },
-    "test:command-reference": {
-      "command": "node --loader ts-node/esm --no-warnings=ExperimentalWarning \"./bin/dev.js\" commandreference:generate --erroronwarnings",
-      "files": [
-        "src/**/*.ts",
-        "messages/**",
-        "package.json"
-      ],
-      "output": [
-        "tmp/root"
-      ]
-    },
-    "test:deprecation-policy": {
-      "command": "node --loader ts-node/esm --no-warnings=ExperimentalWarning \"./bin/dev.js\" snapshot:compare",
-      "files": [
-        "src/**/*.ts"
-      ],
-      "output": [],
-      "dependencies": [
-        "compile"
-      ]
-    },
-    "test:json-schema": {
-      "command": "node --loader ts-node/esm --no-warnings=ExperimentalWarning \"./bin/dev.js\" schema:compare",
-      "files": [
-        "src/**/*.ts",
-        "schemas"
       ],
       "output": []
     }
