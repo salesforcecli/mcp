@@ -16,13 +16,11 @@
 import {
   Services as IServices,
   TelemetryService,
-  ApprovedServerMethods,
   TelemetryEvent,
   RagAssetService,
   OrgService,
   SanitizedOrgAuthorization,
 } from '@salesforce/mcp-provider-api';
-import { SfMcpServer } from './sf-mcp-server.js';
 import { getAssets } from './utils/assets.js';
 import Cache from './utils/cache.js';
 import {
@@ -35,21 +33,15 @@ import {
 
 export class Services implements IServices {
   private readonly telemetry: TelemetryService;
-  private readonly serverWrapper: ApprovedServerMethods;
   private readonly dataDir: string;
 
-  public constructor(opts: { telemetry: TelemetryService | undefined; server: SfMcpServer; dataDir: string }) {
+  public constructor(opts: { telemetry: TelemetryService | undefined; dataDir: string }) {
     this.telemetry = opts.telemetry ? opts.telemetry : new NoopTelemetryService();
-    this.serverWrapper = new ServerWrapper(opts.server);
     this.dataDir = opts.dataDir;
   }
 
   public getTelemetryService(): TelemetryService {
     return this.telemetry;
-  }
-
-  public getApprovedServerMethods(): ApprovedServerMethods {
-    return this.serverWrapper;
   }
 
   public getRagAssetService<D, E, I>(): RagAssetService<D, E, I> {
@@ -75,17 +67,5 @@ export class Services implements IServices {
 class NoopTelemetryService implements TelemetryService {
   public sendEvent(_eventName: string, _event: TelemetryEvent): void {
     // no-op
-  }
-}
-
-class ServerWrapper implements ApprovedServerMethods {
-  private readonly server: SfMcpServer;
-
-  public constructor(server: SfMcpServer) {
-    this.server = server;
-  }
-
-  public sendToolListChanged(): void {
-    this.server.sendToolListChanged();
   }
 }

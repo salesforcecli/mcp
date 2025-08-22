@@ -3,7 +3,6 @@ import { type OrgConfigInfo, type SanitizedOrgAuthorization } from './types.js';
 
 export interface Services {
   getTelemetryService(): TelemetryService;
-  getApprovedServerMethods(): ApprovedServerMethods;
   getRagAssetService<D, E, I>(): RagAssetService<D, E, I>;
   getOrgService(): OrgService;
 }
@@ -15,10 +14,6 @@ export interface TelemetryService {
 export type TelemetryEvent = {
   [key: string]: string | number | boolean | null | undefined;
 };
-
-export interface ApprovedServerMethods {
-  sendToolListChanged(): void;
-}
 
 export type RagAssets<D, E, I> = {
   data: D;

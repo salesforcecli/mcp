@@ -1,5 +1,4 @@
 import {
-  ApprovedServerMethods,
   Services,
   TelemetryEvent,
   TelemetryService,
@@ -7,22 +6,15 @@ import {
 
 export class StubServices implements Services {
   public readonly telemetryService: TelemetryService;
-  public readonly approvedServerMethods: ApprovedServerMethods;
 
   public constructor(
-    telemetryService: TelemetryService = new SpyTelemetryService(),
-    approvedServerMethods: ApprovedServerMethods = new SpyApprovedServerMethods()
+    telemetryService: TelemetryService = new SpyTelemetryService()
   ) {
     this.telemetryService = telemetryService;
-    this.approvedServerMethods = approvedServerMethods;
   }
 
   public getTelemetryService(): TelemetryService {
     return this.telemetryService;
-  }
-
-  public getApprovedServerMethods(): ApprovedServerMethods {
-    return this.approvedServerMethods;
   }
 }
 
@@ -31,12 +23,5 @@ export class SpyTelemetryService implements TelemetryService {
     [];
   public sendEvent(eventName: string, event: TelemetryEvent): void {
     this.sendEventCallHistory.push({ eventName, event });
-  }
-}
-
-export class SpyApprovedServerMethods implements ApprovedServerMethods {
-  public sendToolListChangedCount: number = 0;
-  public sendToolListChanged(): void {
-    this.sendToolListChangedCount++;
   }
 }

@@ -158,7 +158,7 @@ You can also use special values to control access to orgs:
 
     await maybeBuildIndex(this.config.dataDir, false);
 
-    const services = new Services({ server, telemetry: this.telemetry, dataDir: this.config.dataDir });
+    const services = new Services({ telemetry: this.telemetry, dataDir: this.config.dataDir });
 
     await registerToolsets(flags.toolsets ?? ['all'], flags['dynamic-tools'] ?? false, server, services);
 
