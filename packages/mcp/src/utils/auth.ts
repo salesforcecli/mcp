@@ -24,7 +24,7 @@ import Cache from './cache.js';
  * @param orgs - Array of OrgAuthorization objects
  * @returns Array of sanitized org authorization objects with only allowed fields
  */
-function sanitizeOrgs(orgs: OrgAuthorization[]): SanitizedOrgAuthorization[] {
+export function sanitizeOrgs(orgs: OrgAuthorization[]): SanitizedOrgAuthorization[] {
   return orgs.map((org) => ({
     aliases: org.aliases,
     configs: org.configs,
@@ -71,11 +71,7 @@ export function findOrgByUsernameOrAlias(
 }
 
 export async function getAllAllowedOrgs(): Promise<SanitizedOrgAuthorization[]> {
-  // Support for passing orgs via URL parameters for testing purposes
-  const url = new URL(import.meta.url);
-  const params = url.searchParams.get('orgs');
-  const paramOrg = params ? params : undefined;
-  const orgAllowList = paramOrg ? new Set([paramOrg]) : (await Cache.safeGet('allowedOrgs')) ?? new Set<string>();
+  const orgAllowList = (await Cache.safeGet('allowedOrgs')) ?? new Set<string>();
   // Get all orgs on the user's machine
   const allOrgs = await AuthInfo.listAllAuthorizations();
 
@@ -89,7 +85,7 @@ export async function getAllAllowedOrgs(): Promise<SanitizedOrgAuthorization[]> 
 }
 
 // Function to filter orgs based on ORG_ALLOWLIST configuration
-async function filterAllowedOrgs(
+export async function filterAllowedOrgs(
   orgs: SanitizedOrgAuthorization[],
   allowList: Set<string>
 ): Promise<SanitizedOrgAuthorization[]> {
