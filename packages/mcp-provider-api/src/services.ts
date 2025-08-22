@@ -12,5 +12,5 @@ export type TelemetryEvent = {
 };
 
 export interface ApprovedServerMethods {
-  sendToolListChanged: () => void;
+  sendToolListChanged(): void;
 }

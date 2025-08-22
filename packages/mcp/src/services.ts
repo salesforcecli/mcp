@@ -22,12 +22,12 @@ import {
 import { SfMcpServer } from './sf-mcp-server.js';
 
 export class Services implements IServices {
-  private telemetry: TelemetryService;
-  private server: SfMcpServer;
+  private readonly telemetry: TelemetryService;
+  private readonly serverWrapper: ApprovedServerMethods;
 
   public constructor(opts: { telemetry: TelemetryService | undefined; server: SfMcpServer }) {
     this.telemetry = opts.telemetry ? opts.telemetry : new NoopTelemetryService();
-    this.server = opts.server;
+    this.serverWrapper = new ServerWrapper(opts.server);
   }
 
   public getTelemetryService(): TelemetryService {
@@ -35,14 +35,24 @@ export class Services implements IServices {
   }
 
   public getApprovedServerMethods(): ApprovedServerMethods {
-    return {
-      sendToolListChanged: this.server.sendToolListChanged.bind(this.server),
-    };
+    return this.serverWrapper;
   }
 }
 
 class NoopTelemetryService implements TelemetryService {
   public sendEvent(_eventName: string, _event: TelemetryEvent): void {
     // no-op
+  }
+}
+
+class ServerWrapper implements ApprovedServerMethods {
+  private readonly server: SfMcpServer;
+
+  public constructor(server: SfMcpServer) {
+    this.server = server;
+  }
+
+  public sendToolListChanged(): void {
+    this.server.sendToolListChanged();
   }
 }
