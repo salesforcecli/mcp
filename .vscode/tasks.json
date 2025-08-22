@@ -3,7 +3,7 @@
   "tasks": [
     {
       "type": "npm",
-      "script": "build:watch",
+      "script": "build",
       "group": {
         "kind": "build",
         "isDefault": true

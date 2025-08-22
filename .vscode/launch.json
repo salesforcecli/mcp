@@ -9,16 +9,12 @@
       "request": "launch",
       "name": "MCP Server Launcher",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/node_modules/@modelcontextprotocol/inspector/bin/cli.js",
-      "outFiles": ["${workspaceFolder}/**/lib/**/*.js"],
-      "env": {
-        "DEBUG": "true"
-      },
-      "args": ["sf-mcp-server"],
+      "program": "${workspaceFolder}/node_modules/.bin/mcp-inspector",
+      "args": ["packages/mcp/bin/run.js", "--no-telemetry"],
       "sourceMaps": true,
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "preLaunchTask": "npm: build:watch"
+      "preLaunchTask": "npm: build"
     },
     {
       "type": "node",
