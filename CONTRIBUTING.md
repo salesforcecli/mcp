@@ -1,17 +1,17 @@
 ## Contributing
 
 1. The [DEVELOPING](DEVELOPING.md) doc has details on how to set up your environment.
-1. Create a new issue [here](https://github.com/forcedotcom/cli/issues) before starting your project so that we can keep track of
+2. Create a new issue [here](https://github.com/forcedotcom/mcp/issues) before starting your project so that we can keep track of
    what you are trying to add/fix. That way, we can also offer suggestions or
    let you know if there is already an effort in progress.
-1. Fork this repository (external contributors) or branch off main (committers).
-1. Create a _topic_ branch in your fork based on the main branch. Note, this step is recommended but technically not required if contributing using a fork.
-1. Edit the code in your fork/branch.
-1. Write appropriate tests for your changes. Try to achieve at least 95% code coverage on any new code. No pull request will be accepted without associated tests.
-1. Sign CLA (see [CLA](#cla) below).
-1. Send us a pull request when you are done. We'll review your code, suggest any
+3. Fork this repository (external contributors) or branch off main (committers).
+4. Create a _topic_ branch in your fork based on the main branch. Note, this step is recommended but technically not required if contributing using a fork.
+5. Edit the code in your fork/branch.
+6. Write appropriate tests for your changes. Try to achieve at least 95% code coverage on any new code. No pull request will be accepted without associated tests.
+7. Sign CLA (see [CLA](#cla) below).
+8. Send us a pull request when you are done. We'll review your code, suggest any
    needed changes, and merge it in.
-1. Upon merge, a new release of the `@salesforce/mcp` plugin will be published to [npm](https://www.npmjs.com/package/@salesforce/mcp) with a version bump corresponding to commitizen rules.
+9. Upon merge, a new release of the `@salesforce/mcp` plugin will be published to [npm](https://www.npmjs.com/package/@salesforce/mcp) with a version bump corresponding to commitizen rules.
 
 ### CLA
 
