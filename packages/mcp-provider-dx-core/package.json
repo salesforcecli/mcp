@@ -1,0 +1,149 @@
+{
+  "name": "@salesforce/mcp-provider-dx-core",
+  "version": "0.0.1-alpha.1",
+  "description": "MCP provider for core Salesforce DX functionality",
+  "types": "lib/index.d.ts",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "build": "wireit",
+    "build:watch": "yarn build --watch",
+    "clean": "sf-clean",
+    "clean-all": "sf-clean all",
+    "compile": "wireit",
+    "docs": "sf-docs",
+    "fix-license": "eslint src test --fix --rule \"header/header: [2]\"",
+    "format": "wireit",
+    "link-check": "wireit",
+    "lint": "wireit",
+    "lint-fix": "yarn sf-lint --fix",
+    "package": "yarn pack",
+    "postpack": "sf-clean --ignore-signing-artifacts",
+    "prepack": "sf-prepack",
+    "prepare": "sf-install",
+    "test": "wireit",
+    "test:only": "wireit"
+  },
+  "repository": "salesforcecli/mcp",
+  "bugs": {
+    "url": "https://github.com/salesforcecli/mcp/issues"
+  },
+  "homepage": "https://github.com/salesforcecli/mcp",
+  "exports": {
+    ".": {
+      "import": "./lib/index.js",
+      "types": "./lib/index.d.ts"
+    }
+  },
+  "files": [
+    "lib",
+    "!lib/**/*.map",
+    "messages",
+    "LICENSE.txt",
+    "package.json"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.16.0",
+    "@salesforce/agents": "^0.15.4",
+    "@salesforce/apex-node": "^8.2.1",
+    "@salesforce/core": "^8.18.0",
+    "@salesforce/kit": "^3.1.6",
+    "@salesforce/mcp-provider-api": "0.0.1-alpha.1",
+    "@salesforce/source-deploy-retrieve": "^12.22.0",
+    "@salesforce/source-tracking": "^7.4.8",
+    "@salesforce/ts-types": "^2.0.11",
+    "open": "^10.1.2",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/inspector": "^0.15.0",
+    "@salesforce/cli-plugins-testkit": "^5.3.39",
+    "@salesforce/dev-scripts": "11.0.2",
+    "@types/node": "^22.16.5",
+    "eslint": "^8.57.1",
+    "eslint-config-salesforce-license": "^1.0.1",
+    "eslint-plugin-sf-plugin": "^1.20.26",
+    "ts-node": "^10.9.2",
+    "ts-patch": "^3.3.0",
+    "typescript": "^5.8.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "wireit": {
+    "build": {
+      "dependencies": [
+        "../mcp-provider-api:build",
+        "compile",
+        "lint"
+      ]
+    },
+    "compile": {
+      "command": "tsc -p . --pretty --incremental",
+      "dependencies": [
+        "../mcp-provider-api:build"
+      ],
+      "files": [
+        "src/**/*.ts",
+        "**/tsconfig.json",
+        "messages/**"
+      ],
+      "output": [
+        "lib/**",
+        "*.tsbuildinfo"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "format": {
+      "command": "prettier --write \"+(src|test|schemas)/**/*.+(ts|js|json)|command-snapshot.json\"",
+      "files": [
+        "src/**/*.ts",
+        "test/**/*.ts",
+        "schemas/**/*.json",
+        "command-snapshot.json",
+        ".prettier*"
+      ],
+      "output": []
+    },
+    "lint": {
+      "command": "eslint src test --color --cache --cache-location .eslintcache",
+      "files": [
+        "src/**/*.ts",
+        "test/**/*.ts",
+        "messages/**",
+        "**/.eslint*",
+        "**/tsconfig.json"
+      ],
+      "output": []
+    },
+    "test:compile": {
+      "command": "tsc -p \"./test\" --pretty",
+      "files": [
+        "test/**/*.ts",
+        "**/tsconfig.json"
+      ],
+      "output": []
+    },
+    "test": {
+      "dependencies": [
+        "test:only",
+        "test:compile"
+      ]
+    },
+    "test:only": {
+      "command": "nyc mocha \"test/**/*.test.ts\"",
+      "env": {
+        "FORCE_COLOR": "2"
+      },
+      "files": [
+        "test/**/*.ts",
+        "src/**/*.ts",
+        "**/tsconfig.json",
+        ".mocha*",
+        "!*.nut.ts",
+        ".nycrc"
+      ],
+      "output": []
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "extends": "@salesforce/dev-config/tsconfig-strict",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "strictNullChecks": true,
+    "skipLibCheck": true
+  },
+  "include": ["./src"],
+  "references": [
+    {
+      "path": "../mcp-provider-api/tsconfig.json"
+    }
+  ]
+}

@@ -6,7 +6,6 @@ export enum Toolset {
   METADATA = 'metadata',
   TESTING = 'testing',
   USERS = 'users',
-  DYNAMIC = 'dynamic',
 
   // TODO: Remove this in favor of adding a getState method to the McpTool class
   EXPERIMENTAL = 'experimental',

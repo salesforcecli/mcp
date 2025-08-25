@@ -17,8 +17,8 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import Cache from '../../src/shared/cache.js';
-import { ToolInfo } from '../../src/shared/types.js';
+import Cache from '../../src/utils/cache.js';
+import { ToolInfo } from '../../src/utils/types.js';
 
 describe('Cache', () => {
   let sandbox: sinon.SinonSandbox;

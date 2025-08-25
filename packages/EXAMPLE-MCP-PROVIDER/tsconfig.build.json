@@ -7,18 +7,14 @@
     "declaration": true,
     "esModuleInterop": true,
     "isolatedModules": true,
-    "lib": [
-      "ES2022"
-    ],
+    "lib": ["ES2022"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "sourceMap": true,
     "strict": true,
     "target": "ESNEXT"
   },
-  "include": [
-    "./src"
-  ],
+  "include": ["./src"],
   "references": [
     {
       "path": "../mcp-provider-api/tsconfig.json"

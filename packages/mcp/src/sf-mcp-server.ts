@@ -28,7 +28,7 @@ import { Logger } from '@salesforce/core';
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import { ZodRawShape } from 'zod';
 import { Telemetry } from './telemetry.js';
-import { RateLimiter, RateLimitConfig, createRateLimiter } from './shared/rate-limiter.js';
+import { RateLimiter, RateLimitConfig, createRateLimiter } from './utils/rate-limiter.js';
 
 type ToolMethodSignatures = {
   tool: McpServer['tool'];
@@ -44,8 +44,6 @@ export type SfMcpServerOptions = ServerOptions & {
   telemetry?: Telemetry;
   /** Optional rate limiting configuration */
   rateLimit?: Partial<RateLimitConfig>;
-  /** Enable dynamic tool loading */
-  dynamicTools?: boolean;
 };
 
 /**

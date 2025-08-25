@@ -1,0 +1,6 @@
+{
+  "devDepOverrides": [
+    "eslint-config-salesforce-license",
+    "@types/node"
+  ]
+}

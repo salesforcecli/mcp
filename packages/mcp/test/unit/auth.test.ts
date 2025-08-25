@@ -17,14 +17,16 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { AuthInfo, ConfigAggregator, ConfigInfo, OrgConfigProperties, type OrgAuthorization } from '@salesforce/core';
-import { type SanitizedOrgAuthorization } from '../../src/shared/types.js';
-// Import types for dynamic imports with query strings
-import type * as AuthModuleType from '../../src/shared/auth.js';
-const { getDefaultTargetOrg, getDefaultTargetDevHub, sanitizeOrgs, findOrgByUsernameOrAlias, filterAllowedOrgs } =
-  (await import(
-    // @ts-expect-error Dynamic import with query string to control ORG_ALLOWLIST for testing
-    '../../src/shared/auth.js?orgs=foo@example.com'
-  )) as typeof AuthModuleType;
+import { type SanitizedOrgAuthorization } from '@salesforce/mcp-provider-api';
+import {
+  getAllAllowedOrgs,
+  getDefaultTargetOrg,
+  getDefaultTargetDevHub,
+  sanitizeOrgs,
+  findOrgByUsernameOrAlias,
+  filterAllowedOrgs,
+} from '../../src/utils/auth.js';
+import Cache from '../../src/utils/cache.js';
 
 describe('auth tests', () => {
   const sandbox = sinon.createSandbox();
@@ -358,9 +360,7 @@ describe('auth tests', () => {
     });
 
     it('should only return orgs that exists in allowlist', async () => {
-      // @ts-expect-error Dynamic import with query string to control ORG_ALLOWLIST for testing
-      const authModule = (await import('../../src/shared/auth.js?orgs=org1@example.com')) as typeof AuthModuleType;
-      const { getAllAllowedOrgs } = authModule;
+      sandbox.stub(Cache, 'safeGet').resolves(new Set(['org1@example.com']));
 
       const result = await getAllAllowedOrgs();
 
@@ -370,9 +370,7 @@ describe('auth tests', () => {
     });
 
     it('should return all orgs if ALLOW_ALL_ORGS is set', async () => {
-      // @ts-expect-error Dynamic import with query string to control ORG_ALLOWLIST for testing
-      const authModule = (await import('../../src/shared/auth.js?orgs=ALLOW_ALL_ORGS')) as typeof AuthModuleType;
-      const { getAllAllowedOrgs } = authModule;
+      sandbox.stub(Cache, 'safeGet').resolves(new Set(['ALLOW_ALL_ORGS']));
 
       const result = await getAllAllowedOrgs();
 
@@ -383,9 +381,7 @@ describe('auth tests', () => {
     });
 
     it('should return an orgs by an alias', async () => {
-      // @ts-expect-error Dynamic import with query string to control ORG_ALLOWLIST for testing
-      const authModule = (await import('../../src/shared/auth.js?orgs=org1-alias')) as typeof AuthModuleType;
-      const { getAllAllowedOrgs } = authModule;
+      sandbox.stub(Cache, 'safeGet').resolves(new Set(['org1-alias']));
 
       const result = await getAllAllowedOrgs();
 
@@ -423,9 +419,7 @@ describe('auth tests', () => {
       configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(targetOrgConfig);
       configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(emptyDevHubConfig);
 
-      // @ts-expect-error Dynamic import with query string to control ORG_ALLOWLIST for testing
-      const authModule = (await import('../../src/shared/auth.js?orgs=DEFAULT_TARGET_ORG')) as typeof AuthModuleType;
-      const { getAllAllowedOrgs } = authModule;
+      sandbox.stub(Cache, 'safeGet').resolves(new Set(['DEFAULT_TARGET_ORG']));
 
       const result = await getAllAllowedOrgs();
 
@@ -463,11 +457,7 @@ describe('auth tests', () => {
       configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(emptyTargetOrgConfig);
       configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(devHubConfig);
 
-      const authModule = (await import(
-        // @ts-expect-error Dynamic import with query string to control ORG_ALLOWLIST for testing
-        '../../src/shared/auth.js?orgs=DEFAULT_TARGET_DEV_HUB'
-      )) as typeof AuthModuleType;
-      const { getAllAllowedOrgs } = authModule;
+      sandbox.stub(Cache, 'safeGet').resolves(new Set(['DEFAULT_TARGET_DEV_HUB']));
 
       const result = await getAllAllowedOrgs();
 
@@ -619,18 +609,30 @@ describe('auth tests', () => {
   });
 
   describe('getDefaultTargetOrg', () => {
+    beforeEach(() => {
+      // Restore and recreate the stub to ensure a clean state
+      configAggregatorGetInfoStub.restore?.();
+      configAggregatorGetInfoStub = sandbox.stub();
+
+      // Update the mock aggregator to use the new stub
+      const mockAggregator = {
+        getInfo: configAggregatorGetInfoStub,
+      };
+      configAggregatorCreateStub.resolves(mockAggregator);
+    });
+
     it('should return target org config when it exists', async () => {
       const mockConfig: ConfigInfo = {
         key: OrgConfigProperties.TARGET_ORG,
         value: 'test-org@example.com',
         location: ConfigAggregator.Location.LOCAL,
-        path: '/test/path',
+        path: '/test/path/unique-target-org',
         isLocal: () => true,
         isGlobal: () => false,
         isEnvVar: () => false,
       };
 
-      configAggregatorGetInfoStub.returns(mockConfig);
+      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(mockConfig);
 
       const result = await getDefaultTargetOrg();
 
@@ -639,7 +641,7 @@ describe('auth tests', () => {
         key: OrgConfigProperties.TARGET_ORG,
         value: 'test-org@example.com',
         location: ConfigAggregator.Location.LOCAL,
-        path: '/test/path',
+        path: '/test/path/unique-target-org',
       });
       expect(configAggregatorCreateStub.calledOnce).to.be.true;
       expect(configAggregatorGetInfoStub.calledWith(OrgConfigProperties.TARGET_ORG)).to.be.true;
@@ -656,7 +658,7 @@ describe('auth tests', () => {
         isEnvVar: () => false,
       };
 
-      configAggregatorGetInfoStub.returns(mockConfig);
+      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(mockConfig);
 
       const result = await getDefaultTargetOrg();
 
@@ -676,7 +678,7 @@ describe('auth tests', () => {
         isEnvVar: () => false,
       };
 
-      configAggregatorGetInfoStub.returns(mockConfig);
+      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(mockConfig);
 
       const result = await getDefaultTargetOrg();
 
@@ -695,7 +697,7 @@ describe('auth tests', () => {
         isEnvVar: () => false,
       };
 
-      configAggregatorGetInfoStub.returns(mockConfig);
+      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(mockConfig);
 
       // First call
       const result1 = await getDefaultTargetOrg();
@@ -714,7 +716,6 @@ describe('auth tests', () => {
         value: 'test-org@example.com',
         location: ConfigAggregator.Location.LOCAL,
         path: '/test/path/cache1',
-        cached: true,
       });
       expect(configAggregatorCreateStub.calledTwice).to.be.true; // ConfigAggregator is called every time to get the path.
     });
@@ -741,7 +742,7 @@ describe('auth tests', () => {
       };
 
       // First call with first config path
-      configAggregatorGetInfoStub.returns(mockConfig1);
+      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(mockConfig1);
       const result1 = await getDefaultTargetOrg();
       expect(result1).to.deep.equal({
         key: OrgConfigProperties.TARGET_ORG,
@@ -752,7 +753,7 @@ describe('auth tests', () => {
       expect(configAggregatorCreateStub.calledOnce).to.be.true;
 
       // Second call with different config path should not use cache
-      configAggregatorGetInfoStub.returns(mockConfig2);
+      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(mockConfig2);
       const result2 = await getDefaultTargetOrg();
       expect(result2).to.deep.equal({
         key: OrgConfigProperties.TARGET_ORG,
@@ -785,7 +786,7 @@ describe('auth tests', () => {
       };
 
       // First call - should cache the config by path
-      configAggregatorGetInfoStub.returns(mockConfig1);
+      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(mockConfig1);
       const result1 = await getDefaultTargetOrg();
       expect(result1).to.deep.equal({
         key: OrgConfigProperties.TARGET_ORG,
@@ -796,32 +797,43 @@ describe('auth tests', () => {
       expect(configAggregatorCreateStub.calledOnce).to.be.true;
 
       // Second call with same path should use cache
-      configAggregatorGetInfoStub.returns(mockConfig2);
+      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(mockConfig2);
       const result2 = await getDefaultTargetOrg();
       expect(result2).to.deep.equal({
         key: OrgConfigProperties.TARGET_ORG,
         value: 'test-org@example.com',
         location: ConfigAggregator.Location.LOCAL,
         path: '/test/path/cache2',
-        cached: true,
       });
       expect(configAggregatorCreateStub.calledTwice).to.be.true; // ConfigAggregator is called every time to get the path.
     });
   });
 
   describe('getDefaultTargetDevHub', () => {
+    beforeEach(() => {
+      // Restore and recreate the stub to ensure a clean state
+      configAggregatorGetInfoStub.restore?.();
+      configAggregatorGetInfoStub = sandbox.stub();
+
+      // Update the mock aggregator to use the new stub
+      const mockAggregator = {
+        getInfo: configAggregatorGetInfoStub,
+      };
+      configAggregatorCreateStub.resolves(mockAggregator);
+    });
+
     it('should return target dev hub config when it exists', async () => {
       const mockConfig: ConfigInfo = {
         key: OrgConfigProperties.TARGET_DEV_HUB,
         value: 'devhub@example.com',
         location: ConfigAggregator.Location.GLOBAL,
-        path: '/global/path',
+        path: '/global/path/unique-devhub',
         isLocal: () => false,
         isGlobal: () => true,
         isEnvVar: () => false,
       };
 
-      configAggregatorGetInfoStub.returns(mockConfig);
+      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(mockConfig);
 
       const result = await getDefaultTargetDevHub();
 
@@ -829,7 +841,7 @@ describe('auth tests', () => {
         key: OrgConfigProperties.TARGET_DEV_HUB,
         value: 'devhub@example.com',
         location: ConfigAggregator.Location.GLOBAL,
-        path: '/global/path',
+        path: '/global/path/unique-devhub',
       });
       expect(configAggregatorCreateStub.calledOnce).to.be.true;
       expect(configAggregatorGetInfoStub.calledWith(OrgConfigProperties.TARGET_DEV_HUB)).to.be.true;
@@ -846,7 +858,7 @@ describe('auth tests', () => {
         isEnvVar: () => false,
       };
 
-      configAggregatorGetInfoStub.returns(mockConfig);
+      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(mockConfig);
 
       const result = await getDefaultTargetDevHub();
 
@@ -865,7 +877,7 @@ describe('auth tests', () => {
         isEnvVar: () => false,
       };
 
-      configAggregatorGetInfoStub.returns(mockConfig);
+      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(mockConfig);
 
       const result = await getDefaultTargetDevHub();
 
@@ -884,7 +896,7 @@ describe('auth tests', () => {
         isEnvVar: () => false,
       };
 
-      configAggregatorGetInfoStub.returns(mockConfig);
+      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(mockConfig);
 
       // First call
       const result1 = await getDefaultTargetDevHub();
@@ -903,7 +915,6 @@ describe('auth tests', () => {
         value: 'devhub@example.com',
         location: ConfigAggregator.Location.GLOBAL,
         path: '/global/path/cache1',
-        cached: true,
       });
       expect(configAggregatorCreateStub.calledTwice).to.be.true; // ConfigAggregator is called every time to get the path.
     });
@@ -930,7 +941,7 @@ describe('auth tests', () => {
       };
 
       // First call with first config path
-      configAggregatorGetInfoStub.returns(mockConfig1);
+      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(mockConfig1);
       const result1 = await getDefaultTargetDevHub();
       expect(result1).to.deep.equal({
         key: OrgConfigProperties.TARGET_DEV_HUB,
@@ -941,7 +952,7 @@ describe('auth tests', () => {
       expect(configAggregatorCreateStub.calledOnce).to.be.true;
 
       // Second call with different config path should not use cache
-      configAggregatorGetInfoStub.returns(mockConfig2);
+      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(mockConfig2);
       const result2 = await getDefaultTargetDevHub();
       expect(result2).to.deep.equal({
         key: OrgConfigProperties.TARGET_DEV_HUB,
@@ -974,7 +985,7 @@ describe('auth tests', () => {
       };
 
       // First call - should cache the config by path
-      configAggregatorGetInfoStub.returns(mockConfig1);
+      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(mockConfig1);
       const result1 = await getDefaultTargetDevHub();
       expect(result1).to.deep.equal({
         key: OrgConfigProperties.TARGET_DEV_HUB,
@@ -985,14 +996,13 @@ describe('auth tests', () => {
       expect(configAggregatorCreateStub.calledOnce).to.be.true;
 
       // Second call with same path should use cache
-      configAggregatorGetInfoStub.returns(mockConfig2);
+      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(mockConfig2);
       const result2 = await getDefaultTargetDevHub();
       expect(result2).to.deep.equal({
         key: OrgConfigProperties.TARGET_DEV_HUB,
         value: 'devhub@example.com',
         location: ConfigAggregator.Location.GLOBAL,
         path: '/global/path/cache2',
-        cached: true,
       });
       expect(configAggregatorCreateStub.calledTwice).to.be.true; // ConfigAggregator is called every time to get the path.
     });
@@ -1049,14 +1059,12 @@ describe('auth tests', () => {
         value: 'target-org@example.com',
         location: ConfigAggregator.Location.LOCAL,
         path: '/test/path/isolation1',
-        cached: true,
       });
       expect(devHubResult2).to.deep.equal({
         key: OrgConfigProperties.TARGET_DEV_HUB,
         value: 'devhub@example.com',
         location: ConfigAggregator.Location.GLOBAL,
         path: '/global/path/isolation1',
-        cached: true,
       });
       expect(configAggregatorCreateStub.callCount).to.equal(4); // Called twice for each function (4 total)
     });
