@@ -156,7 +156,7 @@ You can also use special values to control access to orgs:
       }
     );
 
-    await maybeBuildIndex(this.config.dataDir, false);
+    await maybeBuildIndex(this.config.dataDir);
 
     const services = new Services({ telemetry: this.telemetry, dataDir: this.config.dataDir });
 
