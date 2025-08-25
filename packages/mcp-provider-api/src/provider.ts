@@ -3,11 +3,10 @@ import { McpPrompt } from './prompts.js';
 import { McpResource, McpResourceTemplate } from './resources.js';
 import { Services } from './services.js';
 import { McpTool } from './tools.js';
-import { createRequire } from 'module';
+import pkg from '../package.json' with { type: 'json' };
 
-const require = createRequire(import.meta.url);
-const packageJson: { version: string } = require('../../package.json');
-export const MCP_PROVIDER_API_VERSION: SemVer = new SemVer(packageJson.version);
+const packageJson: {version: string} = pkg as {version: string};
+export const MCP_PROVIDER_API_VERSION: SemVer =  new SemVer(packageJson.version);
 
 export abstract class McpProvider implements Versioned {
   /**

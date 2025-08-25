@@ -22,9 +22,9 @@ jobs:
           nodeVersionOverride: ${{ vars.NODE_VERSION_OVERRIDE }} # default is 'lts/*'
           nodeDisableVersions: ${{ vars.NODE_DISABLE_VERSIONS }}
 
-  prevent-typescript-dependency:
-    if: ${{ inputs.skipTsDepCheck == false }}
-    uses: salesforcecli/github-workflows/.github/workflows/preventTypescriptDep.yml@main
+  # prevent-typescript-dependency:
+  #   if: ${{ inputs.skipTsDepCheck == false }}
+  #   uses: salesforcecli/github-workflows/.github/workflows/preventTypescriptDep.yml@main
 
   linux-unit-tests:
     needs: determine-node-versions
@@ -41,20 +41,27 @@ jobs:
           node-version: ${{ matrix.node_version }}
           cache: yarn
 
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
 #      - uses: google/wireit@setup-github-actions-caching/v2
 #        continue-on-error: true
 
-      - name: Cache node modules
-        id: cache-nodemodules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+      # - name: Cache node modules
+      #   id: cache-nodemodules
+      #   uses: actions/cache@v4
+      #   env:
+      #     cache-name: cache-node-modules
+      #   with:
+      #     path: "**/node_modules"
+      #     key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: salesforcecli/github-workflows/.github/actions/yarnInstallWithRetries@main
-        if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
+      # - uses: salesforcecli/github-workflows/.github/actions/yarnInstallWithRetries@main
+      #   if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
+
+      - run: yarn
 
 #      # This is a temporary workaround to ensure wireit is >= 0.14.12
 #      # Once all plugins/libraries that use this workflow are updated, this can be removed

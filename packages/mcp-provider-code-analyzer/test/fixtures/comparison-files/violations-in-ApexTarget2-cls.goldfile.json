@@ -1,0 +1,162 @@
+{
+  "runDir": "{{RUNDIR}}{{SEP}}",
+  "violationCounts": {
+    "total": 6,
+    "sev1": 0,
+    "sev2": 0,
+    "sev3": 3,
+    "sev4": 3,
+    "sev5": 0
+  },
+  "versions": {
+    "code-analyzer": "0.31.0",
+    "pmd": "0.28.0",
+    "regex": "0.24.0"
+  },
+  "violations": [
+    {
+      "rule": "ApexSharingViolations",
+      "engine": "pmd",
+      "severity": 3,
+      "tags": [
+        "Recommended",
+        "Security",
+        "Apex"
+      ],
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "test{{SEP}}fixtures{{SEP}}sample-targets{{SEP}}ApexTarget2.cls",
+          "startLine": 1,
+          "startColumn": 1,
+          "endLine": 1,
+          "endColumn": 7
+        }
+      ],
+      "message": "Apex classes should declare a sharing model if DML or SOQL/SOSL is used",
+      "resources": [
+        "https://docs.pmd-code.org/pmd-doc-7.15.0/pmd_rules_apex_security.html#apexsharingviolations"
+      ]
+    },
+    {
+      "rule": "ApexDoc",
+      "engine": "pmd",
+      "severity": 4,
+      "tags": [
+        "Recommended",
+        "Documentation",
+        "Apex"
+      ],
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "test{{SEP}}fixtures{{SEP}}sample-targets{{SEP}}ApexTarget2.cls",
+          "startLine": 1,
+          "startColumn": 8,
+          "endLine": 11,
+          "endColumn": 2
+        }
+      ],
+      "message": "Missing ApexDoc comment",
+      "resources": [
+        "https://docs.pmd-code.org/pmd-doc-7.15.0/pmd_rules_apex_documentation.html#apexdoc"
+      ]
+    },
+    {
+      "rule": "ApexDoc",
+      "engine": "pmd",
+      "severity": 4,
+      "tags": [
+        "Recommended",
+        "Documentation",
+        "Apex"
+      ],
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "test{{SEP}}fixtures{{SEP}}sample-targets{{SEP}}ApexTarget2.cls",
+          "startLine": 4,
+          "startColumn": 19,
+          "endLine": 10,
+          "endColumn": 6
+        }
+      ],
+      "message": "Missing ApexDoc comment",
+      "resources": [
+        "https://docs.pmd-code.org/pmd-doc-7.15.0/pmd_rules_apex_documentation.html#apexdoc"
+      ]
+    },
+    {
+      "rule": "UnusedLocalVariable",
+      "engine": "pmd",
+      "severity": 3,
+      "tags": [
+        "Recommended",
+        "BestPractices",
+        "Apex"
+      ],
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "test{{SEP}}fixtures{{SEP}}sample-targets{{SEP}}ApexTarget2.cls",
+          "startLine": 7,
+          "startColumn": 23,
+          "endLine": 7,
+          "endColumn": 73
+        }
+      ],
+      "message": "Variable 'accs' defined but not used",
+      "resources": [
+        "https://docs.pmd-code.org/pmd-doc-7.15.0/pmd_rules_apex_bestpractices.html#unusedlocalvariable"
+      ]
+    },
+    {
+      "rule": "AvoidNonRestrictiveQueries",
+      "engine": "pmd",
+      "severity": 4,
+      "tags": [
+        "Recommended",
+        "Performance",
+        "Apex"
+      ],
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "test{{SEP}}fixtures{{SEP}}sample-targets{{SEP}}ApexTarget2.cls",
+          "startLine": 7,
+          "startColumn": 30,
+          "endLine": 7,
+          "endColumn": 73
+        }
+      ],
+      "message": "Avoid SOQL queries without a where or limit statement",
+      "resources": [
+        "https://docs.pmd-code.org/pmd-doc-7.15.0/pmd_rules_apex_performance.html#avoidnonrestrictivequeries"
+      ]
+    },
+    {
+      "rule": "OperationWithLimitsInLoop",
+      "engine": "pmd",
+      "severity": 3,
+      "tags": [
+        "Recommended",
+        "Performance",
+        "Apex"
+      ],
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "test{{SEP}}fixtures{{SEP}}sample-targets{{SEP}}ApexTarget2.cls",
+          "startLine": 7,
+          "startColumn": 30,
+          "endLine": 7,
+          "endColumn": 73
+        }
+      ],
+      "message": "Avoid operations in loops that may hit governor limits",
+      "resources": [
+        "https://docs.pmd-code.org/pmd-doc-7.15.0/pmd_rules_apex_performance.html#operationwithlimitsinloop"
+      ]
+    }
+  ]
+}

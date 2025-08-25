@@ -36,17 +36,24 @@ jobs:
           node-version: ${{ matrix.node_version }}
           cache: yarn
 
-      - name: Cache node modules
-        id: cache-nodemodules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
+      - uses: actions/setup-java@v4
         with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          distribution: 'temurin'
+          java-version: '11'
 
-      - uses: salesforcecli/github-workflows/.github/actions/yarnInstallWithRetries@main
-        if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
+      # - name: Cache node modules
+      #   id: cache-nodemodules
+      #   uses: actions/cache@v4
+      #   env:
+      #     cache-name: cache-node-modules
+      #   with:
+      #     path: "**/node_modules"
+      #     key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+
+      # - uses: salesforcecli/github-workflows/.github/actions/yarnInstallWithRetries@main
+      #   if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
+
+      - run: yarn
 
 #      # This is a temporary workaround to ensure wireit is >= 0.14.12
 #      # Once all plugins/libraries that use this workflow are updated, this can be removed
