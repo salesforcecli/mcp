@@ -44,8 +44,6 @@ export type SfMcpServerOptions = ServerOptions & {
   telemetry?: Telemetry;
   /** Optional rate limiting configuration */
   rateLimit?: Partial<RateLimitConfig>;
-  /** Enable dynamic tool loading */
-  dynamicTools?: boolean;
 };
 
 /**
