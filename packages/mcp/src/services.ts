@@ -17,11 +17,10 @@ import {
   Services as IServices,
   TelemetryService,
   TelemetryEvent,
-  RagAssetService,
   OrgService,
   SanitizedOrgAuthorization,
+  ConfigService,
 } from '@salesforce/mcp-provider-api';
-import { getAssets } from './utils/assets.js';
 import Cache from './utils/cache.js';
 import {
   getConnection,
@@ -44,10 +43,9 @@ export class Services implements IServices {
     return this.telemetry;
   }
 
-  public getRagAssetService<D, E, I>(): RagAssetService<D, E, I> {
+  public getConfigService(): ConfigService {
     return {
       getDataDir: () => this.dataDir,
-      getAssets,
     };
   }
 

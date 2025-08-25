@@ -27,7 +27,7 @@ import { SfMcpServer } from '../sf-mcp-server.js';
 import { MCP_PROVIDER_REGISTRY } from '../registry.js';
 import { addTool } from '../utils/tools.js';
 import { Services } from '../services.js';
-import { createDynamicServerTools } from '../dynamic-tool-provider.js';
+import { createDynamicServerTools } from '../main-server-provider.js';
 
 export async function registerToolsets(
   toolsets: Array<Toolset | 'all'>,

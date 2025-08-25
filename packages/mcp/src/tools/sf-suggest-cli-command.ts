@@ -15,11 +15,9 @@
  */
 
 import { z } from 'zod';
-import { McpTool, McpToolConfig, Services, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, Toolset, Services } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { FeatureExtractionPipeline } from '@huggingface/transformers';
-import faiss from 'faiss-node';
-import { textResponse } from '../shared/utils.js';
+import { getAssets } from '../utils/assets.js';
 
 /**
  * Suggest a Salesforce CLI (sf) command based on user input.
@@ -90,14 +88,8 @@ NEVER use this tool for understanding the input schema of a Salesforce MCP tool.
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
-    const ragAssetService = this.services.getRagAssetService<
-      CommandData[],
-      FeatureExtractionPipeline,
-      faiss.IndexFlatL2
-    >();
-
-    const assets = await ragAssetService.getAssets(
-      ragAssetService.getDataDir(),
+    const assets = await getAssets<CommandData[]>(
+      this.services.getConfigService().getDataDir(),
       'sf-commands.json',
       'commands-index.bin'
     );
@@ -154,6 +146,14 @@ Notes about Flag Properties:
 Synthesize the single "sf" command that best fulfills the user's request.
 `;
 
-    return textResponse(prompt);
+    return {
+      isError: false,
+      content: [
+        {
+          type: 'text',
+          text: prompt,
+        },
+      ],
+    };
   }
 }

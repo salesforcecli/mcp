@@ -14,7 +14,6 @@ export {
   type Services,
   type TelemetryService,
   type TelemetryEvent,
-  type RagAssets,
-  type RagAssetService,
   type OrgService,
+  type ConfigService
 } from './services.js';

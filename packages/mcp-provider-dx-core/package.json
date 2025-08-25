@@ -43,7 +43,6 @@
     "package.json"
   ],
   "dependencies": {
-    "@huggingface/transformers": "^3.7.0",
     "@modelcontextprotocol/sdk": "^1.16.0",
     "@salesforce/agents": "^0.15.4",
     "@salesforce/apex-node": "^8.2.1",
@@ -53,7 +52,6 @@
     "@salesforce/source-deploy-retrieve": "^12.22.0",
     "@salesforce/source-tracking": "^7.4.8",
     "@salesforce/ts-types": "^2.0.11",
-    "faiss-node": "^0.5.1",
     "open": "^10.1.2",
     "zod": "^3.25.76"
   },

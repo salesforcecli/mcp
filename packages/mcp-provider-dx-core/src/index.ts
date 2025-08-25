@@ -26,7 +26,6 @@ import { OrgOpenMcpTool } from './tools/sf-org-open.js';
 import { QueryOrgMcpTool } from './tools/sf-query-org.js';
 import { ResumeMcpTool } from './tools/sf-resume.js';
 import { RetrieveMetadataMcpTool } from './tools/sf-retrieve-metadata.js';
-import { SuggestCliCommandMcpTool } from './tools/sf-suggest-cli-command.js';
 import { TestAgentsMcpTool } from './tools/sf-test-agents.js';
 import { TestApexMcpTool } from './tools/sf-test-apex.js';
 
@@ -48,7 +47,6 @@ export class DxCoreMcpProvider extends McpProvider {
       new QueryOrgMcpTool(services),
       new ResumeMcpTool(services),
       new RetrieveMetadataMcpTool(services),
-      new SuggestCliCommandMcpTool(services),
       new TestAgentsMcpTool(services),
       new TestApexMcpTool(services),
     ]);

@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-import { McpTool } from '@salesforce/mcp-provider-api';
+import { McpProvider, McpTool, Services } from '@salesforce/mcp-provider-api';
 import { SfMcpServer } from './sf-mcp-server.js';
 import { EnableToolsMcpTool } from './tools/sf-enable-tools.js';
 import { ListToolsMcpTool } from './tools/sf-list-tools.js';
+import { SuggestCliCommandMcpTool } from './tools/sf-suggest-cli-command.js';
 
 export function createDynamicServerTools(server: SfMcpServer): McpTool[] {
   return [new EnableToolsMcpTool(server), new ListToolsMcpTool()];
+}
+
+export class MainServerProvider extends McpProvider {
+  public getName(): string {
+    return 'MainServerProvider';
+  }
+
+  public async provideTools(services: Services): Promise<McpTool[]> {
+    return Promise.resolve([new SuggestCliCommandMcpTool(services)]);
+  }
 }

@@ -16,10 +16,16 @@
 import fs from 'node:fs';
 import { resolve, join } from 'node:path';
 import { spawn } from 'node:child_process';
+import { FeatureExtractionPipeline } from '@huggingface/transformers';
 import faiss from 'faiss-node';
 import { pipeline } from '@huggingface/transformers';
 import { ux } from '@oclif/core';
-import { RagAssets } from '@salesforce/mcp-provider-api';
+
+type Assets<T> = {
+  data: T;
+  embedder: FeatureExtractionPipeline;
+  index: faiss.IndexFlatL2;
+};
 
 /**
  * Conditionally builds or rebuilds a FAISS index based on its existence and age.
@@ -83,11 +89,7 @@ function spawnBuildScript(outputDir: string, detached: boolean): Promise<void> {
   }
 }
 
-export async function getAssets<D, E, I>(
-  dataDir: string,
-  dataPath: string,
-  indexPath: string
-): Promise<RagAssets<D, E, I>> {
+export async function getAssets<T>(dataDir: string, dataPath: string, indexPath: string): Promise<Assets<T>> {
   const fullDataPath = join(dataDir, dataPath);
   const fullIndexPath = join(dataDir, indexPath);
 
@@ -108,11 +110,11 @@ export async function getAssets<D, E, I>(
 
   try {
     const dataRaw = await fs.promises.readFile(fullDataPath, 'utf-8');
-    const data = JSON.parse(dataRaw) as D;
-    const index = faiss.IndexFlatL2.read(fullIndexPath) as I;
-    const embedder = (await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
+    const data = JSON.parse(dataRaw) as T;
+    const index = faiss.IndexFlatL2.read(fullIndexPath);
+    const embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
       dtype: 'fp32',
-    })) as E;
+    });
 
     return {
       data,
