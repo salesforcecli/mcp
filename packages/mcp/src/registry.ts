@@ -15,11 +15,13 @@
  */
 
 import { McpProvider } from '@salesforce/mcp-provider-api';
+import { CodeAnalyzerMcpProvider } from '@salesforce/mcp-provider-code-analyzer';
 import { PlatformCliMcpProvider } from './modules/platform-cli/index.js';
 
 /** -------- ADD McpProvider INSTANCES HERE ------------------------------------------------------------------------- */
 
 export const MCP_PROVIDER_REGISTRY: McpProvider[] = [
   new PlatformCliMcpProvider(),
+  new CodeAnalyzerMcpProvider()
   // Add new instances here
 ];

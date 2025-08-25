@@ -2,9 +2,10 @@
   "name": "monorepo-for-salesforce-mcp-server-and-providers",
   "private": true,
   "license": "Apache-2.0",
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": {
+    "packages": ["packages/*"],
+    "nohoist": ["**"]
+  },
   "devDependencies": {
     "rimraf": "^6.0.1"
   },

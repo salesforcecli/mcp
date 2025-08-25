@@ -12,6 +12,9 @@
   "references": [
     {
       "path": "../mcp-provider-api/tsconfig.json"
+    },
+    {
+      "path": "../mcp-provider-code-analyzer/tsconfig.build.json"
     }
   ]
 }

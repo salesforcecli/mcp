@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "MCP Server Launcher",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/node_modules/.bin/mcp-inspector",
+      "program": "${workspaceFolder}/packages/mcp/node_modules/.bin/mcp-inspector",
       "args": ["packages/mcp/bin/run.js", "--no-telemetry", "--orgs", "DEFAULT_TARGET_ORG"],
       "sourceMaps": true,
       "console": "integratedTerminal",

@@ -51,6 +51,7 @@
     "@salesforce/core": "^8.18.0",
     "@salesforce/kit": "^3.1.6",
     "@salesforce/mcp-provider-api": "0.0.1-alpha.1",
+    "@salesforce/mcp-provider-code-analyzer": "0.0.1-alpha.1",
     "@salesforce/source-deploy-retrieve": "^12.22.0",
     "@salesforce/source-tracking": "^7.4.8",
     "@salesforce/telemetry": "^6.1.0",
@@ -86,7 +87,6 @@
   "wireit": {
     "build": {
       "dependencies": [
-        "../mcp-provider-api:build",
         "compile",
         "lint"
       ]
@@ -94,7 +94,8 @@
     "compile": {
       "command": "tsc -p . --pretty --incremental",
       "dependencies": [
-        "../mcp-provider-api:build"
+        "../mcp-provider-api:build",
+        "../mcp-provider-code-analyzer:build"
       ],
       "files": [
         "src/**/*.ts",

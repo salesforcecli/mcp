@@ -1,0 +1,8 @@
+rules:
+  pmd:
+    WhileLoopsMustUseBraces:
+      severity: 1
+      tags:
+        - Recommended
+        - Apex
+        - MyCustomTag
