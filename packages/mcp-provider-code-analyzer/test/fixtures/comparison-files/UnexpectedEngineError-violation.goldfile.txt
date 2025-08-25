@@ -1,0 +1,25 @@
+{
+  "runDir": "{{RUNDIR}}{{SEP}}",
+  "violationCounts": {
+    "total": 1,
+    "sev1": 1,
+    "sev2": 0,
+    "sev3": 0,
+    "sev4": 0,
+    "sev5": 0
+  },
+  "versions": {
+    "code-analyzer": "0.31.0",
+    "UnrunnableEngine": "1.0.0"
+  },
+  "violations": [
+    {
+      "rule": "UnexpectedEngineError",
+      "engine": "UnrunnableEngine",
+      "severity": 1,
+      "tags": [],
+      "primaryLocationIndex": 0,
+      "locations": [
+        {}
+      ],
+      "message": "The engine with name 'UnrunnableEngine' threw an unexpected error: Error: This engine is impossible to run\n

@@ -1,0 +1,10 @@
+# Some of our files are gold files used to hold expected text for our tests.
+# We do not wish to have GitHub add carriage returns for these files on windows.
+# So we forcefully set any file that ends in .goldfile.<ext> to only have \n characters:
+# See https://help.github.com/articles/dealing-with-line-endings/
+*.goldfile.*    text eol=lf
+
+# Some of our input files must be forced to use a certain EOL signifier no matter what the OS wants.
+# So we forcefully set any file that includes lf or crlf in its file extension to use the corresponding EOL.
+*.lf.* text eol=lf
+*.crlf.* text eol=crlf

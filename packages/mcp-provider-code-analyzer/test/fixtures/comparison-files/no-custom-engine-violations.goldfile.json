@@ -1,0 +1,16 @@
+{
+  "runDir": "{{RUNDIR}}{{SEP}}",
+  "violationCounts": {
+    "total": 0,
+    "sev1": 0,
+    "sev2": 0,
+    "sev3": 0,
+    "sev4": 0,
+    "sev5": 0
+  },
+  "versions": {
+    "code-analyzer": "0.31.0",
+    "EngineThatLogsError": "1.0.0"
+  },
+  "violations": []
+}

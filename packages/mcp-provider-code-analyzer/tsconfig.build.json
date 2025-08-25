@@ -3,9 +3,10 @@
     "composite": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "isolatedModules": true,
+
     "declaration": true,
     "esModuleInterop": true,
+    "isolatedModules": true,
     "lib": [
       "ES2022"
     ],
@@ -16,6 +17,11 @@
     "target": "ESNEXT"
   },
   "include": [
-    "./src",
+    "./src"
+  ],
+  "references": [
+    {
+      "path": "../mcp-provider-api/tsconfig.json"
+    }
   ]
 }

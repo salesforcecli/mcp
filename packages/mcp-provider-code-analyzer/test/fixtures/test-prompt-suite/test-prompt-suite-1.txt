@@ -1,0 +1,12 @@
+=== PROMPT 1
+Create a class called AccountService.cls. Give it a static boolean method that accepts a list of strings and, for each string,
+queries for Accounts with that FirstName__c. Then make sure that the code passes all of the quality rules.
+
+=== PROMPT 2
+Tell me about pmd's VfUnescapeEl rule.
+
+=== PROMPT 3
+Tell me about Code Analyzer's information for ESLint's no-with rule.
+
+=== PROMPT 4
+Tell me about PMD's NotARealRule rule.
