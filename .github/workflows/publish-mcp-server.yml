@@ -1,0 +1,28 @@
+name: publish-mcp-server
+
+on:
+  workflow_dispatch:
+    inputs:
+      update-providers:
+        description: 'Update provider dependencies to latest versions'
+        type: boolean
+        default: false
+      providers-to-update:
+        description: 'Comma-separated list of providers to update (leave empty to update all)'
+        type: string
+        default: ''
+      prerelease:
+        type: string
+        description: 'Name to use for the prerelease: beta, dev, etc.'
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder job
+        run: |
+          echo "This is a placeholder workflow. The actual implementation is in feature branches."
+          echo "Update providers to latest: ${{ inputs.update-providers }}"
+          echo "Providers to update: ${{ inputs.providers-to-update }}"
+          echo "Prerelease tag: ${{ inputs.prerelease }}"
+          echo "This workflow will be replaced when the feature branch is merged to main."
