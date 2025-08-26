@@ -1,0 +1,24 @@
+name: publish-providers
+
+on:
+  workflow_dispatch:
+    inputs:
+      packages:
+        description: 'Comma-separated list of packages to publish (e.g., mcp-provider-api,mcp-provider-dx-core). Leave empty to publish all available packages.'
+        type: string
+        default: ''
+      skip-on-empty:
+        description: 'Skip publishing if no semantic commits found'
+        type: boolean
+        default: true
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder job
+        run: |
+          echo "This is a placeholder workflow. The actual implementation is in feature branches."
+          echo "Packages requested: ${{ inputs.packages }}"
+          echo "Skip on empty: ${{ inputs.skip-on-empty }}"
+          echo "This workflow will be replaced when the feature branch is merged to main."
