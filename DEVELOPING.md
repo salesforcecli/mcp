@@ -112,6 +112,29 @@ yarn install
 yarn workspace @salesforce/mcp build
 ```
 
+## Triggering releases for your provider
+
+Once your provider is ready for release, you can publish it and optionally trigger a full server release:
+
+### Provider-only release (automatic on main branch):
+- Push changes to `main` branch - providers in the auto-publish list (`mcp-provider-api`, `mcp-provider-dx-core`) will automatically publish when changes are detected
+- To opt-in to auto-publishing: add your provider to the `AUTO_PUBLISHABLE_PACKAGES` array in `.github/workflows/publish-providers.yml` and in the `on.push.paths` array.
+- For manual-schedule providers like `mcp-provider-code-analyzer`, use: `gh workflow run publish-providers --field packages='mcp-provider-YOUR_PROVIDER'`
+
+### Full server release (includes your provider):
+1. First ensure your provider is published: `gh workflow run publish-providers --field packages='mcp-provider-YOUR_PROVIDER'`
+2. Then release the main server with updated dependencies: `gh workflow run publish-mcp-server --field update-providers=true`
+
+### Server release with all latest providers:
+- To release the server with all provider packages updated to their latest versions: `gh workflow run publish-mcp-server --field update-providers=true`
+- To update only specific providers: `gh workflow run publish-mcp-server --field update-providers=true --field providers-to-update='mcp-provider-api,mcp-provider-dx-core'`
+
+### Server prerelease (dev versions):
+- For dev releases: `gh workflow run publish-mcp-server --field prerelease='dev'`
+- Prereleases are published to custom npm tags (e.g., `npm install -g @salesforce/mcp@dev`).
+
+The server release workflow will automatically update to the latest provider versions before publishing the main MCP server package.
+
 - For server wiring details and how providers are loaded, see `packages/mcp/DEVELOPING.md`.
 
 ## Running the MCP server locally

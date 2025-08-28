@@ -16,13 +16,172 @@ on:
         description: 'Name to use for the prerelease: beta, dev, etc.'
 
 jobs:
-  placeholder:
+  update-dependencies:
+    if: inputs.update-providers
+    runs-on: ubuntu-latest
+    outputs:
+      has-updates: ${{ steps.update-deps.outputs.has-updates }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
+
+      - name: Get Github user info
+        id: github-user-info
+        uses: salesforcecli/github-workflows/.github/actions/getGithubUserInfo@main
+        with:
+          SVC_CLI_BOT_GITHUB_TOKEN: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: yarn
+
+      - name: Update provider dependencies
+        id: update-deps
+        run: |
+          cd packages/mcp
+          
+          # Define all provider packages
+          ALL_PROVIDERS=("@salesforce/mcp-provider-api" "@salesforce/mcp-provider-dx-core" "@salesforce/mcp-provider-code-analyzer")
+          
+          # Determine which providers to update
+          if [ -n "${{ inputs.providers-to-update }}" ]; then
+            IFS=',' read -ra PROVIDERS_TO_UPDATE <<< "${{ inputs.providers-to-update }}"
+            # Add @salesforce/ prefix if not present
+            for i in "${!PROVIDERS_TO_UPDATE[@]}"; do
+              if [[ "${PROVIDERS_TO_UPDATE[i]}" != @salesforce/* ]]; then
+                PROVIDERS_TO_UPDATE[i]="@salesforce/${PROVIDERS_TO_UPDATE[i]}"
+              fi
+            done
+          else
+            PROVIDERS_TO_UPDATE=("${ALL_PROVIDERS[@]}")
+          fi
+          
+          HAS_UPDATES=false
+          UPDATED_PACKAGES=()
+          
+          # Update each specified provider
+          for provider in "${PROVIDERS_TO_UPDATE[@]}"; do
+            echo "Checking for updates to $provider..."
+            
+            # Get current version
+            CURRENT_VERSION=$(node -p "require('./package.json').dependencies['$provider']")
+            
+            # Get latest version from npm
+            LATEST_VERSION=$(npm show "$provider" version)
+            
+            if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
+              echo "Updating $provider from $CURRENT_VERSION to $LATEST_VERSION"
+              
+              # Update using jq (similar to provider workflow)
+              jq --arg pkg "$provider" --arg ver "$LATEST_VERSION" \
+                '.dependencies[$pkg] = $ver' package.json > package.json.tmp
+              mv package.json.tmp package.json
+              
+              UPDATED_PACKAGES+=("$provider")
+              HAS_UPDATES=true
+            else
+              echo "$provider is already at latest version ($LATEST_VERSION)"
+            fi
+          done
+          
+          echo "has-updates=$HAS_UPDATES" >> "$GITHUB_OUTPUT"
+          
+          # Update lockfile and commit changes if any updates were made
+          if [ "$HAS_UPDATES" = true ]; then
+            cd ../../
+            # TODO(cristian): need to nuke all `node_modules` to cleanup some dep, running `yarn install` 2 times fails at the second run.
+            git clean -fdx
+            yarn install
+            
+            git config user.name "${{ steps.github-user-info.outputs.username }}"
+            git config user.email "${{ steps.github-user-info.outputs.email }}"
+            git add packages/mcp/package.json yarn.lock
+            git commit -m "chore: update provider dependencies
+            
+            Updated packages:
+            $(printf '%s\n' "${UPDATED_PACKAGES[@]}")"
+            git push
+          fi
+
+  publish-server:
+    needs: [update-dependencies]
+    # Skip publishing if update-providers=true but no provider updates were needed
+    # Logic: Run if (manual release) OR (provider updates were requested AND updates were found)
+    if: always() && (needs.update-dependencies.result == 'success' || needs.update-dependencies.result == 'skipped') && (!inputs.update-providers || needs.update-dependencies.outputs.has-updates == 'true')
     runs-on: ubuntu-latest
     steps:
-      - name: Placeholder job
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Get Github user info
+        id: github-user-info
+        uses: salesforcecli/github-workflows/.github/actions/getGithubUserInfo@main
+        with:
+          SVC_CLI_BOT_GITHUB_TOKEN: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build package
         run: |
-          echo "This is a placeholder workflow. The actual implementation is in feature branches."
-          echo "Update providers to latest: ${{ inputs.update-providers }}"
-          echo "Providers to update: ${{ inputs.providers-to-update }}"
-          echo "Prerelease tag: ${{ inputs.prerelease }}"
-          echo "This workflow will be replaced when the feature branch is merged to main."
+          cd packages/mcp
+          yarn build
+
+      - name: Conventional Changelog Action
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@3a392e9aa44a72686b0fc13259a90d287dd0877c
+        with:
+          git-user-name: ${{ steps.github-user-info.outputs.username }}
+          git-user-email: ${{ steps.github-user-info.outputs.email }}
+          github-token: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
+          tag-prefix: ""
+          release-count: "0"
+          skip-on-empty: false
+          git-path: "packages/mcp"
+          version-file: "packages/mcp/package.json"
+          output-file: "packages/mcp/CHANGELOG.md"
+          pre-release: ${{ inputs.prerelease && 'true' || 'false' }}
+          pre-release-identifier: ${{ inputs.prerelease || '' }}
+
+      - name: Create Github Release
+        id: release
+        uses: ncipollo/release-action@2c591bcc8ecdcd2db72b97d6147f871fcd833ba5
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        with:
+          name: "${{ steps.changelog.outputs.version }}"
+          tag: "${{ steps.changelog.outputs.version }}"
+          commit: ${{ github.sha }}
+          body: |
+            ## Changes in @salesforce/mcp
+            
+            ${{ steps.changelog.outputs.clean_changelog }}
+          token: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
+          skipIfReleaseExists: true
+          prerelease: ${{ inputs.prerelease && 'true' || 'false' }}
+
+      - name: Publish to npm
+        if: ${{ steps.changelog.outputs.skipped == 'false' && steps.release.outputs.id != '' }}
+        run: |
+          cd packages/mcp
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          
+          # Determine npm dist-tag
+          if [ -n "${{ inputs.prerelease }}" ]; then
+            NPM_TAG="${{ inputs.prerelease }}"
+            echo "Publishing prerelease to npm tag: $NPM_TAG"
+            npm publish --access public --tag "$NPM_TAG"
+          else
+            echo "Publishing to latest tag"
+            npm publish --access public
+          fi
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

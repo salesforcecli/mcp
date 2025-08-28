@@ -1,6 +1,13 @@
 name: publish-providers
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/mcp-provider-api/**'
+      - 'packages/mcp-provider-dx-core/**'  
+      # - 'packages/mcp-provider-code-analyzer/**'
   workflow_dispatch:
     inputs:
       packages:
@@ -13,12 +20,174 @@ on:
         default: true
 
 jobs:
-  placeholder:
+  detect-changes:
     runs-on: ubuntu-latest
+    outputs:
+      changed-packages: ${{ steps.detect.outputs.packages }}
+      has-changes: ${{ steps.detect.outputs.has-changes }}
     steps:
-      - name: Placeholder job
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Detect changed packages
+        id: detect
         run: |
-          echo "This is a placeholder workflow. The actual implementation is in feature branches."
-          echo "Packages requested: ${{ inputs.packages }}"
-          echo "Skip on empty: ${{ inputs.skip-on-empty }}"
-          echo "This workflow will be replaced when the feature branch is merged to main."
+          # Packages that auto-publish on push to main
+          AUTO_PUBLISHABLE_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core")
+          
+          # All available provider packages
+          ALL_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core" "mcp-provider-code-analyzer")
+          
+          # Initialize packages array
+          PACKAGES='[]'
+          HAS_CHANGES=false
+          
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual workflow dispatch detected"
+            
+            if [ -n "${{ inputs.packages }}" ]; then
+              # Parse comma-separated input
+              IFS=',' read -ra SPECIFIED_PACKAGES <<< "${{ inputs.packages }}"
+              for pkg in "${SPECIFIED_PACKAGES[@]}"; do
+                # Trim whitespace
+                pkg=$(echo "$pkg" | xargs)
+                # Validate package exists
+                if [[ " ${ALL_PACKAGES[@]} " =~ " ${pkg} " ]]; then
+                  PACKAGES=$(echo "$PACKAGES" | jq -c --arg pkg "$pkg" '. += [$pkg]')
+                  HAS_CHANGES=true
+                  echo "Manual publish requested for: $pkg"
+                else
+                  echo "Warning: Unknown package '$pkg' specified, skipping"
+                fi
+              done
+            else
+              # No packages specified, publish auto-publishable packages only
+              # code-analyzer is excluded from bulk operations and must be specified explicitly
+              for pkg in "${AUTO_PUBLISHABLE_PACKAGES[@]}"; do
+                PACKAGES=$(echo "$PACKAGES" | jq -c --arg pkg "$pkg" '. += [$pkg]')
+                HAS_CHANGES=true
+                echo "Manual publish requested for: $pkg"
+              done
+            fi
+          else
+            echo "Push event detected, checking for changed files"
+            # Get changed files in the last commit
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+            
+            # Check each provider package for changes (only auto-publish enabled packages)
+            for pkg in "${AUTO_PUBLISHABLE_PACKAGES[@]}"; do
+              if echo "$CHANGED_FILES" | grep -q "^packages/$pkg/"; then
+                PACKAGES=$(echo "$PACKAGES" | jq -c --arg pkg "$pkg" '. += [$pkg]')
+                HAS_CHANGES=true
+                echo "Detected changes in: $pkg"
+              fi
+            done
+          fi
+          
+          echo "packages=$PACKAGES" >> "$GITHUB_OUTPUT"
+          echo "has-changes=$HAS_CHANGES" >> "$GITHUB_OUTPUT"
+          echo "Final packages to process: $PACKAGES"
+
+  publish-package:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has-changes == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.detect-changes.outputs.changed-packages) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Get Github user info
+        id: github-user-info
+        uses: salesforcecli/github-workflows/.github/actions/getGithubUserInfo@main
+        with:
+          SVC_CLI_BOT_GITHUB_TOKEN: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build package
+        run: |
+          cd packages/${{ matrix.package }}
+          yarn build
+
+      - name: Conventional Changelog Action
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@3a392e9aa44a72686b0fc13259a90d287dd0877c
+        with:
+          git-user-name: ${{ steps.github-user-info.outputs.username }}
+          git-user-email: ${{ steps.github-user-info.outputs.email }}
+          github-token: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
+          tag-prefix: "${{ matrix.package }}@"
+          release-count: "0"
+          skip-on-empty: ${{ github.event_name == 'push' || inputs.skip-on-empty }}
+          git-path: "packages/${{ matrix.package }}"
+          version-file: "packages/${{ matrix.package }}/package.json"
+          output-file: "packages/${{ matrix.package }}/CHANGELOG.md"
+
+      - name: Create Github Release
+        id: release
+        uses: ncipollo/release-action@2c591bcc8ecdcd2db72b97d6147f871fcd833ba5
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        with:
+          name: "${{ matrix.package }}@${{ steps.changelog.outputs.version }}"
+          tag: "${{ matrix.package }}@${{ steps.changelog.outputs.version }}"
+          commit: ${{ github.sha }}
+          body: |
+            ## Changes in ${{ matrix.package }}
+            
+            ${{ steps.changelog.outputs.clean_changelog }}
+          token: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
+          skipIfReleaseExists: true
+
+      - name: Publish to npm
+        if: ${{ steps.changelog.outputs.skipped == 'false' && steps.release.outputs.id != '' }}
+        run: |
+          cd packages/${{ matrix.package }}
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          npm publish --access public
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Update main server dependency
+        if: ${{ steps.changelog.outputs.skipped == 'false' && steps.release.outputs.id != '' }}
+        run: |
+          # Get the published version
+          PUBLISHED_VERSION="${{ steps.changelog.outputs.version }}"
+          PACKAGE_NAME="@salesforce/${{ matrix.package }}"
+          
+          echo "Updating $PACKAGE_NAME to version $PUBLISHED_VERSION in main MCP server"
+          
+          # Update the dependency in main server's package.json using jq
+          cd packages/mcp
+          jq --arg pkg "$PACKAGE_NAME" --arg ver "$PUBLISHED_VERSION" \
+            '.dependencies[$pkg] = $ver' package.json > package.json.tmp
+          mv package.json.tmp package.json
+          
+          # Go back to root and update yarn.lock
+          cd ../../
+          # TODO(cristian): need to nuke all `node_modules` to cleanup some dep, running `yarn install` 2 times fails at the second run.
+          git clean -fdx
+          yarn install
+          
+          # Commit the changes
+          git add packages/mcp/package.json yarn.lock
+          git config user.name "${{ steps.github-user-info.outputs.username }}"
+          git config user.email "${{ steps.github-user-info.outputs.email }}"
+          # TODO(cristian): remove `--no-verify` after linting issues are solved
+          git commit -m "chore: bump $PACKAGE_NAME to $PUBLISHED_VERSION --no-verify
+
+          Auto-update dependency after provider package publish.
+          
+          Related release: ${{ matrix.package }}@${{ steps.changelog.outputs.version }}"
+          git push
