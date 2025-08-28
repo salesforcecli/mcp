@@ -41,7 +41,6 @@
     "package.json"
   ],
   "dependencies": {
-    "@huggingface/transformers": "^3.7.0",
     "@modelcontextprotocol/sdk": "^1.16.0",
     "@oclif/core": "^4.5.1",
     "@salesforce/agents": "^0.15.4",
@@ -55,7 +54,6 @@
     "@salesforce/source-tracking": "^7.4.8",
     "@salesforce/telemetry": "^6.1.0",
     "@salesforce/ts-types": "^2.0.11",
-    "faiss-node": "^0.5.1",
     "zod": "^3.25.76"
   },
   "devDependencies": {

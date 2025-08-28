@@ -22,7 +22,6 @@ import { Command, Flags, ux } from '@oclif/core';
 import Cache from './utils/cache.js';
 import { Telemetry } from './telemetry.js';
 import { SfMcpServer } from './sf-mcp-server.js';
-import { maybeBuildIndex } from './utils/assets.js';
 import { registerToolsets } from './utils/registry-utils.js';
 import { Services } from './services.js';
 
@@ -163,11 +162,15 @@ You can also use special values to control access to orgs:
       }
     );
 
-    await maybeBuildIndex(this.config.dataDir);
-
     const services = new Services({ telemetry: this.telemetry, dataDir: this.config.dataDir });
 
-    await registerToolsets(flags.toolsets ?? ['all'], flags['dynamic-tools'] ?? false, flags['allow-non-ga-tools'] ?? false, server, services);
+    await registerToolsets(
+      flags.toolsets ?? ['all'],
+      flags['dynamic-tools'] ?? false,
+      flags['allow-non-ga-tools'] ?? false,
+      server,
+      services
+    );
 
     const transport = new StdioServerTransport();
     await server.connect(transport);
