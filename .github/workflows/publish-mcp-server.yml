@@ -133,7 +133,7 @@ jobs:
 
       - name: Build package
         run: |
-          cd packages/mcp
+          # build the whole monorepo to get a provider-api build to for other dependant code
           yarn build
 
       - name: Conventional Changelog Action
