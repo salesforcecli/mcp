@@ -19,6 +19,7 @@ import {
   MCP_PROVIDER_API_VERSION,
   McpProvider,
   McpTool,
+  ReleaseState,
   Toolset,
   TOOLSETS,
   Versioned,
@@ -32,21 +33,21 @@ import { createDynamicServerTools } from '../main-server-provider.js';
 export async function registerToolsets(
   toolsets: Array<Toolset | 'all'>,
   useDynamicTools: boolean,
+  allowNonGaTools: boolean,
   server: SfMcpServer,
   services: Services
 ): Promise<void> {
   if (useDynamicTools) {
     const dynamicTools = createDynamicServerTools(server);
-    ux.stderr('Registering dynamic tools');
+    ux.stderr('Registering dynamic tools.');
     // eslint-disable-next-line no-await-in-loop
-    await registerTools(dynamicTools, server, useDynamicTools);
+    await registerTools(dynamicTools, server, useDynamicTools, allowNonGaTools);
   } else {
-    ux.stderr('Skipping registration of dynamic tools');
+    ux.stderr('Skipping registration of dynamic tools.');
   }
 
   const toolsetsToEnable: Set<Toolset> = toolsets.includes('all')
-    ? new Set(TOOLSETS.filter((ts) => ts !== Toolset.EXPERIMENTAL))
-    : new Set([Toolset.CORE, ...(toolsets as Toolset[])]);
+    ? new Set(TOOLSETS) : new Set([Toolset.CORE, ...(toolsets as Toolset[])]);
 
   const newToolRegistry: Record<Toolset, McpTool[]> = await createToolRegistryFromProviders(
     MCP_PROVIDER_REGISTRY,
@@ -55,21 +56,28 @@ export async function registerToolsets(
 
   for (const toolset of TOOLSETS) {
     if (toolsetsToEnable.has(toolset)) {
-      ux.stderr(`Registering ${toolset} tools`);
+      ux.stderr(`Registering tools from the '${toolset}' toolset.`);
       // eslint-disable-next-line no-await-in-loop
-      await registerTools(newToolRegistry[toolset], server, useDynamicTools);
+      await registerTools(newToolRegistry[toolset], server, useDynamicTools, allowNonGaTools);
     } else {
-      ux.stderr(`Skipping registration of ${toolset} tools`);
+      ux.stderr(`Skipping registration of the tools from the '${toolset}' toolset.`);
     }
   }
 }
 
-async function registerTools(tools: McpTool[], server: SfMcpServer, useDynamicTools: boolean): Promise<void> {
+async function registerTools(tools: McpTool[], server: SfMcpServer, useDynamicTools: boolean, allowNonGaTools: boolean): Promise<void> {
   for (const tool of tools) {
+    if (!allowNonGaTools && tool.getReleaseState() === ReleaseState.NON_GA) {
+      ux.stderr(`* Skipping registration of non-ga tool '${tool.getName()}' because the '--allow-non-ga-tools' flag was not set at server startup.`);
+      continue;
+    }
     const registeredTool = server.registerTool(tool.getName(), tool.getConfig(), (...args) => tool.exec(...args));
     const toolsets = tool.getToolsets();
     if (useDynamicTools && !toolsets.includes(Toolset.CORE)) {
+      ux.stderr(`* Registering tool '${tool.getName()}' but marking it as disabled for now because the server is set for dynamic tool loading.`);
       registeredTool.disable();
+    } else {
+      ux.stderr(`* Registering tool '${tool.getName()}'.`);
     }
     // eslint-disable-next-line no-await-in-loop
     await addTool(registeredTool, tool.getName());

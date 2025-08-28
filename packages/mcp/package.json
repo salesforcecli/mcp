@@ -64,7 +64,6 @@
     "@salesforce/cli-plugins-testkit": "^5.3.39",
     "@salesforce/dev-scripts": "11.0.2",
     "@types/node": "^22.16.5",
-    "eslint": "^8.57.1",
     "eslint-config-salesforce-license": "^1.0.1",
     "eslint-plugin-sf-plugin": "^1.20.26",
     "oclif": "^4.21.0",
@@ -92,11 +91,6 @@
     },
     "compile": {
       "command": "tsc -p . --pretty --incremental",
-      "dependencies": [
-        "../mcp-provider-api:build",
-        "../mcp-provider-dx-core:build",
-        "../mcp-provider-code-analyzer:build"
-      ],
       "files": [
         "src/**/*.ts",
         "**/tsconfig.json",

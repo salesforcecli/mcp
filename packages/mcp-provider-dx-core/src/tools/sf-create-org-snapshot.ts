@@ -16,7 +16,7 @@
 
 import { z } from 'zod';
 import { Org } from '@salesforce/core';
-import { McpTool, McpToolConfig, Services, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, ReleaseState, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { textResponse } from '../shared/utils.js';
 import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
@@ -55,8 +55,12 @@ export class CreateOrgSnapshotMcpTool extends McpTool<InputArgsShape, OutputArgs
     super();
   }
 
+  public getReleaseState(): ReleaseState {
+    return ReleaseState.NON_GA;
+  }
+
   public getToolsets(): Toolset[] {
-    return [Toolset.EXPERIMENTAL];
+    return [Toolset.ORGS];
   }
 
   public getName(): string {

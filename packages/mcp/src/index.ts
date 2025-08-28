@@ -104,6 +104,9 @@ You can also use special values to control access to orgs:
       char: 'd',
       exclusive: ['toolsets'],
     }),
+    'allow-non-ga-tools': Flags.boolean({
+      summary: 'Enable the ability to register tools that are not yet generally available (GA)',
+    }),
   };
 
   public static examples = [
@@ -118,6 +121,10 @@ You can also use special values to control access to orgs:
     {
       description: 'Allow access to 3 specific orgs and enable all toolsets',
       command: '<%= config.bin %> --orgs test-org@example.com,my-dev-hub,my-alias',
+    },
+    {
+      description: 'Allow tools that are not generally available (GA) to be registered with the server',
+      command: '<%= config.bin %> --orgs DEFAULT_TARGET_ORG --allow-non-ga-tools',
     },
   ];
 
@@ -160,7 +167,7 @@ You can also use special values to control access to orgs:
 
     const services = new Services({ telemetry: this.telemetry, dataDir: this.config.dataDir });
 
-    await registerToolsets(flags.toolsets ?? ['all'], flags['dynamic-tools'] ?? false, server, services);
+    await registerToolsets(flags.toolsets ?? ['all'], flags['dynamic-tools'] ?? false, flags['allow-non-ga-tools'] ?? false, server, services);
 
     const transport = new StdioServerTransport();
     await server.connect(transport);

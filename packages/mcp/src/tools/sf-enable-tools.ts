@@ -15,7 +15,7 @@
  */
 
 import { z } from 'zod';
-import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { enableTools as utilEnableTools } from '../utils/tools.js';
 import { SfMcpServer } from '../sf-mcp-server.js';
@@ -31,6 +31,10 @@ type OutputArgsShapeType = z.ZodRawShape;
 export class EnableToolsMcpTool extends McpTool<InputArgsShapeType, OutputArgsShapeType> {
   public constructor(private readonly server: SfMcpServer) {
     super();
+  }
+
+  public getReleaseState(): ReleaseState {
+    return ReleaseState.GA;
   }
 
   public getToolsets(): Toolset[] {

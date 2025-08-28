@@ -7,6 +7,7 @@ import { ReadResourceResult, ServerNotification, ServerRequest } from '@modelcon
  * NOTE - CURRENTLY THE MAIN MCP SERVER DOES NOT CONSUME THIS YET.
  *
  * TODO: Update this documentation when the main server registered provided McpResource instances.
+ * Also consider whether or not a getReleaseState method that returns a ReleaseState for the prompt should be added.
  */
 export abstract class McpResource {
   kind: 'McpResource' = 'McpResource';

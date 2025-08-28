@@ -3,6 +3,7 @@ import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import {
   McpTool,
   McpToolConfig,
+  ReleaseState,
   TelemetryService,
   Toolset,
 } from "@salesforce/mcp-provider-api";
@@ -32,9 +33,13 @@ export class ExampleMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
     this.telemetryService = telemetryService;
   }
 
+  public getReleaseState(): ReleaseState {
+    return ReleaseState.NON_GA;
+  }
+
   // Must return which toolsets your tool should belong to
   public getToolsets(): Toolset[] {
-    return [Toolset.EXPERIMENTAL];
+    return [Toolset.OTHER];
   }
 
   // Must return the name of your tool. Your tool name should start with a 'sf-' prefix. The server may validate this.

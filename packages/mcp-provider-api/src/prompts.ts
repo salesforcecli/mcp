@@ -6,6 +6,7 @@ import { z } from 'zod';
  * NOTE - CURRENTLY THE MAIN MCP SERVER DOES NOT CONSUME THIS YET.
  *
  * TODO: Update this documentation when the main server registered provided McpPrompt instances.
+ * Also consider whether or not a getReleaseState method that returns a ReleaseState for the prompt should be added.
  */
 export abstract class McpPrompt<ArgsShape extends PromptArgsRawShape = PromptArgsRawShape> {
   abstract getName(): string;

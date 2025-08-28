@@ -1,6 +1,6 @@
-import { McpToolConfig, Toolset } from "@salesforce/mcp-provider-api";
-import { ExampleMcpTool } from "../../src/tools/sf-example-tool";
-import { SpyTelemetryService } from "../test-doubles";
+import { McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
+import { ExampleMcpTool } from "../../src/tools/sf-example-tool.js";
+import { SpyTelemetryService } from "../test-doubles.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 
 describe("Tests for ExampleMcpTool", () => {
@@ -12,8 +12,12 @@ describe("Tests for ExampleMcpTool", () => {
     tool = new ExampleMcpTool(telemetryService);
   });
 
-  it("When getToolsets is called, then 'experimental' is returned", () => {
-    expect(tool.getToolsets()).toEqual([Toolset.EXPERIMENTAL]);
+  it("When getReleaseState is called, then 'non-ga' is returned", () => {
+    expect(tool.getReleaseState()).toEqual(ReleaseState.NON_GA); // Make sure this truely reflects what you want
+  })
+
+  it("When getToolsets is called, then 'other' is returned", () => {
+    expect(tool.getToolsets()).toEqual([Toolset.OTHER]);
   });
 
   it("When getName is called, then 'sf-example' is returned", () => {

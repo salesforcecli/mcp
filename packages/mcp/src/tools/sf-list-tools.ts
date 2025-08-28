@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { listAllTools } from '../utils/tools.js';
 
 export class ListToolsMcpTool extends McpTool {
   public getToolsets(): Toolset[] {
     return [Toolset.CORE];
+  }
+
+  public getReleaseState(): ReleaseState {
+    return ReleaseState.GA;
   }
 
   public getName(): string {

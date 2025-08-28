@@ -1,7 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "url";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { McpToolConfig, Toolset } from "@salesforce/mcp-provider-api";
+import { McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
 import { CodeAnalyzerRunMcpTool } from "../../src/tools/sf-code-analyzer-run.js";
 import { RunAnalyzerAction, RunInput, RunOutput } from "../../src/actions/run-analyzer.js";
 
@@ -17,8 +17,12 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
         tool = new CodeAnalyzerRunMcpTool();
     });
 
-    it("When getToolsets is called, then 'experimental' is returned", () => {
-        expect(tool.getToolsets()).toEqual([Toolset.EXPERIMENTAL]);
+    it("When getReleaseState is called, then 'non-ga' is returned", () => {
+        expect(tool.getReleaseState()).toEqual(ReleaseState.NON_GA);
+    })
+
+    it("When getToolsets is called, then 'other' is returned", () => {
+        expect(tool.getToolsets()).toEqual([Toolset.OTHER]);
     });
 
     it("When getName is called, then 'sf-example' is returned", () => {

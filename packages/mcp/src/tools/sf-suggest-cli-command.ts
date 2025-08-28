@@ -15,7 +15,7 @@
  */
 
 import { z } from 'zod';
-import { McpTool, McpToolConfig, Toolset, Services } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, Toolset, Services, ReleaseState } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { getAssets } from '../utils/assets.js';
 
@@ -54,6 +54,10 @@ type CommandData = {
 export class SuggestCliCommandMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
   public constructor(private readonly services: Services) {
     super();
+  }
+
+  public getReleaseState(): ReleaseState {
+    return ReleaseState.GA;
   }
 
   public getToolsets(): Toolset[] {

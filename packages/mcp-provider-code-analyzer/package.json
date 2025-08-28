@@ -46,6 +46,6 @@
         "lint": "eslint **/*.ts",
         "postclean": "rimraf dist && rimraf ./*.tgz",
         "package": "yarn pack",
-        "test": "vitest run --coverage"
+        "test": "tsc --build tsconfig.json --noEmit && vitest run --coverage"
     }
 }

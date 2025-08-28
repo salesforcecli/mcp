@@ -20,7 +20,7 @@ import { z } from 'zod';
 import { Org, scratchOrgCreate, ScratchOrgCreateOptions } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { McpTool, McpToolConfig, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
 import { textResponse } from '../shared/utils.js';
 import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
 
@@ -94,8 +94,13 @@ type InputArgsShape = typeof createScratchOrgParams.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class CreateScratchOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  
+  public getReleaseState(): ReleaseState {
+    return ReleaseState.NON_GA;
+  }
+
   public getToolsets(): Toolset[] {
-    return [Toolset.EXPERIMENTAL];
+    return [Toolset.ORGS];
   }
 
   public getName(): string {

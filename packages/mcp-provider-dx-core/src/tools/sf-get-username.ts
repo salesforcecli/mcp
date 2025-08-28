@@ -15,7 +15,7 @@
  */
 
 import { z } from 'zod';
-import { McpTool, McpToolConfig, OrgConfigInfo, Services, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, OrgConfigInfo, ReleaseState, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { type OrgService } from '@salesforce/mcp-provider-api';
 import { textResponse } from '../shared/utils.js';
@@ -106,6 +106,11 @@ export class GetUsernameMcpTool extends McpTool<InputArgsShape, OutputArgsShape>
   public constructor(private readonly services: Services) {
     super();
   }
+
+  public getReleaseState(): ReleaseState {
+    return ReleaseState.GA;
+  }
+
   public getToolsets(): Toolset[] {
     return [Toolset.CORE];
   }
