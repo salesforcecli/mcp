@@ -1,3 +1,12 @@
+# [0.19.0](https://github.com/salesforcecli/mcp/compare/0.18.0...0.19.0) (2025-08-29)
+
+
+### Features
+
+* remove sf-suggest-cli-command W-19452518 ([#166](https://github.com/salesforcecli/mcp/issues/166)) ([9a06c05](https://github.com/salesforcecli/mcp/commit/9a06c056c564844b2df74a1ecf3484eb654e614e))
+
+
+
 # [0.18.0](https://github.com/salesforcecli/mcp/compare/0.17.1...0.18.0) (2025-08-28)
 
 
