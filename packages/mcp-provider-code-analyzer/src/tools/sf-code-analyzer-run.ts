@@ -17,23 +17,7 @@ const DESCRIPTION: string = `A tool for performing static analysis against code.
     `\n` +
     `When to use this tool:\n` +
     `- When the user asks you to generate files, use this tool to scan those files.\n` +
-    `- When the user asks you to check code for problems, use this tool to do that.\n` +
-    `\n` +
-    `Parameters explained:\n` +
-    `- target: An Array of absolute paths to files that should be scanned.\n` +
-    `  * This list MUST include files, and CANNOT include directories or globs.\n` +
-    `  * ALL files included in this array must actually exist on the user's machine.\n` +
-    `  * The array MUST be non-empty.\n` +
-    `  * The array can contain a MAXIMUM of ${MAX_ALLOWABLE_TARGET_COUNT} entries. If there are more than ten files to scan, the tool should be called multiple times.\n` +
-    `\n` +
-    `Output explained:\n` +
-    `- status: A string indicating whether the operation as a whole was successful.\n` +
-    `  * In a successful run, this will be "success".\n` +
-    `  * In a failed run, this will be an error message.\n` +
-    `- resultsFile: The absolute path to the results file. Read from this file to see what violations were found in the\n` +
-    `  target files, so that either you or the user can fix them.\n` +
-    `  * If the analysis finished successfully, this property will be present.\n` +
-    `  * If the analysis failed, then this property will be absent.\n`;
+    `- When the user asks you to check code for problems, use this tool to do that.\n`;
 
 const inputSchema = z.object({
     target: z.array(z.string()).describe(`A JSON-formatted array of between 1 and ${MAX_ALLOWABLE_TARGET_COUNT} files on the users machine that should be scanned.`)
@@ -48,6 +32,7 @@ type OutputArgsShape = typeof outputSchema.shape;
 
 
 export class CodeAnalyzerRunMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+    public static readonly NAME: string = 'run_code_analyzer';
     private readonly action: RunAnalyzerAction;
 
     public constructor(
@@ -69,7 +54,7 @@ export class CodeAnalyzerRunMcpTool extends McpTool<InputArgsShape, OutputArgsSh
     }
 
     public getName(): string {
-        return "sf-code-analyzer-run"; 
+        return CodeAnalyzerRunMcpTool.NAME;
     }
 
     public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {

@@ -19,7 +19,7 @@ describe("Tests for DescribeRuleTool", () => {
     });
 
     it("When getName is called, then 'sf-example' is returned", () => {
-        expect(tool.getName()).toEqual('sf-code-analyzer-describe-rule');
+        expect(tool.getName()).toEqual('describe_code_analyzer_rule');
     });
 
     it("When getConfig is called, then the correct configuration is returned", () => {
