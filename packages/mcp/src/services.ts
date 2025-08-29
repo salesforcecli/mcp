@@ -16,43 +16,54 @@
 import {
   Services as IServices,
   TelemetryService,
-  ApprovedServerMethods,
   TelemetryEvent,
+  OrgService,
+  SanitizedOrgAuthorization,
+  ConfigService,
 } from '@salesforce/mcp-provider-api';
-import { SfMcpServer } from './sf-mcp-server.js';
+import Cache from './utils/cache.js';
+import {
+  getConnection,
+  getDefaultTargetOrg,
+  getDefaultTargetDevHub,
+  getAllAllowedOrgs,
+  findOrgByUsernameOrAlias,
+} from './utils/auth.js';
 
 export class Services implements IServices {
   private readonly telemetry: TelemetryService;
-  private readonly serverWrapper: ApprovedServerMethods;
+  private readonly dataDir: string;
 
-  public constructor(opts: { telemetry: TelemetryService | undefined; server: SfMcpServer }) {
+  public constructor(opts: { telemetry: TelemetryService | undefined; dataDir: string }) {
     this.telemetry = opts.telemetry ? opts.telemetry : new NoopTelemetryService();
-    this.serverWrapper = new ServerWrapper(opts.server);
+    this.dataDir = opts.dataDir;
   }
 
   public getTelemetryService(): TelemetryService {
     return this.telemetry;
   }
 
-  public getApprovedServerMethods(): ApprovedServerMethods {
-    return this.serverWrapper;
+  public getConfigService(): ConfigService {
+    return {
+      getDataDir: () => this.dataDir,
+    };
+  }
+
+  public getOrgService(): OrgService {
+    return {
+      getAllowedOrgUsernames: async () => Cache.safeGet('allowedOrgs'),
+      getAllowedOrgs: () => getAllAllowedOrgs(),
+      getConnection: (username: string) => getConnection(username),
+      getDefaultTargetOrg: () => getDefaultTargetOrg(),
+      getDefaultTargetDevHub: () => getDefaultTargetDevHub(),
+      findOrgByUsernameOrAlias: (allOrgs: SanitizedOrgAuthorization[], usernameOrAlias: string) =>
+        findOrgByUsernameOrAlias(allOrgs, usernameOrAlias),
+    };
   }
 }
 
 class NoopTelemetryService implements TelemetryService {
   public sendEvent(_eventName: string, _event: TelemetryEvent): void {
     // no-op
-  }
-}
-
-class ServerWrapper implements ApprovedServerMethods {
-  private readonly server: SfMcpServer;
-
-  public constructor(server: SfMcpServer) {
-    this.server = server;
-  }
-
-  public sendToolListChanged(): void {
-    this.server.sendToolListChanged();
   }
 }

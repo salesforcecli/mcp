@@ -17,8 +17,8 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { addTool, enableTool, enableTools, disableTool, getToolStatus, listAllTools } from '../../src/shared/tools.js';
-import Cache from '../../src/shared/cache.js';
+import { addTool, enableTool, enableTools, disableTool, getToolStatus, listAllTools } from '../../src/utils/tools.js';
+import Cache from '../../src/utils/cache.js';
 
 describe('Tool Management', () => {
   let sandbox: sinon.SinonSandbox;

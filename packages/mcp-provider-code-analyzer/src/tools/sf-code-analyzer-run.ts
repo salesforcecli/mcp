@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import { z }  from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { McpTool, McpToolConfig, Toolset } from "@salesforce/mcp-provider-api";
+import { McpTool, McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
 import { getMessage } from "../messages.js";
 import { getErrorMessage } from "../utils.js";
 import { RunAnalyzerAction, RunAnalyzerActionImpl, RunInput, RunOutput } from "../actions/run-analyzer.js";
@@ -60,8 +60,12 @@ export class CodeAnalyzerRunMcpTool extends McpTool<InputArgsShape, OutputArgsSh
         this.action = action;
     }
 
+    public getReleaseState(): ReleaseState {
+        return ReleaseState.NON_GA;
+    }
+
     public getToolsets(): Toolset[] {
-        return [Toolset.EXPERIMENTAL];
+        return [Toolset.OTHER];
     }
 
     public getName(): string {

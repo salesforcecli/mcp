@@ -8,7 +8,8 @@
         "all",
         "--orgs",
         "DEFAULT_TARGET_ORG",
-        "--no-telemetry"
+        "--no-telemetry",
+        "--allow-non-ga-tools"
       ]
     }
   }

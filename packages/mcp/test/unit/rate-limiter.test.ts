@@ -15,7 +15,7 @@
  */
 
 import { expect } from 'chai';
-import { createRateLimiter } from '../../src/shared/rate-limiter.js';
+import { createRateLimiter } from '../../src/utils/rate-limiter.js';
 
 describe('RateLimiter', () => {
   describe('createRateLimiter', () => {

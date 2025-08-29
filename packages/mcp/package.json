@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/mcp",
-  "version": "0.17.1",
+  "version": "0.18.0",
   "description": "MCP Server for interacting with Salesforce instances",
   "bin": {
     "sf-mcp-server": "bin/run.js"
@@ -22,7 +22,6 @@
     "lint-fix": "yarn sf-lint --fix",
     "package": "yarn pack",
     "postpack": "sf-clean --ignore-signing-artifacts",
-    "prepack": "sf-prepack",
     "prepare": "sf-install",
     "start": "yarn build && npm link && mcp-inspector sf-mcp-server",
     "test": "wireit",
@@ -43,21 +42,20 @@
   ],
   "dependencies": {
     "@huggingface/transformers": "^3.7.0",
-    "@jsforce/jsforce-node": "^3.9.4",
     "@modelcontextprotocol/sdk": "^1.16.0",
     "@oclif/core": "^4.5.1",
     "@salesforce/agents": "^0.15.4",
     "@salesforce/apex-node": "^8.2.1",
     "@salesforce/core": "^8.18.0",
     "@salesforce/kit": "^3.1.6",
-    "@salesforce/mcp-provider-api": "0.0.1-alpha.1",
-    "@salesforce/mcp-provider-code-analyzer": "0.0.1-alpha.1",
+    "@salesforce/mcp-provider-api": "0.2.0",
+    "@salesforce/mcp-provider-dx-core": "0.2.0",
+    "@salesforce/mcp-provider-code-analyzer": "0.0.2",
     "@salesforce/source-deploy-retrieve": "^12.22.0",
     "@salesforce/source-tracking": "^7.4.8",
     "@salesforce/telemetry": "^6.1.0",
     "@salesforce/ts-types": "^2.0.11",
     "faiss-node": "^0.5.1",
-    "open": "^10.1.2",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -65,7 +63,6 @@
     "@salesforce/cli-plugins-testkit": "^5.3.39",
     "@salesforce/dev-scripts": "11.0.2",
     "@types/node": "^22.16.5",
-    "eslint": "^8.57.1",
     "eslint-config-salesforce-license": "^1.0.1",
     "eslint-plugin-sf-plugin": "^1.20.26",
     "oclif": "^4.21.0",
@@ -93,10 +90,6 @@
     },
     "compile": {
       "command": "tsc -p . --pretty --incremental",
-      "dependencies": [
-        "../mcp-provider-api:build",
-        "../mcp-provider-code-analyzer:build"
-      ],
       "files": [
         "src/**/*.ts",
         "**/tsconfig.json",

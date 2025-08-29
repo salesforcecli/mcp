@@ -3,11 +3,20 @@
   "private": true,
   "license": "Apache-2.0",
   "workspaces": {
-    "packages": ["packages/*"],
-    "nohoist": ["**"]
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**"
+    ]
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
     "rimraf": "^6.0.1"
+  },
+  "overrides": {
+    "@salesforce/core": "^8.22.0"
   },
   "scripts": {
     "build": "yarn workspaces run build",

@@ -1,7 +1,7 @@
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { DescribeRuleAction, DescribeRuleInput, DescribeRuleOutput } from "../../src/actions/describe-rule.js";
 import { CodeAnalyzerDescribeRuleMcpTool } from "../../src/tools/sf-code-analyzer-describe-rule.js";
-import { McpToolConfig, Toolset } from "@salesforce/mcp-provider-api";
+import { McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
 
 describe("Tests for DescribeRuleTool", () => {
     let tool: CodeAnalyzerDescribeRuleMcpTool;
@@ -10,8 +10,12 @@ describe("Tests for DescribeRuleTool", () => {
         tool = new CodeAnalyzerDescribeRuleMcpTool();
     });
 
-    it("When getToolsets is called, then 'experimental' is returned", () => {
-        expect(tool.getToolsets()).toEqual([Toolset.EXPERIMENTAL]);
+    it("When getReleaseState is called, then 'non-ga' is returned", () => {
+        expect(tool.getReleaseState()).toEqual(ReleaseState.NON_GA);
+    })
+
+    it("When getToolsets is called, then 'other' is returned", () => {
+        expect(tool.getToolsets()).toEqual([Toolset.OTHER]);
     });
 
     it("When getName is called, then 'sf-example' is returned", () => {
