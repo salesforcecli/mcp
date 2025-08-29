@@ -1,7 +1,11 @@
 version: 2
 updates:
   - package-ecosystem: 'npm'
-    directory: '/'
+    directories:
+      - '/packages/mcp'
+      - '/packages/mcp-provider-api'
+      - '/packages/mcp-provider-dx-core'
+      - '/packages/EXAMPLE-MCP-PROVIDER'
     schedule:
       interval: 'weekly'
       day: 'saturday'
