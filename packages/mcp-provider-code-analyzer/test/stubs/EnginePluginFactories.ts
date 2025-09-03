@@ -188,6 +188,9 @@ class EngineThatLogsError extends EngineApi.Engine {
     }
 
     async describeRules(): Promise<EngineApi.RuleDescription[]> {
+        this.emitTelemetryEvent('DescribeRuleTelemetryEvent', {
+            prop1: true
+        })
         return [
             {
                 name: "stub1RuleA",
@@ -201,7 +204,9 @@ class EngineThatLogsError extends EngineApi.Engine {
 
     async runRules(ruleNames: string[], _runOptions: EngineApi.RunOptions): Promise<EngineApi.EngineRunResults> {
         this.emitLogEvent(EngineApi.LogLevel.Error, 'FakeErrorLog');
-
+        this.emitTelemetryEvent('RunRulesTelemetryEvent', {
+            prop1: true
+        });
         return Promise.resolve({violations: []});
     }
 }

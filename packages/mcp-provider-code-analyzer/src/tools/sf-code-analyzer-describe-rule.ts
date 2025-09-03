@@ -1,6 +1,6 @@
 import { z }  from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { McpTool, McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
+import { McpTool, McpToolConfig, ReleaseState, Services, Toolset } from "@salesforce/mcp-provider-api";
 import { DescribeRuleAction, DescribeRuleActionImpl, DescribeRuleInput, DescribeRuleOutput} from "../actions/describe-rule.js";
 import { CodeAnalyzerConfigFactoryImpl } from "../factories/CodeAnalyzerConfigFactory.js";
 import { EnginePluginsFactoryImpl } from "../factories/EnginePluginsFactory.js";

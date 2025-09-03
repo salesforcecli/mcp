@@ -59,8 +59,13 @@ export class StubOrgService implements OrgService {
   }
 }
 
+export type SendTelemetryEvent = {
+  eventName: string,
+  event: TelemetryEvent
+}
+
 export class SpyTelemetryService implements TelemetryService {
-  public sendEventCallHistory: { eventName: string; event: TelemetryEvent }[] = [];
+  public sendEventCallHistory: SendTelemetryEvent[] = [];
   public sendEvent(eventName: string, event: TelemetryEvent): void {
     this.sendEventCallHistory.push({ eventName, event });
   }

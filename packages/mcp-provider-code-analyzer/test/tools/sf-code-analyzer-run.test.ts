@@ -25,7 +25,7 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
         expect(tool.getToolsets()).toEqual([Toolset.OTHER]);
     });
 
-    it("When getName is called, then 'sf-example' is returned", () => {
+    it("When getName is called, then tool name is returned", () => {
         expect(tool.getName()).toEqual('run_code_analyzer');
     });
 
