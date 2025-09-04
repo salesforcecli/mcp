@@ -108,9 +108,31 @@ For the best getting-started experience, make sure that you have a Salesforce DX
 
 1. To stop, restart, or view the MCP server configuration, run the **MCP: List Servers** command, click `Salesforce DX`, then click the appropriate option.
 
-## Configure Orgs and Toolsets
+## Configure the DX MCP Server
 
-You configure the Salesforce DX MCP Server by specifying at least one authorized org and an optional list of MCP toolsets.
+Configure the Salesforce DX MCP Server by passing arguments to the `args`option. Surround the argument name and its value each in double quotes, and separate all arguments and values with commas. Some arguments are Boolean and don't take a value. 
+
+This example shows three arguments that take a value (`-y`, `--orgs`, and `--toolsets`) and one Boolean argument (`--allow-non-ga-tools`):
+
+```
+       "Salesforce DX": {
+         "type": "stdio",
+         "command": "npx",
+         "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "all", "--allow-non-ga-tools"]
+       }
+```
+
+These are the available arguments that you can pass to the `args` option. 
+
+| Argument | Description | Required? |Notes |
+| -----------------| -------| ------- | ----- |
+| `-y` | The npm name of the Salesforce DX MCP server. | Yes| Value is always `"@salesforce/mcp"`|
+| `--orgs` | One or more orgs that you've locally authorized. | Yes | You must specify at least one org. <br/> <br/>See [Configure Orgs](README.md#configure-orgs) for the values you can pass to this argument. |
+| `--toolsets` | Sets of tools, based on functionality, that you want to enable. | No | Default value is `all`, or enable all tools in all toolsets. <br/> <br/>See [Configure Toolsets](README.md#configure-toolsets) for the values you can pass to this argument.|
+| `--no-telemetry` | Boolean argument to disable telemetry, the automatic collection of data for monitoring and analysis. | No | Telemetry is enabled by default, so specify this argument to disable it.  |
+| `--debug` | Boolean argument that requests that the DX MCP Server print debug logs. | No | Debug mode is disabled by default. <br/> <br/>**NOTE:** Not all MCP clients expose MCP logs, so this argument might not work for all IDEs. |
+| `--allow-non-ga-tools` |Boolean argument to allow the DX MCP Server to use both the generally available (GA) and non-GA tools that are in the toolset you specify. | No | By default, the DX MCP server uses only the tools marked GA. |
+| `--dynamic-tools` | (experimental) Boolean argument that enables dynamic tool discovery and loading. When specified, the DX MCP server starts with a minimal set of core tools and loads new tools as needed. | No| This argument is useful for reducing the initial context size and improving LLM performance. Dynamic tool discovery is disabled by default.<br/> <br/>**NOTE:** This feature works in VSCode and Cline but may not work in other environments.|
 
 ### Configure Orgs
 
@@ -157,14 +179,17 @@ The Salesforce DX MCP Server supports **toolsets** - a way to selectively enable
 
 Use the `--toolsets` (or short name `-t`) argument to specify the toolsets when you configure the Salesforce DX MCP Server. Separate multiple toolsets with commas. The `--toolsets` argument is optional; if you don't specify it, the MCP server is configured with all toolsets.
 
-These are the available toolsets:
+These are the available toolsets.
 
-- `all` (default) - Enables all available tools from all toolsets.
-- `orgs` - [Tools to manage your authorized orgs.](README.md#orgs-toolset)
-- `data` - [Tools to manage the data in your org, such as listing all accounts.](README.md#data-toolset)
-- `users` - [Tools to manage org users, such as assigning a permission set.](README.md#users-toolset)
-- `metadata` - [Tools to deploy and retrieve metadata to and from your org and your DX project.](README.md#metadata-toolset)
-- `testing` - [Tools to test your code and features](README.md#testing-toolset)
+| Toolset| Description|
+| ----- | ----- |
+| `all` | Enables all available tools from all toolsets. This is the default value if you don't specify the `--toolsets` argument.|
+| `orgs` | [Tools to manage your authorized orgs.](README.md#orgs-toolset)|
+| `data` | [Tools to manage the data in your org, such as listing all accounts.](README.md#data-toolset)|
+| `users` | [Tools to manage org users, such as assigning a permission set.](README.md#users-toolset)|
+| `metadata` | [Tools to deploy and retrieve metadata to and from your org and your DX project.](README.md#metadata-toolset)|
+| `testing` | [Tools to test your code and features](README.md#testing-toolset)|
+| `other` | [Tools for static analysis of your code. The tools use Salesforce Code Analyzer.](README.md#other-toolset)|
 
 This example shows how to enable the `data`, `orgs`, and `metadata` toolsets when configuring the MCP server for VS Code:
 
@@ -178,20 +203,6 @@ This example shows how to enable the `data`, `orgs`, and `metadata` toolsets whe
          }
        }
      }
-```
-
-#### Dynamic Tools (Experimental)
-
-The `--dynamic-tools` flag enables dynamic tool discovery and loading. When this flag is set, the MCP server starts with a minimal set of core tools and will load new tools as the need arises. This is useful for reducing initial context size and improving LLM performance.
-
-**NOTE:** This feature works in VSCode and Cline but may not work in other environments.
-
-#### Allow Non-GA Tools
-
-By default, the DX MCP Server uses only tools that are marked generally available (GA). If you want the MCP server to use non-GA tools, then specify the `--allow-non-ga-tools` argument. For example:
-
-```
-"args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "data,orgs,metadata", "--allow-non-ga-tools"]
 ```
 
 #### Core Toolset (always enabled)
@@ -232,6 +243,14 @@ Includes these tools:
 
 - `sf-test-agents` - Executes agent tests in your org.
 - `sf-test-apex` - Executes apex tests in your org.
+
+#### Other Toolset
+
+Includes these tools:
+
+- `run_code_analyzer` - Performs a static analysis of your code. Includes validating that the code conforms to best practices, checking for security vulnerabilities, and identifying possible performance issues.
+    `performance issues.
+- `describe_code_analyzer_rule` - Gets the description of a Code Analyzer rule, including the engine it belongs to, its severity, and associated tags.
 
 ## Configure Other Clients to Use the Salesforce DX MCP Server
 
