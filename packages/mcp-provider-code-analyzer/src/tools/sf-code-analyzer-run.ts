@@ -24,9 +24,18 @@ const inputSchema = z.object({
 });
 type InputArgsShape = typeof inputSchema.shape;
 
+// NOTE: THIS MUST ALIGN WITH THE HARDCODED SCHEMA DEFINED IN `run-analyzer.ts`.
 const outputSchema = z.object({
     status: z.string().describe("If the analysis succeeded, then this will be 'success'. Otherwise, it will be an error message."),
     resultsFile: z.string().optional().describe(`The absolute path of the file to which results were written. Read from this file to get those results.`),
+    summary: z.object({
+        totalViolations: z.number().optional().describe('The total number of violations that are present in the results file. Will be equal to the sum of all violations across all severities.'),
+        sev1Violations: z.number().optional().describe('The number of severity 1 violations that are present in the results file.'),
+        sev2Violations: z.number().optional().describe('The number of severity 2 violations that are present in the results file.'),
+        sev3Violations: z.number().optional().describe('The number of severity 3 violations that are present in the results file.'),
+        sev4Violations: z.number().optional().describe('The number of severity 4 violations that are present in the results file.'),
+        sev5Violations: z.number().optional().describe('The number of severity 5 violations that are present in the results file.')
+    }).optional().describe('An object describing the number of violations of each severity, as well as the total number of violations.')
 });
 type OutputArgsShape = typeof outputSchema.shape;
 

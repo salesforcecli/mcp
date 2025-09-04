@@ -40,7 +40,15 @@ describe('RunAnalyzerActionImpl', () => {
             enginePluginsFactory: new EnginePluginsFactoryImpl(),
             keyStatusPhrases: [
                 'success'
-            ]
+            ],
+            expectedSummary: {
+                totalViolations: 0,
+                sev1Violations: 0,
+                sev2Violations: 0,
+                sev3Violations: 0,
+                sev4Violations: 0,
+                sev5Violations: 0
+            }
         },
         {
             case: 'violations are found and all engine succeed',
@@ -54,7 +62,15 @@ describe('RunAnalyzerActionImpl', () => {
             enginePluginsFactory: new EnginePluginsFactoryImpl(),
             keyStatusPhrases: [
                 'success'
-            ]
+            ],
+            expectedSummary: {
+                totalViolations: 6,
+                sev1Violations: 0,
+                sev2Violations: 0,
+                sev3Violations: 3,
+                sev4Violations: 3,
+                sev5Violations: 0
+            }
         },
         {
             case: 'no violations are found and non-fatal errors are logged',
@@ -68,7 +84,15 @@ describe('RunAnalyzerActionImpl', () => {
             keyStatusPhrases: [
                 'Run completed successfully, but the following errors were logged, and results may be incomplete:',
                 'FakeErrorLog'
-            ]
+            ],
+            expectedSummary: {
+                totalViolations: 0,
+                sev1Violations: 0,
+                sev2Violations: 0,
+                sev3Violations: 0,
+                sev4Violations: 0,
+                sev5Violations: 0
+            }
         },
         {
             case: 'the global config is invalid',
@@ -96,7 +120,15 @@ describe('RunAnalyzerActionImpl', () => {
             keyStatusPhrases: [
                 `Error within Core: Failed to create engine with name 'pmd' due to the following error:`,
                 `invalid key 'asdf'`
-            ]
+            ],
+            expectedSummary: {
+                totalViolations: 1,
+                sev1Violations: 1,
+                sev2Violations: 0,
+                sev3Violations: 0,
+                sev4Violations: 0,
+                sev5Violations: 0
+            }
         },
         {
             case: 'an engine cannot be added',
@@ -125,7 +157,15 @@ describe('RunAnalyzerActionImpl', () => {
                 'Run completed successfully, but the following errors were logged, and results may be incomplete:',
                 "Error within Core: Failed to get rules from engine with name 'EngineThatCannotReturnRules' due to the following error:",
                 "ThisEngineCannotReturnRules"
-            ]
+            ],
+            expectedSummary: {
+                totalViolations: 1,
+                sev1Violations: 1,
+                sev2Violations: 0,
+                sev3Violations: 0,
+                sev4Violations: 0,
+                sev5Violations: 0
+            }
         },
         {
             case: 'an engine cannot run rules',
@@ -141,9 +181,17 @@ describe('RunAnalyzerActionImpl', () => {
             enginePluginsFactory: new FactoryForThrowingPlugin3(),
             keyStatusPhrases: [
                 'success'
-            ]
+            ],
+            expectedSummary: {
+                totalViolations: 1,
+                sev1Violations: 1,
+                sev2Violations: 0,
+                sev3Violations: 0,
+                sev4Violations: 0,
+                sev5Violations: 0
+            }
         }
-    ])('When $case, $expectation', async ({target, comparisonFile, configFactory, enginePluginsFactory, keyStatusPhrases}) => {
+    ])('When $case, $expectation', async ({target, comparisonFile, configFactory, enginePluginsFactory, keyStatusPhrases, expectedSummary}) => {
         const input: RunInput = {
             target
         }
@@ -172,6 +220,7 @@ describe('RunAnalyzerActionImpl', () => {
                 .replaceAll(`{{SEP}}`, pathSepVar);
 
             expect(outputFileContents).toContain(expectedOutfile);
+            expect(output.summary).toEqual(expectedSummary);
         } else {
             expect(output.resultsFile).toBeUndefined();
         }

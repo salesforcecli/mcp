@@ -1,13 +1,20 @@
 import os from "node:os";
 import path from "node:path";
 import fs from "node:fs";
-import {CodeAnalyzer, OutputFormat, RuleSelection, RunResults, Workspace} from "@salesforce/code-analyzer-core";
+import {
+    CodeAnalyzer,
+    OutputFormat,
+    RuleSelection,
+    RunResults,
+    SeverityLevel,
+    Workspace
+} from "@salesforce/code-analyzer-core";
 import {EnginePlugin} from "@salesforce/code-analyzer-engine-api";
 import {getErrorMessage} from "../utils.js";
 import {getMessage} from "../messages.js";
-import { CodeAnalyzerConfigFactory } from "../factories/CodeAnalyzerConfigFactory.js";
-import { EnginePluginsFactory } from "../factories/EnginePluginsFactory.js";
-import { ErrorCapturer } from "../listeners/ErrorCapturer.js";
+import {CodeAnalyzerConfigFactory} from "../factories/CodeAnalyzerConfigFactory.js";
+import {EnginePluginsFactory} from "../factories/EnginePluginsFactory.js";
+import {ErrorCapturer} from "../listeners/ErrorCapturer.js";
 import {TelemetryService} from "@salesforce/mcp-provider-api";
 import {TelemetryListenerFactory} from "../factories/TelemetryListenerFactory.js";
 import {TelemetryListener} from "../listeners/TelemetryListener.js";
@@ -25,10 +32,20 @@ export type RunInput = {
     target: string[]
 }
 
+type RunSummary = {
+    totalViolations: number
+    sev1Violations: number
+    sev2Violations: number
+    sev3Violations: number
+    sev4Violations: number
+    sev5Violations: number
+}
+
 // NOTE: THIS MUST ALIGN WITH THE ZOD SCHEMA DEFINED IN `sf-code-analyzer-run.ts`.
 export type RunOutput = {
     status: string
     resultsFile?: string
+    summary?: RunSummary
 }
 
 export interface RunAnalyzerAction {
@@ -91,13 +108,15 @@ export class RunAnalyzerActionImpl implements RunAnalyzerAction {
         if (capturedErrors.length > 0) {
             return {
                 status: getMessage('runCompletedWithErrorsHeader') + '\n' + indent(capturedErrors.join('\n')),
-                resultsFile
+                resultsFile,
+                summary: generateSummary(results)
             };
         }
 
         return Promise.resolve({
             status: `success`,
-            resultsFile
+            resultsFile,
+            summary: generateSummary(results)
         });
     }
 
@@ -147,4 +166,15 @@ export class RunAnalyzerActionImpl implements RunAnalyzerAction {
 
 export function indent(value: string): string {
     return '    ' + value.replaceAll('\n', `\n    `);
+}
+
+function generateSummary(results: RunResults): RunSummary {
+    return {
+        totalViolations: results.getViolationCount(),
+        sev1Violations: results.getViolationCountOfSeverity(SeverityLevel.Critical),
+        sev2Violations: results.getViolationCountOfSeverity(SeverityLevel.High),
+        sev3Violations: results.getViolationCountOfSeverity(SeverityLevel.Moderate),
+        sev4Violations: results.getViolationCountOfSeverity(SeverityLevel.Low),
+        sev5Violations: results.getViolationCountOfSeverity(SeverityLevel.Info)
+    };
 }
