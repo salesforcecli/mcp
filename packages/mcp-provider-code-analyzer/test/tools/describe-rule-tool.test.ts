@@ -18,7 +18,7 @@ describe("Tests for DescribeRuleTool", () => {
         expect(tool.getToolsets()).toEqual([Toolset.OTHER]);
     });
 
-    it("When getName is called, then 'sf-example' is returned", () => {
+    it("When getName is called, then tool name is returned", () => {
         expect(tool.getName()).toEqual('describe_code_analyzer_rule');
     });
 

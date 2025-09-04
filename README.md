@@ -186,6 +186,14 @@ The `--dynamic-tools` flag enables dynamic tool discovery and loading. When this
 
 **NOTE:** This feature works in VSCode and Cline but may not work in other environments.
 
+#### Allow Non-GA Tools
+
+By default, the DX MCP Server uses only tools that are marked generally available (GA). If you want the MCP server to use non-GA tools, then specify the `--allow-non-ga-tools` argument. For example:
+
+```
+"args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "data,orgs,metadata", "--allow-non-ga-tools"]
+```
+
 #### Core Toolset (always enabled)
 
 Includes these tools:

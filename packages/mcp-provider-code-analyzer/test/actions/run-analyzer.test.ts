@@ -16,6 +16,8 @@ import {
     FactoryForThrowingPlugin3,
     FactoryWithErrorLoggingPlugin
 } from "../stubs/EnginePluginFactories.js";
+import {SendTelemetryEvent, SpyTelemetryService} from "../test-doubles.js";
+import * as Constants from "../../src/constants.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -38,7 +40,15 @@ describe('RunAnalyzerActionImpl', () => {
             enginePluginsFactory: new EnginePluginsFactoryImpl(),
             keyStatusPhrases: [
                 'success'
-            ]
+            ],
+            expectedSummary: {
+                totalViolations: 0,
+                sev1Violations: 0,
+                sev2Violations: 0,
+                sev3Violations: 0,
+                sev4Violations: 0,
+                sev5Violations: 0
+            }
         },
         {
             case: 'violations are found and all engine succeed',
@@ -52,7 +62,15 @@ describe('RunAnalyzerActionImpl', () => {
             enginePluginsFactory: new EnginePluginsFactoryImpl(),
             keyStatusPhrases: [
                 'success'
-            ]
+            ],
+            expectedSummary: {
+                totalViolations: 6,
+                sev1Violations: 0,
+                sev2Violations: 0,
+                sev3Violations: 3,
+                sev4Violations: 3,
+                sev5Violations: 0
+            }
         },
         {
             case: 'no violations are found and non-fatal errors are logged',
@@ -66,7 +84,15 @@ describe('RunAnalyzerActionImpl', () => {
             keyStatusPhrases: [
                 'Run completed successfully, but the following errors were logged, and results may be incomplete:',
                 'FakeErrorLog'
-            ]
+            ],
+            expectedSummary: {
+                totalViolations: 0,
+                sev1Violations: 0,
+                sev2Violations: 0,
+                sev3Violations: 0,
+                sev4Violations: 0,
+                sev5Violations: 0
+            }
         },
         {
             case: 'the global config is invalid',
@@ -94,7 +120,15 @@ describe('RunAnalyzerActionImpl', () => {
             keyStatusPhrases: [
                 `Error within Core: Failed to create engine with name 'pmd' due to the following error:`,
                 `invalid key 'asdf'`
-            ]
+            ],
+            expectedSummary: {
+                totalViolations: 1,
+                sev1Violations: 1,
+                sev2Violations: 0,
+                sev3Violations: 0,
+                sev4Violations: 0,
+                sev5Violations: 0
+            }
         },
         {
             case: 'an engine cannot be added',
@@ -123,7 +157,15 @@ describe('RunAnalyzerActionImpl', () => {
                 'Run completed successfully, but the following errors were logged, and results may be incomplete:',
                 "Error within Core: Failed to get rules from engine with name 'EngineThatCannotReturnRules' due to the following error:",
                 "ThisEngineCannotReturnRules"
-            ]
+            ],
+            expectedSummary: {
+                totalViolations: 1,
+                sev1Violations: 1,
+                sev2Violations: 0,
+                sev3Violations: 0,
+                sev4Violations: 0,
+                sev5Violations: 0
+            }
         },
         {
             case: 'an engine cannot run rules',
@@ -139,9 +181,17 @@ describe('RunAnalyzerActionImpl', () => {
             enginePluginsFactory: new FactoryForThrowingPlugin3(),
             keyStatusPhrases: [
                 'success'
-            ]
+            ],
+            expectedSummary: {
+                totalViolations: 1,
+                sev1Violations: 1,
+                sev2Violations: 0,
+                sev3Violations: 0,
+                sev4Violations: 0,
+                sev5Violations: 0
+            }
         }
-    ])('When $case, $expectation', async ({target, comparisonFile, configFactory, enginePluginsFactory, keyStatusPhrases}) => {
+    ])('When $case, $expectation', async ({target, comparisonFile, configFactory, enginePluginsFactory, keyStatusPhrases, expectedSummary}) => {
         const input: RunInput = {
             target
         }
@@ -170,8 +220,43 @@ describe('RunAnalyzerActionImpl', () => {
                 .replaceAll(`{{SEP}}`, pathSepVar);
 
             expect(outputFileContents).toContain(expectedOutfile);
+            expect(output.summary).toEqual(expectedSummary);
         } else {
             expect(output.resultsFile).toBeUndefined();
         }
     }, 15_000);
+
+    describe('Telemetry Emission', () => {
+        it('When a telemetry service is provided, it is used', async () => {
+            const input: RunInput = {
+                target: [path.join(PATH_TO_SAMPLE_TARGETS, 'ApexTarget1.cls')]
+            };
+
+            const spyTelemetryService: SpyTelemetryService = new SpyTelemetryService();
+
+            const action: RunAnalyzerActionImpl = new RunAnalyzerActionImpl({
+                configFactory: new CodeAnalyzerConfigFactoryImpl(),
+                enginePluginsFactory: new FactoryWithErrorLoggingPlugin(),
+                telemetryService: spyTelemetryService
+            });
+
+            await action.exec(input);
+
+            const telemetryEvents: SendTelemetryEvent[] = spyTelemetryService.sendEventCallHistory;
+
+            expect(telemetryEvents).toHaveLength(4);
+            expect(telemetryEvents[0].event.source).toEqual('EngineThatLogsError')
+            expect(telemetryEvents[0].event.sfcaEvent).toEqual('DescribeRuleTelemetryEvent');
+            expect(telemetryEvents[0].event.prop1).toEqual(true);
+            expect(telemetryEvents[1].event.source).toEqual('EngineThatLogsError')
+            expect(telemetryEvents[1].event.sfcaEvent).toEqual('RunRulesTelemetryEvent');
+            expect(telemetryEvents[1].event.prop1).toEqual(true);
+            expect(telemetryEvents[2].event.source).toEqual('MCP')
+            expect(telemetryEvents[2].event.sfcaEvent).toEqual(Constants.McpTelemetryEvents.ENGINE_SELECTION);
+            expect(telemetryEvents[2].event.ruleCount).toEqual(1);
+            expect(telemetryEvents[3].event.source).toEqual('MCP')
+            expect(telemetryEvents[3].event.sfcaEvent).toEqual(Constants.McpTelemetryEvents.ENGINE_EXECUTION);
+            expect(telemetryEvents[3].event.violationCount).toEqual(0);
+        });
+    });
 })

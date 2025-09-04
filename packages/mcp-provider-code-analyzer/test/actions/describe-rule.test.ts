@@ -11,7 +11,10 @@ import {
 } from "../../src/factories/CodeAnalyzerConfigFactory.js";
 import { CustomizableConfigFactory } from "../stubs/CustomizableConfigFactory.js";
 import { EnginePluginsFactoryImpl } from "../../src/factories/EnginePluginsFactory.js";
-import { FactoryWithThrowingPlugin1 } from "../stubs/EnginePluginFactories.js";
+import { FactoryWithThrowingPlugin1, FactoryWithErrorLoggingPlugin } from "../stubs/EnginePluginFactories.js";
+import {SendTelemetryEvent, SpyTelemetryService} from "../test-doubles.js";
+import * as Constants from "../../src/constants.js";
+import {expect} from "vitest";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -123,5 +126,34 @@ describe('DescribeRuleActionImpl', () => {
             expect(output.status).toContain(keyErrorPhrase);
         }
         expect(output.rule).toBeUndefined();
+    });
+
+    describe('Telemetry Emission', () => {
+        it('When a telemetry service is provided, it is used', async () => {
+            const input: DescribeRuleInput = {
+                ruleName: 'Stub1RuleA',
+                engineName: 'EngineThatLogsError'
+            };
+
+            const telemetryService: SpyTelemetryService = new SpyTelemetryService();
+
+            const action: DescribeRuleActionImpl = new DescribeRuleActionImpl({
+                configFactory: new CodeAnalyzerConfigFactoryImpl(),
+                enginePluginsFactory: new FactoryWithErrorLoggingPlugin(),
+                telemetryService
+            });
+
+            await action.exec(input);
+
+            const telemetryEvents: SendTelemetryEvent[] = telemetryService.sendEventCallHistory;
+
+            expect(telemetryEvents).toHaveLength(2);
+            expect(telemetryEvents[0].event.source).toEqual('EngineThatLogsError')
+            expect(telemetryEvents[0].event.prop1).toEqual(true)
+            expect(telemetryEvents[0].event.sfcaEvent).toEqual('DescribeRuleTelemetryEvent');
+            expect(telemetryEvents[1].event.source).toEqual('MCP')
+            expect(telemetryEvents[1].event.sfcaEvent).toEqual(Constants.McpTelemetryEvents.ENGINE_SELECTION)
+            expect(telemetryEvents[1].event.ruleCount).toEqual(1)
+        });
     });
 });

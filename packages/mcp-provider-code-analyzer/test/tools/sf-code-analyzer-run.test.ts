@@ -25,7 +25,7 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
         expect(tool.getToolsets()).toEqual([Toolset.OTHER]);
     });
 
-    it("When getName is called, then 'sf-example' is returned", () => {
+    it("When getName is called, then tool name is returned", () => {
         expect(tool.getName()).toEqual('run_code_analyzer');
     });
 
@@ -36,7 +36,7 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
         expect(config.inputSchema).toBeTypeOf('object');
         expect(Object.keys(config.inputSchema as object)).toEqual(['target']);
         expect(config.outputSchema).toBeTypeOf('object');
-        expect(Object.keys(config.outputSchema as object)).toEqual(['status', 'resultsFile']);
+        expect(Object.keys(config.outputSchema as object)).toEqual(['status', 'resultsFile', 'summary']);
         expect(config.annotations).toEqual({readOnlyHint: false});
     });
 
