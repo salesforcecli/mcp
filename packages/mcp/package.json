@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/mcp",
-  "version": "0.19.0",
+  "version": "0.19.1-dev.0",
   "description": "MCP Server for interacting with Salesforce instances",
   "bin": {
     "sf-mcp-server": "bin/run.js"
@@ -48,7 +48,7 @@
     "@salesforce/core": "^8.18.0",
     "@salesforce/kit": "^3.1.6",
     "@salesforce/mcp-provider-api": "0.2.0",
-    "@salesforce/mcp-provider-dx-core": "0.2.1",
+    "@salesforce/mcp-provider-dx-core": "0.2.2",
     "@salesforce/mcp-provider-code-analyzer": "0.0.2",
     "@salesforce/source-deploy-retrieve": "^12.22.0",
     "@salesforce/source-tracking": "^7.4.8",

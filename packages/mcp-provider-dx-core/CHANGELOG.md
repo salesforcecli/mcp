@@ -1,3 +1,12 @@
+## [0.2.2](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.2.1...mcp-provider-dx-core@0.2.2) (2025-09-02)
+
+
+### Bug Fixes
+
+* improve sf-get-username instructions ([2c5a63f](https://github.com/salesforcecli/mcp/commit/2c5a63f541108fcae0dbd2f5620c7279b616bb26))
+
+
+
 ## [0.2.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.2.0...mcp-provider-dx-core@0.2.1) (2025-08-29)
 
 

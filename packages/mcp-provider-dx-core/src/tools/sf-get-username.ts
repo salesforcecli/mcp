@@ -78,23 +78,8 @@ export async function suggestUsername(orgService: OrgService): Promise<{
  */
 
 export const getUsernameParamsSchema = z.object({
-  defaultTargetOrg: z.boolean().optional().default(false).describe(`Try to find default org
-AGENT INSTRUCTIONS:
-ONLY SET TO TRUE when the user explicitly asks for the default org or default target org.
-Leave it as false when the user is vague and says something like "for my org" or "for my-alias".
-
-USAGE EXAMPLE:
-Get username for my default org
-...for my default target org`),
-  defaultDevHub: z.boolean().optional().default(false).describe(`Try to find default dev hub
-AGENT INSTRUCTIONS:
-ONLY SET TO TRUE when the user explicitly asks for the default dev hub or default target devhub.
-Leave it as false when the user is vague and says something like "for my org" or "for my-alias".
-
-USAGE EXAMPLE:
-Get username for my default dev hub
-...for my default target dev hub
-...for my default devhub`),
+  defaultTargetOrg: z.boolean().optional().default(false).describe('Resolve the default target org username'),
+  defaultDevHub: z.boolean().optional().default(false).describe('Resolve the default target devhub org username'),
   directory: directoryParam,
 });
 
@@ -124,23 +109,13 @@ export class GetUsernameMcpTool extends McpTool<InputArgsShape, OutputArgsShape>
       title: 'Get Username',
       description: `Intelligently determines the appropriate username or alias for Salesforce operations.
 
-AGENT/LLM INSTRUCTIONS:
-Use this tool when uncertain which username/org a user wants for Salesforce operations.
-This tool handles three distinct scenarios:
+WHEN TO USE THIS TOOL:
+- When uncertain which org username a user wants for Salesforce operations.
 
-1. When defaultTargetOrg=true: Fetches the default target org configuration
-   - Use when user says "for my default org" or "for my default target org"
-
-2. When defaultDevHub=true: Fetches the default dev hub configuration
-   - Use when user says "for my default dev hub" or "for my default target dev hub"
-
-3. When both are false (default): Uses suggestUsername to intelligently determine the appropriate org
-   - Use when user is vague and says something like "for my org" or doesn't specify
-
-EXAMPLE USAGE:
-- When user says "Do X for my org" → defaultTargetOrg=false, defaultDevHub=false
-- When user says "For my default org" → defaultTargetOrg=true
-- When user says "For my default dev hub" → defaultDevHub=true`,
+To resolve the default org username, set the defaultTargetOrg param to true and defaultDevHub to false.
+To resole the default devhub org username, set the defaultTargetOrg param to false and defaultDevHub to true.
+If it's not clear which type of org to resolve, set both defaultTargetOrg and defaultDevHub to false to an allow-listed org username available.
+`,
       inputSchema: getUsernameParamsSchema.shape,
       outputSchema: undefined,
       annotations: {

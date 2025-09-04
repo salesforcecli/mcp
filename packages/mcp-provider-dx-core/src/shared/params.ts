@@ -24,17 +24,13 @@ import { sanitizePath } from './utils.js';
 export const usernameOrAliasParam = z.string()
   .describe(`The username or alias for the Salesforce org to run this tool against.
 
-AGENT INSTRUCTIONS:
-If it is not clear what username or alias is, run the #sf-get-username tool.
-NEVER guess or make-up a username or alias, use #sf-get-username if you are not sure.
-DO NOT use #sf-get-username if the user mentions an alias or username, like "for my an-alias org" or "for my test-prgelc2petd9@example.com org".
+A username follows the <name@domain.com> format.
+If the user refers to an org with a string not following that format, it can be a valid alias.
 
-USAGE:
-...for the my-alias org
-...for my 'my-alias' user
-...for alias myAlias
-...for my 'test@example.com' user
-...for the 'test@example.com' org`);
+IMPORTANT:
+- If it is not clear what the username or alias is, run the #sf-get-username tool to resolve it.
+- NEVER guess or make-up a username or alias.
+`);
 
 export const useToolingApiParam = z.boolean().optional().describe('Use Tooling API for the operation');
 
