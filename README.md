@@ -214,13 +214,15 @@ Includes these tools:
 
 #### Orgs Toolset
 
-Includes these tools (the ones marked NON-GA are not yet generally available):
+Includes these tools:
 
 - `sf-list-all-orgs` - Lists all configured Salesforce orgs, with optional connection status checking.
 - `sf-create-org-snapshot` - (NON-GA) Create a scratch org snapshot. 
 - `sf-create-scratch-org` - (NON-GA) Create a scratch org. 
 - `sf-delete-org` - (NON-GA) Delete a locally-authorized Salesforce scratch org or sandbox.
 - `sf-org-open` - (NON-GA) Open an org in a browser. 
+
+**NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` argument to use them. 
 
 #### Data Toolset
 
@@ -255,6 +257,8 @@ Includes these tools, which aren't yet generally available:
 - `run_code_analyzer` - (NON-GA) Performs a static analysis of your code. Includes validating that the code conforms to best practices, checking for security vulnerabilities, and identifying possible performance issues.
     `performance issues.
 - `describe_code_analyzer_rule` - (NON-GA) Gets the description of a Code Analyzer rule, including the engine it belongs to, its severity, and associated tags.
+
+**NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` argument to use them. 
 
 ## Configure Other Clients to Use the Salesforce DX MCP Server
 
