@@ -1,4 +1,9 @@
-## [0.19.1-dev.0](https://github.com/salesforcecli/mcp/compare/0.19.0...0.19.1-dev.0) (2025-09-02)
+## [0.19.1](https://github.com/salesforcecli/mcp/compare/0.19.0...0.19.1) (2025-09-04)
+
+
+### Bug Fixes
+
+* improve sf-get-username instructions W-19472383 ([#181](https://github.com/salesforcecli/mcp/issues/181)) ([ce845f8](https://github.com/salesforcecli/mcp/commit/ce845f8a956dece92cf2d67e29cc868c8ac69b92))
 
 
 
