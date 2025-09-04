@@ -135,7 +135,7 @@ These are the available arguments that you can pass to the `args` option.
 | `--toolsets` | Sets of tools, based on functionality, that you want to enable. | No | Default value is `all`, or enable all tools in all toolsets. <br/> <br/>See [Configure Toolsets](README.md#configure-toolsets) for the values you can pass to this argument.|
 | `--no-telemetry` | Boolean argument to disable telemetry, the automatic collection of data for monitoring and analysis. | No | Telemetry is enabled by default, so specify this argument to disable it.  |
 | `--debug` | Boolean argument that requests that the DX MCP Server print debug logs. | No | Debug mode is disabled by default. <br/> <br/>**NOTE:** Not all MCP clients expose MCP logs, so this argument might not work for all IDEs. |
-| `--allow-non-ga-tools` |Boolean argument to allow the DX MCP Server to use both the generally available (GA) and non-GA tools that are in the toolset you specify. | No | By default, the DX MCP server uses only the tools marked GA. |
+| `--allow-non-ga-tools` |Boolean argument to allow the DX MCP Server to use both the generally available (GA) and NON-GA tools that are in the toolset you specify. | No | By default, the DX MCP server uses only the tools marked GA. |
 | `--dynamic-tools` | (experimental) Boolean argument that enables dynamic tool discovery and loading. When specified, the DX MCP server starts with a minimal set of core tools and loads new tools as needed. | No| This argument is useful for reducing the initial context size and improving LLM performance. Dynamic tool discovery is disabled by default.<br/> <br/>**NOTE:** This feature works in VSCode and Cline but may not work in other environments.|
 
 ### Configure Orgs
@@ -214,9 +214,13 @@ Includes these tools:
 
 #### Orgs Toolset
 
-Includes this tool:
+Includes these tools (the ones marked NON-GA are not yet generally available):
 
 - `sf-list-all-orgs` - Lists all configured Salesforce orgs, with optional connection status checking.
+- `sf-create-org-snapshot` - (NON-GA) Create a scratch org snapshot. 
+- `sf-create-scratch-org` - (NON-GA) Create a scratch org. 
+- `sf-delete-org` - (NON-GA) Delete a locally-authorized Salesforce scratch org or sandbox.
+- `sf-org-open` - (NON-GA) Open an org in a browser. 
 
 #### Data Toolset
 
@@ -246,11 +250,11 @@ Includes these tools:
 
 #### Other Toolset
 
-Includes these tools:
+Includes these tools, which aren't yet generally available:
 
-- `run_code_analyzer` - Performs a static analysis of your code. Includes validating that the code conforms to best practices, checking for security vulnerabilities, and identifying possible performance issues.
+- `run_code_analyzer` - (NON-GA) Performs a static analysis of your code. Includes validating that the code conforms to best practices, checking for security vulnerabilities, and identifying possible performance issues.
     `performance issues.
-- `describe_code_analyzer_rule` - Gets the description of a Code Analyzer rule, including the engine it belongs to, its severity, and associated tags.
+- `describe_code_analyzer_rule` - (NON-GA) Gets the description of a Code Analyzer rule, including the engine it belongs to, its severity, and associated tags.
 
 ## Configure Other Clients to Use the Salesforce DX MCP Server
 
