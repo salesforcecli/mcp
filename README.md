@@ -115,11 +115,13 @@ Configure the Salesforce DX MCP Server by passing arguments to the `args`option.
 This example shows three arguments that take a value (`-y`, `--orgs`, and `--toolsets`) and one Boolean argument (`--allow-non-ga-tools`):
 
 ```
+     "servers": {
        "Salesforce DX": {
          "type": "stdio",
          "command": "npx",
          "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "all", "--allow-non-ga-tools"]
        }
+     }
 ```
 
 These are the available arguments that you can pass to the `args` option. 
@@ -150,7 +152,6 @@ These are the available values for the `--orgs` argument:
 This example shows how to specify that the MCP tools run against your default org when you configure the MCP server for VS Code:
 
 ```json
-     "mcp": {
        "servers": {
          "Salesforce DX": {
            "type": "stdio",
@@ -158,7 +159,6 @@ This example shows how to specify that the MCP tools run against your default or
            "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG"]
          }
        }
-     }
 ```
 
 This sample snippet shows how to configure access to your default Dev Hub org and an org with username `test-org@example.com`:
@@ -191,18 +191,16 @@ These are the available toolsets.
 | `testing` | [Tools to test your code and features](README.md#testing-toolset)|
 | `other` | [Tools for static analysis of your code. The tools use Salesforce Code Analyzer.](README.md#other-toolset)|
 
-This example shows how to enable the `data`, `orgs`, and `metadata` toolsets when configuring the MCP server for VS Code:
+This example shows how to enable the `data`, `orgs`, `metadata`, and `other` toolsets when configuring the MCP server for VS Code:
 
 ```json
-     "mcp": {
        "servers": {
          "Salesforce DX": {
            "type": "stdio",
            "command": "npx",
-           "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "data,orgs,metadata"]
+           "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "data,orgs,metadata,other"]
          }
        }
-     }
 ```
 
 #### Core Toolset (always enabled)
