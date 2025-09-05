@@ -37,7 +37,6 @@ type InputArgsShape = typeof orgOpenParamsSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class OrgOpenMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
-  
   public getReleaseState(): ReleaseState {
     return ReleaseState.NON_GA;
   }

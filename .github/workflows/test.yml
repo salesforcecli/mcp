@@ -17,15 +17,19 @@ jobs:
     needs: linux-unit-tests
 #    uses: salesforcecli/github-workflows/.github/workflows/unitTestsWindows.yml@main
     uses: ./.github/workflows/tempUnitTestsWindows.yml # temporary replacement
-
-  # Uncomment to enable NUT testing in Github Actions
-  # nuts:
-  #   needs: linux-unit-tests
-  #   uses: salesforcecli/github-workflows/.github/workflows/nut.yml@main
-  #   secrets: inherit
-  #   strategy:
-  #     matrix:
-  #       os: [ubuntu-latest, windows-latest]
-  #     fail-fast: false
-  #   with:
-  #     os: ${{ matrix.os }}
+  e2e:
+    # needs: linux-unit-tests
+    uses: ./.github/workflows/e2e.yml
+    secrets: inherit
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        command:
+          - 'yarn test:e2e'
+        provider:
+          - 'mcp-provider-dx-core'
+      fail-fast: false
+    with:
+      os: ${{ matrix.os }}
+      command: ${{ matrix.command }}
+      provider: ${{ matrix.provider }}
