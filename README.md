@@ -105,7 +105,7 @@ For the best getting-started experience, make sure that you have a Salesforce DX
    - Which are my active scratch orgs?
    - Show me all the accounts in the org with alias my-org.
    - Deploy everything in my project to the org with alias my-org.
-   - Do you see any performance or security issues with the code in the MyApexClass.cls file?
+   - Do you see any performance or security issues with the Apex code in the `MyApexClass.cls` file?
    - I see that my Apex code violates the pmd:ApexCRUDViolation rule; can you give me more information about this rule?
 
 1. To stop, restart, or view the MCP server configuration, run the **MCP: List Servers** command, click `Salesforce DX`, then click the appropriate option.
