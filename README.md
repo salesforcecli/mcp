@@ -83,7 +83,7 @@ For the best getting-started experience, make sure that you have a Salesforce DX
 
    You can also configure the MCP server globally by editing the VS Code [settings.json](https://code.visualstudio.com/docs/configure/settings#_settings-file-locations) file and adding a similar JSON snippet but contained in an `mcp:servers` section.
 
-   The `--orgs` argument is required and specifies the authorized orgs you're allowing the MCP server to access. The `--toolsets` argument is optional and specifies the toolsets it should consult when determining the specific tool to run. See [Configure Orgs and Toolsets](README.md#configure-orgs-and-toolsets) for the available values for the two arguments.
+   The `--orgs` flag is required and specifies the authorized orgs you're allowing the MCP server to access. The `--toolsets` flag is optional and specifies the toolsets it should consult when determining the specific tool to run. See [Configure Orgs and Toolsets](README.md#configure-orgs-and-toolsets) for the available values for the two flags.
 
 1. Open VS Code, go to **View -> Command Palette** and enter **MCP: List Servers**.
 
@@ -105,20 +105,46 @@ For the best getting-started experience, make sure that you have a Salesforce DX
    - Which are my active scratch orgs?
    - Show me all the accounts in the org with alias my-org.
    - Deploy everything in my project to the org with alias my-org.
+   - Do you see any performance or security issues with the code in the MyApexClass.cls file?
+   - I see that my Apex code violates the pmd:ApexCRUDViolation rule; can you give me more information about this rule?
 
 1. To stop, restart, or view the MCP server configuration, run the **MCP: List Servers** command, click `Salesforce DX`, then click the appropriate option.
 
-## Configure Orgs and Toolsets
+## Configure the DX MCP Server
 
-You configure the Salesforce DX MCP Server by specifying at least one authorized org and an optional list of MCP toolsets.
+Configure the Salesforce DX MCP Server by passing flags to the `args` option. Surround the flag name and its value each in double quotes, and separate all flags and values with commas. Some flags are Boolean and don't take a value. 
+
+This example shows two flags that take a string value (`--orgs` and `--toolsets`) and one Boolean flag (`--allow-non-ga-tools`):
+
+```
+     "servers": {
+       "Salesforce DX": {
+         "type": "stdio",
+         "command": "npx",
+         "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "all", "--allow-non-ga-tools"]
+       }
+     }
+```
+The `"-y", "@salesforce/mcp"` part tells `npx` to automatically install the `@salesforce/mcp` package instead of asking permission. Don't change this. 
+
+These are the available flags that you can pass to the `args` option. 
+
+| Flag Name | Description | Required? |Notes |
+| -----------------| -------| ------- | ----- |
+| `--orgs` | One or more orgs that you've locally authorized. | Yes | You must specify at least one org. <br/> <br/>See [Configure Orgs](README.md#configure-orgs) for the values you can pass to this flag. |
+| `--toolsets` | Sets of tools, based on functionality, that you want to enable. | No | Default value is `all`, or enable all tools in all toolsets. <br/> <br/>See [Configure Toolsets](README.md#configure-toolsets) for the values you can pass to this flag.|
+| `--no-telemetry` | Boolean flag to disable telemetry, the automatic collection of data for monitoring and analysis. | No | Telemetry is enabled by default, so specify this flag to disable it.  |
+| `--debug` | Boolean flag that requests that the DX MCP Server print debug logs. | No | Debug mode is disabled by default. <br/> <br/>**NOTE:** Not all MCP clients expose MCP logs, so this flag might not work for all IDEs. |
+| `--allow-non-ga-tools` |Boolean flag to allow the DX MCP Server to use both the generally available (GA) and NON-GA tools that are in the toolset you specify. | No | By default, the DX MCP server uses only the tools marked GA. |
+| `--dynamic-tools` | (experimental) Boolean flag that enables dynamic tool discovery and loading. When specified, the DX MCP server starts with a minimal set of core tools and loads new tools as needed. | No| This flag is useful for reducing the initial context size and improving LLM performance. Dynamic tool discovery is disabled by default.<br/> <br/>**NOTE:** This feature works in VSCode and Cline but may not work in other environments.|
 
 ### Configure Orgs
 
-The Salesforce MCP tools require an org, and so you must include the required `--orgs` argument to specify at least one authorized org when you configure the MCP server. Separate multiple values with commas.
+The Salesforce MCP tools require an org, and so you must include the required `--orgs` flag to specify at least one authorized org when you configure the MCP server. Separate multiple values with commas.
 
 You must explicitly [authorize the orgs](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_web_flow.htm) on your computer before the MCP server can access them. Use the `org login web` Salesforce CLI command or the VS Code **SFDX: Authorize an Org** command from the command palette.
 
-These are the available values for the `--orgs` argument:
+These are the available values for the `--orgs` flag:
 
 - `DEFAULT_TARGET_ORG` - Allow access to your default org. If you've set a local default org in your DX project, the MCP server uses it. If not, the server uses a globally-set default org.
 - `DEFAULT_TARGET_DEV_HUB` - Allow access to your default Dev Hub org. If you've set a local default Dev Hub org in your DX project, the MCP server uses it. If not, the server uses a globally-set default Dev Hub org.
@@ -128,7 +154,6 @@ These are the available values for the `--orgs` argument:
 This example shows how to specify that the MCP tools run against your default org when you configure the MCP server for VS Code:
 
 ```json
-     "mcp": {
        "servers": {
          "Salesforce DX": {
            "type": "stdio",
@@ -136,7 +161,6 @@ This example shows how to specify that the MCP tools run against your default or
            "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG"]
          }
        }
-     }
 ```
 
 This sample snippet shows how to configure access to your default Dev Hub org and an org with username `test-org@example.com`:
@@ -155,43 +179,30 @@ This sample snippet shows how to configure access to two orgs for which you spec
 
 The Salesforce DX MCP Server supports **toolsets** - a way to selectively enable different groups of MCP tools based on your needs. This allows you to run the MCP server with only the tools you require, which in turn reduces the context.
 
-Use the `--toolsets` (or short name `-t`) argument to specify the toolsets when you configure the Salesforce DX MCP Server. Separate multiple toolsets with commas. The `--toolsets` argument is optional; if you don't specify it, the MCP server is configured with all toolsets.
+Use the `--toolsets` (or short name `-t`) flag to specify the toolsets when you configure the Salesforce DX MCP Server. Separate multiple toolsets with commas. The `--toolsets` flag is optional; if you don't specify it, the MCP server is configured with all toolsets.
 
-These are the available toolsets:
+These are the available toolsets.
 
-- `all` (default) - Enables all available tools from all toolsets.
-- `orgs` - [Tools to manage your authorized orgs.](README.md#orgs-toolset)
-- `data` - [Tools to manage the data in your org, such as listing all accounts.](README.md#data-toolset)
-- `users` - [Tools to manage org users, such as assigning a permission set.](README.md#users-toolset)
-- `metadata` - [Tools to deploy and retrieve metadata to and from your org and your DX project.](README.md#metadata-toolset)
-- `testing` - [Tools to test your code and features](README.md#testing-toolset)
+| Toolset| Description|
+| ----- | ----- |
+| `all` | Enables all available tools from all toolsets. This is the default value if you don't specify the `--toolsets` flag.|
+| `orgs` | [Tools to manage your authorized orgs.](README.md#orgs-toolset)|
+| `data` | [Tools to manage the data in your org, such as listing all accounts.](README.md#data-toolset)|
+| `users` | [Tools to manage org users, such as assigning a permission set.](README.md#users-toolset)|
+| `metadata` | [Tools to deploy and retrieve metadata to and from your org and your DX project.](README.md#metadata-toolset)|
+| `testing` | [Tools to test your code and features](README.md#testing-toolset)|
+| `other` | [Other useful tools, such as tools for static analysis of your code using Salesforce Code Analyzer.](README.md#other-toolset)|
 
-This example shows how to enable the `data`, `orgs`, and `metadata` toolsets when configuring the MCP server for VS Code:
+This example shows how to enable the `data`, `orgs`, `metadata`, and `other` toolsets when configuring the MCP server for VS Code:
 
 ```json
-     "mcp": {
        "servers": {
          "Salesforce DX": {
            "type": "stdio",
            "command": "npx",
-           "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "data,orgs,metadata"]
+           "args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "data,orgs,metadata,other"]
          }
        }
-     }
-```
-
-#### Dynamic Tools (Experimental)
-
-The `--dynamic-tools` flag enables dynamic tool discovery and loading. When this flag is set, the MCP server starts with a minimal set of core tools and will load new tools as the need arises. This is useful for reducing initial context size and improving LLM performance.
-
-**NOTE:** This feature works in VSCode and Cline but may not work in other environments.
-
-#### Allow Non-GA Tools
-
-By default, the DX MCP Server uses only tools that are marked generally available (GA). If you want the MCP server to use non-GA tools, then specify the `--allow-non-ga-tools` argument. For example:
-
-```
-"args": ["-y", "@salesforce/mcp", "--orgs", "DEFAULT_TARGET_ORG", "--toolsets", "data,orgs,metadata", "--allow-non-ga-tools"]
 ```
 
 #### Core Toolset (always enabled)
@@ -203,9 +214,15 @@ Includes these tools:
 
 #### Orgs Toolset
 
-Includes this tool:
+Includes these tools:
 
 - `sf-list-all-orgs` - Lists all configured Salesforce orgs, with optional connection status checking.
+- `sf-create-org-snapshot` - (NON-GA) Create a scratch org snapshot. 
+- `sf-create-scratch-org` - (NON-GA) Create a scratch org. 
+- `sf-delete-org` - (NON-GA) Delete a locally-authorized Salesforce scratch org or sandbox.
+- `sf-org-open` - (NON-GA) Open an org in a browser. 
+
+**NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
 
 #### Data Toolset
 
@@ -232,6 +249,15 @@ Includes these tools:
 
 - `sf-test-agents` - Executes agent tests in your org.
 - `sf-test-apex` - Executes apex tests in your org.
+
+#### Other Toolset
+
+Includes these tools, which aren't yet generally available:
+
+- `sf-code-analyzer-run` - (NON-GA) Performs a static analysis of your code using Salesforce Code Analyzer. Includes validating that the code conforms to best practices, checking for security vulnerabilities, and identifying possible performance issues.
+- `sf-code-analyzer-describe-rule` - (NON-GA) Gets the description of a Salesforce Code Analyzer rule, including the engine it belongs to, its severity, and associated tags.
+
+**NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
 
 ## Configure Other Clients to Use the Salesforce DX MCP Server
 
