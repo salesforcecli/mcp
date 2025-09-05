@@ -191,7 +191,7 @@ These are the available toolsets.
 | `users` | [Tools to manage org users, such as assigning a permission set.](README.md#users-toolset)|
 | `metadata` | [Tools to deploy and retrieve metadata to and from your org and your DX project.](README.md#metadata-toolset)|
 | `testing` | [Tools to test your code and features](README.md#testing-toolset)|
-| `other` | [Tools for static analysis of your code. The tools use Salesforce Code Analyzer.](README.md#other-toolset)|
+| `other` | [Other useful tools, such as tools for static analysis of your code using Salesforce Code Analyzer.](README.md#other-toolset)|
 
 This example shows how to enable the `data`, `orgs`, `metadata`, and `other` toolsets when configuring the MCP server for VS Code:
 
