@@ -64,7 +64,8 @@ yarn workspace @salesforce/mcp-provider-api remove some-dep
 
 ## Adding a new package
 
-> [!NOTE]: If you are creating an MCP provider in a stand-alone repo:
+> [!NOTE]
+> If you are creating an MCP provider in a stand-alone repo:
 > - You can still use EXAMPLE-MCP-PROVIDER as a guide for building your tool
 > - Publish your package to npm (e.g. `@salesforce/mcp-provider-<your-name>`)
 > - Add your package name and version to `packages/mcp/package.json` > `dependencies`
