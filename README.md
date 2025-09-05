@@ -125,7 +125,7 @@ This example shows two flags that take a string value (`--orgs` and `--toolsets`
        }
      }
 ```
-The `"-y", "@salesforce/mcp"` part tells `npx` to automatically install the `@salesforce/mcp` package instead of asking permission.
+The `"-y", "@salesforce/mcp"` part tells `npx` to automatically install the `@salesforce/mcp` package instead of asking permission. Don't change this. 
 
 These are the available flags that you can pass to the `args` option. 
 
