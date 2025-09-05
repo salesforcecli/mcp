@@ -254,8 +254,8 @@ Includes these tools:
 
 Includes these tools, which aren't yet generally available:
 
-- `sf-code-analyzer-run` - (NON-GA) Performs a static analysis of your code. Includes validating that the code conforms to best practices, checking for security vulnerabilities, and identifying possible performance issues.
-- `sf-code-analyzer-describe-rule` - (NON-GA) Gets the description of a Code Analyzer rule, including the engine it belongs to, its severity, and associated tags.
+- `sf-code-analyzer-run` - (NON-GA) Performs a static analysis of your code using Salesforce Code Analyzer. Includes validating that the code conforms to best practices, checking for security vulnerabilities, and identifying possible performance issues.
+- `sf-code-analyzer-describe-rule` - (NON-GA) Gets the description of a Salesforce Code Analyzer rule, including the engine it belongs to, its severity, and associated tags.
 
 **NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
 
