@@ -7,7 +7,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.17.3",
+    "@modelcontextprotocol/sdk": "^1.17.5",
     "@salesforce/core": "^8",
     "@salesforce/ts-types": "^2",
     "semver": "^7.7.2",
