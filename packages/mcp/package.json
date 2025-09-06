@@ -41,7 +41,7 @@
     "package.json"
   ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.16.0",
+    "@modelcontextprotocol/sdk": "^1.17.5",
     "@oclif/core": "^4.5.1",
     "@salesforce/agents": "^0.15.4",
     "@salesforce/apex-node": "^8.2.1",
