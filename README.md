@@ -83,7 +83,7 @@ For the best getting-started experience, make sure that you have a Salesforce DX
 
    You can also configure the MCP server globally by editing the VS Code [settings.json](https://code.visualstudio.com/docs/configure/settings#_settings-file-locations) file and adding a similar JSON snippet but contained in an `mcp:servers` section.
 
-   The `--orgs` flag is required and specifies the authorized orgs you're allowing the MCP server to access. The `--toolsets` flag is optional and specifies the toolsets it should consult when determining the specific tool to run. See [Configure Orgs and Toolsets](README.md#configure-orgs-and-toolsets) for the available values for the two flags.
+   The `--orgs` flag is required and specifies the authorized orgs you're allowing the MCP server to access. The `--toolsets` flag is optional and specifies the toolsets it should consult when determining the specific tool to run. See [Configure the DX MCP Server](README.md#configure-the-dx-mcp-server) for the available values for the two flags.
 
 1. Open VS Code, go to **View -> Command Palette** and enter **MCP: List Servers**.
 
