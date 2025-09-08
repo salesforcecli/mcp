@@ -48,13 +48,21 @@ The Salesforce DX MCP Server was designed with security as a top priority.
   - MCP Server can access auth info for only orgs that have been explicitly allowlisted.
   - Users specify allowed orgs when starting the server.
 
+### Agentforce for Developers Includes the Salesforce DX MCP Server
+
+Agentforce for Developers is an AI-powered Salesforce developer tool that's available as an easy-to-install Visual Studio Code (VS Code) extension. It includes Dev Agent (developer preview), an intelligent coding partner that provides information and, most importantly, can take action. Through agentic chat powered by MCP, Dev Agent can execute commands and perform complex workflows automatically, right from within VS Code.
+
+The Salesforce DX MCP server is pre-configured in Agentforce for Developers, so you can start using the DX MCP tools immediately after you install the extension in VS Code. 
+
+See [Set Up Agentforce for Developers](https://developer.salesforce.com/docs/platform/einstein-for-devs/guide/einstein-setup.html) and [Chat with Dev Agent (Dev Preview)](https://developer.salesforce.com/docs/platform/einstein-for-devs/guide/devagent-overview.html) for more information. 
+
 ## Get Started Using VS Code as the Client
 
 Want to jump in and see what all the fuss is about? Read on!
 
-This example uses Visual Studio Code (VS Code) as the MCP client because it's a standard Salesforce DX development tool. After you configure it with the Salesforce DX MCP Server, you then use GitHub Copilot and natural language to easily execute typical Salesforce DX development tasks, such as listing your authorized orgs, viewing org records, and deploying or retrieving metadata.
+This example uses Visual Studio Code (VS Code) as the MCP client. After you configure it with the Salesforce DX MCP Server, you then use GitHub Copilot and natural language to easily execute typical Salesforce DX development tasks, such as listing your authorized orgs, viewing org records, and deploying or retrieving metadata.
 
-But you're not limited to using only VS Code and Copilot! You can [configure many other clients](README.md#configure-other-clients-to-use-the-salesforce-dx-mcp-server) to use the Salesforce DX MCP Server, such as Cursor, Cline, Claude Desktop, Zed, Windsurf, and more.
+But you're not limited to using only VS Code and Copilot as the MCP client! As already mentioned, you can use [Agentforce for Developers](README.md#agentforce-for-developers-includes-the-salesforce-dx-mcp-server), which is pre-configured with the DX MCP server.  Or you can [configure many other clients](README.md#configure-other-clients-to-use-the-salesforce-dx-mcp-server) to use the Salesforce DX MCP Server, such as Cursor, Cline, Claude Desktop, Zed, Windsurf, and more. 
 
 **Before You Begin**
 
