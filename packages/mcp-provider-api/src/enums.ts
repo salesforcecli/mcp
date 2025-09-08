@@ -17,6 +17,7 @@ export enum Toolset {
   METADATA = 'metadata',
   TESTING = 'testing',
   USERS = 'users',
+  MOBILE = 'mobile',
   OTHER = 'other'
 }
 
