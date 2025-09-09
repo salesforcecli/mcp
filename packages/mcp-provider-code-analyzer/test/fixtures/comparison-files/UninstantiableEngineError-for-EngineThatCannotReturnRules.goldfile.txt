@@ -9,7 +9,7 @@
     "sev5": 0
   },
   "versions": {
-    "code-analyzer": "0.31.0",
+    "code-analyzer": "0.34.0",
     "EngineThatCannotReturnRules": "unknown"
   },
   "violations": [
@@ -20,6 +20,8 @@
       "tags": [],
       "primaryLocationIndex": 0,
       "locations": [
-        {}
+        {
+          "comment": "Undefined Code Location"
+        }
       ],
       "message": "The engine with name 'EngineThatCannotReturnRules' could not be instantiated. Error: ThisEngineCannotReturnRules
