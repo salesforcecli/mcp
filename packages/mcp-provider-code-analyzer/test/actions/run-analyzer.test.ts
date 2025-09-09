@@ -42,12 +42,12 @@ describe('RunAnalyzerActionImpl', () => {
                 'success'
             ],
             expectedSummary: {
-                totalViolations: 0,
-                sev1Violations: 0,
-                sev2Violations: 0,
-                sev3Violations: 0,
-                sev4Violations: 0,
-                sev5Violations: 0
+                total: 0,
+                sev1: 0,
+                sev2: 0,
+                sev3: 0,
+                sev4: 0,
+                sev5: 0
             }
         },
         {
@@ -64,12 +64,12 @@ describe('RunAnalyzerActionImpl', () => {
                 'success'
             ],
             expectedSummary: {
-                totalViolations: 6,
-                sev1Violations: 0,
-                sev2Violations: 0,
-                sev3Violations: 3,
-                sev4Violations: 3,
-                sev5Violations: 0
+                total: 6,
+                sev1: 0,
+                sev2: 0,
+                sev3: 3,
+                sev4: 3,
+                sev5: 0
             }
         },
         {
@@ -86,12 +86,12 @@ describe('RunAnalyzerActionImpl', () => {
                 'FakeErrorLog'
             ],
             expectedSummary: {
-                totalViolations: 0,
-                sev1Violations: 0,
-                sev2Violations: 0,
-                sev3Violations: 0,
-                sev4Violations: 0,
-                sev5Violations: 0
+                total: 0,
+                sev1: 0,
+                sev2: 0,
+                sev3: 0,
+                sev4: 0,
+                sev5: 0
             }
         },
         {
@@ -122,12 +122,12 @@ describe('RunAnalyzerActionImpl', () => {
                 `invalid key 'asdf'`
             ],
             expectedSummary: {
-                totalViolations: 1,
-                sev1Violations: 1,
-                sev2Violations: 0,
-                sev3Violations: 0,
-                sev4Violations: 0,
-                sev5Violations: 0
+                total: 1,
+                sev1: 1,
+                sev2: 0,
+                sev3: 0,
+                sev4: 0,
+                sev5: 0
             }
         },
         {
@@ -159,12 +159,12 @@ describe('RunAnalyzerActionImpl', () => {
                 "ThisEngineCannotReturnRules"
             ],
             expectedSummary: {
-                totalViolations: 1,
-                sev1Violations: 1,
-                sev2Violations: 0,
-                sev3Violations: 0,
-                sev4Violations: 0,
-                sev5Violations: 0
+                total: 1,
+                sev1: 1,
+                sev2: 0,
+                sev3: 0,
+                sev4: 0,
+                sev5: 0
             }
         },
         {
@@ -183,12 +183,12 @@ describe('RunAnalyzerActionImpl', () => {
                 'success'
             ],
             expectedSummary: {
-                totalViolations: 1,
-                sev1Violations: 1,
-                sev2Violations: 0,
-                sev3Violations: 0,
-                sev4Violations: 0,
-                sev5Violations: 0
+                total: 1,
+                sev1: 1,
+                sev2: 0,
+                sev3: 0,
+                sev4: 0,
+                sev5: 0
             }
         }
     ])('When $case, $expectation', async ({target, comparisonFile, configFactory, enginePluginsFactory, keyStatusPhrases, expectedSummary}) => {
