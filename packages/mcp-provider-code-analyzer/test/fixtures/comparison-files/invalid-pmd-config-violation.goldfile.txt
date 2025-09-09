@@ -9,7 +9,7 @@
     "sev5": 0
   },
   "versions": {
-    "code-analyzer": "0.31.0",
+    "code-analyzer": "0.34.0",
     "cpd": "0.28.0",
     "regex": "0.24.0",
     "pmd": "unknown"
@@ -22,6 +22,8 @@
       "tags": [],
       "primaryLocationIndex": 0,
       "locations": [
-        {}
+        {
+          "comment": "Undefined Code Location"
+        }
       ],
       "message": "The engine with name 'pmd' could not be instantiated. Error: The 'engines.pmd' configuration object contains an invalid key 'asdf'. Valid keys are: [\"custom_rulesets\",\"file_extensions\",\"java_classpath_entries\",\"java_command\"]

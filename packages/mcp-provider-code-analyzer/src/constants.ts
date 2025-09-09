@@ -1,4 +1,4 @@
-export const TelemetryEventName = "plugin-code-analyzer"
+export const TelemetryEventName = "code-analyzer"
 export const TelemetrySource = "MCP"
 
 export const McpTelemetryEvents = {

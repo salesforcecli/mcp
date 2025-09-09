@@ -9,7 +9,7 @@
     "sev5": 0
   },
   "versions": {
-    "code-analyzer": "0.31.0",
+    "code-analyzer": "0.34.0",
     "UnrunnableEngine": "1.0.0"
   },
   "violations": [
@@ -20,6 +20,8 @@
       "tags": [],
       "primaryLocationIndex": 0,
       "locations": [
-        {}
+        {
+          "comment": "Undefined Code Location"
+        }
       ],
       "message": "The engine with name 'UnrunnableEngine' threw an unexpected error: Error: This engine is impossible to run\n

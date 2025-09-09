@@ -9,6 +9,7 @@ import {
     SeverityLevel,
     Workspace
 } from "@salesforce/code-analyzer-core";
+import type { ViolationCounts } from "@salesforce/code-analyzer-core/output-formats";
 import {EnginePlugin} from "@salesforce/code-analyzer-engine-api";
 import {getErrorMessage} from "../utils.js";
 import {getMessage} from "../messages.js";
@@ -32,20 +33,11 @@ export type RunInput = {
     target: string[]
 }
 
-type RunSummary = {
-    totalViolations: number
-    sev1Violations: number
-    sev2Violations: number
-    sev3Violations: number
-    sev4Violations: number
-    sev5Violations: number
-}
-
 // NOTE: THIS MUST ALIGN WITH THE ZOD SCHEMA DEFINED IN `sf-code-analyzer-run.ts`.
 export type RunOutput = {
     status: string
     resultsFile?: string
-    summary?: RunSummary
+    summary?: ViolationCounts
 }
 
 export interface RunAnalyzerAction {
@@ -168,13 +160,13 @@ export function indent(value: string): string {
     return '    ' + value.replaceAll('\n', `\n    `);
 }
 
-function generateSummary(results: RunResults): RunSummary {
+function generateSummary(results: RunResults): ViolationCounts {
     return {
-        totalViolations: results.getViolationCount(),
-        sev1Violations: results.getViolationCountOfSeverity(SeverityLevel.Critical),
-        sev2Violations: results.getViolationCountOfSeverity(SeverityLevel.High),
-        sev3Violations: results.getViolationCountOfSeverity(SeverityLevel.Moderate),
-        sev4Violations: results.getViolationCountOfSeverity(SeverityLevel.Low),
-        sev5Violations: results.getViolationCountOfSeverity(SeverityLevel.Info)
+        total: results.getViolationCount(),
+        sev1: results.getViolationCountOfSeverity(SeverityLevel.Critical),
+        sev2: results.getViolationCountOfSeverity(SeverityLevel.High),
+        sev3: results.getViolationCountOfSeverity(SeverityLevel.Moderate),
+        sev4: results.getViolationCountOfSeverity(SeverityLevel.Low),
+        sev5: results.getViolationCountOfSeverity(SeverityLevel.Info)
     };
 }
