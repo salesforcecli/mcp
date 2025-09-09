@@ -14,8 +14,8 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.3",
-    "@salesforce/code-analyzer-core": "0.31.0",
-    "@salesforce/code-analyzer-engine-api": "0.26.0",
+    "@salesforce/code-analyzer-core": "0.34.0",
+    "@salesforce/code-analyzer-engine-api": "0.28.0",
     "@salesforce/code-analyzer-eslint-engine": "0.28.0",
     "@salesforce/code-analyzer-pmd-engine": "0.28.0",
     "@salesforce/code-analyzer-regex-engine": "0.24.0",

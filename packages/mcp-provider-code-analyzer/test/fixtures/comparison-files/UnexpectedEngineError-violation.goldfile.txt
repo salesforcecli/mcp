@@ -9,7 +9,7 @@
     "sev5": 0
   },
   "versions": {
-    "code-analyzer": "0.31.0",
+    "code-analyzer": "0.34.0",
     "UnrunnableEngine": "1.0.0"
   },
   "violations": [
@@ -20,6 +20,9 @@
       "tags": [],
       "primaryLocationIndex": 0,
       "locations": [
-        {}
+        {
+          "comment": "Undefined Code Location"
+        }
       ],
-      "message": "The engine with name 'UnrunnableEngine' threw an unexpected error: Error: This engine is impossible to run\n
+      "message": "The engine with name 'UnrunnableEngine' threw an unexpected error: Error: This engine is impossible to run\n    at UnrunnableEngine.runRules (/Users/randi.wilson/Documents/Repos/mcp/packages/mcp-provider-code-analyzer/test/stubs/EnginePluginFactories.ts:140:15)\n    at CodeAnalyzer.runEngineAndValidateResults (/Users/randi.wilson/Documents/Repos/mcp/packages/mcp-provider-code-analyzer/node_modules/@salesforce/code-analyzer-core/src/code-analyzer.ts:399:48)\n    at /Users/randi.wilson/Documents/Repos/mcp/packages/mcp-provider-code-analyzer/node_modules/@salesforce/code-analyzer-core/src/code-analyzer.ts:317:40\n    at async Promise.all (index 0)\n    at CodeAnalyzer.run (/Users/randi.wilson/Documents/Repos/mcp/packages/mcp-provider-code-analyzer/node_modules/@salesforce/code-analyzer-core/src/code-analyzer.ts:322:58)\n    at RunAnalyzerActionImpl.exec (/Users/randi.wilson/Documents/Repos/mcp/packages/mcp-provider-code-analyzer/src/actions/run-analyzer.ts:145:29)\n    at /Users/randi.wilson/Documents/Repos/mcp/packages/mcp-provider-code-analyzer/test/actions/run-analyzer.test.ts:204:35\n    at file:///Users/randi.wilson/Documents/Repos/mcp/packages/mcp-provider-code-analyzer/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20",
+      "resources": []

@@ -9,7 +9,7 @@
     "sev5": 0
   },
   "versions": {
-    "code-analyzer": "0.31.0",
+    "code-analyzer": "0.34.0",
     "cpd": "0.28.0",
     "regex": "0.24.0",
     "pmd": "unknown"
@@ -22,6 +22,9 @@
       "tags": [],
       "primaryLocationIndex": 0,
       "locations": [
-        {}
+        {
+          "comment": "Undefined Code Location"
+        }
       ],
-      "message": "The engine with name 'pmd' could not be instantiated. Error: The 'engines.pmd' configuration object contains an invalid key 'asdf'. Valid keys are: [\"custom_rulesets\",\"file_extensions\",\"java_classpath_entries\",\"java_command\"]
+      "message": "The engine with name 'pmd' could not be instantiated. Error: The 'engines.pmd' configuration object contains an invalid key 'asdf'. Valid keys are: [\"custom_rulesets\",\"file_extensions\",\"java_classpath_entries\",\"java_command\"]\n    at ConfigValueExtractor.validateContainsOnlySpecifiedKeys (/Users/randi.wilson/Documents/Repos/mcp/packages/mcp-provider-code-analyzer/node_modules/@salesforce/code-analyzer-engine-api/src/config.ts:112:23)\n    at validateAndNormalizePmdConfig (/Users/randi.wilson/Documents/Repos/mcp/packages/mcp-provider-code-analyzer/node_modules/@salesforce/code-analyzer-pmd-engine/src/config.ts:170:26)\n    at PmdCpdEnginesPlugin.createEngineConfig (/Users/randi.wilson/Documents/Repos/mcp/packages/mcp-provider-code-analyzer/node_modules/@salesforce/code-analyzer-pmd-engine/src/plugin.ts:47:55)\n    at CodeAnalyzer.createAndAddEngineIfValid (/Users/randi.wilson/Documents/Repos/mcp/packages/mcp-provider-code-analyzer/node_modules/@salesforce/code-analyzer-core/src/code-analyzer.ts:482:76)\n    at /Users/randi.wilson/Documents/Repos/mcp/packages/mcp-provider-code-analyzer/node_modules/@salesforce/code-analyzer-core/src/code-analyzer.ts:195:18\n    at Array.map (<anonymous>)\n    at CodeAnalyzer.addEnginePlugin (/Users/randi.wilson/Documents/Repos/mcp/packages/mcp-provider-code-analyzer/node_modules/@salesforce/code-analyzer-core/src/code-analyzer.ts:194:93)\n    at RunAnalyzerActionImpl.exec (/Users/randi.wilson/Documents/Repos/mcp/packages/mcp-provider-code-analyzer/src/actions/run-analyzer.ts:128:38)\n    at /Users/randi.wilson/Documents/Repos/mcp/packages/mcp-provider-code-analyzer/test/actions/run-analyzer.test.ts:204:35\n    at file:///Users/randi.wilson/Documents/Repos/mcp/packages/mcp-provider-code-analyzer/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20",
+      "resources": []
