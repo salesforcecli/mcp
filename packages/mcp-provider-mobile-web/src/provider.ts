@@ -1,19 +1,31 @@
 import { McpProvider, McpTool, Services } from "@salesforce/mcp-provider-api";
-import { ExampleMcpTool } from "./tools/sf-example-tool.js";
+import { NativeCapabilityTool } from "./tools/native-capabilities/nativeCapabilityTool.js";
+import { OfflineAnalysisTool } from "./tools/mobile-offline/offline-analysis/sf-mobile-web-offline-analysis.js";
+import { OfflineGuidanceTool } from "./tools/mobile-offline/offline-guidance/sf-mobile-web-offline-guidance.js";
+import { nativeCapabilityConfigs } from "./tools/native-capabilities/nativeCapabilityConfig.js";
 
 /**
  * Example MCPProvider for demonstration puproses
  */
-export class ExampleMcpProvider extends McpProvider {
+export class MobileWebMcpProvider extends McpProvider {
   // Must return a name for your McpProvider. It is recommended to make this match the class name
   public getName(): string {
-    return "ExampleMcpProvider";
+    return "MobileWebMcpProvider";
   }
 
   // Must return a promise containing an array of the McpTool instances that you want to register
   public provideTools(services: Services): Promise<McpTool[]> {
+    const telemetryService = services.getTelemetryService();
+    const nativeCapabilityTools: NativeCapabilityTool[] = [];
+    for (const config of nativeCapabilityConfigs) {
+      nativeCapabilityTools.push(new NativeCapabilityTool(config, telemetryService));
+
+    }
+    
     return Promise.resolve([
-      new ExampleMcpTool(services.getTelemetryService()),
+      new OfflineAnalysisTool(telemetryService),
+      new OfflineGuidanceTool(telemetryService),
+      ...nativeCapabilityTools,
     ]);
   }
 

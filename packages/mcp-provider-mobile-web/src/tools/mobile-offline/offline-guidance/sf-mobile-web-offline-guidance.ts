@@ -6,7 +6,7 @@
  */
 import { z } from 'zod';
 import { McpTool, type McpToolConfig } from '@salesforce/mcp-provider-api';
-import { ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
+import { ReleaseState, Toolset, TelemetryService } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import {
   ExpertsReviewInstructionsSchema,
@@ -16,6 +16,7 @@ import {
 } from '../../../schemas/analysisSchema.js';
 import dedent from 'dedent';
 import { zodToJsonSchema } from 'zod-to-json-schema';
+import { TelemetryEventName } from '../../../constants.js';
 
 const EMPTY_INPUT_SCHEMA = z.object({}).describe('No input required');
 
@@ -24,6 +25,13 @@ type OutputArgsShape = typeof ExpertsReviewInstructionsSchema.shape;
 type InputArgs = z.infer<typeof EMPTY_INPUT_SCHEMA>;
 
 export class OfflineGuidanceTool extends McpTool<InputArgsShape, OutputArgsShape> {
+
+  private readonly telemetryService: TelemetryService;
+
+  constructor(telemetryService: TelemetryService) {
+    super();
+    this.telemetryService = telemetryService;
+  }
 
   public getReleaseState(): ReleaseState {
     return ReleaseState.NON_GA;
@@ -53,6 +61,9 @@ export class OfflineGuidanceTool extends McpTool<InputArgsShape, OutputArgsShape
     _args: InputArgs,
   ): Promise<CallToolResult> {
     try {
+      this.telemetryService.sendEvent(TelemetryEventName, {
+       toolId: this.getName(),
+      });
       const reviewInstructions = this.getExpertReviewInstructions();
 
       return {

@@ -5,11 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { Linter } from 'eslint';
-import { McpTool, type McpToolConfig } from '@salesforce/mcp-provider-api';
+import { McpTool, type McpToolConfig, TelemetryService } from '@salesforce/mcp-provider-api';
 import { ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
 import { LwcCodeSchema, type LwcCodeType } from '../../../schemas/lwcSchema.js';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
+import { TelemetryEventName } from '../../../constants.js';
 import lwcGraphAnalyzerPlugin from '@salesforce/eslint-plugin-lwc-graph-analyzer';
 import { ruleConfigs } from './ruleConfig.js';
 
@@ -39,11 +40,13 @@ type InputArgs = z.infer<typeof LwcCodeSchema>;
 
 export class OfflineAnalysisTool extends McpTool<InputArgsShape, OutputArgsShape> {
 
+  private readonly telemetryService: TelemetryService;
   private readonly linter: Linter;
   private readonly ruleReviewers: Record<string, CodeAnalysisBaseIssueType>;
 
-  constructor() {
+  constructor(telemetryService: TelemetryService) {
     super();
+    this.telemetryService = telemetryService;
     this.linter = new Linter({ configType: 'flat' });
     this.ruleReviewers = this.initializeRuleReviewers();
   }
@@ -76,6 +79,9 @@ export class OfflineAnalysisTool extends McpTool<InputArgsShape, OutputArgsShape
     args: InputArgs,
   ): Promise<CallToolResult> {
     try {
+      this.telemetryService.sendEvent(TelemetryEventName, {
+        tooId: this.getName(),
+      });
       const analysisResults = await this.analyzeCode(args);
 
       return {

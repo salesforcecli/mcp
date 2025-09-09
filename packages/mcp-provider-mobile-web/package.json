@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/mcp-provider-mobile-web",
   "description": "MCP Provider for Mobile Web development tools and utilities",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1",
   "author": "Salesforce",
   "license": "Apache-2.0",
   "type": "module",
@@ -25,6 +25,8 @@
     "@types/node": "^22.16.5",
     "@vitest/coverage-istanbul": "^3.2.4",
     "rimraf": "^6.0.1",
+    "tar": "^7.4.3",
+    "tsx": "^4.19.2",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.37.0",
     "vite": "^7.0.6",
@@ -32,6 +34,7 @@
   },
   "files": [
     "dist",
+    "resources",
     "LICENSE.txt",
     "package.json"
   ],
@@ -39,9 +42,10 @@
     "build": "tsc --build tsconfig.build.json --verbose",
     "clean": "tsc --build tsconfig.build.json --clean",
     "clean-all": "yarn clean && rimraf node_modules",
-    "lint": "eslint **/*.ts",
+    "lint": "eslint **/*.ts --no-warn-ignored",
     "postclean": "rimraf dist && rimraf ./*.tgz",
     "package": "yarn pack",
-    "test": "tsc --build tsconfig.json --noEmit && vitest run --coverage"
+    "test": "tsc --build tsconfig.json --noEmit && vitest run --coverage",
+    "update-resources": "tsx src/scripts/update-type-declarations.ts"
   }
 }

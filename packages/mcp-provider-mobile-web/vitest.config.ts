@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config.js";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
@@ -11,7 +11,7 @@ export default defineConfig({
       provider: "istanbul",
       reporter: ["text", "json", "html", "lcov"],
       include: ["src/**/*.ts"],
-      exclude: ["src/index.ts"],
+      exclude: ["src/index.ts", "src/scripts/**/*.ts"],
     },
   },
 });
