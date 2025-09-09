@@ -1,5 +1,5 @@
 import { McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
-import { OfflineGuidanceTool } from "../../src/tools/mobile-offline/offline-guidance/sf-mobile-web-offline-guidance.js";
+import { OfflineGuidanceTool } from "../../src/tools/offline-guidance/sf-mobile-web-offline-guidance.js";
 import { SpyTelemetryService } from "../test-doubles.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 

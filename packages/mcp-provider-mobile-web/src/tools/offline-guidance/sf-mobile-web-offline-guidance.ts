@@ -13,10 +13,10 @@ import {
   ExpertsReviewInstructionsType,
   ExpertReviewInstructionsType,
   ExpertCodeAnalysisIssuesSchema,
-} from '../../../schemas/analysisSchema.js';
+} from '../../schemas/analysisSchema.js';
 import dedent from 'dedent';
 import { zodToJsonSchema } from 'zod-to-json-schema';
-import { TelemetryEventName } from '../../../constants.js';
+import { TelemetryEventName } from '../../constants.js';
 
 const EMPTY_INPUT_SCHEMA = z.object({}).describe('No input required');
 

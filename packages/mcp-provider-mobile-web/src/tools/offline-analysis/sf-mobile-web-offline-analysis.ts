@@ -7,10 +7,10 @@
 import { Linter } from 'eslint';
 import { McpTool, type McpToolConfig, TelemetryService } from '@salesforce/mcp-provider-api';
 import { ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
-import { LwcCodeSchema, type LwcCodeType } from '../../../schemas/lwcSchema.js';
+import { LwcCodeSchema, type LwcCodeType } from '../../schemas/lwcSchema.js';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
-import { TelemetryEventName } from '../../../constants.js';
+import { TelemetryEventName } from '../../constants.js';
 import lwcGraphAnalyzerPlugin from '@salesforce/eslint-plugin-lwc-graph-analyzer';
 import { ruleConfigs } from './ruleConfig.js';
 
@@ -20,7 +20,7 @@ import {
   ExpertsCodeAnalysisIssuesSchema,
   ExpertsCodeAnalysisIssuesType,
   ExpertCodeAnalysisIssuesType,
-} from '../../../schemas/analysisSchema.js';
+} from '../../schemas/analysisSchema.js';
 
 const ANALYSIS_EXPERT_NAME = 'Mobile Web Offline Analysis';
 const PLUGIN_NAME = '@salesforce/lwc-graph-analyzer';
