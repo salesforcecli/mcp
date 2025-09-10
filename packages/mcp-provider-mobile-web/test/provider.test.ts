@@ -1,6 +1,6 @@
 import { McpProvider, McpTool, Services } from "@salesforce/mcp-provider-api";
 import { MobileWebMcpProvider } from "../src/provider.js";
-import { NativeCapabilityTool } from "../src/tools/native-capabilities/nativeCapabilityTool.js";
+import { NativeCapabilityTool } from "../src/tools/native-capabilities/sf-mobile-native-capability.js";
 import { OfflineAnalysisTool } from "../src/tools/offline-analysis/sf-mobile-web-offline-analysis.js";
 import { OfflineGuidanceTool } from "../src/tools/offline-guidance/sf-mobile-web-offline-guidance.js";
 import { StubServices } from "./test-doubles.js";
