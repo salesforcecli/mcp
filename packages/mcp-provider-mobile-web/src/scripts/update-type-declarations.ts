@@ -1,10 +1,19 @@
 #!/usr/bin/env node
 
 /*
- * Copyright (c) 2025, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ * Copyright 2025, Salesforce, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 import { execSync } from 'child_process';
@@ -54,10 +63,7 @@ async function downloadAndExtractLightningTypes(): Promise<void> {
 
     // Step 3: Check if the mobile capabilities directory exists in the extracted package
     const extractedPackageDir = path.resolve(TEMP_DIR, 'package');
-    const mobileCapabilitiesSourceDir = path.resolve(
-      extractedPackageDir,
-      'dist/lightning/mobileCapabilities'
-    );
+    const mobileCapabilitiesSourceDir = path.resolve(extractedPackageDir, 'dist/lightning/mobileCapabilities');
 
     if (!fs.existsSync(mobileCapabilitiesSourceDir)) {
       throw new Error(`Mobile capabilities directory not found at ${mobileCapabilitiesSourceDir}`);
@@ -121,7 +127,7 @@ async function copyWithLowerCaseDirs(src: string, dest: string) {
   }
 }
 
-downloadAndExtractLightningTypes().catch(error => {
+downloadAndExtractLightningTypes().catch((error) => {
   console.error('Script execution failed:', error);
   process.exit(1);
 });

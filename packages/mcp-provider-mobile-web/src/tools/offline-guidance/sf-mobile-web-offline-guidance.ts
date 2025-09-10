@@ -1,9 +1,19 @@
 /*
- * Copyright (c) 2025, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ * Copyright 2025, Salesforce, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 import { z } from 'zod';
 import { McpTool, type McpToolConfig } from '@salesforce/mcp-provider-api';
 import { ReleaseState, Toolset, TelemetryService } from '@salesforce/mcp-provider-api';
@@ -25,7 +35,6 @@ type OutputArgsShape = typeof ExpertsReviewInstructionsSchema.shape;
 type InputArgs = z.infer<typeof EMPTY_INPUT_SCHEMA>;
 
 export class OfflineGuidanceTool extends McpTool<InputArgsShape, OutputArgsShape> {
-
   private readonly telemetryService: TelemetryService;
 
   constructor(telemetryService: TelemetryService) {
@@ -48,7 +57,8 @@ export class OfflineGuidanceTool extends McpTool<InputArgsShape, OutputArgsShape
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: 'Salesforce Mobile Offline LWC Expert Instruction Delivery',
-      description: 'Provides structured review instructions to detect and remediate Mobile Offline code violations in Lightning web components (LWCs) for Salesforce Mobile Apps.',
+      description:
+        'Provides structured review instructions to detect and remediate Mobile Offline code violations in Lightning web components (LWCs) for Salesforce Mobile Apps.',
       inputSchema: EMPTY_INPUT_SCHEMA.shape,
       outputSchema: ExpertsReviewInstructionsSchema.shape,
       annotations: {
@@ -57,12 +67,10 @@ export class OfflineGuidanceTool extends McpTool<InputArgsShape, OutputArgsShape
     };
   }
 
-  public async exec(
-    _args: InputArgs,
-  ): Promise<CallToolResult> {
+  public async exec(_args: InputArgs): Promise<CallToolResult> {
     try {
       this.telemetryService.sendEvent(TelemetryEventName, {
-       toolId: this.getName(),
+        toolId: this.getName(),
       });
       const reviewInstructions = this.getExpertReviewInstructions();
 
@@ -96,8 +104,7 @@ export class OfflineGuidanceTool extends McpTool<InputArgsShape, OutputArgsShape
 
     return {
       reviewInstructions,
-      orchestrationInstructions:
-        ExpertsReviewInstructionsSchema.shape.orchestrationInstructions.parse(undefined),
+      orchestrationInstructions: ExpertsReviewInstructionsSchema.shape.orchestrationInstructions.parse(undefined),
     };
   }
 

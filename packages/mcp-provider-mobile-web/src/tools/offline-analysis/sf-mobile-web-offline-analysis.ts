@@ -1,9 +1,19 @@
 /*
- * Copyright (c) 2025, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ * Copyright 2025, Salesforce, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 import { Linter } from 'eslint';
 import { McpTool, type McpToolConfig, TelemetryService } from '@salesforce/mcp-provider-api';
 import { ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
@@ -39,7 +49,6 @@ type OutputArgsShape = typeof ExpertsCodeAnalysisIssuesSchema.shape;
 type InputArgs = z.infer<typeof LwcCodeSchema>;
 
 export class OfflineAnalysisTool extends McpTool<InputArgsShape, OutputArgsShape> {
-
   private readonly telemetryService: TelemetryService;
   private readonly linter: Linter;
   private readonly ruleReviewers: Record<string, CodeAnalysisBaseIssueType>;
@@ -66,7 +75,8 @@ export class OfflineAnalysisTool extends McpTool<InputArgsShape, OutputArgsShape
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: 'Salesforce Mobile Offline LWC Expert Static Analysis',
-      description: 'Analyzes LWC components for mobile-specific issues and provides detailed recommendations for improvements. It can be leveraged to check if components are mobile-ready.',
+      description:
+        'Analyzes LWC components for mobile-specific issues and provides detailed recommendations for improvements. It can be leveraged to check if components are mobile-ready.',
       inputSchema: LwcCodeSchema.shape,
       outputSchema: ExpertsCodeAnalysisIssuesSchema.shape,
       annotations: {
@@ -75,9 +85,7 @@ export class OfflineAnalysisTool extends McpTool<InputArgsShape, OutputArgsShape
     };
   }
 
-  public async exec(
-    args: InputArgs,
-  ): Promise<CallToolResult> {
+  public async exec(args: InputArgs): Promise<CallToolResult> {
     try {
       this.telemetryService.sendEvent(TelemetryEventName, {
         tooId: this.getName(),
@@ -112,7 +120,7 @@ export class OfflineAnalysisTool extends McpTool<InputArgsShape, OutputArgsShape
         acc[ruleConfig.id] = ruleConfig.config;
         return acc;
       },
-      {} as Record<string, CodeAnalysisBaseIssueType>
+      {} as Record<string, CodeAnalysisBaseIssueType>,
     );
   }
 
@@ -132,10 +140,7 @@ export class OfflineAnalysisTool extends McpTool<InputArgsShape, OutputArgsShape
     return ExpertsCodeAnalysisIssuesSchema.shape.orchestrationInstructions.parse(undefined);
   }
 
-  private analyzeIssues(
-    code: string,
-    messages: Linter.LintMessage[]
-  ): ExpertCodeAnalysisIssuesType {
+  private analyzeIssues(code: string, messages: Linter.LintMessage[]): ExpertCodeAnalysisIssuesType {
     const issues: CodeAnalysisIssueType[] = [];
 
     for (const violation of messages) {

@@ -22,8 +22,10 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@salesforce/prettier-config": "^0.0.3",
     "@types/node": "^22.16.5",
     "@vitest/coverage-istanbul": "^3.2.4",
+    "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
     "tar": "^7.4.3",
     "tsx": "^4.19.2",
@@ -42,6 +44,7 @@
     "build": "tsc --build tsconfig.build.json --verbose",
     "clean": "tsc --build tsconfig.build.json --clean",
     "clean-all": "yarn clean && rimraf node_modules",
+    "format": "prettier --write \"+(src|test|resources)/**/*.+(ts|js|json)\"",
     "lint": "eslint **/*.ts --no-warn-ignored",
     "postclean": "rimraf dist && rimraf ./*.tgz",
     "package": "yarn pack",

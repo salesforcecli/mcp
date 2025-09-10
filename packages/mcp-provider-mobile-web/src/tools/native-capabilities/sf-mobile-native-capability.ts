@@ -1,8 +1,17 @@
 /*
- * Copyright (c) 2025, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ * Copyright 2025, Salesforce, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 import { readFile } from 'fs/promises';
@@ -20,7 +29,6 @@ type OutputArgsShape = typeof TextOutputSchema.shape;
 type InputArgs = z.infer<typeof EmptySchema>;
 
 export class NativeCapabilityTool extends McpTool<InputArgsShape, OutputArgsShape> {
-  
   public readonly description: string;
   public readonly title: string;
   protected readonly typeDefinitionPath: string;
@@ -39,13 +47,7 @@ export class NativeCapabilityTool extends McpTool<InputArgsShape, OutputArgsShap
     this.telemetryService = telemetryService;
   }
   // Extract repeated path as a protected member
-  protected readonly resourcesPath = resolve(
-    dirname(fileURLToPath(import.meta.url)),
-    '..',
-    '..',
-    '..',
-    'resources'
-  );
+  protected readonly resourcesPath = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'resources');
 
   // Simplified - no parameter needed since it always uses this.typeDefinitionPath
   protected async readTypeDefinitionFile(): Promise<string> {
@@ -63,7 +65,7 @@ export class NativeCapabilityTool extends McpTool<InputArgsShape, OutputArgsShap
   protected createServiceGroundingText(
     typeDefinitions: string,
     baseCapability: string,
-    mobileCapabilities: string
+    mobileCapabilities: string,
   ): string {
     return `# ${this.serviceName} Service Grounding Context
 
@@ -109,9 +111,7 @@ ${typeDefinitions}
     };
   }
 
-  public async exec(
-    _args: InputArgs,
-  ): Promise<CallToolResult> {
+  public async exec(_args: InputArgs): Promise<CallToolResult> {
     try {
       this.telemetryService.sendEvent(TelemetryEventName, {
         toolId: this.getName(),
@@ -119,11 +119,7 @@ ${typeDefinitions}
       const typeDefinitions = await this.readTypeDefinitionFile();
       const baseCapability = await this.readBaseCapability();
       const mobileCapabilities = await this.readMobileCapabilities();
-      const groundingText = this.createServiceGroundingText(
-        typeDefinitions,
-        baseCapability,
-        mobileCapabilities
-      );
+      const groundingText = this.createServiceGroundingText(typeDefinitions, baseCapability, mobileCapabilities);
       return {
         content: [
           {
@@ -133,7 +129,7 @@ ${typeDefinitions}
         ],
         structuredContent: {
           content: groundingText,
-        }
+        },
       };
     } catch {
       return {
@@ -146,10 +142,8 @@ ${typeDefinitions}
         ],
         structuredContent: {
           content: `Error: Unable to load ${this.toolId} type definitions.`,
-        }
+        },
       };
-      
     }
   }
-
 }
