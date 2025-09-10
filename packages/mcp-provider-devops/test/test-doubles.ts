@@ -11,7 +11,7 @@ import {
 
 export class StubServices implements Services {
   public configService: ConfigService = new StubConfigService();
-  public orgService: OrgService = new StubOrgService();
+  public orgService: OrgService = new StubOrgService() as any;
   public telemetryService: TelemetryService = new SpyTelemetryService();
 
   public getConfigService(): ConfigService {
@@ -42,7 +42,7 @@ export class StubOrgService implements OrgService {
     throw new Error("Method not implemented.");
   }
 
-  public getConnection(_username: string): Promise<Connection> {
+  public getConnection(_username: string): Promise<any> {
     throw new Error("Method not implemented.");
   }
 

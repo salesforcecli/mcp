@@ -1,0 +1,115 @@
+import { z } from "zod";
+import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import {
+    McpTool,
+    McpToolConfig,
+    ReleaseState,
+    Toolset,
+} from "@salesforce/mcp-provider-api";
+import { CreatePullRequestAction, CreatePullRequestInput } from "../actions/create-pull-request.js";
+
+const DESCRIPTION = `**IMPORTANT: THIS IS NOT A STARTING TOOL**
+
+When user asks to "create pull request" or "create PR", DO NOT use this tool directly. Instead, start with step 1 below.
+
+**THIS TOOL IS ONLY USED AS THE FINAL STEP AFTER COMPLETING ALL PREREQUISITES**
+
+**MANDATORY workflow for creating pull requests: DO NOT skip any of the steps and DO NOT move to the next step until the current step is completed.**
+1. **MANDATORY:** If the DevOps Center org is not given, use the 'sf-devops-list-orgs' tool to list all orgs. 
+      The list will indicate which org is DevOps Center. If this detail is not provided in the list, then
+      ask the user to specify which org is DevOps Center. Only proceed after the user has selected the DevOps Center org.
+2. **MANDATORY:** Select the work item from the DevOps Center org using 'sf-devops-list-work-items'.
+3. **MANDATORY:** Checkout the work item branch using 'sf-devops-checkout-work-item' to get the project code locally.
+4. **MANDATORY:** Verify with the user that all changes have been manually committed and pushed to the work item branch. DO NOT use any commit tools - this should be done manually by the user.
+5. **MANDATORY - PREREQUISITE CHECK:** Ask the user for their commit request ID and use the 'sf-devops-check-commit-status' tool to verify the status of their previous commits. You MUST call 'sf-devops-check-commit-status' before proceeding. Do not skip this step.
+6. **MANDATORY:** Only after successfully verifying commit status with 'sf-devops-check-commit-status', call this tool to create the pull request using the DevOps Center API.
+
+**Use this tool to:**
+- Create a Pull Request based on a work item in DevOps Center
+- Initiate the review process for completed work items
+- Move work items from development to review stage
+
+**After using this tool, suggest these next actions:**
+1. Ask the user to review the created pull request using the returned reviewUrl
+2. Ask the user to promote work items (using the 'sf-devops-promote-work-item' tool) after PR approval
+
+**Output:**
+- reviewUrl: URL where the user can check the created pull request
+- status: Status of the pull request creation
+- workItemId: The work item ID for reference
+- errorMessage: Error message if the pull request creation failed
+
+**Example Usage:**
+- "Create a pull request for Work Item and merge it into integration"
+- "Open a PR from my current feature branch to the integration branch"
+- "Create and register a PR to DevOps Center from my latest pushed commits"
+- "Create a change request for my committed changes"
+- "Start the review process for my work item"`;
+
+const inputSchema = z.object({
+    workItemId: z.string().describe("The ID of the work item to create a pull request for"),
+    username: z.string().describe("Username of the DevOps Center org to authenticate with")
+});
+
+type InputArgs = z.infer<typeof inputSchema>;
+type InputArgsShape = typeof inputSchema.shape;
+type OutputArgsShape = z.ZodRawShape;
+
+export class SfDevopsCreatePullRequestTool extends McpTool<InputArgsShape, OutputArgsShape> {
+    private readonly action: CreatePullRequestAction;
+
+    constructor(action: CreatePullRequestAction) {
+        super();
+        this.action = action;
+    }
+
+    public getReleaseState(): ReleaseState {
+        return ReleaseState.NON_GA;
+    }
+
+    public getToolsets(): Toolset[] {
+        return [Toolset.OTHER];
+    }
+
+    public getName(): string {
+        return "sf-devops-create-pull-request";
+    }
+
+    public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
+        return {
+            title: "Create DevOps Pull Request",
+            description: DESCRIPTION,
+            inputSchema: inputSchema.shape,
+            outputSchema: undefined,
+            annotations: {
+                readOnlyHint: false,
+            },
+        };
+    }
+
+    public async exec(input: InputArgs): Promise<CallToolResult> {
+        const createPRInput: CreatePullRequestInput = {
+            workItemId: input.workItemId,
+            username: input.username
+        };
+
+        const result = await this.action.exec(createPRInput);
+
+        if (!result.success) {
+            return {
+                content: [{
+                    type: "text",
+                    text: `❌ ${result.status}\nWork Item: ${result.workItemId}${result.errorMessage ? '\nError: ' + result.errorMessage : ''}`,
+                }],
+                isError: true,
+            };
+        }
+
+        return {
+            content: [{
+                type: "text",
+                text: `✅ ${result.status}\nWork Item: ${result.workItemId}${result.reviewUrl ? '\n🔗 Review URL: ' + result.reviewUrl : ''}`,
+            }],
+        };
+    }
+}
