@@ -64,7 +64,14 @@ yarn workspace @salesforce/mcp-provider-api remove some-dep
 
 ## Adding a new package
 
-If you’re adding an MCP provider, follow these two rules:
+> [!NOTE]
+> If you are creating an MCP provider in a stand-alone repo:
+> - You can still use EXAMPLE-MCP-PROVIDER as a guide for building your tool
+> - Publish your package to npm (e.g. `@salesforce/mcp-provider-<your-name>`)
+> - Add your package name and version to `packages/mcp/package.json` > `dependencies`
+> - Register your tools ([docs](https://github.com/salesforcecli/mcp/blob/main/DEVELOPING.md#registering-new-tools-in-the-server))
+
+If you’re adding an MCP provider to the `salesforcecli/mcp` repository, follow these two rules:
 
 - The folder name under `packages/` must start with `mcp-provider-`.
 - The npm package name should follow the existing scope and naming (e.g., `@salesforce/mcp-provider-<your-name>`). Match the scope used by current packages unless you have a reason to use a different scope.
