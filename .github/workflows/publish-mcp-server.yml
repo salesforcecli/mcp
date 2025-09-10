@@ -172,6 +172,13 @@ jobs:
         if: ${{ steps.changelog.outputs.skipped == 'false' && steps.release.outputs.id != '' }}
         run: |
           cd packages/mcp
+          rm -rf node_modules
+          mkdir ${{ runner.temp }}/mcp-shrinkwrap
+          cp -r . ${{ runner.temp }}/mcp-shrinkwrap
+          cd ${{ runner.temp }}/mcp-shrinkwrap
+          npm install
+          npm shrinkwrap
+
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
           
           # Determine npm dist-tag

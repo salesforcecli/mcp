@@ -1,3 +1,12 @@
+## [0.19.2-dev.1](https://github.com/salesforcecli/mcp/compare/0.19.1...0.19.2-dev.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* add shrinkwrap lockfile ([400fe7a](https://github.com/salesforcecli/mcp/commit/400fe7a1852956aa8d25f5f299334f67acb36ea6))
+
+
+
 ## [0.19.1](https://github.com/salesforcecli/mcp/compare/0.19.0...0.19.1) (2025-09-04)
 
 

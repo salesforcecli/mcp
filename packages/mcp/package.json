@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/mcp",
-  "version": "0.19.1",
+  "version": "0.19.2-dev.1",
   "description": "MCP Server for interacting with Salesforce instances",
   "bin": {
     "sf-mcp-server": "bin/run.js"
@@ -22,7 +22,9 @@
     "lint-fix": "yarn sf-lint --fix",
     "package": "yarn pack",
     "postpack": "sf-clean --ignore-signing-artifacts",
+    "prepack": "echo 'no prepack script'",
     "prepare": "sf-install",
+    "prepublishOnly": "npm shrinkwrap",
     "start": "yarn build && npm link && mcp-inspector sf-mcp-server",
     "test": "wireit",
     "test:only": "wireit"
@@ -38,6 +40,7 @@
     "!lib/**/*.map",
     "messages",
     "LICENSE.txt",
+    "npm-shrinkwrap.json",
     "package.json"
   ],
   "dependencies": {
