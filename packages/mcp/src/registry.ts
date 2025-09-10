@@ -17,11 +17,13 @@
 import { McpProvider } from '@salesforce/mcp-provider-api';
 import { DxCoreMcpProvider } from '@salesforce/mcp-provider-dx-core';
 import { CodeAnalyzerMcpProvider } from '@salesforce/mcp-provider-code-analyzer';
+import { DevOpsMcpProvider } from '@salesforce/mcp-provider-devops';
 
 /** -------- ADD McpProvider INSTANCES HERE ------------------------------------------------------------------------- */
 
 export const MCP_PROVIDER_REGISTRY: McpProvider[] = [
-  new DxCoreMcpProvider(),
-  new CodeAnalyzerMcpProvider(),
+  new DxCoreMcpProvider() as McpProvider,
+  new CodeAnalyzerMcpProvider() as McpProvider,
+  new DevOpsMcpProvider() as McpProvider,
   // Add new instances here
 ];
