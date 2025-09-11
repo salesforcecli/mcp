@@ -20,3 +20,4 @@ export const DevOpsOperations = {
     PROMOTE_WORKITEM: 'promote_workitem',
     CREATE_PULLREQUEST: 'create_pullrequest'
 }
+
