@@ -2738,7 +2738,7 @@
     strip-ansi "6.0.1"
     ts-retry-promise "^0.8.1"
 
-"@salesforce/code-analyzer-core@0.34.0":
+"@salesforce/code-analyzer-core@^0.34.0":
   version "0.34.0"
   resolved "https://registry.yarnpkg.com/@salesforce/code-analyzer-core/-/code-analyzer-core-0.34.0.tgz#d1155934cf229c7d40d1dec6cbf7c9e2c43e7381"
   integrity sha512-hOIqME6XcMDwrzbmXJqHLFSA9HAGoJYsWNhRL0lVDKASkyAoUYrDodeZqsRenmKF/uOFzzsGk0ef22EOkgdVOA==
@@ -2758,7 +2758,7 @@
     "@types/node" "^20.0.0"
     tmp "^0.2.3"
 
-"@salesforce/code-analyzer-engine-api@0.28.0":
+"@salesforce/code-analyzer-engine-api@0.28.0", "@salesforce/code-analyzer-engine-api@^0.28.0":
   version "0.28.0"
   resolved "https://registry.yarnpkg.com/@salesforce/code-analyzer-engine-api/-/code-analyzer-engine-api-0.28.0.tgz#1167a16f30fefc3ce982c115a6b1005c1a655928"
   integrity sha512-zW/TjQqlHwxndbagPTn4kid7PX53J9+DB70dflCpON2DqqzQLCIu0KnBpULq1ONn4zu1Ao1bWtyEyVWRDQ4WqA==
@@ -2766,7 +2766,7 @@
     "@types/node" "^20.0.0"
     tmp "^0.2.3"
 
-"@salesforce/code-analyzer-eslint-engine@0.28.0":
+"@salesforce/code-analyzer-eslint-engine@^0.28.0":
   version "0.28.0"
   resolved "https://registry.yarnpkg.com/@salesforce/code-analyzer-eslint-engine/-/code-analyzer-eslint-engine-0.28.0.tgz#b26be7819b3217220467d2b56753dacba004bec0"
   integrity sha512-zuyz+UptPYD4qSqOCvE5bwUS2WWfXJn6hQT0U8JOJZiJh5xtKmYauvfsEuONd/1LOlteevarhR/6ZuVXwm1NUQ==
@@ -2811,7 +2811,7 @@
     typescript "5.8.3"
     typescript-eslint "8.30.1"
 
-"@salesforce/code-analyzer-pmd-engine@0.28.0":
+"@salesforce/code-analyzer-pmd-engine@^0.28.0":
   version "0.28.0"
   resolved "https://registry.yarnpkg.com/@salesforce/code-analyzer-pmd-engine/-/code-analyzer-pmd-engine-0.28.0.tgz#15cc0e73f91b268358d5a9db881ade5b1df8bcb9"
   integrity sha512-fL7/npYlKawcYiQ0xU3un90g3smxg9BsE5SAvQPEA6GtAVK+WrwKHi3XKPNeSy1YjtK8T+ABVV8zKx6ieLwhLw==
@@ -2820,7 +2820,7 @@
     "@types/node" "^20.0.0"
     semver "^7.7.2"
 
-"@salesforce/code-analyzer-regex-engine@0.24.0":
+"@salesforce/code-analyzer-regex-engine@^0.24.0":
   version "0.24.0"
   resolved "https://registry.yarnpkg.com/@salesforce/code-analyzer-regex-engine/-/code-analyzer-regex-engine-0.24.0.tgz#e33f4d9789704fa696559df1b1fa2c81cfdd8f91"
   integrity sha512-T2EU5FtDOOUFjxSJaxVFO4k7CC3DfAvQc5WgGVyq3jlU9r3nmsGDEBvvycM8fwfenQ883BL2Y32HktiiqhGqhw==
@@ -2830,7 +2830,7 @@
     isbinaryfile "^5.0.4"
     p-limit "^3.1.0"
 
-"@salesforce/code-analyzer-retirejs-engine@0.24.0":
+"@salesforce/code-analyzer-retirejs-engine@^0.24.0":
   version "0.24.0"
   resolved "https://registry.yarnpkg.com/@salesforce/code-analyzer-retirejs-engine/-/code-analyzer-retirejs-engine-0.24.0.tgz#7773f537ff80ab30a18934fd2e8d295250113731"
   integrity sha512-MBFV8uKUmw17sSH/MoWn0zZUunEs7napTvyjD5ykOr/4k4xMAEdOTFrrE3m9ja3xlJCcX9GuDTfMXWweJSB/ZQ==
@@ -10516,16 +10516,7 @@ stop-iteration-iterator@^1.1.0:
     es-errors "^1.3.0"
     internal-slot "^1.1.0"
 
-"string-width-cjs@npm:string-width@^4.2.0":
-  version "4.2.3"
-  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
-  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
-  dependencies:
-    emoji-regex "^8.0.0"
-    is-fullwidth-code-point "^3.0.0"
-    strip-ansi "^6.0.1"
-
-string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -10597,14 +10588,7 @@ stringify-entities@^4.0.0:
     character-entities-html4 "^2.0.0"
     character-entities-legacy "^3.0.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
-  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
-  dependencies:
-    ansi-regex "^5.0.1"
-
-strip-ansi@6.0.1, strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@6.0.1, strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -11484,7 +11468,7 @@ workerpool@^6.5.1:
   resolved "https://registry.yarnpkg.com/workerpool/-/workerpool-6.5.1.tgz#060f73b39d0caf97c6db64da004cd01b4c099544"
   integrity sha512-Fs4dNYcsdpYSAfVxhnl1L5zTksjvOJxtC5hzMNl+1t9B8hTJTdKDyZ5ju7ztgPy+ft9tBFXoOlDNiOT9WUXZlA==
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -11497,15 +11481,6 @@ wrap-ansi@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-6.2.0.tgz#e9393ba07102e6c91a3b221478f0257cd2856e53"
   integrity sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==
-  dependencies:
-    ansi-styles "^4.0.0"
-    string-width "^4.1.0"
-    strip-ansi "^6.0.0"
-
-wrap-ansi@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
-  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
   dependencies:
     ansi-styles "^4.0.0"
     string-width "^4.1.0"
