@@ -72,3 +72,4 @@ export class CheckCommitStatusActionImpl implements CheckCommitStatusAction {
         }
     }
 }
+
