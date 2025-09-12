@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+
+    "declaration": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "lib": ["ES2022"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "ESNEXT"
+  },
+  "include": ["./src"],
+  "references": [
+    {
+      "path": "../mcp-provider-api/tsconfig.json"
+    }
+  ]
+}
