@@ -162,7 +162,16 @@ You can also use special values to control access to orgs:
       }
     );
 
-    const services = new Services({ telemetry: this.telemetry, dataDir: this.config.dataDir });
+    const services = new Services({
+      telemetry: this.telemetry,
+      dataDir: this.config.dataDir,
+      // Startup flags that could be useful to reference inside of a MCP tool
+      startupFlags: {
+        // !! Never pass the 'orgs' flag here. Use 'getOrgService()'.
+        'allow-non-ga-tools': flags['allow-non-ga-tools'],
+        debug: flags.debug
+      }
+    });
 
     await registerToolsets(
       flags.toolsets ?? ['all'],

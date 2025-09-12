@@ -28,6 +28,12 @@ export interface OrgService {
   ): SanitizedOrgAuthorization | undefined;
 }
 
+export type StartupFlags = {
+  'allow-non-ga-tools': boolean | undefined,
+  debug: boolean | undefined
+}
+
 export interface ConfigService {
   getDataDir(): string;
+  getStartupFlags(): StartupFlags;
 }
