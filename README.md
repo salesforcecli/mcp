@@ -258,12 +258,10 @@ Includes these tools:
 - `sf-test-agents` - Executes agent tests in your org.
 - `sf-test-apex` - Executes apex tests in your org.
 
-#### Other Toolset
+#### Mobile Toolset
 
 Includes these tools, which aren't yet generally available:
 
-- `sf-code-analyzer-run` - (NON-GA) Performs a static analysis of your code using Salesforce Code Analyzer. Includes validating that the code conforms to best practices, checking for security vulnerabilities, and identifying possible performance issues.
-- `sf-code-analyzer-describe-rule` - (NON-GA) Gets the description of a Salesforce Code Analyzer rule, including the engine it belongs to, its severity, and associated tags.
 - `sf-mobile-web-app-review` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC App Review Service, offering expert guidance for implementing app review features in Lightning Web Components.
 - `sf-mobile-web-ar-space-capture` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC AR Space Capture, offering expert guidance for implementing AR space capture features in Lightning Web Components.
 - `sf-mobile-web-barcode-scanner` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Barcode Scanner, offering expert guidance for implementing barcode scanning features in Lightning Web Components.
@@ -277,6 +275,16 @@ Includes these tools, which aren't yet generally available:
 - `sf-mobile-web-payments` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Payments Service, offering expert guidance for implementing payment processing features in Lightning Web Components.
 - `sf-mobile-web-offline-analysis` - (NON-GA) Analyzes Lightning Web Components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
 - `sf-mobile-web-offline-guidance` - (NON-GA) Provides structured review instructions to detect and remediate mobile offline code violations in Lightning Web Components for Salesforce Mobile Apps.
+
+**NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
+
+#### Other Toolset
+
+Includes these tools, which aren't yet generally available:
+
+- `sf-code-analyzer-run` - (NON-GA) Performs a static analysis of your code using Salesforce Code Analyzer. Includes validating that the code conforms to best practices, checking for security vulnerabilities, and identifying possible performance issues.
+- `sf-code-analyzer-describe-rule` - (NON-GA) Gets the description of a Salesforce Code Analyzer rule, including the engine it belongs to, its severity, and associated tags.
+
 
 **NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
 

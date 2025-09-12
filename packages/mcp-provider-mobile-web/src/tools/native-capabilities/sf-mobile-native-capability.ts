@@ -90,7 +90,7 @@ ${typeDefinitions}
   }
 
   public getToolsets(): Toolset[] {
-    return [Toolset.OTHER];
+    return [Toolset.MOBILE];
   }
 
   public getName(): string {
