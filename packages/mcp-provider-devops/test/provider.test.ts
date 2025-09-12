@@ -1,6 +1,5 @@
 import { McpProvider, McpTool, Services } from "@salesforce/mcp-provider-api";
 import { DevOpsMcpProvider } from "../src/provider.js";
-import { DevOpsExampleTool } from "../src/tools/sf-devops-example-tool.js";
 import { StubServices } from "./test-doubles.js";
 
 describe("Tests for DevOpsMcpProvider", () => {
@@ -16,9 +15,15 @@ describe("Tests for DevOpsMcpProvider", () => {
     expect(provider.getName()).toEqual("DevOpsMcpProvider");
   });
 
-  it("When provideTools is called, then the returned array contains a DevOpsExampleTool instance", async () => {
+  it("When provideTools is called, then the returned array contains all expected DevOps tools", async () => {
     const tools: McpTool[] = await provider.provideTools(services);
-    expect(tools).toHaveLength(1);
-    expect(tools[0]).toBeInstanceOf(DevOpsExampleTool);
+    expect(tools).toHaveLength(22); // 22 DevOps tools
+    
+    // Check that we have all the core tools
+    const toolNames = tools.map(tool => tool.getName());
+    expect(toolNames).toContain("sf-devops-list-orgs");
+    expect(toolNames).toContain("sf-devops-list-projects");
+    expect(toolNames).toContain("sf-devops-list-work-items");
+    expect(toolNames).toContain("sf-devops-deploy-project-to-org");
   });
 });
