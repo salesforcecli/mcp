@@ -39,7 +39,7 @@ import { textResponse } from '../shared/utils.js';
  * - textResponse: Permission set assignment result
  */
 
-const assignPermissionSetParamsSchema = z.object({
+export const assignPermissionSetParamsSchema = z.object({
   permissionSetName: z.string().describe(`A single permission set to assign
 
 EXAMPLE USAGE:
