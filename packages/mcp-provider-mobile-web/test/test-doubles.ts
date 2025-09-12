@@ -47,6 +47,10 @@ export class StubConfigService implements ConfigService {
   public getDataDir(): string {
     throw new Error('Method not implemented.');
   }
+
+  public getStartupFlags(): { 'allow-non-ga-tools': boolean | undefined; debug: boolean | undefined } {
+    throw new Error('Method not implemented.');
+  }
 }
 
 export class StubOrgService implements OrgService {

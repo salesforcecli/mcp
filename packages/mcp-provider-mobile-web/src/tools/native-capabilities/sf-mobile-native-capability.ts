@@ -19,11 +19,10 @@ import { join, resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { EmptySchema, TextOutputSchema } from '../../schemas/lwcSchema.js';
 import { McpTool, type McpToolConfig } from '@salesforce/mcp-provider-api';
-import { ReleaseState, Toolset, TelemetryService } from '@salesforce/mcp-provider-api';
+import { ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { NativeCapabilityConfig } from './nativeCapabilityConfig.js';
-import { TelemetryEventName } from '../../constants.js';
 type InputArgsShape = typeof EmptySchema.shape;
 type OutputArgsShape = typeof TextOutputSchema.shape;
 type InputArgs = z.infer<typeof EmptySchema>;
@@ -35,8 +34,8 @@ export class NativeCapabilityTool extends McpTool<InputArgsShape, OutputArgsShap
   public readonly toolId: string;
   protected readonly serviceDescription: string;
   public readonly serviceName: string;
-  private readonly telemetryService: TelemetryService;
-  constructor(config: NativeCapabilityConfig, telemetryService: TelemetryService) {
+
+  constructor(config: NativeCapabilityConfig) {
     super();
     this.description = config.description;
     this.title = config.title;
@@ -44,7 +43,6 @@ export class NativeCapabilityTool extends McpTool<InputArgsShape, OutputArgsShap
     this.toolId = config.toolId;
     this.serviceDescription = config.groundingDescription;
     this.serviceName = config.serviceName;
-    this.telemetryService = telemetryService;
   }
   // Extract repeated path as a protected member
   protected readonly resourcesPath = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'resources');
@@ -113,9 +111,6 @@ ${typeDefinitions}
 
   public async exec(_args: InputArgs): Promise<CallToolResult> {
     try {
-      this.telemetryService.sendEvent(TelemetryEventName, {
-        toolId: this.getName(),
-      });
       const typeDefinitions = await this.readTypeDefinitionFile();
       const baseCapability = await this.readBaseCapability();
       const mobileCapabilities = await this.readMobileCapabilities();

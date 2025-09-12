@@ -16,16 +16,13 @@
 
 import { McpToolConfig, ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
 import { OfflineGuidanceTool } from '../../src/tools/offline-guidance/sf-mobile-web-offline-guidance.js';
-import { SpyTelemetryService } from '../test-doubles.js';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
 describe('Tests for OfflineGuidanceTool', () => {
-  let telemetryService: SpyTelemetryService;
   let tool: OfflineGuidanceTool;
 
   beforeEach(() => {
-    telemetryService = new SpyTelemetryService();
-    tool = new OfflineGuidanceTool(telemetryService);
+    tool = new OfflineGuidanceTool();
   });
 
   it("When getReleaseState is called, then 'non-ga' is returned", () => {
@@ -55,14 +52,6 @@ describe('Tests for OfflineGuidanceTool', () => {
 
     beforeEach(async () => {
       result = await tool.exec({});
-    });
-
-    it('... then telemetry is sent', () => {
-      expect(telemetryService.sendEventCallHistory).toHaveLength(1);
-      expect(telemetryService.sendEventCallHistory[0].eventName).toEqual('mobile-web');
-      expect(telemetryService.sendEventCallHistory[0].event).toEqual({
-        toolId: 'sf-mobile-web-offline-guidance',
-      });
     });
 
     it('... then a valid result is returned', () => {

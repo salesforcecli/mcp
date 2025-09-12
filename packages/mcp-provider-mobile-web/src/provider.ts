@@ -25,17 +25,12 @@ export class MobileWebMcpProvider extends McpProvider {
     return 'MobileWebMcpProvider';
   }
 
-  public provideTools(services: Services): Promise<McpTool[]> {
-    const telemetryService = services.getTelemetryService();
+  public provideTools(_services: Services): Promise<McpTool[]> {
     const nativeCapabilityTools: NativeCapabilityTool[] = [];
     for (const config of nativeCapabilityConfigs) {
-      nativeCapabilityTools.push(new NativeCapabilityTool(config, telemetryService));
+      nativeCapabilityTools.push(new NativeCapabilityTool(config));
     }
 
-    return Promise.resolve([
-      new OfflineAnalysisTool(telemetryService),
-      new OfflineGuidanceTool(telemetryService),
-      ...nativeCapabilityTools,
-    ]);
+    return Promise.resolve([new OfflineAnalysisTool(), new OfflineGuidanceTool(), ...nativeCapabilityTools]);
   }
 }

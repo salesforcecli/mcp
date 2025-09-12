@@ -17,16 +17,13 @@
 import { McpToolConfig, ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
 import { NativeCapabilityTool } from '../../src/tools/native-capabilities/sf-mobile-native-capability.js';
 import { AppReviewConfig } from '../../src/tools/native-capabilities/nativeCapabilityConfig.js';
-import { SpyTelemetryService } from '../test-doubles.js';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
 describe('Tests for NativeCapabilityTool', () => {
-  let telemetryService: SpyTelemetryService;
   let tool: NativeCapabilityTool;
 
   beforeEach(() => {
-    telemetryService = new SpyTelemetryService();
-    tool = new NativeCapabilityTool(AppReviewConfig, telemetryService);
+    tool = new NativeCapabilityTool(AppReviewConfig);
   });
 
   it("When getReleaseState is called, then 'non-ga' is returned", () => {
