@@ -2740,7 +2740,7 @@
 
 "@salesforce/code-analyzer-core@^0.34.0":
   version "0.34.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/code-analyzer-core/-/code-analyzer-core-0.34.0.tgz#d1155934cf229c7d40d1dec6cbf7c9e2c43e7381"
+  resolved "https://nexus-proxy.repo.local.sfdc.net/nexus/content/groups/npm-all/@salesforce/code-analyzer-core/-/code-analyzer-core-0.34.0.tgz#d1155934cf229c7d40d1dec6cbf7c9e2c43e7381"
   integrity sha512-hOIqME6XcMDwrzbmXJqHLFSA9HAGoJYsWNhRL0lVDKASkyAoUYrDodeZqsRenmKF/uOFzzsGk0ef22EOkgdVOA==
   dependencies:
     "@salesforce/code-analyzer-engine-api" "0.28.0"
@@ -2760,7 +2760,7 @@
 
 "@salesforce/code-analyzer-engine-api@0.28.0", "@salesforce/code-analyzer-engine-api@^0.28.0":
   version "0.28.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/code-analyzer-engine-api/-/code-analyzer-engine-api-0.28.0.tgz#1167a16f30fefc3ce982c115a6b1005c1a655928"
+  resolved "https://nexus-proxy.repo.local.sfdc.net/nexus/content/groups/npm-all/@salesforce/code-analyzer-engine-api/-/code-analyzer-engine-api-0.28.0.tgz#1167a16f30fefc3ce982c115a6b1005c1a655928"
   integrity sha512-zW/TjQqlHwxndbagPTn4kid7PX53J9+DB70dflCpON2DqqzQLCIu0KnBpULq1ONn4zu1Ao1bWtyEyVWRDQ4WqA==
   dependencies:
     "@types/node" "^20.0.0"
@@ -2768,7 +2768,7 @@
 
 "@salesforce/code-analyzer-eslint-engine@^0.28.0":
   version "0.28.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/code-analyzer-eslint-engine/-/code-analyzer-eslint-engine-0.28.0.tgz#b26be7819b3217220467d2b56753dacba004bec0"
+  resolved "https://nexus-proxy.repo.local.sfdc.net/nexus/content/groups/npm-all/@salesforce/code-analyzer-eslint-engine/-/code-analyzer-eslint-engine-0.28.0.tgz#b26be7819b3217220467d2b56753dacba004bec0"
   integrity sha512-zuyz+UptPYD4qSqOCvE5bwUS2WWfXJn6hQT0U8JOJZiJh5xtKmYauvfsEuONd/1LOlteevarhR/6ZuVXwm1NUQ==
   dependencies:
     "@eslint/js" "^9.31.0"
@@ -2813,7 +2813,7 @@
 
 "@salesforce/code-analyzer-pmd-engine@^0.28.0":
   version "0.28.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/code-analyzer-pmd-engine/-/code-analyzer-pmd-engine-0.28.0.tgz#15cc0e73f91b268358d5a9db881ade5b1df8bcb9"
+  resolved "https://nexus-proxy.repo.local.sfdc.net/nexus/content/groups/npm-all/@salesforce/code-analyzer-pmd-engine/-/code-analyzer-pmd-engine-0.28.0.tgz#15cc0e73f91b268358d5a9db881ade5b1df8bcb9"
   integrity sha512-fL7/npYlKawcYiQ0xU3un90g3smxg9BsE5SAvQPEA6GtAVK+WrwKHi3XKPNeSy1YjtK8T+ABVV8zKx6ieLwhLw==
   dependencies:
     "@salesforce/code-analyzer-engine-api" "0.26.0"
@@ -2822,7 +2822,7 @@
 
 "@salesforce/code-analyzer-regex-engine@^0.24.0":
   version "0.24.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/code-analyzer-regex-engine/-/code-analyzer-regex-engine-0.24.0.tgz#e33f4d9789704fa696559df1b1fa2c81cfdd8f91"
+  resolved "https://nexus-proxy.repo.local.sfdc.net/nexus/content/groups/npm-all/@salesforce/code-analyzer-regex-engine/-/code-analyzer-regex-engine-0.24.0.tgz#e33f4d9789704fa696559df1b1fa2c81cfdd8f91"
   integrity sha512-T2EU5FtDOOUFjxSJaxVFO4k7CC3DfAvQc5WgGVyq3jlU9r3nmsGDEBvvycM8fwfenQ883BL2Y32HktiiqhGqhw==
   dependencies:
     "@salesforce/code-analyzer-engine-api" "0.26.0"
@@ -2832,7 +2832,7 @@
 
 "@salesforce/code-analyzer-retirejs-engine@^0.24.0":
   version "0.24.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/code-analyzer-retirejs-engine/-/code-analyzer-retirejs-engine-0.24.0.tgz#7773f537ff80ab30a18934fd2e8d295250113731"
+  resolved "https://nexus-proxy.repo.local.sfdc.net/nexus/content/groups/npm-all/@salesforce/code-analyzer-retirejs-engine/-/code-analyzer-retirejs-engine-0.24.0.tgz#7773f537ff80ab30a18934fd2e8d295250113731"
   integrity sha512-MBFV8uKUmw17sSH/MoWn0zZUunEs7napTvyjD5ykOr/4k4xMAEdOTFrrE3m9ja3xlJCcX9GuDTfMXWweJSB/ZQ==
   dependencies:
     "@salesforce/code-analyzer-engine-api" "0.26.0"
@@ -2849,6 +2849,31 @@
     "@jsforce/jsforce-node" "^3.10.4"
     "@salesforce/kit" "^3.2.2"
     "@salesforce/schemas" "^1.9.1"
+    "@salesforce/ts-types" "^2.0.11"
+    ajv "^8.17.1"
+    change-case "^4.1.2"
+    fast-levenshtein "^3.0.0"
+    faye "^1.4.1"
+    form-data "^4.0.4"
+    js2xmlparser "^4.0.1"
+    jsonwebtoken "9.0.2"
+    jszip "3.10.1"
+    memfs "^4.30.1"
+    pino "^9.7.0"
+    pino-abstract-transport "^1.2.0"
+    pino-pretty "^11.3.0"
+    proper-lockfile "^4.1.2"
+    semver "^7.6.3"
+    ts-retry-promise "^0.8.1"
+
+"@salesforce/core@^8.17.0":
+  version "8.23.1"
+  resolved "https://nexus-proxy.repo.local.sfdc.net/nexus/content/groups/npm-all/@salesforce/core/-/core-8.23.1.tgz#89e04518d6d4033ef6a248380eb952328068797c"
+  integrity sha512-/mQMu6g0gmkKQsl+G93VkkU+yrLEjnBzdUu0sPlS0WY5jM4M9sxg97LmRXa6dchECU3c/ugamsXaP6j6QmEfsQ==
+  dependencies:
+    "@jsforce/jsforce-node" "^3.10.4"
+    "@salesforce/kit" "^3.2.4"
+    "@salesforce/schemas" "^1.10.0"
     "@salesforce/ts-types" "^2.0.11"
     ajv "^8.17.1"
     change-case "^4.1.2"
@@ -2942,6 +2967,13 @@
   dependencies:
     "@salesforce/ts-types" "^2.0.12"
 
+"@salesforce/kit@^3.2.4":
+  version "3.2.4"
+  resolved "https://nexus-proxy.repo.local.sfdc.net/nexus/content/groups/npm-all/@salesforce/kit/-/kit-3.2.4.tgz#69fb56974685e41d26ae5db30a7261acdc731bb6"
+  integrity sha512-9buqZ2puIGWqjUFWYNroSeNih4d1s9kdQAzZfutr/Re/JMl6xBct0ATO5LVb1ty5UhdBruJrVaiTg03PqVKU+Q==
+  dependencies:
+    "@salesforce/ts-types" "^2.0.12"
+
 "@salesforce/o11y-reporter@1.3.2":
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/@salesforce/o11y-reporter/-/o11y-reporter-1.3.2.tgz#36e30312135dc3e5842358a5bdd0ae8f796cfcf0"
@@ -2954,6 +2986,11 @@
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/@salesforce/prettier-config/-/prettier-config-0.0.3.tgz#ba648d4886bb38adabe073dbea0b3a91b3753bb0"
   integrity sha512-hYOhoPTCSYMDYn+U1rlEk16PoBeAJPkrdg4/UtAzupM1mRRJOwEPMG1d7U8DxJFKuXW3DMEYWr2MwAIBDaHmFg==
+
+"@salesforce/schemas@^1.10.0":
+  version "1.10.3"
+  resolved "https://nexus-proxy.repo.local.sfdc.net/nexus/content/groups/npm-all/@salesforce/schemas/-/schemas-1.10.3.tgz#52c867fdd60679cf216110aa49542b7ad391f5d1"
+  integrity sha512-FKfvtrYTcvTXE9advzS25/DEY9yJhEyLvStm++eQFtnAaX1pe4G3oGHgiQ0q55BM5+0AlCh0+0CVtQv1t4oJRA==
 
 "@salesforce/schemas@^1.9.1":
   version "1.9.1"
@@ -4625,6 +4662,15 @@ available-typed-arrays@^1.0.7:
   integrity sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==
   dependencies:
     possible-typed-array-names "^1.0.0"
+
+axios@^1.10.0:
+  version "1.11.0"
+  resolved "https://nexus-proxy.repo.local.sfdc.net/nexus/content/groups/npm-all/axios/-/axios-1.11.0.tgz#c2ec219e35e414c025b2095e8b8280278478fdb6"
+  integrity sha512-1Lx3WLFQWm3ooKDYZD1eXmoGO9fxYQjrycfHFC8P0sCfQVXyROp0p9PFWBehewBOdCwHc+f/b8I0fMto5eSfwA==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.4"
+    proxy-from-env "^1.1.0"
 
 balanced-match@^1.0.0:
   version "1.0.2"
@@ -6633,6 +6679,11 @@ flatted@^3.2.9:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.3.3.tgz#67c8fad95454a7c7abebf74bb78ee74a44023358"
   integrity sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==
+
+follow-redirects@^1.15.6:
+  version "1.15.11"
+  resolved "https://nexus-proxy.repo.local.sfdc.net/nexus/content/groups/npm-all/follow-redirects/-/follow-redirects-1.15.11.tgz#777d73d72a92f8ec4d2e410eb47352a56b8e8340"
+  integrity sha512-deG2P0JfjrTxl50XGCDyfI97ZGVCxIpfKYmfyrQ54n5FO/0gfIES8C/Psl6kWVDolizcaaxZJnTS0QSMxvnsBQ==
 
 for-each@^0.3.3, for-each@^0.3.5:
   version "0.3.5"
@@ -11666,7 +11717,7 @@ zod-to-json-schema@^3.24.1:
   resolved "https://registry.yarnpkg.com/zod-to-json-schema/-/zod-to-json-schema-3.24.6.tgz#5920f020c4d2647edfbb954fa036082b92c9e12d"
   integrity sha512-h/z3PKvcTcTetyjl1fkj79MHNEjm+HpD6NXheWjzOekY7kV+lwDYnHw+ivHkijnCSMz1yJaWBD9vu/Fcmk+vEg==
 
-zod@^3.22.4, zod@^3.23.8, zod@^3.25.76:
+zod@^3.22.4, zod@^3.23.8, zod@^3.25.50, zod@^3.25.76:
   version "3.25.76"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.25.76.tgz#26841c3f6fd22a6a2760e7ccb719179768471e34"
   integrity sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==
