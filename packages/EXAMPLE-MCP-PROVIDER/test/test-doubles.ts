@@ -17,7 +17,7 @@ export class StubServices implements Services {
   public getConfigService(): ConfigService {
     return this.configService;
   }
-  
+
   public getOrgService(): OrgService {
     return this.orgService;
   }
@@ -29,6 +29,9 @@ export class StubServices implements Services {
 
 export class StubConfigService implements ConfigService {
   public getDataDir(): string {
+    throw new Error("Method not implemented.");
+  }
+  public getStartupFlags(): { 'allow-non-ga-tools': boolean | undefined; debug: boolean | undefined; } {
     throw new Error("Method not implemented.");
   }
 }

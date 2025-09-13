@@ -2988,6 +2988,17 @@
   dependencies:
     "@salesforce/ts-types" "^2.0.12"
 
+"@salesforce/mcp-provider-api@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-api/-/mcp-provider-api-0.2.0.tgz#7b544c658833f9459e215448a0ff066163bccd95"
+  integrity sha512-Vk8eqtlSFUXo1hTaGIgAVhHymfCRXdZScT7wHCLpu9rMxqH5+MR1yM6a5s3cNcQYMjTPQecnRpGirFW+UmVhvA==
+  dependencies:
+    "@modelcontextprotocol/sdk" "^1.17.3"
+    "@salesforce/core" "^8"
+    "@salesforce/ts-types" "^2"
+    semver "^7.7.2"
+    zod "^3.23.8"
+
 "@salesforce/mcp-provider-aura-experts@0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-aura-experts/-/mcp-provider-aura-experts-0.1.1.tgz#250d39cd5658e167d5687142485e3d4d898f4075"

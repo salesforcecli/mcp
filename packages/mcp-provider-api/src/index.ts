@@ -15,5 +15,6 @@ export {
   type TelemetryService,
   type TelemetryEvent,
   type OrgService,
-  type ConfigService
+  type ConfigService,
+  type StartupFlags
 } from './services.js';
