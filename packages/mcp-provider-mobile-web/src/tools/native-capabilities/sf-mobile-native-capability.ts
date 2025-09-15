@@ -28,13 +28,13 @@ type OutputArgsShape = typeof TextOutputSchema.shape;
 type InputArgs = z.infer<typeof EmptySchema>;
 
 export class NativeCapabilityTool extends McpTool<InputArgsShape, OutputArgsShape> {
-  public readonly description: string;
+  private readonly description: string;
   public readonly title: string;
-  protected readonly typeDefinitionPath: string;
-  public readonly toolId: string;
-  protected readonly serviceDescription: string;
-  public readonly serviceName: string;
-
+  private readonly typeDefinitionPath: string;
+  private readonly toolId: string;
+  private readonly serviceDescription: string;
+  private readonly serviceName: string;
+  private readonly isLite: boolean;
   constructor(config: NativeCapabilityConfig) {
     super();
     this.description = config.description;
@@ -43,24 +43,25 @@ export class NativeCapabilityTool extends McpTool<InputArgsShape, OutputArgsShap
     this.toolId = config.toolId;
     this.serviceDescription = config.groundingDescription;
     this.serviceName = config.serviceName;
+    this.isLite = config.isLite;
   }
   // Extract repeated path as a protected member
-  protected readonly resourcesPath = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'resources');
+  private readonly resourcesPath = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'resources');
 
   // Simplified - no parameter needed since it always uses this.typeDefinitionPath
-  protected async readTypeDefinitionFile(): Promise<string> {
+  private async readTypeDefinitionFile(): Promise<string> {
     return readFile(join(this.resourcesPath, this.typeDefinitionPath), 'utf-8');
   }
 
-  protected async readBaseCapability(): Promise<string> {
+  private async readBaseCapability(): Promise<string> {
     return readFile(join(this.resourcesPath, 'BaseCapability.d.ts'), 'utf-8');
   }
 
-  protected async readMobileCapabilities(): Promise<string> {
+  private async readMobileCapabilities(): Promise<string> {
     return readFile(join(this.resourcesPath, 'mobileCapabilities.d.ts'), 'utf-8');
   }
 
-  protected createServiceGroundingText(
+  private createServiceGroundingText(
     typeDefinitions: string,
     baseCapability: string,
     mobileCapabilities: string,
@@ -90,7 +91,7 @@ ${typeDefinitions}
   }
 
   public getToolsets(): Toolset[] {
-    return [Toolset.MOBILE];
+    return this.isLite ? [Toolset.MOBILE, Toolset.MOBILE_LITE] : [Toolset.MOBILE];
   }
 
   public getName(): string {

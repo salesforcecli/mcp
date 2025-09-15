@@ -62,7 +62,7 @@ export class OfflineAnalysisTool extends McpTool<InputArgsShape, OutputArgsShape
   }
 
   public getToolsets(): Toolset[] {
-    return [Toolset.MOBILE];
+    return [Toolset.MOBILE, Toolset.MOBILE_LITE];
   }
 
   public getName(): string {

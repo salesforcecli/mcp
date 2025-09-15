@@ -200,6 +200,7 @@ These are the available toolsets.
 | `metadata` | [Tools to deploy and retrieve metadata to and from your org and your DX project.](README.md#metadata-toolset)|
 | `testing` | [Tools to test your code and features](README.md#testing-toolset)|
 | `other` | [Other useful tools, such as tools for static analysis of your code using Salesforce Code Analyzer.](README.md#other-toolset)|
+| `mobile-lite` | [A subset of mobile tools focused on essential mobile capabilities.](README.md#mobile-lite-toolset)|
 
 This example shows how to enable the `data`, `orgs`, `metadata`, and `other` toolsets when configuring the MCP server for VS Code:
 
@@ -273,6 +274,18 @@ Includes these tools, which aren't yet generally available:
 - `sf-mobile-web-location` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Location Service, offering expert guidance for implementing location services in Lightning Web Components.
 - `sf-mobile-web-nfc` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC NFC Service, offering expert guidance for implementing NFC features in Lightning Web Components.
 - `sf-mobile-web-payments` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Payments Service, offering expert guidance for implementing payment processing features in Lightning Web Components.
+- `sf-mobile-web-offline-analysis` - (NON-GA) Analyzes Lightning Web Components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
+- `sf-mobile-web-offline-guidance` - (NON-GA) Provides structured review instructions to detect and remediate mobile offline code violations in Lightning Web Components for Salesforce Mobile Apps.
+
+**NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
+
+#### Mobile-lite Toolset
+
+Includes these essential mobile tools, which aren't yet generally available:
+
+- `sf-mobile-web-barcode-scanner` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Barcode Scanner, offering expert guidance for implementing barcode scanning features in Lightning Web Components.
+- `sf-mobile-web-biometrics` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Biometrics Service, offering expert guidance for implementing biometric authentication features in Lightning Web Components.
+- `sf-mobile-web-location` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Location Service, offering expert guidance for implementing location services in Lightning Web Components.
 - `sf-mobile-web-offline-analysis` - (NON-GA) Analyzes Lightning Web Components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
 - `sf-mobile-web-offline-guidance` - (NON-GA) Provides structured review instructions to detect and remediate mobile offline code violations in Lightning Web Components for Salesforce Mobile Apps.
 

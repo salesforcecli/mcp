@@ -30,8 +30,8 @@ describe('Tests for NativeCapabilityTool', () => {
     expect(tool.getReleaseState()).toEqual(ReleaseState.NON_GA);
   });
 
-  it("When getToolsets is called, then 'other' is returned", () => {
-    expect(tool.getToolsets()).toEqual([Toolset.OTHER]);
+  it("When getToolsets is called, then 'mobile' is returned", () => {
+    expect(tool.getToolsets()).toEqual([Toolset.MOBILE]);
   });
 
   it('When getName is called, then the toolId is returned', () => {

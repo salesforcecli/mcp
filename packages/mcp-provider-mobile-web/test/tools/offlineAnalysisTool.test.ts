@@ -30,8 +30,8 @@ describe('Tests for OfflineAnalysisTool', () => {
     expect(tool.getReleaseState()).toEqual(ReleaseState.NON_GA);
   });
 
-  it("When getToolsets is called, then 'other' is returned", () => {
-    expect(tool.getToolsets()).toEqual([Toolset.OTHER]);
+  it("When getToolsets is called, then 'mobile' and 'mobile-lite' are returned", () => {
+    expect(tool.getToolsets()).toEqual([Toolset.MOBILE, Toolset.MOBILE_LITE]);
   });
 
   it("When getName is called, then 'sf-mobile-web-offline-analysis' is returned", () => {
