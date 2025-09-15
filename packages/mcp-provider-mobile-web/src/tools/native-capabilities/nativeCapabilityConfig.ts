@@ -20,7 +20,7 @@ export interface NativeCapabilityConfig {
   typeDefinitionPath: string;
   groundingDescription: string;
   serviceName: string;
-  isLite: boolean;
+  isCore: boolean;
 }
 
 export const AppReviewConfig: NativeCapabilityConfig = {
@@ -32,7 +32,7 @@ export const AppReviewConfig: NativeCapabilityConfig = {
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages app review facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the app review API of the mobile device, within the LWC.',
   serviceName: 'App Review',
-  isLite: false,
+  isCore: false,
 };
 
 const ArSpaceCaptureConfig: NativeCapabilityConfig = {
@@ -44,7 +44,7 @@ const ArSpaceCaptureConfig: NativeCapabilityConfig = {
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages AR Space Capture facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the AR Space Capture API of the mobile device, within the LWC.',
   serviceName: 'AR Space Capture',
-  isLite: false,
+  isCore: false,
 };
 
 const BarcodeScannerConfig: NativeCapabilityConfig = {
@@ -56,7 +56,7 @@ const BarcodeScannerConfig: NativeCapabilityConfig = {
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages barcode scanning facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the barcode scanning API of the mobile device, within the LWC.',
   serviceName: 'Barcode Scanner',
-  isLite: true,
+  isCore: true,
 };
 
 const BiometricsConfig: NativeCapabilityConfig = {
@@ -68,7 +68,7 @@ const BiometricsConfig: NativeCapabilityConfig = {
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages biometrics scanning facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the face recognition and the finger printing scanner of the mobile device to authorize the user, within the LWC.',
   serviceName: 'Biometrics',
-  isLite: true,
+  isCore: true,
 };
 
 const CalendarConfig: NativeCapabilityConfig = {
@@ -80,7 +80,7 @@ const CalendarConfig: NativeCapabilityConfig = {
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages calendar facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the calendar API of the mobile device, within the LWC.',
   serviceName: 'Calendar',
-  isLite: false,
+  isCore: false,
 };
 
 const ContactsConfig: NativeCapabilityConfig = {
@@ -92,7 +92,7 @@ const ContactsConfig: NativeCapabilityConfig = {
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages contacts facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the contacts API of the mobile device, within the LWC.',
   serviceName: 'Contacts',
-  isLite: false,
+  isCore: false,
 };
 
 const DocumentScannerConfig: NativeCapabilityConfig = {
@@ -104,7 +104,7 @@ const DocumentScannerConfig: NativeCapabilityConfig = {
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages document scanning facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the document scanner API of the mobile device, within the LWC.',
   serviceName: 'Document Scanner',
-  isLite: false,
+  isCore: false,
 };
 
 const GeofencingConfig: NativeCapabilityConfig = {
@@ -116,7 +116,7 @@ const GeofencingConfig: NativeCapabilityConfig = {
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages geofencing facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the geofencing API of the mobile device, within the LWC.',
   serviceName: 'Geofencing',
-  isLite: false,
+  isCore: false,
 };
 
 const LocationConfig: NativeCapabilityConfig = {
@@ -128,7 +128,7 @@ const LocationConfig: NativeCapabilityConfig = {
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages location facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the location API of the mobile device, within the LWC.',
   serviceName: 'Location',
-  isLite: true,
+  isCore: true,
 };
 
 const NfcConfig: NativeCapabilityConfig = {
@@ -140,7 +140,7 @@ const NfcConfig: NativeCapabilityConfig = {
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages NFC facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the NFC API of the mobile device, within the LWC.',
   serviceName: 'NFC',
-  isLite: false,
+  isCore: false,
 };
 
 const PaymentsConfig: NativeCapabilityConfig = {
@@ -152,7 +152,7 @@ const PaymentsConfig: NativeCapabilityConfig = {
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages payments facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the payments API of the mobile device, within the LWC.',
   serviceName: 'Payments',
-  isLite: false,
+  isCore: false,
 };
 
 export const nativeCapabilityConfigs: NativeCapabilityConfig[] = [

@@ -200,7 +200,8 @@ These are the available toolsets.
 | `metadata` | [Tools to deploy and retrieve metadata to and from your org and your DX project.](README.md#metadata-toolset)|
 | `testing` | [Tools to test your code and features](README.md#testing-toolset)|
 | `other` | [Other useful tools, such as tools for static analysis of your code using Salesforce Code Analyzer.](README.md#other-toolset)|
-| `mobile-lite` | [A subset of mobile tools focused on essential mobile capabilities.](README.md#mobile-lite-toolset)|
+| `mobile` | [Tools for mobile development and capabilities.](README.md#mobile-toolset)|
+| `mobile-core` | [A subset of mobile tools focused on essential mobile capabilities.](README.md#mobile-core-toolset)|
 
 This example shows how to enable the `data`, `orgs`, `metadata`, and `other` toolsets when configuring the MCP server for VS Code:
 
@@ -279,7 +280,7 @@ Includes these tools, which aren't yet generally available:
 
 **NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
 
-#### Mobile-lite Toolset
+#### Mobile-core Toolset
 
 Includes these essential mobile tools, which aren't yet generally available:
 

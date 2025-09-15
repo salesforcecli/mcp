@@ -34,7 +34,7 @@ export class NativeCapabilityTool extends McpTool<InputArgsShape, OutputArgsShap
   private readonly toolId: string;
   private readonly serviceDescription: string;
   private readonly serviceName: string;
-  private readonly isLite: boolean;
+  private readonly isCore: boolean;
   constructor(config: NativeCapabilityConfig) {
     super();
     this.description = config.description;
@@ -43,7 +43,7 @@ export class NativeCapabilityTool extends McpTool<InputArgsShape, OutputArgsShap
     this.toolId = config.toolId;
     this.serviceDescription = config.groundingDescription;
     this.serviceName = config.serviceName;
-    this.isLite = config.isLite;
+    this.isCore = config.isCore;
   }
   // Extract repeated path as a protected member
   private readonly resourcesPath = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'resources');
@@ -91,7 +91,7 @@ ${typeDefinitions}
   }
 
   public getToolsets(): Toolset[] {
-    return this.isLite ? [Toolset.MOBILE, Toolset.MOBILE_LITE] : [Toolset.MOBILE];
+    return this.isCore ? [Toolset.MOBILE, Toolset.MOBILE_CORE] : [Toolset.MOBILE];
   }
 
   public getName(): string {

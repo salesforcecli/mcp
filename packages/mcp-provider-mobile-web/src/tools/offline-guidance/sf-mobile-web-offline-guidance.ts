@@ -43,7 +43,7 @@ export class OfflineGuidanceTool extends McpTool<InputArgsShape, OutputArgsShape
   }
 
   public getToolsets(): Toolset[] {
-    return [Toolset.MOBILE, Toolset.MOBILE_LITE];
+    return [Toolset.MOBILE, Toolset.MOBILE_CORE];
   }
 
   public getName(): string {
