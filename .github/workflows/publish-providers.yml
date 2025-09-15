@@ -7,6 +7,7 @@ on:
     paths:
       - 'packages/mcp-provider-api/**'
       - 'packages/mcp-provider-dx-core/**'  
+      - 'packages/mcp-provider-mobile-web/**'
       # - 'packages/mcp-provider-code-analyzer/**'
   workflow_dispatch:
     inputs:
@@ -34,10 +35,10 @@ jobs:
         id: detect
         run: |
           # Packages that auto-publish on push to main
-          AUTO_PUBLISHABLE_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core")
+          AUTO_PUBLISHABLE_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core" "mcp-provider-mobile-web")
           
           # All available provider packages
-          ALL_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core" "mcp-provider-code-analyzer")
+          ALL_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core" "mcp-provider-code-analyzer" "mcp-provider-mobile-web")
           
           # Initialize packages array
           PACKAGES='[]'
