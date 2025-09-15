@@ -40,7 +40,7 @@ import { textResponse } from '../shared/utils.js';
  * - textResponse: Deploy result.
  */
 
-const deployMetadataParams = z.object({
+export const deployMetadataParams = z.object({
   sourceDir: z
     .array(z.string())
     .describe('Path to the local source files to deploy. Leave this unset if the user is vague about what to deploy.')

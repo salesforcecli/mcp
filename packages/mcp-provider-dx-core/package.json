@@ -22,6 +22,7 @@
     "prepack": "sf-prepack",
     "prepare": "sf-install",
     "test": "wireit",
+    "test:e2e": "nyc mocha \"./test/e2e/**/*.test.ts\" --slow 4500 --timeout 600000 --parallel --jobs 20",
     "test:only": "wireit"
   },
   "repository": "salesforcecli/mcp",
@@ -56,6 +57,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@salesforce/mcp-test-client": "0.0.1",
     "@modelcontextprotocol/inspector": "^0.15.0",
     "@salesforce/cli-plugins-testkit": "^5.3.39",
     "@salesforce/dev-scripts": "11.0.2",
@@ -72,17 +74,10 @@
   },
   "wireit": {
     "build": {
-      "dependencies": [
-        "../mcp-provider-api:build",
-        "compile",
-        "lint"
-      ]
+      "command": "yarn compile"
     },
     "compile": {
-      "command": "tsc -p . --pretty --incremental",
-      "dependencies": [
-        "../mcp-provider-api:build"
-      ],
+      "command": "tsc --build --pretty --incremental --verbose",
       "files": [
         "src/**/*.ts",
         "**/tsconfig.json",
@@ -131,7 +126,7 @@
       ]
     },
     "test:only": {
-      "command": "nyc mocha \"test/**/*.test.ts\"",
+      "command": "nyc mocha \"test/**/*.test.ts\" --exclude \"test/e2e/**/*.test.ts\"",
       "env": {
         "FORCE_COLOR": "2"
       },

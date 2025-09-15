@@ -185,3 +185,21 @@ jobs:
           fi
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Run E2E test with latest MCP 
+        if: ${{ steps.changelog.outputs.skipped == 'false' && steps.release.outputs.id != '' }}
+        uses: ./.github/workflows/e2e.yml
+        strategy:
+          matrix:
+            os: [ubuntu-latest, windows-latest]
+            command:
+              - 'yarn test:e2e'
+            provider:
+              - 'mcp-provider-dx-core'
+          fail-fast: false
+        with:
+          os: ${{ matrix.os }}
+          command: ${{ matrix.command }}
+          provider: ${{ matrix.provider }}
+          dxMcpVersion: ${{ steps.changelog.outputs.version }}
+

@@ -42,7 +42,6 @@ type InputArgsShape = typeof deleteOrgParams.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class DeleteOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
-  
   public getReleaseState(): ReleaseState {
     return ReleaseState.NON_GA;
   }

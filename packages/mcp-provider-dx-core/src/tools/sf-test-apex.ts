@@ -36,7 +36,7 @@ import { textResponse } from '../shared/utils.js';
  * - textResponse: Test result.
  */
 
-const runApexTestsParam = z.object({
+export const runApexTestsParam = z.object({
   testLevel: z.enum([TestLevel.RunLocalTests, TestLevel.RunAllTestsInOrg, TestLevel.RunSpecifiedTests]).describe(
     `Apex test level
 
@@ -133,9 +133,9 @@ What are the results for 707XXXXXXXXXXXX`,
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
     if (
-      (ensureArray(input.suiteName).length > 1 ||
-        ensureArray(input.methodNames).length > 1 ||
-        ensureArray(input.classNames).length > 1) &&
+      (ensureArray(input.suiteName).length >= 1 ||
+        ensureArray(input.methodNames).length >= 1 ||
+        ensureArray(input.classNames).length >= 1) &&
       input.testLevel !== TestLevel.RunSpecifiedTests
     ) {
       return textResponse("You can't specify which tests to run without setting testLevel='RunSpecifiedTests'", true);
