@@ -20,7 +20,7 @@ import {
   OrgService,
   SanitizedOrgAuthorization,
   ConfigService,
-  StartupFlags
+  StartupFlags,
 } from '@salesforce/mcp-provider-api';
 import Cache from './utils/cache.js';
 import {
@@ -36,11 +36,7 @@ export class Services implements IServices {
   private readonly dataDir: string;
   private readonly startupFlags: StartupFlags;
 
-  public constructor(opts: {
-    telemetry: TelemetryService | undefined;
-    dataDir: string;
-    startupFlags: StartupFlags;
-  }) {
+  public constructor(opts: { telemetry: TelemetryService | undefined; dataDir: string; startupFlags: StartupFlags }) {
     this.telemetry = opts.telemetry ? opts.telemetry : new NoopTelemetryService();
     this.dataDir = opts.dataDir;
     this.startupFlags = opts.startupFlags;
@@ -53,7 +49,7 @@ export class Services implements IServices {
   public getConfigService(): ConfigService {
     return {
       getDataDir: () => this.dataDir,
-      getStartupFlags: () => this.startupFlags
+      getStartupFlags: () => this.startupFlags,
     };
   }
 
