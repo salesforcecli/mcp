@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/mcp-provider-api",
   "description": "(For Internal Use Only) API to implement a McpProvider that provides prompts, resources, and tools to be registered by an MCP server",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "type": "module",
   "license": "Apache-2.0",
   "main": "dist/index.js",
