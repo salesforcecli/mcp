@@ -43,7 +43,7 @@ jobs:
           cd packages/mcp
           
           # Define all provider packages
-          ALL_PROVIDERS=("@salesforce/mcp-provider-api" "@salesforce/mcp-provider-dx-core" "@salesforce/mcp-provider-code-analyzer")
+          ALL_PROVIDERS=("@salesforce/mcp-provider-api" "@salesforce/mcp-provider-dx-core" "@salesforce/mcp-provider-mobile-web" "@salesforce/mcp-provider-code-analyzer")
           
           # Determine which providers to update
           if [ -n "${{ inputs.providers-to-update }}" ]; then
