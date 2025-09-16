@@ -17,6 +17,8 @@
 import { McpProvider } from '@salesforce/mcp-provider-api';
 import { DxCoreMcpProvider } from '@salesforce/mcp-provider-dx-core';
 import { CodeAnalyzerMcpProvider } from '@salesforce/mcp-provider-code-analyzer';
+import { LwcExpertsMcpProvider } from '@salesforce/mcp-provider-lwc-experts';
+import { AuraExpertsMcpProvider } from '@salesforce/mcp-provider-aura-experts';
 import { MobileWebMcpProvider } from '@salesforce/mcp-provider-mobile-web';
 
 /** -------- ADD McpProvider INSTANCES HERE ------------------------------------------------------------------------- */
@@ -24,6 +26,8 @@ import { MobileWebMcpProvider } from '@salesforce/mcp-provider-mobile-web';
 export const MCP_PROVIDER_REGISTRY: McpProvider[] = [
   new DxCoreMcpProvider(),
   new CodeAnalyzerMcpProvider(),
+  new LwcExpertsMcpProvider(),
+  new AuraExpertsMcpProvider(),
   new MobileWebMcpProvider(),
   // Add new instances here
 ];
