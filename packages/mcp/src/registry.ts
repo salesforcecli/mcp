@@ -21,7 +21,6 @@ import { LwcExpertsMcpProvider } from '@salesforce/mcp-provider-lwc-experts';
 import { AuraExpertsMcpProvider } from '@salesforce/mcp-provider-aura-experts';
 import { MobileWebMcpProvider } from '@salesforce/mcp-provider-mobile-web';
 
->>>>>>> origin/main
 /** -------- ADD McpProvider INSTANCES HERE ------------------------------------------------------------------------- */
 
 export const MCP_PROVIDER_REGISTRY: McpProvider[] = [
