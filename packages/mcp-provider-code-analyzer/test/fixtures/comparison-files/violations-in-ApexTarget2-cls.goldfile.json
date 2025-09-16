@@ -9,9 +9,9 @@
     "sev5": 0
   },
   "versions": {
-    "code-analyzer": "0.34.0",
-    "pmd": "0.28.0",
-    "regex": "0.24.0"
+    "code-analyzer": "0.35.0",
+    "pmd": "0.30.0",
+    "regex": "0.27.0"
   },
   "violations": [
     {
@@ -35,7 +35,7 @@
       ],
       "message": "Apex classes should declare a sharing model if DML or SOQL/SOSL is used",
       "resources": [
-        "https://docs.pmd-code.org/pmd-doc-7.15.0/pmd_rules_apex_security.html#apexsharingviolations"
+        "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexsharingviolations"
       ]
     },
     {
@@ -59,7 +59,7 @@
       ],
       "message": "Missing ApexDoc comment",
       "resources": [
-        "https://docs.pmd-code.org/pmd-doc-7.15.0/pmd_rules_apex_documentation.html#apexdoc"
+        "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_documentation.html#apexdoc"
       ]
     },
     {
@@ -83,7 +83,7 @@
       ],
       "message": "Missing ApexDoc comment",
       "resources": [
-        "https://docs.pmd-code.org/pmd-doc-7.15.0/pmd_rules_apex_documentation.html#apexdoc"
+        "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_documentation.html#apexdoc"
       ]
     },
     {
@@ -107,7 +107,7 @@
       ],
       "message": "Variable 'accs' defined but not used",
       "resources": [
-        "https://docs.pmd-code.org/pmd-doc-7.15.0/pmd_rules_apex_bestpractices.html#unusedlocalvariable"
+        "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#unusedlocalvariable"
       ]
     },
     {
@@ -131,7 +131,7 @@
       ],
       "message": "Avoid SOQL queries without a where or limit statement",
       "resources": [
-        "https://docs.pmd-code.org/pmd-doc-7.15.0/pmd_rules_apex_performance.html#avoidnonrestrictivequeries"
+        "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#avoidnonrestrictivequeries"
       ]
     },
     {
@@ -155,7 +155,7 @@
       ],
       "message": "Avoid operations in loops that may hit governor limits",
       "resources": [
-        "https://docs.pmd-code.org/pmd-doc-7.15.0/pmd_rules_apex_performance.html#operationwithlimitsinloop"
+        "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#operationwithlimitsinloop"
       ]
     }
   ]

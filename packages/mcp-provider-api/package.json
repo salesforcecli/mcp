@@ -7,20 +7,20 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.17.3",
+    "@modelcontextprotocol/sdk": "^1.18.0",
     "@salesforce/core": "^8",
     "@salesforce/ts-types": "^2",
+    "@types/semver": "^7.7.1",
     "semver": "^7.7.2",
-    "zod": "^3.23.8"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@eslint/js": "^9.32.0",
+    "@eslint/js": "^9.35.0",
     "@types/node": "^22.16.5",
-    "@types/semver": "^7.7.0",
-    "eslint": "^9.32.0",
+    "eslint": "^9.35.0",
     "rimraf": "^6.0.1",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.37.0"
+    "typescript-eslint": "^8.44.0"
   },
   "files": [
     "dist",

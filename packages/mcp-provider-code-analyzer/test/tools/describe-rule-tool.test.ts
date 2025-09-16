@@ -1,6 +1,6 @@
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { DescribeRuleAction, DescribeRuleInput, DescribeRuleOutput } from "../../src/actions/describe-rule.js";
-import { CodeAnalyzerDescribeRuleMcpTool } from "../../src/tools/sf-code-analyzer-describe-rule.js";
+import { CodeAnalyzerDescribeRuleMcpTool } from "../../src/tools/describe_code_analyzer_rule.js";
 import { McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
 
 describe("Tests for DescribeRuleTool", () => {
