@@ -51,7 +51,7 @@
     "@salesforce/mcp-provider-api": "0.2.1",
     "@salesforce/mcp-provider-dx-core": "0.2.3",
     "@salesforce/mcp-provider-code-analyzer": "0.0.2",
-    "@salesforce/mcp-provider-mobile-web": "^0.0.1",
+    "@salesforce/mcp-provider-mobile-web": "0.0.2",
     "@salesforce/source-deploy-retrieve": "^12.22.0",
     "@salesforce/source-tracking": "^7.4.8",
     "@salesforce/telemetry": "^6.1.0",
