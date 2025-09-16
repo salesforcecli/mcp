@@ -26,7 +26,7 @@ import {
 } from '@salesforce/mcp-provider-api';
 import { SfMcpServer } from '../sf-mcp-server.js';
 import { MCP_PROVIDER_REGISTRY } from '../registry.js';
-import { addTool } from '../utils/tools.js';
+import { addTool, isToolRegistered } from '../utils/tools.js';
 import { Services } from '../services.js';
 import { createDynamicServerTools } from '../main-server-provider.js';
 
@@ -47,7 +47,8 @@ export async function registerToolsets(
   }
 
   const toolsetsToEnable: Set<Toolset> = toolsets.includes('all')
-    ? new Set(TOOLSETS) : new Set([Toolset.CORE, ...(toolsets as Toolset[])]);
+    ? new Set(TOOLSETS)
+    : new Set([Toolset.CORE, ...(toolsets as Toolset[])]);
 
   const newToolRegistry: Record<Toolset, McpTool[]> = await createToolRegistryFromProviders(
     MCP_PROVIDER_REGISTRY,
@@ -65,16 +66,30 @@ export async function registerToolsets(
   }
 }
 
-async function registerTools(tools: McpTool[], server: SfMcpServer, useDynamicTools: boolean, allowNonGaTools: boolean): Promise<void> {
+async function registerTools(
+  tools: McpTool[],
+  server: SfMcpServer,
+  useDynamicTools: boolean,
+  allowNonGaTools: boolean
+): Promise<void> {
   for (const tool of tools) {
     if (!allowNonGaTools && tool.getReleaseState() === ReleaseState.NON_GA) {
-      ux.stderr(`* Skipping registration of non-ga tool '${tool.getName()}' because the '--allow-non-ga-tools' flag was not set at server startup.`);
+      ux.stderr(
+        `* Skipping registration of non-ga tool '${tool.getName()}' because the '--allow-non-ga-tools' flag was not set at server startup.`
+      );
+      continue;
+    }
+    // eslint-disable-next-line no-await-in-loop
+    if (await isToolRegistered(tool.getName())) {
+      ux.stderr(`* Skipping registration of tool '${tool.getName()}' because it is already registered.`);
       continue;
     }
     const registeredTool = server.registerTool(tool.getName(), tool.getConfig(), (...args) => tool.exec(...args));
     const toolsets = tool.getToolsets();
     if (useDynamicTools && !toolsets.includes(Toolset.CORE)) {
-      ux.stderr(`* Registering tool '${tool.getName()}' but marking it as disabled for now because the server is set for dynamic tool loading.`);
+      ux.stderr(
+        `* Registering tool '${tool.getName()}' but marking it as disabled for now because the server is set for dynamic tool loading.`
+      );
       registeredTool.disable();
     } else {
       ux.stderr(`* Registering tool '${tool.getName()}'.`);

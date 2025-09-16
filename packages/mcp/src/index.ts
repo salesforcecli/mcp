@@ -169,8 +169,8 @@ You can also use special values to control access to orgs:
       startupFlags: {
         // !! Never pass the 'orgs' flag here. Use 'getOrgService()'.
         'allow-non-ga-tools': flags['allow-non-ga-tools'],
-        debug: flags.debug
-      }
+        debug: flags.debug,
+      },
     });
 
     await registerToolsets(
