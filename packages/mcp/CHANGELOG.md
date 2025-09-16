@@ -1,3 +1,12 @@
+# [0.20.0](https://github.com/salesforcecli/mcp/compare/0.19.3...0.20.0) (2025-09-16)
+
+
+### Features
+
+* @W-18832384 add lwc experts mcp provider ([#211](https://github.com/salesforcecli/mcp/issues/211)) ([b8b9169](https://github.com/salesforcecli/mcp/commit/b8b9169753c8341f57a5ad43752cb12393b6892c))
+
+
+
 ## [0.19.3](https://github.com/salesforcecli/mcp/compare/0.19.2...0.19.3) (2025-09-16)
 
 
