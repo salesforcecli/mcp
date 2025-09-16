@@ -1,6 +1,6 @@
 import { McpProvider,  McpTool, Services } from "@salesforce/mcp-provider-api";
-import { CodeAnalyzerRunMcpTool } from "./tools/sf-code-analyzer-run.js";
-import { CodeAnalyzerDescribeRuleMcpTool } from "./tools/sf-code-analyzer-describe-rule.js";
+import { CodeAnalyzerRunMcpTool } from "./tools/run_code_analyzer.js";
+import { CodeAnalyzerDescribeRuleMcpTool } from "./tools/describe_code_analyzer_rule.js";
 import {CodeAnalyzerConfigFactory, CodeAnalyzerConfigFactoryImpl} from "./factories/CodeAnalyzerConfigFactory.js";
 import {EnginePluginsFactory, EnginePluginsFactoryImpl} from "./factories/EnginePluginsFactory.js";
 import {RunAnalyzerActionImpl} from "./actions/run-analyzer.js";

@@ -13,25 +13,25 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.17.3",
-    "@salesforce/code-analyzer-core": "^0.34.0",
-    "@salesforce/code-analyzer-engine-api": "^0.28.0",
-    "@salesforce/code-analyzer-eslint-engine": "^0.28.0",
-    "@salesforce/code-analyzer-pmd-engine": "^0.28.0",
-    "@salesforce/code-analyzer-regex-engine": "^0.24.0",
-    "@salesforce/code-analyzer-retirejs-engine": "^0.24.0",
-    "@salesforce/mcp-provider-api": "0.2.2",
-    "zod": "^3.23.8"
+    "@modelcontextprotocol/sdk": "^1.18.0",
+    "@salesforce/code-analyzer-core": "^0.35.0",
+    "@salesforce/code-analyzer-engine-api": "^0.29.0",
+    "@salesforce/code-analyzer-eslint-engine": "^0.31.0",
+    "@salesforce/code-analyzer-pmd-engine": "^0.30.0",
+    "@salesforce/code-analyzer-regex-engine": "^0.27.0",
+    "@salesforce/code-analyzer-retirejs-engine": "^0.26.0",
+    "@salesforce/mcp-provider-api": "^0.2.2",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@eslint/js": "^9.32.0",
+    "@eslint/js": "^9.35.0",
     "@types/node": "^22.16.5",
     "@vitest/coverage-istanbul": "^3.2.4",
-    "eslint": "^9.32.0",
+    "eslint": "^9.35.0",
     "rimraf": "^6.0.1",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.37.0",
-    "vite": "^7.0.6",
+    "typescript-eslint": "^8.44.0",
+    "vite": "^7.1.5",
     "vitest": "^3.2.4"
   },
   "files": [

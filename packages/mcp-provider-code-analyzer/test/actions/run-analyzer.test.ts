@@ -26,6 +26,9 @@ const __dirname = path.dirname(__filename);
 const PATH_TO_SAMPLE_TARGETS: string = path.resolve(__dirname, '..', 'fixtures', 'sample-targets');
 const PATH_TO_COMPARISON_FILES: string = path.resolve(__dirname, '..', 'fixtures', 'comparison-files');
 
+// TODO: FIGURE OUT A WAY TO MAKE THESE GOLD FILE TESTS MORE ROBUST AGAINST VERSION CHANGES. FOR NOW USING CONSTANT:
+const PMD_VERSION: string = '7.17.0';
+
 describe('RunAnalyzerActionImpl', () => {
     it.each([
         {
@@ -217,7 +220,8 @@ describe('RunAnalyzerActionImpl', () => {
 
             const expectedOutfile: string =  (await fs.promises.readFile(comparisonFile, 'utf-8'))
                 .replaceAll('{{RUNDIR}}', runDir)
-                .replaceAll(`{{SEP}}`, pathSepVar);
+                .replaceAll(`{{SEP}}`, pathSepVar)
+                .replaceAll('{{PMD_VERSION}}', PMD_VERSION);
 
             expect(outputFileContents).toContain(expectedOutfile);
             expect(output.summary).toEqual(expectedSummary);
