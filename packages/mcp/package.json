@@ -47,7 +47,7 @@
     "@salesforce/apex-node": "^8.2.1",
     "@salesforce/core": "^8.23.1",
     "@salesforce/kit": "^3.1.6",
-    "@salesforce/mcp-provider-api": "0.2.2",
+    "@salesforce/mcp-provider-api": "0.3.0",
     "@salesforce/mcp-provider-dx-core": "0.2.4",
     "@salesforce/mcp-provider-code-analyzer": "0.1.0",
     "@salesforce/mcp-provider-lwc-experts": "0.1.1",
