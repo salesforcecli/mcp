@@ -1,3 +1,12 @@
+# [0.3.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-api@0.2.2...mcp-provider-api@0.3.0) (2025-09-17)
+
+
+### Features
+
+* add lwc and aura experts toolsets ([#225](https://github.com/salesforcecli/mcp/issues/225)) ([f56c102](https://github.com/salesforcecli/mcp/commit/f56c1024dbd25845ee1216d21bc285a8062b31ed))
+
+
+
 ## [0.2.2](https://github.com/salesforcecli/mcp/compare/mcp-provider-api@0.2.1...mcp-provider-api@0.2.2) (2025-09-16)
 
 
