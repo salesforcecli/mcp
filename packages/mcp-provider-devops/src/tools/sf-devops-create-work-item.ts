@@ -1,0 +1,95 @@
+import { z } from "zod";
+import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { McpTool, McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
+import { createWorkItem } from "../utils/createWorkItem.js";
+
+const DESCRIPTION: string = `Create a new work item in DevOps Center.
+
+**Input Parameters:**
+- username: DevOps Center org username
+- projectId: The ID of the project to create the work item in
+- name: Name for the new work item
+- description: Description of the work item
+- assigneeId: ID of the user to assign the work item to (optional)
+
+**Output:**
+- Details of the created work item including its ID`;
+
+const inputSchema = z.object({
+    username: z.string().describe("Username of the DevOps Center org"),
+    projectId: z.string().describe("The ID of the project to create the work item in"),
+    name: z.string().describe("Name for the new work item"),
+    description: z.string().optional().describe("Description of the work item"),
+    assigneeId: z.string().optional().describe("ID of the user to assign the work item to")
+});
+type InputArgsShape = typeof inputSchema.shape;
+
+const outputSchema = z.object({
+    workItem: z.object({
+        id: z.string().describe("Work item ID"),
+        name: z.string().describe("Work item name"),
+        status: z.string().describe("Work item status")
+    }).describe("Created work item details")
+});
+type OutputArgsShape = typeof outputSchema.shape;
+
+export class SfDevopsCreateWorkItemMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+    public static readonly NAME: string = 'sf-devops-create-work-item';
+
+    public constructor(private readonly services: Services) {
+        super();
+    }
+
+    public getReleaseState(): ReleaseState {
+        return ReleaseState.NON_GA;
+    }
+
+    public getToolsets(): Toolset[] {
+        return [Toolset.OTHER];
+    }
+
+    public getName(): string {
+        return SfDevopsCreateWorkItemMcpTool.NAME;
+    }
+
+    public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
+        return {
+            title: "Create DevOps Work Item",
+            description: DESCRIPTION,
+            inputSchema: inputSchema.shape,
+            outputSchema: outputSchema.shape,
+            annotations: {
+                readOnlyHint: false
+            }
+        };
+    }
+
+    public async exec(input: { 
+        username: string; 
+        projectId: string; 
+        name: string; 
+        description?: string;
+        assigneeId?: string;
+    }): Promise<CallToolResult> {
+        try {
+            const result = await createWorkItem({
+                username: input.username,
+                projectId: input.projectId,
+                subject: input.name,
+                description: input.description || ""
+            });
+            
+            const response = { workItem: result };
+            return {
+                content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
+                structuredContent: response
+            };
+        } catch (error) {
+            const errorMessage = 'Operation failed. Please check your authentication and try again.';
+            return {
+                content: [{ type: "text", text: `Error creating work item: ${errorMessage}` }],
+                isError: true
+            };
+        }
+    }
+}

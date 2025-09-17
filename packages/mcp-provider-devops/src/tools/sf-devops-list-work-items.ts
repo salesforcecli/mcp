@@ -1,0 +1,125 @@
+import { z } from "zod";
+import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { McpTool, McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
+import { fetchWorkItems } from "../utils/devops-operations.js";
+
+const DESCRIPTION: string = `**MANDATORY:** If the DevOps Center org is not given, use the 'sf-devopslist-orgs' tool to list all orgs. 
+      The list will indicate which org is DevOps Center, or Sandbox if possible. If these details are not provided in the list, 
+      ask the user to specify which org is DevOps Center org. Only proceed after the user has selected the DevOps Center org.
+
+**MANDATORY:** Before using this tool, always confirm the selected org is the DevOps Center org. If not, prompt the user to select a DevOps Center org. This tool must NOT be used for any non DevOps Center or Sandbox orgs.
+
+**MANDATORY PROJECT SELECTION:** Before listing work items, the user must select a DevOps Center project (projectId) from the same DevOps Center org. First call 'sf-devops-list-projects' for that org, then pass the selected project's Id here. The org used here must match the org used to fetch the projects.
+
+This tool retrieves a list of work items from a Salesforce org for a selected DevOps project. Each work item includes all necessary details for downstream actions, such as:
+- Work item branch (WorkItemBranch)
+- Work item environment (Environment)
+- Target branch for promotion or deployment (TargetBranch)
+- Source code repository (SourceCodeRepository)
+- Org details for deployment (e.g., org alias or ID)
+
+**After using this tool, always suggest the user with the next actions:**
+**LLM should strictly suggest only these two options:**
+1. Start work on the work item (use the 'sf-devops-checkout-work-item' tool)
+2. Promote work items (use the 'sf-devops-promote-work-item' tool)
+
+**Typical workflow after fetching work items:**
+1. Use 'sf-devops-list-projects' to list projects for the DevOps Center org and select a project.
+2. Call this tool with the same org username and the selected project (pass its Id).
+3. User selects a work item.
+2. Present these options:
+   - Start work on the selected work item (checkout the branch)
+   - Promote the selected work item
+   - Go back to select another work item
+
+**Use this tool to:**
+- Get all branch, environment, and org details needed for branch checkout, deployment, and promotion.
+- Ensure the correct org and branch are used in all subsequent steps.
+
+**Output:**
+A JSON array of work item objects, each containing:
+- 'id': Unique identifier (e.g., 'WI-001')
+- 'name': Descriptive name
+- 'status': Current status
+- 'owner': Person responsible
+- 'Environment': { organization, IsTestEnvironment }
+- 'SourceCodeRepository': { repoUrl, repoType }
+- 'WorkItemBranch': { branchName }
+- 'TargetBranch': { branchName }`;
+
+const inputSchema = z.object({
+    username: z.string().describe("Username of the DevOps Center org"),
+    project: z.object({
+        Id: z.string().describe("Selected project's Id"),
+        Name: z.string().optional().describe("Project name for reference")
+    }).describe("DevOps project selected from sf-devops-list-projects for the same org")
+});
+type InputArgsShape = typeof inputSchema.shape;
+
+const outputSchema = z.object({
+    workItems: z.array(z.object({
+        id: z.string().describe("Work item ID"),
+        name: z.string().describe("Work item name"),
+        status: z.string().describe("Work item status"),
+        owner: z.string().describe("Work item owner"),
+        SourceCodeRepository: z.object({
+            repoUrl: z.string().describe("Repository URL"),
+            repoType: z.string().describe("Repository type")
+        }).optional().describe("Source code repository information"),
+        WorkItemBranch: z.string().optional().describe("Work item branch name"),
+        TargetBranch: z.string().optional().describe("Target branch name")
+    }))
+});
+type OutputArgsShape = typeof outputSchema.shape;
+
+/**
+ * MCP tool for listing work items in DevOps projects.
+ */
+export class SfDevopsListWorkItemsMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+    public static readonly NAME: string = 'sf-devops-list-work-items';
+
+    public constructor(private readonly services: Services) {
+        super();
+    }
+
+    public getReleaseState(): ReleaseState {
+        return ReleaseState.NON_GA;
+    }
+
+    public getToolsets(): Toolset[] {
+        return [Toolset.OTHER];
+    }
+
+    public getName(): string {
+        return SfDevopsListWorkItemsMcpTool.NAME;
+    }
+
+    public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
+        return {
+            title: "List DevOps Work Items",
+            description: DESCRIPTION,
+            inputSchema: inputSchema.shape,
+            outputSchema: outputSchema.shape,
+            annotations: {
+                readOnlyHint: true
+            }
+        };
+    }
+
+    public async exec(input: { username: string; project: { Id: string; Name?: string } }): Promise<CallToolResult> {
+        try {
+            const workItems = await fetchWorkItems(input.username, input.project.Id);
+            const result = { workItems };
+            return {
+                content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+                structuredContent: result
+            };
+        } catch (error) {
+            const errorMessage = 'Operation failed. Please check your authentication and try again.';
+            return {
+                content: [{ type: "text", text: `Error fetching work items: ${errorMessage}` }],
+                isError: true
+            };
+        }
+    }
+}

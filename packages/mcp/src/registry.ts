@@ -17,6 +17,7 @@
 import { McpProvider } from '@salesforce/mcp-provider-api';
 import { DxCoreMcpProvider } from '@salesforce/mcp-provider-dx-core';
 import { CodeAnalyzerMcpProvider } from '@salesforce/mcp-provider-code-analyzer';
+import { DevOpsMcpProvider } from '@salesforce/mcp-provider-devops';
 import { LwcExpertsMcpProvider } from '@salesforce/mcp-provider-lwc-experts';
 import { AuraExpertsMcpProvider } from '@salesforce/mcp-provider-aura-experts';
 import { MobileWebMcpProvider } from '@salesforce/mcp-provider-mobile-web';
@@ -26,6 +27,7 @@ import { MobileWebMcpProvider } from '@salesforce/mcp-provider-mobile-web';
 export const MCP_PROVIDER_REGISTRY: McpProvider[] = [
   new DxCoreMcpProvider(),
   new CodeAnalyzerMcpProvider(),
+  new DevOpsMcpProvider(),
   new LwcExpertsMcpProvider(),
   new AuraExpertsMcpProvider(),
   new MobileWebMcpProvider(),

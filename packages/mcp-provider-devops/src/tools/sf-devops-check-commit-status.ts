@@ -1,0 +1,115 @@
+import { z } from "zod";
+import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { McpTool, McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
+import { getConnection } from "../shared/auth.js";
+
+const DESCRIPTION: string = `Checks the status of a specific commit by querying the "DevopsRequestInfo" Salesforce object using the RequestToken field.
+
+**Use this tool to:**
+- Check the status of a specific commit using its Request Token
+- Verify commit processing completion before creating a pull request
+- Ensure commits are ready for PR creation
+
+**Input Parameters:**
+- username: The username of the DevOps Center org to authenticate with
+- requestId: The specific request token to check status for (REQUIRED)
+
+**Output:**
+- Status field value for the specified request token
+- Request token and associated status information`;
+
+const inputSchema = z.object({
+    username: z.string().describe("Username of the DevOps Center org to authenticate with"),
+    requestId: z.string().describe("The specific request ID to check status for")
+});
+type InputArgsShape = typeof inputSchema.shape;
+
+const outputSchema = z.object({
+    requestId: z.string().describe("The request ID that was checked"),
+    status: z.string().describe("Status of the commit request"),
+    details: z.string().optional().describe("Additional details about the status")
+});
+type OutputArgsShape = typeof outputSchema.shape;
+
+/**
+ * MCP tool for checking commit status in DevOps Center.
+ */
+export class SfDevopsCheckCommitStatusMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+    public static readonly NAME: string = 'sf-devops-check-commit-status';
+
+    public constructor(private readonly services: Services) {
+        super();
+    }
+
+    public getReleaseState(): ReleaseState {
+        return ReleaseState.NON_GA;
+    }
+
+    public getToolsets(): Toolset[] {
+        return [Toolset.OTHER];
+    }
+
+    public getName(): string {
+        return SfDevopsCheckCommitStatusMcpTool.NAME;
+    }
+
+    public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
+        return {
+            title: "Check DevOps Commit Status",
+            description: DESCRIPTION,
+            inputSchema: inputSchema.shape,
+            outputSchema: outputSchema.shape,
+            annotations: {
+                readOnlyHint: true
+            }
+        };
+    }
+
+    public async exec(input: { username: string; requestId: string }): Promise<CallToolResult> {
+        try {
+            const connection = await getConnection(input.username);
+            
+            // Query the DevopsRequestInfo object to get the status
+            const query = `SELECT Id, RequestToken, Status, CreatedDate, LastModifiedDate FROM DevopsRequestInfo WHERE RequestToken = '${input.requestId}' LIMIT 1`;
+            const result = await connection.query(query);
+            
+            if (!result.records || result.records.length === 0) {
+                const response = {
+                    requestId: input.requestId,
+                    status: "NOT_FOUND",
+                    details: "No record found for the provided request ID"
+                };
+                
+                return {
+                    content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
+                    structuredContent: response
+                };
+            }
+
+            const record = result.records[0] as any;
+            const response = {
+                requestId: input.requestId,
+                status: record.Status || "UNKNOWN",
+                details: `Created: ${record.CreatedDate}, Last Modified: ${record.LastModifiedDate}`
+            };
+
+            return {
+                content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
+                structuredContent: response
+            };
+        } catch (error) {
+            const errorMessage = 'Operation failed. Please check your authentication and try again.';
+            const response = {
+                requestId: input.requestId,
+                status: "ERROR",
+                details: errorMessage
+            };
+            
+            return {
+                content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
+                structuredContent: response,
+                isError: true
+            };
+        }
+    }
+}

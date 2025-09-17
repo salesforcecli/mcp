@@ -1,0 +1,81 @@
+import { z } from "zod";
+import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { McpTool, McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
+import { fetchWorkItemsMP } from "../utils/getWorkItemsMP.js";
+
+const DESCRIPTION: string = `List DevOps Center Work Items when the request comes from a Managed Package DevOps user.
+
+**Scenario:**
+- Use this tool in managed package workflows to list work items in the DevOps Center org.
+- First select the DevOps Center org and project, then pass the details here.
+
+**Input Parameters:**
+- username: Username of the DevOps Center org
+- projectId: The ID of the project to list work items for
+
+**Output:**
+- Returns an array of work item records with managed package specific fields.`;
+
+const inputSchema = z.object({
+    username: z.string().describe("Username of the DevOps Center org"),
+    projectId: z.string().describe("The ID of the project to list work items for")
+});
+type InputArgsShape = typeof inputSchema.shape;
+
+const outputSchema = z.object({
+    workItems: z.array(z.object({
+        id: z.string().describe("Work item ID"),
+        name: z.string().describe("Work item name"),
+        status: z.string().describe("Work item status")
+    })).describe("List of managed package work items")
+});
+type OutputArgsShape = typeof outputSchema.shape;
+
+export class SfDevopsListWorkItemsMpMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+    public static readonly NAME: string = 'sf-devops-list-work-items-mp';
+
+    public constructor(private readonly services: Services) {
+        super();
+    }
+
+    public getReleaseState(): ReleaseState {
+        return ReleaseState.NON_GA;
+    }
+
+    public getToolsets(): Toolset[] {
+        return [Toolset.OTHER];
+    }
+
+    public getName(): string {
+        return SfDevopsListWorkItemsMpMcpTool.NAME;
+    }
+
+    public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
+        return {
+            title: "List DevOps Work Items (Managed Package)",
+            description: DESCRIPTION,
+            inputSchema: inputSchema.shape,
+            outputSchema: outputSchema.shape,
+            annotations: {
+                readOnlyHint: true
+            }
+        };
+    }
+
+    public async exec(input: { username: string; projectId: string }): Promise<CallToolResult> {
+        try {
+            const workItems = await fetchWorkItemsMP(input.username, input.projectId);
+            const result = { workItems };
+            return {
+                content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+                structuredContent: result
+            };
+        } catch (error) {
+            const errorMessage = 'Operation failed. Please check your authentication and try again.';
+            return {
+                content: [{ type: "text", text: `Error fetching managed package work items: ${errorMessage}` }],
+                isError: true
+            };
+        }
+    }
+}

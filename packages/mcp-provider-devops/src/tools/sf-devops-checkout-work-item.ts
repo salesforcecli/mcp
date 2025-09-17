@@ -1,0 +1,136 @@
+import { z } from "zod";
+import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { McpTool, McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
+import { checkoutWorkitemBranch } from "../utils/checkoutWorkitemBranch.js";
+import { fetchWorkItemByName } from "../utils/devops-operations.js";
+
+const DESCRIPTION: string = `Checks out the branch associated with a selected work item by name.
+
+**MANDATORY:** Always ask the user to provide the local path (repoPath) to the checked-out repository. 
+You may show the current working directory as an option, but do not proceed until the user has explicitly chosen a repo path. 
+Never assume or default to a path without user confirmation.
+
+This tool takes the DevOps Center org username and the exact Work Item Name, looks up the Work Item to retrieve its repository URL and branch, and then checks out that branch. If localPath is not provided, the current working directory will be used. It clones the repository to the specified local path if it does not exist there, and checks out the specified branch. Assumes the user is already authenticated with the git CLI.
+
+**How to use this tool:**
+
+1. **Work Item Name Required:**
+   - Provide the exact Work Item Name and the DevOps Center org username. The tool will fetch the Work Item and derive repo URL and branch automatically.
+
+2. **Input Parameters:**
+   - "username": The username of the DevOps Center org.
+   - "workItemName": The exact Name of the Work Item whose branch to check out.
+   - "localPath" (mandatory): The directory path where the repository should be cloned/checked out. Must be provided by the user. The current working directory can be shown as an option, but do not proceed until the user chooses.
+
+3. **Operation:**
+   - If the repository does not exist at the specified local path, the tool will clone it there.
+   - The tool will then check out the specified branch in that directory.
+   - The output will explicitly show the path where the repository is cloned.
+
+**Typical workflow:**
+- Provide Work Item Name and local path, then run this tool to clone and check out the correct branch.
+
+**Output:**
+- Success or error message indicating the result of the clone and checkout operations, including the path where the repository is cloned.`;
+
+const inputSchema = z.object({
+    username: z.string().describe("The username of the DevOps Center org."),
+    workItemName: z.string().min(1).describe("Exact Work Item Name to check out."),
+    localPath: z.string().optional().describe("The directory path where the repository should be cloned/checked out. If not provided, ask user to provide the path where project is cloned.")
+});
+type InputArgsShape = typeof inputSchema.shape;
+
+const outputSchema = z.object({
+    success: z.boolean().describe("Whether the checkout was successful"),
+    message: z.string().describe("Status message about the checkout operation"),
+    path: z.string().optional().describe("Path where repository was cloned/checked out")
+});
+type OutputArgsShape = typeof outputSchema.shape;
+
+/**
+ * MCP tool for checking out work item branches.
+ */
+export class SfDevopsCheckoutWorkItemMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+    public static readonly NAME: string = 'sf-devops-checkout-work-item';
+
+    public constructor(private readonly services: Services) {
+        super();
+    }
+
+    public getReleaseState(): ReleaseState {
+        return ReleaseState.NON_GA;
+    }
+
+    public getToolsets(): Toolset[] {
+        return [Toolset.OTHER];
+    }
+
+    public getName(): string {
+        return SfDevopsCheckoutWorkItemMcpTool.NAME;
+    }
+
+    public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
+        return {
+            title: "Checkout DevOps Work Item Branch",
+            description: DESCRIPTION,
+            inputSchema: inputSchema.shape,
+            outputSchema: outputSchema.shape,
+            annotations: {
+                readOnlyHint: false
+            }
+        };
+    }
+
+    public async exec(input: { username: string; workItemName: string; localPath?: string }): Promise<CallToolResult> {
+        try {
+            const item = await fetchWorkItemByName(input.username, input.workItemName);
+            if (!item) {
+                return {
+                    content: [{ type: "text", text: `No Work Item found with Name: ${input.workItemName}.` }],
+                    isError: true
+                };
+            }
+
+            const repoUrl = item?.SourceCodeRepository?.repoUrl;
+            const branchName = item?.WorkItemBranch;
+
+            if (!repoUrl) {
+                return {
+                    content: [{ type: "text", text: `Repository URL is missing for '${input.workItemName}'. Ensure the Work Item is linked to a repository.` }],
+                    isError: true
+                };
+            }
+
+            if (!branchName) {
+                return {
+                    content: [{ type: "text", text: `Branch name is missing for '${input.workItemName}'. Ensure a branch is set on the Work Item.` }],
+                    isError: true
+                };
+            }
+
+            const result = await checkoutWorkitemBranch({ repoUrl, branchName, localPath: input.localPath });
+            
+            // Extract the text from the result
+            const message = result.content[0]?.text || 'Checkout completed';
+            const success = !message.toLowerCase().includes('error') && !message.toLowerCase().includes('failed');
+            
+            const response = {
+                success,
+                message,
+                path: input.localPath
+            };
+
+            return {
+                content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
+                structuredContent: response,
+                isError: !success
+            };
+        } catch (error) {
+            const errorMessage = 'Operation failed. Please check your authentication and try again.';
+            return {
+                content: [{ type: "text", text: `Error checking out work item: ${errorMessage}` }],
+                isError: true
+            };
+        }
+    }
+}

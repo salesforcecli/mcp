@@ -1,0 +1,176 @@
+import { z } from "zod";
+import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { McpTool, McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
+import { commitWorkItem } from "../utils/commitWorkItem.js";
+import { getRequiredOrgs } from "../shared/auth.js";
+import { randomUUID } from "crypto";
+
+const DESCRIPTION: string = `**IMPORTANT: THIS IS NOT A STARTING TOOL**
+
+When user asks to "commit work item" or "commit changes", DO NOT use this tool directly. Instead, start with step 1 below.
+
+**THIS TOOL IS ONLY USED AS THE FINAL STEP AFTER COMPLETING ALL PREREQUISITES**
+
+**MANDATORY workflow for committing work items: DO NOT skip any of the steps and DO NOT move to the next step until the current step is completed.**
+1. **MANDATORY:**If the DevOps Center org and Sandbox org are not given, use the 'sf-devopslist-orgs' tool to list all orgs. 
+   The list will indicate which org is DevOps Center and a Sandbox. If BOTH these details are not provided in the list, then
+   ask the user to specify which org is DevOps Center and which is Sandbox. Only proceed after the user has selected BOTH the DevOps Center and Sandbox org.
+2. **MANDATORY:**Select the work item from the DevOps Center org using 'sf-devops-list-work-items'.
+3. **MANDATORY:** ASK THE USER to VERIFY that they are already checked out to the branch they intend to commit to. Ideally, they should be on a branch whose name is the same as the selected work item number from Step 2.
+4. **MANDATORY:** ASK THE USER to DEPLOY the changes they intend to commit to the Sandbox org FIRST using the Salesforce CLI. From the project root, SUGGEST them to run a command like:
+
+   \`sf project deploy start --source-dir force-app --target-org <SANDBOX_USERNAME> --test-level NoTestRun\`
+
+   Replace \`force-app\` if your source lives elsewhere, and use the Sandbox username selected in Step 1.
+5. **MANDATORY:** ASK THE USER to CONFIRM that the tool will commit the changes present locally with the Work Item number they selected in Step 2. Proceed only if they approve, and ASK THEM to provide a commit message.
+   Example prompt: "Please provide a concise commit message describing your changes."
+6. **MANDATORY:** Run this tool (commit_workitem) now with the selected work item, the prepared changes, and the provided commit message to perform the commit.
+
+**Use this tool to:**
+- Finalize changes made to a work item in DevOps Center
+- Commits the provided changes to the specified work item using DevOps Center org credentials
+- Ensure metadata changes are properly recorded in the DevOps workflow
+
+**After using this tool, suggest these next actions:**
+1. Ask the user to check commit status using the returned requestId
+2. Ask the user to promote work items (using the 'sf-devops-promote-work-item' tool)
+
+**MANDATORY:** Before using this tool, ask the user to provide a commit message for the changes and then use that while calling this tool.
+
+**Org selection requirements:**
+- The inputs 'doceHubUsername' and 'sandboxUsername' are REQUIRED. If you don't have them yet:
+  1) Use the 'sf-devopslist-orgs' tool to list all authenticated orgs
+  2) Ask the user to select which username is the DevOps Center org and which is the Sandbox org
+  3) Pass those selections here as 'doceHubUsername' and 'sandboxUsername'
+
+**Output:**
+- requestId: Generated UUID for tracking this commit operation
+
+**Example Usage:**
+- "Commit my changes with message 'Fix bug in account logic' and tie it to WI-1092."
+- "Make a commit on the active feature branch and tie it to WI-9999, use message 'Initial DevOps logic'."
+- "Commit my changes to the work item"
+- "Commit changes to work item's feature branch"`;
+
+const inputSchema = z.object({
+    doceHubUsername: z.string().describe("DevOps Center org username (required; list orgs and select if unknown)"),
+    sandboxUsername: z.string().describe("Sandbox org username (required; list orgs and select if unknown)"),
+    workItem: z.object({
+        id: z.string().describe("Work item ID")
+    }).describe("Work item object - only ID needed for commit"),
+    commitMessage: z.string().describe("Commit message describing the changes (ask user for input)"),
+    changes: z.array(
+        z.object({
+            fullName: z.string().describe("Full name of the metadata component"),
+            type: z.string().describe("Type of the metadata component (e.g., 'ApexClass', 'CustomObject')"),
+            operation: z.string().describe("Operation performed ('Add', 'Modify', 'Delete')")
+        }).strict()
+    ).optional().describe("Optional: Pre-selected changes. If omitted, the tool will intersect Sandbox changes with local git changes automatically."),
+    repoPath: z.string().optional().describe("Optional: Absolute path to the git repository root. Defaults to current working directory.")
+});
+type InputArgsShape = typeof inputSchema.shape;
+
+const outputSchema = z.object({
+    requestId: z.string().describe("UUID for tracking the commit operation"),
+    doceHubOrg: z.string().describe("DevOps Center org username used"),
+    message: z.string().describe("Success message")
+});
+type OutputArgsShape = typeof outputSchema.shape;
+
+/**
+ * MCP tool for committing work item changes.
+ */
+export class SfDevopsCommitWorkItemMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+    public static readonly NAME: string = 'sf-devops-commit-work-item';
+
+    public constructor(private readonly services: Services) {
+        super();
+    }
+
+    public getReleaseState(): ReleaseState {
+        return ReleaseState.NON_GA;
+    }
+
+    public getToolsets(): Toolset[] {
+        return [Toolset.OTHER];
+    }
+
+    public getName(): string {
+        return SfDevopsCommitWorkItemMcpTool.NAME;
+    }
+
+    public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
+        return {
+            title: "Commit DevOps Work Item",
+            description: DESCRIPTION,
+            inputSchema: inputSchema.shape,
+            outputSchema: outputSchema.shape,
+            annotations: {
+                readOnlyHint: false
+            }
+        };
+    }
+
+    public async exec(input: {
+        doceHubUsername: string;
+        sandboxUsername: string;
+        workItem: { id: string };
+        commitMessage: string;
+        changes?: Array<{ fullName: string; type: string; operation: string }>;
+        repoPath?: string;
+    }): Promise<CallToolResult> {
+        try {
+            if (!input.workItem || !input.workItem.id) {
+                return {
+                    content: [{ type: "text", text: `Error: Work item ID is required. Please provide a work item with an ID.` }],
+                    isError: true
+                };
+            }
+
+            if (!input.commitMessage || input.commitMessage.trim().length === 0) {
+                return {
+                    content: [{ type: "text", text: `Error: Commit message is required. Please provide a commit message.` }],
+                    isError: true
+                };
+            }
+
+            const { doceHub, sandbox, error } = await getRequiredOrgs(input.doceHubUsername, input.sandboxUsername);
+            
+            if (error || !doceHub || !sandbox) {
+                return {
+                    content: [{ type: "text", text: `❌ Dual org detection failed: ${error || 'DevOps Center and Sandbox orgs not found'}\n\nCommit API requires both orgs:\n- DevOps Center org (for authentication)\n- Sandbox org (for change headers)\n\nUse 'sf org login web' to authenticate to both orgs.` }],
+                    isError: true
+                };
+            }
+            
+            const requestId = randomUUID();
+            const formattedChanges = Array.isArray(input.changes) ? input.changes : [];
+            
+            const result = await commitWorkItem({
+                workItem: input.workItem,
+                requestId,
+                commitMessage: input.commitMessage,
+                changes: formattedChanges as any,
+                doceHubUsername: input.doceHubUsername,
+                sandboxUsername: input.sandboxUsername,
+                repoPath: input.repoPath
+            });
+
+            const response = {
+                requestId,
+                doceHubOrg: doceHub.username,
+                message: `Work item committed successfully using DevOps Center org: ${doceHub.username}`
+            };
+
+            return {
+                content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
+                structuredContent: response
+            };
+        } catch (error: any) {
+            return {
+                content: [{ type: "text", text: `Error committing work item. Please check your authentication and try again.` }],
+                isError: true
+            };
+        }
+    }
+}

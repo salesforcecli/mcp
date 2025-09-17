@@ -1,0 +1,111 @@
+import { z } from "zod";
+import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { McpTool, McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
+import { getChanges } from "../utils/getChanges.js";
+
+const DESCRIPTION: string = `Get list of changes from Salesforce that can be committed.
+
+This tool is typically used before committing changes. It shows what changes are available to be committed. The returned changes can be used as input for the commit tool.
+
+Args:
+  token: Salesforce access token (required)
+  instance_url: Salesforce instance URL (required)
+  offset: Starting offset for pagination (optional, default 0)
+  limit: Number of records to return (optional, default 50)
+  ignore_committed: Whether to ignore committed changes (optional, default false)
+
+Returns:
+  JSON string containing the changes data. The changes can be used directly with the commit tool.
+
+Next steps:
+  After getting changes, you might want to use the commit tool to commit these changes. The commit tool can use the changes returned by this tool.`;
+
+const inputSchema = z.object({
+    username: z.string().describe("DevOps Center org username"),
+    offset: z.number().optional().default(0).describe("Starting offset for pagination"),
+    limit: z.number().optional().default(50).describe("Number of records to return")
+});
+type InputArgsShape = typeof inputSchema.shape;
+
+const outputSchema = z.object({
+    changes: z.array(z.object({
+        fullName: z.string().describe("Full name of the component"),
+        type: z.string().describe("Type of the component"),
+        operation: z.string().describe("Operation (Add, Modify, Delete)")
+    })).describe("List of available changes"),
+    total: z.number().describe("Total number of changes"),
+    offset: z.number().describe("Current offset"),
+    limit: z.number().describe("Current limit")
+});
+type OutputArgsShape = typeof outputSchema.shape;
+
+export class SfDevopsGetChangesMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+    public static readonly NAME: string = 'sf-devops-get-changes';
+
+    public constructor(private readonly services: Services) {
+        super();
+    }
+
+    public getReleaseState(): ReleaseState {
+        return ReleaseState.NON_GA;
+    }
+
+    public getToolsets(): Toolset[] {
+        return [Toolset.OTHER];
+    }
+
+    public getName(): string {
+        return SfDevopsGetChangesMcpTool.NAME;
+    }
+
+    public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
+        return {
+            title: "Get DevOps Changes",
+            description: DESCRIPTION,
+            inputSchema: inputSchema.shape,
+            outputSchema: outputSchema.shape,
+            annotations: {
+                readOnlyHint: true
+            }
+        };
+    }
+
+    public async exec(input: { 
+        username: string; 
+        offset?: number; 
+        limit?: number;
+    }): Promise<CallToolResult> {
+        try {
+            const result = await getChanges({
+                username: input.username,
+                offset: input.offset || 0,
+                limit: input.limit || 50
+            });
+
+            // Parse the result to extract structured information
+            const changes = Array.isArray(result) ? result : (result.changes || []);
+            
+            const response = {
+                changes: changes.map((change: any) => ({
+                    fullName: change.fullName || change.name,
+                    type: change.type,
+                    operation: change.operation || change.state
+                })),
+                total: changes.length,
+                offset: input.offset || 0,
+                limit: input.limit || 50
+            };
+
+            return {
+                content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
+                structuredContent: response
+            };
+        } catch (error) {
+            const errorMessage = 'Operation failed. Please check your authentication and try again.';
+            return {
+                content: [{ type: "text", text: `Error getting changes: ${errorMessage}` }],
+                isError: true
+            };
+        }
+    }
+}

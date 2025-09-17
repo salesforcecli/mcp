@@ -1,0 +1,81 @@
+import { z } from "zod";
+import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { McpTool, McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
+import { fetchProjects, DevopsProjectRecord } from "../utils/devops-operations.js";
+
+const DESCRIPTION: string = `**MANDATORY:** If the DevOps Center org is not given, use the 'sf-devopslist-orgs' tool to list all orgs. 
+The list will indicate which org is DevOps Center, or Sandbox if possible. If these details are not provided in the list, 
+ask the user to specify which org is DevOps Center org. Only proceed after the user has selected the DevOps Center org.
+
+**MANDATORY:** Before using this tool, always confirm the selected org is the DevOps Center org. If not, prompt the user to select a DevOps Center org. This tool must NOT be used for any non DevOps Center or Sandbox orgs.
+
+Lists DevOps Center Projects available in the specified org using SOQL on DevopsProject.
+
+**Output:**
+An array of project records with fields such as Id, Name, Description.`;
+
+const inputSchema = z.object({
+    username: z.string().describe("Username of the DevOps Center org")
+});
+type InputArgsShape = typeof inputSchema.shape;
+
+const outputSchema = z.object({
+    projects: z.array(z.object({
+        Id: z.string().describe("Project ID"),
+        Name: z.string().describe("Project Name"),
+        Description: z.string().optional().describe("Project Description")
+    }))
+});
+type OutputArgsShape = typeof outputSchema.shape;
+
+/**
+ * MCP tool for listing DevOps projects.
+ */
+export class SfDevopsListProjectsMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+    public static readonly NAME: string = 'sf-devops-list-projects';
+
+    public constructor() {
+        super();
+    }
+
+    public getReleaseState(): ReleaseState {
+        return ReleaseState.NON_GA;
+    }
+
+    public getToolsets(): Toolset[] {
+        return [Toolset.OTHER];
+    }
+
+    public getName(): string {
+        return SfDevopsListProjectsMcpTool.NAME;
+    }
+
+    public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
+        return {
+            title: "List DevOps Center Projects",
+            description: DESCRIPTION,
+            inputSchema: inputSchema.shape,
+            outputSchema: outputSchema.shape,
+            annotations: {
+                readOnlyHint: true
+            }
+        };
+    }
+
+    public async exec(input: { username: string }): Promise<CallToolResult> {
+        try {
+            const projects = await fetchProjects(input.username);
+            const result = { projects };
+            return {
+                content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+                structuredContent: result
+            };
+        } catch (error) {
+            const errorMessage = 'Operation failed. Please check your authentication and try again.';
+            return {
+                content: [{ type: "text", text: `Error fetching projects: ${errorMessage}` }],
+                isError: true
+            };
+        }
+    }
+}
