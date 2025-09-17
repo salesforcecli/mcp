@@ -5,7 +5,7 @@ import { DescribeRuleAction, DescribeRuleActionImpl, DescribeRuleInput, Describe
 import { CodeAnalyzerConfigFactoryImpl } from "../factories/CodeAnalyzerConfigFactory.js";
 import { EnginePluginsFactoryImpl } from "../factories/EnginePluginsFactory.js";
 import { getErrorMessage } from "../utils.js";
-import {CodeAnalyzerRunMcpTool} from "./sf-code-analyzer-run.js";
+import {CodeAnalyzerRunMcpTool} from "./run_code_analyzer.js";
 
 const DESCRIPTION: string = `A tool for getting the description of a Code Analyzer rule.\n` +
     `This tool can return a JSON that describes the properties of a Code Analyzer rule, which may include information about\n` +

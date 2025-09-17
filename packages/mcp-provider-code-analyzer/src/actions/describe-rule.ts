@@ -15,13 +15,13 @@ type DescribeRuleActionOptions = {
     telemetryService?: TelemetryService
 }
 
-// NOTE: THIS MUST ALIGN WITH THE ZOD SCHEMA DEFINED IN `sf-code-analyzer-describe-rule.ts`.
+// NOTE: THIS MUST ALIGN WITH THE ZOD SCHEMA DEFINED IN `tools/describe_code_analyzer_rule.ts`.
 export type DescribeRuleInput = {
     ruleName: string
     engineName: string
 };
 
-// NOTE: THIS MUST ALIGN WITH THE ZOD SCHEMA DEFINED IN `sf-code-analyzer-describe-rule.ts`.
+// NOTE: THIS MUST ALIGN WITH THE ZOD SCHEMA DEFINED IN `tools/describe_code_analyzer_rule.ts`.
 export type DescribeRuleOutput = {
     status: string
     rule?: {

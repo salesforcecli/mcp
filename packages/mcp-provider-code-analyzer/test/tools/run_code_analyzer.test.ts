@@ -2,7 +2,7 @@ import path from "node:path";
 import { fileURLToPath } from "url";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
-import { CodeAnalyzerRunMcpTool } from "../../src/tools/sf-code-analyzer-run.js";
+import { CodeAnalyzerRunMcpTool } from "../../src/tools/run_code_analyzer.js";
 import { RunAnalyzerAction, RunInput, RunOutput } from "../../src/actions/run-analyzer.js";
 
 const __filename = fileURLToPath(import.meta.url);

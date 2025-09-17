@@ -1,8 +1,8 @@
 import { McpProvider, McpTool, Services } from "@salesforce/mcp-provider-api";
 import { CodeAnalyzerMcpProvider } from "../src/provider.js";
-import { CodeAnalyzerRunMcpTool } from "../src/tools/sf-code-analyzer-run.js";
+import { CodeAnalyzerRunMcpTool } from "../src/tools/run_code_analyzer.js";
 import { StubServices } from "./test-doubles.js";
-import { CodeAnalyzerDescribeRuleMcpTool } from "../src/tools/sf-code-analyzer-describe-rule.js";
+import { CodeAnalyzerDescribeRuleMcpTool } from "../src/tools/describe_code_analyzer_rule.js";
 
 describe("Tests for CodeAnalyzerMcpProvider", () => {
     let services: Services;

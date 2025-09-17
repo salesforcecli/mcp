@@ -28,12 +28,12 @@ type RunAnalyzerActionOptions = {
     telemetryService?: TelemetryService
 }
 
-// NOTE: THIS MUST ALIGN WITH THE ZOD SCHEMA DEFINED IN `sf-code-analyzer-run.ts`.
+// NOTE: THIS MUST ALIGN WITH THE ZOD SCHEMA DEFINED IN `tools/run_code_analyzer.ts`.
 export type RunInput = {
     target: string[]
 }
 
-// NOTE: THIS MUST ALIGN WITH THE ZOD SCHEMA DEFINED IN `sf-code-analyzer-run.ts`.
+// NOTE: THIS MUST ALIGN WITH THE ZOD SCHEMA DEFINED IN `tools/run_code_analyzer.ts`.
 export type RunOutput = {
     status: string
     resultsFile?: string
