@@ -202,6 +202,8 @@ These are the available toolsets.
 | `other` | [Other useful tools, such as tools for static analysis of your code using Salesforce Code Analyzer.](README.md#other-toolset)|
 | `mobile` | [Tools for mobile development and capabilities.](README.md#mobile-toolset)|
 | `mobile-core` | [A subset of mobile tools focused on essential mobile capabilities.](README.md#mobile-core-toolset)|
+| `aura-experts` | [Tools which provides Aura component analysis, blueprinting, and migration expertise.](README.md#aura-experts-toolset)|
+| `lwc-experts`  | [Tools to assist with LWC development, testing, optimization, and best practices.](README.md#lwc-experts-toolset)|
 
 This example shows how to enable the `data`, `orgs`, `metadata`, and `other` toolsets when configuring the MCP server for VS Code:
 
@@ -289,6 +291,56 @@ Includes these essential mobile tools, which aren't yet generally available:
 - `sf-mobile-web-location` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Location Service, offering expert guidance for implementing location services in Lightning Web Components.
 - `sf-mobile-web-offline-analysis` - (NON-GA) Analyzes Lightning Web Components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
 - `sf-mobile-web-offline-guidance` - (NON-GA) Provides structured review instructions to detect and remediate mobile offline code violations in Lightning Web Components for Salesforce Mobile Apps.
+
+**NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
+
+#### Aura Experts Toolset
+
+ - sf-aura-create-blueprint-draft - (NON-GA)
+Creates a comprehensive Product Requirements Document (PRD) blueprint for Aura component migration. Analyzes Aura component files and generates framework-agnostic specifications suitable for LWC migration, including business requirements, technical patterns, and migration guidelines.
+
+ - sf-aura-enhance-blueprint-draft - (NON-GA)
+Enhances an existing draft PRD with expert analysis and unknown resolution. Takes a draft blueprint and applies specialized Aura expert knowledge to resolve dependencies, add technical insights, and improve the migration specifications for better LWC implementation guidance.
+
+ - sf-aura-dispatch-component-creation - (NON-GA)
+Provides migration bridge guidance for creating LWC components from Aura specifications. Takes the enhanced PRD and generates specific implementation guidance, platform service mappings, and step-by-step instructions for building the equivalent LWC component.
+
+ - sf-aura-orchestrate-migration - (NON-GA)
+Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end guidance for the entire migration process, from initial analysis through final implementation, including best practices, tooling recommendations, and quality assurance steps.
+
+**NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
+
+#### Lwc Experts Toolset
+
+##### Component Development
+ - sf-lwc-create-component - (GA) Creates complete LWC components from PRD specifications with proper structure and best practices
+ - sf-lwc-generate-jest-tests - (GA) Generates comprehensive Jest test suites for LWC components with coverage and mocking
+ - sf-lwc-review-jest-tests - (GA) Reviews and validates Jest test implementations for LWC components
+
+##### Development Guidelines
+ - sf-lwc-guide-accessibility - (GA) Provides accessibility guidelines and testing instructions for LWC components
+ - sf-lwc-best-practices - (GA) Offers LWC development best practices and coding standards guidance
+ - sf-lwc-guide-development - (GA) Comprehensive LWC development workflow and implementation guidelines
+ - sf-lwc-guide-rtl - (GA) Right-to-Left internationalization support and RTL development guidance
+ - sf-lwc-guide-uplift-ai-metadata - (GA) AI metadata enhancement for LWC components
+ - sf-lwc-guide-slds2-uplift-linter-fixes - (GA) Analyzes the given LWC code along with the slds-linter output to fix issues using the SLDS2 knowledge
+
+##### Workflow Tools
+ - sf-lwc-workflow-component-creation - (GA) Step-by-step component creation workflow guidance
+ - sf-lwc-workflow-component-optimization - (GA)  Performance optimization and best practices for LWC components
+ - sf-lwc-workflow-component-testing - (GA) Comprehensive testing workflow and test generation guidance
+ - sf-lwc-workflow-slds2-uplift - (GA) Migration guidance for upgrading to SLDS2 design system
+
+##### LDS (Lightning Design System) Tools
+ - sf-lds-explore-uiapi - (GA) Explores and documents Lightning Design System UI API capabilities
+ - sf-lds-guide-data-consistency - (GA) Data consistency patterns and best practices for LDS components
+ - sf-lds-guide-development - (GA) LDS development guidelines and component integration
+ - sf-lds-guide-referential-integrity - (GA) Referential integrity patterns for LDS data management
+
+##### Migration & Integration Tools
+ - sf-aura-migration-completeness - (GA) Aura to LWC migration completeness checklist and validation
+ - sf-figma-guide-lwc-conversion - (GA) Converts Figma designs to LWC component specifications
+ - sf-accessibility-jest-test - (GA) Accessibility testing utilities and Jest integration for LWC components
 
 **NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
 
