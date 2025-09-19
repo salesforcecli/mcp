@@ -1542,6 +1542,11 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-9.35.0.tgz#ffbc7e13cf1204db18552e9cd9d4a8e17c692d07"
   integrity sha512-30iXE9whjlILfWobBkNerJo+TXYsgVM5ERQwMcMKCHckHflCmf7wXDAHlARoWnh0s1U72WqlbeyE7iAcCzuCPw==
 
+"@eslint/js@9.36.0":
+  version "9.36.0"
+  resolved "https://registry.yarnpkg.com/@eslint/js/-/js-9.36.0.tgz#b1a3893dd6ce2defed5fd49de805ba40368e8fef"
+  integrity sha512-uhCbYtYynH30iZErszX78U+nR3pJU3RHGQ57NXy5QupD4SBVwDeU8TNBy+MjMngc1UyIW9noKqsRqfjQTBU2dw==
+
 "@eslint/object-schema@^2.1.6":
   version "2.1.6"
   resolved "https://registry.yarnpkg.com/@eslint/object-schema/-/object-schema-2.1.6.tgz#58369ab5b5b3ca117880c0f6c0b0f32f6950f24f"
@@ -2184,6 +2189,24 @@
   version "1.18.0"
   resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.18.0.tgz#53489f88b739d2df489ed552c025868f401a095e"
   integrity sha512-JvKyB6YwS3quM+88JPR0axeRgvdDu3Pv6mdZUy+w4qVkCzGgumb9bXG/TmtDRQv+671yaofVfXSQmFLlWU5qPQ==
+  dependencies:
+    ajv "^6.12.6"
+    content-type "^1.0.5"
+    cors "^2.8.5"
+    cross-spawn "^7.0.5"
+    eventsource "^3.0.2"
+    eventsource-parser "^3.0.0"
+    express "^5.0.1"
+    express-rate-limit "^7.5.0"
+    pkce-challenge "^5.0.0"
+    raw-body "^3.0.0"
+    zod "^3.23.8"
+    zod-to-json-schema "^3.24.1"
+
+"@modelcontextprotocol/sdk@^1.16.0":
+  version "1.18.1"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.18.1.tgz#cdc7e0809319b0466599b93fbf655dafa9f49ceb"
+  integrity sha512-d//GE8/Yh7aC3e7p+kZG8JqqEAwwDUmAfvH1quogtbk+ksS6E0RR6toKKESPYYZVre0meqkJb27zb+dhqE9Sgw==
   dependencies:
     ajv "^6.12.6"
     content-type "^1.0.5"
@@ -3059,7 +3082,7 @@
     node-stream-zip "^1.15.0"
     retire "^5.3.0"
 
-"@salesforce/core@^8", "@salesforce/core@^8.10.3", "@salesforce/core@^8.22.0", "@salesforce/core@^8.23.0", "@salesforce/core@^8.23.1", "@salesforce/core@^8.8.0":
+"@salesforce/core@^8", "@salesforce/core@^8.10.3", "@salesforce/core@^8.18.0", "@salesforce/core@^8.22.0", "@salesforce/core@^8.23.0", "@salesforce/core@^8.23.1", "@salesforce/core@^8.8.0":
   version "8.23.1"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.23.1.tgz#89e04518d6d4033ef6a248380eb952328068797c"
   integrity sha512-/mQMu6g0gmkKQsl+G93VkkU+yrLEjnBzdUu0sPlS0WY5jM4M9sxg97LmRXa6dchECU3c/ugamsXaP6j6QmEfsQ==
@@ -3185,6 +3208,29 @@
     semver "^7.7.2"
     zod "^3.23.8"
 
+"@salesforce/mcp-provider-api@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-api/-/mcp-provider-api-0.2.2.tgz#dbd3a0b35b23ce67af53c004f38d092d237977d0"
+  integrity sha512-vEN1N1nhonT+SIJKmis8h3gaP2MehfwRrBQpgBqHo13Iu6LWp2GISgr+JqDl0WsnNC+BS53VlGwpf+Fo5ykt/Q==
+  dependencies:
+    "@modelcontextprotocol/sdk" "^1.17.3"
+    "@salesforce/core" "^8"
+    "@salesforce/ts-types" "^2"
+    semver "^7.7.2"
+    zod "^3.23.8"
+
+"@salesforce/mcp-provider-api@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-api/-/mcp-provider-api-0.3.0.tgz#7ec38c653c72b8c54f99efb90fbeef13f62dfde9"
+  integrity sha512-R10tweSst4WT/ZqYMvl7W5mhdQRlsRD694AQ0qmNFjEAKp8UA3qv6W7nCAfiQvOabyYYM0g47s2MWnhkyHMzrg==
+  dependencies:
+    "@modelcontextprotocol/sdk" "^1.18.0"
+    "@salesforce/core" "^8"
+    "@salesforce/ts-types" "^2"
+    "@types/semver" "^7.7.1"
+    semver "^7.7.2"
+    zod "^3.25.76"
+
 "@salesforce/mcp-provider-aura-experts@0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-aura-experts/-/mcp-provider-aura-experts-0.1.1.tgz#250d39cd5658e167d5687142485e3d4d898f4075"
@@ -3196,6 +3242,23 @@
     yaml "^2.6.0"
     zod "^3.24.2"
 
+"@salesforce/mcp-provider-dx-core@0.2.4":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-dx-core/-/mcp-provider-dx-core-0.2.4.tgz#f0a1ada31840dac3673291f175b953fca82c0815"
+  integrity sha512-3VSpu7YJXlXBTjxvNIkk9T7DWaN5qiwQvmRJBBAu+ZqOjOrGjoka/V3fr29LTnhNC93AsqnENmbpamoxVSSEiA==
+  dependencies:
+    "@modelcontextprotocol/sdk" "^1.16.0"
+    "@salesforce/agents" "^0.15.4"
+    "@salesforce/apex-node" "^8.2.1"
+    "@salesforce/core" "^8.18.0"
+    "@salesforce/kit" "^3.1.6"
+    "@salesforce/mcp-provider-api" "^0.2.2"
+    "@salesforce/source-deploy-retrieve" "^12.22.0"
+    "@salesforce/source-tracking" "^7.4.8"
+    "@salesforce/ts-types" "^2.0.11"
+    open "^10.1.2"
+    zod "^3.25.76"
+
 "@salesforce/mcp-provider-lwc-experts@0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-lwc-experts/-/mcp-provider-lwc-experts-0.1.1.tgz#948d04e6859f771eb1a0ed64a41a98031e39479c"
@@ -3204,6 +3267,18 @@
     "@modelcontextprotocol/sdk" "^1.9.0"
     "@salesforce/mcp-provider-api" "0.2.0"
     zod "^3.24.2"
+
+"@salesforce/mcp-provider-mobile-web@0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-mobile-web/-/mcp-provider-mobile-web-0.0.3.tgz#3161f75e7d3b92fca0984ae9f2115cc06cd7b121"
+  integrity sha512-88zWYWGfbnnqPaqZsltnJV1+Ma5cQRbrSb82MekWLrjwGENISa60RlXO3VrBTYyLY10tKlxbYjAMs2MoBUJc2Q==
+  dependencies:
+    "@modelcontextprotocol/sdk" "^1.17.3"
+    "@salesforce/eslint-plugin-lwc-graph-analyzer" "^1.0.0"
+    "@salesforce/mcp-provider-api" "^0.2.2"
+    dedent "^1.5.3"
+    eslint "^9.32.0"
+    zod "^3.23.8"
 
 "@salesforce/o11y-reporter@1.3.3":
   version "1.3.3"
@@ -6507,6 +6582,47 @@ eslint@8.57.1, eslint@^8.56.0, eslint@^8.57.1:
     optionator "^0.9.3"
     strip-ansi "^6.0.1"
     text-table "^0.2.0"
+
+eslint@^9.32.0:
+  version "9.36.0"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-9.36.0.tgz#9cc5cbbfb9c01070425d9bfed81b4e79a1c09088"
+  integrity sha512-hB4FIzXovouYzwzECDcUkJ4OcfOEkXTv2zRY6B9bkwjx/cprAq0uvm1nl7zvQ0/TsUk0zQiN4uPfJpB9m+rPMQ==
+  dependencies:
+    "@eslint-community/eslint-utils" "^4.8.0"
+    "@eslint-community/regexpp" "^4.12.1"
+    "@eslint/config-array" "^0.21.0"
+    "@eslint/config-helpers" "^0.3.1"
+    "@eslint/core" "^0.15.2"
+    "@eslint/eslintrc" "^3.3.1"
+    "@eslint/js" "9.36.0"
+    "@eslint/plugin-kit" "^0.3.5"
+    "@humanfs/node" "^0.16.6"
+    "@humanwhocodes/module-importer" "^1.0.1"
+    "@humanwhocodes/retry" "^0.4.2"
+    "@types/estree" "^1.0.6"
+    "@types/json-schema" "^7.0.15"
+    ajv "^6.12.4"
+    chalk "^4.0.0"
+    cross-spawn "^7.0.6"
+    debug "^4.3.2"
+    escape-string-regexp "^4.0.0"
+    eslint-scope "^8.4.0"
+    eslint-visitor-keys "^4.2.1"
+    espree "^10.4.0"
+    esquery "^1.5.0"
+    esutils "^2.0.2"
+    fast-deep-equal "^3.1.3"
+    file-entry-cache "^8.0.0"
+    find-up "^5.0.0"
+    glob-parent "^6.0.2"
+    ignore "^5.2.0"
+    imurmurhash "^0.1.4"
+    is-glob "^4.0.0"
+    json-stable-stringify-without-jsonify "^1.0.1"
+    lodash.merge "^4.6.2"
+    minimatch "^3.1.2"
+    natural-compare "^1.4.0"
+    optionator "^0.9.3"
 
 eslint@^9.35.0:
   version "9.35.0"
@@ -10908,7 +11024,16 @@ stop-iteration-iterator@^1.1.0:
     es-errors "^1.3.0"
     internal-slot "^1.1.0"
 
-"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+  dependencies:
+    emoji-regex "^8.0.0"
+    is-fullwidth-code-point "^3.0.0"
+    strip-ansi "^6.0.1"
+
+string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -10980,7 +11105,14 @@ stringify-entities@^4.0.0:
     character-entities-html4 "^2.0.0"
     character-entities-legacy "^3.0.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@6.0.1, strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
+  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+  dependencies:
+    ansi-regex "^5.0.1"
+
+strip-ansi@6.0.1, strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -11875,7 +12007,7 @@ workerpool@^6.5.1:
   resolved "https://registry.yarnpkg.com/workerpool/-/workerpool-6.5.1.tgz#060f73b39d0caf97c6db64da004cd01b4c099544"
   integrity sha512-Fs4dNYcsdpYSAfVxhnl1L5zTksjvOJxtC5hzMNl+1t9B8hTJTdKDyZ5ju7ztgPy+ft9tBFXoOlDNiOT9WUXZlA==
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -11888,6 +12020,15 @@ wrap-ansi@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-6.2.0.tgz#e9393ba07102e6c91a3b221478f0257cd2856e53"
   integrity sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==
+  dependencies:
+    ansi-styles "^4.0.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+
+wrap-ansi@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
+  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
   dependencies:
     ansi-styles "^4.0.0"
     string-width "^4.1.0"
