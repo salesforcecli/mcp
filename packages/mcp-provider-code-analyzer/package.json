@@ -20,7 +20,7 @@
     "@salesforce/code-analyzer-pmd-engine": "^0.30.0",
     "@salesforce/code-analyzer-regex-engine": "^0.27.0",
     "@salesforce/code-analyzer-retirejs-engine": "^0.26.0",
-    "@salesforce/mcp-provider-api": "^0.2.2",
+    "@salesforce/mcp-provider-api": "^0.3.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {

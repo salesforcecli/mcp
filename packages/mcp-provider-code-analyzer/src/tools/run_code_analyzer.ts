@@ -59,7 +59,7 @@ export class CodeAnalyzerRunMcpTool extends McpTool<InputArgsShape, OutputArgsSh
     }
 
     public getToolsets(): Toolset[] {
-        return [Toolset.OTHER];
+        return [Toolset.CODE_ANALYSIS];
     }
 
     public getName(): string {

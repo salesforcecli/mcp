@@ -161,7 +161,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Update main server dependency
-        if: ${{ steps.changelog.outputs.skipped == 'false' && steps.release.outputs.id != '' }}
+        if: ${{ steps.changelog.outputs.skipped == 'false' && steps.release.outputs.id != '' && matrix.package != 'mcp-provider-api' }}
         run: |
           # Get the published version
           PUBLISHED_VERSION="${{ steps.changelog.outputs.version }}"
