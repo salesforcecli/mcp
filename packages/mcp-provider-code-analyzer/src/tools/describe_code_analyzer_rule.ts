@@ -54,7 +54,7 @@ export class CodeAnalyzerDescribeRuleMcpTool extends McpTool<InputArgsShape, Out
     }
 
     public getToolsets(): Toolset[] {
-        return [Toolset.OTHER];
+        return [Toolset.CODE_ANALYSIS];
     }
 
     public getName(): string {

@@ -22,7 +22,7 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
     })
 
     it("When getToolsets is called, then 'other' is returned", () => {
-        expect(tool.getToolsets()).toEqual([Toolset.OTHER]);
+        expect(tool.getToolsets()).toEqual([Toolset.CODE_ANALYSIS]);
     });
 
     it("When getName is called, then tool name is returned", () => {
