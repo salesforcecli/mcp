@@ -1,0 +1,60 @@
+import { z } from "zod";
+import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
+import { fetchProjects } from "../getProjects.js";
+
+const inputSchema = z.object({
+  username: z.string().describe("Username of the DevOps Center org"),
+});
+type InputArgs = z.infer<typeof inputSchema>;
+type InputArgsShape = typeof inputSchema.shape;
+type OutputArgsShape = z.ZodRawShape;
+
+export class SfDevopsListProjects extends McpTool<InputArgsShape, OutputArgsShape> {
+  private readonly telemetryService: TelemetryService;
+
+  constructor(telemetryService: TelemetryService) {
+    super();
+    this.telemetryService = telemetryService;
+  }
+
+  public getReleaseState(): ReleaseState {
+    return ReleaseState.NON_GA;
+  }
+
+  public getToolsets(): Toolset[] {
+    return [Toolset.DEVOPS];
+  }
+
+  public getName(): string {
+    return "list_projects";
+  }
+
+  public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
+    return {
+      title: "List DevOps Projects",
+      description: `**MANDATORY:** If the DevOps Center org is not given, use the 'sf-list-all-orgs' tool to list all orgs. 
+      The list will indicate which org is DevOps Center, or Sandbox if possible. If these details are not provided in the list, 
+      ask the user to specify which org is DevOps Center org. Only proceed after the user has selected the DevOps Center org.
+
+**MANDATORY:** Before using this tool, always confirm the selected org is the DevOps Center org. If not, prompt the user to select a DevOps Center org. This tool must NOT be used for any non DevOps Center or Sandbox orgs.
+
+Lists DevOps Center Projects available in the specified org using SOQL on DevopsProject.
+
+**Output:**
+An array of project records with fields such as Id, Name, Description.`,
+      inputSchema: inputSchema.shape,
+      outputSchema: undefined,
+    };
+  }
+
+  public async exec(input: InputArgs): Promise<CallToolResult> {
+    const projects = await fetchProjects(input.username);
+    return {
+      content: [{
+        type: "text",
+        text: JSON.stringify(projects, null, 2)
+      }]
+    };
+  }
+}
