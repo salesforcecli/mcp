@@ -14,7 +14,7 @@ describe("Tests for DescribeRuleTool", () => {
         expect(tool.getReleaseState()).toEqual(ReleaseState.NON_GA);
     })
 
-    it("When getToolsets is called, then 'other' is returned", () => {
+    it("When getToolsets is called, then 'code-analysis' is returned", () => {
         expect(tool.getToolsets()).toEqual([Toolset.CODE_ANALYSIS]);
     });
 
