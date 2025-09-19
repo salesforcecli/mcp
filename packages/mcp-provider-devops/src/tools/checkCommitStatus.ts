@@ -21,7 +21,7 @@ export class CheckCommitStatus extends McpTool<InputArgsShape, OutputArgsShape> 
   }
 
   public getReleaseState(): ReleaseState {
-    return ReleaseState.GA;
+    return ReleaseState.NON_GA;
   }
 
   public getToolsets(): Toolset[] {

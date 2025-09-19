@@ -25,7 +25,7 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
   }
 
   public getReleaseState(): ReleaseState {
-    return ReleaseState.GA;
+    return ReleaseState.NON_GA;
   }
 
   public getToolsets(): Toolset[] {

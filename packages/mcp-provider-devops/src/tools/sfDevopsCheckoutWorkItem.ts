@@ -23,7 +23,7 @@ export class SfDevopsCheckoutWorkItem extends McpTool<InputArgsShape, OutputArgs
   }
 
   public getReleaseState(): ReleaseState {
-    return ReleaseState.GA;
+    return ReleaseState.NON_GA;
   }
 
   public getToolsets(): Toolset[] {

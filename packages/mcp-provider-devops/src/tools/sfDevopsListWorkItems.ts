@@ -23,7 +23,7 @@ export class SfDevopsListWorkItems extends McpTool<InputArgsShape, OutputArgsSha
   }
 
   public getReleaseState(): ReleaseState {
-    return ReleaseState.GA;
+    return ReleaseState.NON_GA;
   }
 
   public getToolsets(): Toolset[] {

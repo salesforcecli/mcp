@@ -21,7 +21,7 @@ export class SfDevopsPromoteWorkItem extends McpTool<InputArgsShape, OutputArgsS
   }
 
   public getReleaseState(): ReleaseState {
-    return ReleaseState.GA;
+    return ReleaseState.NON_GA;
   }
 
   public getToolsets(): Toolset[] {
