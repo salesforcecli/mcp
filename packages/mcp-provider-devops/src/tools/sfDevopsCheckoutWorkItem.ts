@@ -3,6 +3,7 @@ import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
 import { checkoutWorkitemBranch } from "../checkoutWorkitemBranch.js";
 import { fetchWorkItemByName } from "../getWorkItems.js";
+import { normalizeAndValidateRepoPath } from "../shared/pathUtils.js";
 
 const inputSchema = z.object({
   username: z.string().describe("The username of the DevOps Center org."),
@@ -43,6 +44,15 @@ export class SfDevopsCheckoutWorkItem extends McpTool<InputArgsShape, OutputArgs
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
+    let safeLocalPath: string | undefined = undefined;
+    try {
+      safeLocalPath = input.localPath ? normalizeAndValidateRepoPath(input.localPath) : undefined;
+    } catch (e: any) {
+      return {
+        content: [{ type: "text", text: `Invalid localPath: ${e?.message || e}` }]
+      };
+    }
+
     const workItem = await fetchWorkItemByName(input.username, input.workItemName);
     
     if (!workItem?.SourceCodeRepository?.repoUrl || !workItem?.WorkItemBranch) {
@@ -58,7 +68,7 @@ export class SfDevopsCheckoutWorkItem extends McpTool<InputArgsShape, OutputArgs
     const result = await checkoutWorkitemBranch({
       repoUrl: workItem.SourceCodeRepository.repoUrl,
       branchName: workItem.WorkItemBranch,
-      localPath: input.localPath
+      localPath: safeLocalPath
     });
     
     return {

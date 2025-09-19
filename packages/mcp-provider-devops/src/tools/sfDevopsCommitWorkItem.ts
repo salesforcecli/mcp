@@ -3,6 +3,7 @@ import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
 import { commitWorkItem } from "../commitWorkItem.js";
 import { fetchWorkItemByName } from "../getWorkItems.js";
+import { normalizeAndValidateRepoPath } from "../shared/pathUtils.js";
 
 const inputSchema = z.object({
   doceHubUsername: z.string().describe("DevOps Center org username (required; list orgs and select if unknown)"),
@@ -46,6 +47,8 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
     try {
+      const safeRepoPath = input.repoPath ? normalizeAndValidateRepoPath(input.repoPath) : undefined;
+
       const workItem = await fetchWorkItemByName(input.doceHubUsername, input.workItemName);
       
       if (!workItem) {
@@ -84,7 +87,7 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
         workItem: workItem,
         requestId: requestId,
         commitMessage: input.commitMessage,
-        repoPath: input.repoPath
+        repoPath: safeRepoPath
       });
       
       return {

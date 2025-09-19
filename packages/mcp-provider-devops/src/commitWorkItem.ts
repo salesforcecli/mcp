@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { getConnection, getRequiredOrgs } from './shared/auth.js';
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import path from 'path';
+import fs from 'fs';
+import { normalizeAndValidateRepoPath } from './shared/pathUtils.js';
 
 interface Change {
     fullName: string;
@@ -47,11 +49,14 @@ export async function commitWorkItem({
     const sandboxToken = sandboxConnection.accessToken;
     const sandboxInstanceUrl = sandboxConnection.instanceUrl;
 
-    const workingDir = repoPath && repoPath.trim().length > 0 ? repoPath : process.cwd();
+    const workingDir = normalizeAndValidateRepoPath(repoPath);
     let deployJson: any;
     try {
-        const cmd = `sf project deploy report --use-most-recent --target-org ${sandbox.username} --json | cat`;
-        const out = execSync(cmd, { cwd: workingDir, encoding: 'utf8' });
+        const out = execFileSync(
+            'sf',
+            ['project', 'deploy', 'report', '--use-most-recent', '--target-org', sandbox.username, '--json'],
+            { cwd: workingDir, encoding: 'utf8' }
+        );
         deployJson = JSON.parse(out);
     } catch (e: any) {
         throw new Error(`Deployment failed or output unparsable. Ensure repoPath is a valid SFDX project and CLI is authenticated. Details: ${e?.message || e}`);
@@ -78,11 +83,11 @@ export async function commitWorkItem({
     for (const f of files) addEntry(f?.type, f?.fullName, f?.state, f?.filePath);
     for (const s of successes) addEntry(s?.componentType, s?.fullName, s?.created ? 'Created' : (s?.changed ? 'Changed' : 'Unchanged'), undefined);
 
-    const deletedRel = execSync(`git -C "${workingDir}" ls-files -d`, { encoding: 'utf8' })
+    const deletedRel = execFileSync('git', ['ls-files', '-d'], { cwd: workingDir, encoding: 'utf8' })
         .split('\n').map(l => l.trim()).filter(Boolean);
-    const modifiedRel = execSync(`git -C "${workingDir}" ls-files -m`, { encoding: 'utf8' })
+    const modifiedRel = execFileSync('git', ['ls-files', '-m'], { cwd: workingDir, encoding: 'utf8' })
         .split('\n').map(l => l.trim()).filter(Boolean);
-    const untrackedRel = execSync(`git -C "${workingDir}" ls-files --others --exclude-standard`, { encoding: 'utf8' })
+    const untrackedRel = execFileSync('git', ['ls-files', '--others', '--exclude-standard'], { cwd: workingDir, encoding: 'utf8' })
         .split('\n').map(l => l.trim()).filter(Boolean);
 
     const deletedAbs = new Set<string>(deletedRel.map(rel => path.resolve(workingDir, rel)));
