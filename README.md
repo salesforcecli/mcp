@@ -293,19 +293,19 @@ Includes these tools:
 
 Includes these tools, which aren't yet generally available:
 
-- `sf-mobile-web-app-review` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC App Review Service, offering expert guidance for implementing app review features in Lightning Web Components.
-- `sf-mobile-web-ar-space-capture` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC AR Space Capture, offering expert guidance for implementing AR space capture features in Lightning Web Components.
-- `sf-mobile-web-barcode-scanner` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Barcode Scanner, offering expert guidance for implementing barcode scanning features in Lightning Web Components.
-- `sf-mobile-web-biometrics` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Biometrics Service, offering expert guidance for implementing biometric authentication features in Lightning Web Components.
-- `sf-mobile-web-calendar` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Calendar Service, offering expert guidance for implementing calendar integration features in Lightning Web Components.
-- `sf-mobile-web-contacts` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Contacts Service, offering expert guidance for implementing contacts management features in Lightning Web Components.
-- `sf-mobile-web-document-scanner` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Document Scanner, offering expert guidance for implementing document scanning features in Lightning Web Components.
-- `sf-mobile-web-geofencing` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Geofencing Service, offering expert guidance for implementing geofencing features in Lightning Web Components.
-- `sf-mobile-web-location` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Location Service, offering expert guidance for implementing location services in Lightning Web Components.
-- `sf-mobile-web-nfc` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC NFC Service, offering expert guidance for implementing NFC features in Lightning Web Components.
-- `sf-mobile-web-payments` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Payments Service, offering expert guidance for implementing payment processing features in Lightning Web Components.
-- `sf-mobile-web-offline-analysis` - (NON-GA) Analyzes Lightning Web Components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
-- `sf-mobile-web-offline-guidance` - (NON-GA) Provides structured review instructions to detect and remediate mobile offline code violations in Lightning Web Components for Salesforce Mobile Apps.
+- `create_mobile_lwc_app_review` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC App Review Service, offering expert guidance for implementing app review features in Lightning Web Components.
+- `create_mobile_lwc_ar_space_capture` - (NON-GA) Provides TypeScript API documentation for Salesforce L    WC AR Space Capture, offering expert guidance for implementing AR space capture features in Lightning Web Components.
+- `create_mobile_lwc_barcode_scanner` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Barcode Scanner, offering expert guidance for implementing barcode scanning features in Lightning Web Components.
+- `create_mobile_lwc_biometrics` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Biometrics Service, offering expert guidance for implementing biometric authentication features in Lightning Web Components.
+- `create_mobile_lwc_calendar` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Calendar Service, offering expert guidance for implementing calendar integration features in Lightning Web Components.
+- `create_mobile_lwc_contacts` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Contacts Service, offering expert guidance for implementing contacts management features in Lightning Web Components.
+- `create_mobile_lwc_document_scanner` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Document Scanner, offering expert guidance for implementing document scanning features in Lightning Web Components.
+- `create_mobile_lwc_geofencing` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Geofencing Service, offering expert guidance for implementing geofencing features in Lightning Web Components.
+- `create_mobile_lwc_location` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Location Service, offering expert guidance for implementing location services in Lightning Web Components.
+- `create_mobile_lwc_nfc` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC NFC Service, offering expert guidance for implementing NFC features in Lightning Web Components.
+- `create_mobile_lwc_payments` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Payments Service, offering expert guidance for implementing payment processing features in Lightning Web Components.
+- `get_mobile_lwc_offline_analysis` - (NON-GA) Analyzes Lightning Web Components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
+- `get_mobile_lwc_offline_guidance` - (NON-GA) Provides structured review instructions to detect and remediate mobile offline code violations in Lightning Web Components for Salesforce Mobile Apps.
 
 **NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
 
@@ -313,11 +313,11 @@ Includes these tools, which aren't yet generally available:
 
 Includes these essential mobile tools, which aren't yet generally available:
 
-- `sf-mobile-web-barcode-scanner` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Barcode Scanner, offering expert guidance for implementing barcode scanning features in Lightning Web Components.
-- `sf-mobile-web-biometrics` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Biometrics Service, offering expert guidance for implementing biometric authentication features in Lightning Web Components.
-- `sf-mobile-web-location` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Location Service, offering expert guidance for implementing location services in Lightning Web Components.
-- `sf-mobile-web-offline-analysis` - (NON-GA) Analyzes Lightning Web Components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
-- `sf-mobile-web-offline-guidance` - (NON-GA) Provides structured review instructions to detect and remediate mobile offline code violations in Lightning Web Components for Salesforce Mobile Apps.
+- `create_mobile_lwc_barcode_scanner` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Barcode Scanner, offering expert guidance for implementing barcode scanning features in Lightning Web Components.
+- `create_mobile_lwc_biometrics` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Biometrics Service, offering expert guidance for implementing biometric authentication features in Lightning Web Components.
+- `create_mobile_lwc_location` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Location Service, offering expert guidance for implementing location services in Lightning Web Components.
+- `get_mobile_lwc_offline_analysis` - (NON-GA) Analyzes Lightning Web Components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
+- `get_mobile_lwc_offline_guidance` - (NON-GA) Provides structured review instructions to detect and remediate mobile offline code violations in Lightning Web Components for Salesforce Mobile Apps.
 
 **NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
 

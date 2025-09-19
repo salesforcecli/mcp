@@ -47,7 +47,7 @@ export class OfflineGuidanceTool extends McpTool<InputArgsShape, OutputArgsShape
   }
 
   public getName(): string {
-    return 'sf-mobile-web-offline-guidance';
+    return 'get_mobile_lwc_offline_guidance';
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {

@@ -66,7 +66,7 @@ export class OfflineAnalysisTool extends McpTool<InputArgsShape, OutputArgsShape
   }
 
   public getName(): string {
-    return 'sf-mobile-web-offline-analysis';
+    return 'get_mobile_lwc_offline_analysis';
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {

@@ -15,7 +15,9 @@
  */
 
 import { McpToolConfig, ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
-import { OfflineAnalysisTool } from '../../src/tools/offline-analysis/sf-mobile-web-offline-analysis.js';
+import { OfflineAnalysisTool } from '../../src/tools/offline-analysis/get_mobile_lwc_offline_analysis.js';
+import { ExpertsCodeAnalysisIssuesType } from '../../src/schemas/analysisSchema.js';
+import { LwcCodeType } from '../../src/schemas/lwcSchema.js';
 
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
@@ -34,8 +36,8 @@ describe('Tests for OfflineAnalysisTool', () => {
     expect(tool.getToolsets()).toEqual([Toolset.MOBILE, Toolset.MOBILE_CORE]);
   });
 
-  it("When getName is called, then 'sf-mobile-web-offline-analysis' is returned", () => {
-    expect(tool.getName()).toEqual('sf-mobile-web-offline-analysis');
+  it("When getName is called, then 'get_mobile_lwc_offline_analysis' is returned", () => {
+    expect(tool.getName()).toEqual('get_mobile_lwc_offline_analysis');
   });
 
   it('When getConfig is called, then the correct configuration is returned', () => {
@@ -85,7 +87,7 @@ describe('Tests for OfflineAnalysisTool', () => {
       expect(result).toHaveProperty('structuredContent');
       expect(result.structuredContent).toBeDefined();
       expect(result.structuredContent).toHaveProperty('analysisResults');
-      expect(Array.isArray((result.structuredContent as any).analysisResults)).toBe(true);
+      expect(Array.isArray((result.structuredContent as ExpertsCodeAnalysisIssuesType).analysisResults)).toBe(true);
     });
   });
 
@@ -94,7 +96,7 @@ describe('Tests for OfflineAnalysisTool', () => {
 
     beforeEach(async () => {
       // Simulate an error by passing invalid input
-      result = await tool.exec(null as any);
+      result = await tool.exec({} as LwcCodeType);
     });
 
     it('... then an error result is returned', () => {
@@ -183,22 +185,26 @@ describe('Tests for OfflineAnalysisTool', () => {
     const testCode = 'line1\nline2\nline3\nline4\nline5';
 
     it('... then the correct code snippet is extracted for single line', () => {
-      const result = (tool as any).extractCodeSnippet(testCode, 2, 2);
+      // @ts-expect-error - Testing private method
+      const result = tool.extractCodeSnippet(testCode, 2, 2);
       expect(result).toBe('line2');
     });
 
     it('... then the correct code snippet is extracted for multiple lines', () => {
-      const result = (tool as any).extractCodeSnippet(testCode, 2, 4);
+      // @ts-expect-error - Testing private method
+      const result = tool.extractCodeSnippet(testCode, 2, 4);
       expect(result).toBe('line2\nline3\nline4');
     });
 
     it('... then the correct code snippet is extracted for first line', () => {
-      const result = (tool as any).extractCodeSnippet(testCode, 1, 1);
+      // @ts-expect-error - Testing private method
+      const result = tool.extractCodeSnippet(testCode, 1, 1);
       expect(result).toBe('line1');
     });
 
     it('... then the correct code snippet is extracted for last line', () => {
-      const result = (tool as any).extractCodeSnippet(testCode, 5, 5);
+      // @ts-expect-error - Testing private method
+      const result = tool.extractCodeSnippet(testCode, 5, 5);
       expect(result).toBe('line5');
     });
   });

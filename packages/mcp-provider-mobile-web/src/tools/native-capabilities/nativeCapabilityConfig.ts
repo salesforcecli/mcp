@@ -27,7 +27,7 @@ export const AppReviewConfig: NativeCapabilityConfig = {
   description:
     'The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC App Review Service, laying the foundation for understanding mobile app review and offering expert-level guidance for implementing the App Review feature in a Lightning Web Component (LWC).',
   title: 'Salesforce Mobile App Review LWC Native Capability',
-  toolId: 'sf-mobile-web-app-review',
+  toolId: 'create_mobile_lwc_app_review',
   typeDefinitionPath: 'appReview/appReviewService.d.ts',
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages app review facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the app review API of the mobile device, within the LWC.',
@@ -39,7 +39,7 @@ const ArSpaceCaptureConfig: NativeCapabilityConfig = {
   description:
     'The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC AR Space Capture, laying the foundation for understanding mobile AR space capture and offering expert-level guidance for implementing the AR Space Capture feature in a Lightning Web Component (LWC).',
   title: 'Salesforce Mobile AR Space Capture LWC Native Capability',
-  toolId: 'sf-mobile-web-ar-space-capture',
+  toolId: 'create_mobile_lwc_ar_space_capture',
   typeDefinitionPath: 'arSpaceCapture/arSpaceCapture.d.ts',
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages AR Space Capture facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the AR Space Capture API of the mobile device, within the LWC.',
@@ -51,7 +51,7 @@ const BarcodeScannerConfig: NativeCapabilityConfig = {
   description:
     'The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Barcode Scanner, laying the foundation for understanding mobile barcode scanner and offering expert-level guidance for implementing the Barcode Scanner feature in a Lightning Web Component (LWC).',
   title: 'Salesforce Mobile Barcode Scanner LWC Native Capability',
-  toolId: 'sf-mobile-web-barcode-scanner',
+  toolId: 'create_mobile_lwc_barcode_scanner',
   typeDefinitionPath: 'barcodeScanner/barcodeScanner.d.ts',
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages barcode scanning facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the barcode scanning API of the mobile device, within the LWC.',
@@ -63,7 +63,7 @@ const BiometricsConfig: NativeCapabilityConfig = {
   description:
     'The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Biometrics Service, laying the foundation for understanding mobile biometrics and offering expert-level guidance for implementing the Biometrics feature in a Lightning Web Component (LWC).',
   title: 'Salesforce Mobile Biometrics Service LWC Native Capability',
-  toolId: 'sf-mobile-web-biometrics',
+  toolId: 'create_mobile_lwc_biometrics',
   typeDefinitionPath: 'biometrics/biometricsService.d.ts',
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages biometrics scanning facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the face recognition and the finger printing scanner of the mobile device to authorize the user, within the LWC.',
@@ -75,7 +75,7 @@ const CalendarConfig: NativeCapabilityConfig = {
   description:
     'The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Calendar Service, laying the foundation for understanding mobile calendar and offering expert-level guidance for implementing the Calendar feature in a Lightning Web Component (LWC).',
   title: 'Salesforce Mobile Calendar Service LWC Native Capability',
-  toolId: 'sf-mobile-web-calendar',
+  toolId: 'create_mobile_lwc_calendar',
   typeDefinitionPath: 'calendar/calendarService.d.ts',
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages calendar facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the calendar API of the mobile device, within the LWC.',
@@ -87,7 +87,7 @@ const ContactsConfig: NativeCapabilityConfig = {
   description:
     'The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Contacts Service, laying the foundation for understanding mobile contacts and offering expert-level guidance for implementing the Contacts feature in a Lightning Web Component (LWC).',
   title: 'Salesforce Mobile Contacts Service LWC Native Capability',
-  toolId: 'sf-mobile-web-contacts',
+  toolId: 'create_mobile_lwc_contacts',
   typeDefinitionPath: 'contacts/contactsService.d.ts',
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages contacts facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the contacts API of the mobile device, within the LWC.',
@@ -99,7 +99,7 @@ const DocumentScannerConfig: NativeCapabilityConfig = {
   description:
     'The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Document Scanner, laying the foundation for understanding mobile document scanner and offering expert-level guidance for implementing the Document Scanner feature in a Lightning Web Component (LWC).',
   title: 'Salesforce Mobile Document Scanner LWC Native Capability',
-  toolId: 'sf-mobile-web-document-scanner',
+  toolId: 'create_mobile_lwc_document_scanner',
   typeDefinitionPath: 'documentScanner/documentScanner.d.ts',
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages document scanning facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the document scanner API of the mobile device, within the LWC.',
@@ -111,7 +111,7 @@ const GeofencingConfig: NativeCapabilityConfig = {
   description:
     'The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Geofencing Service, laying the foundation for understanding mobile geofencing and offering expert-level guidance for implementing the Geofencing feature in a Lightning Web Component (LWC).',
   title: 'Salesforce Mobile Geofencing Service LWC Native Capability',
-  toolId: 'sf-mobile-web-geofencing',
+  toolId: 'create_mobile_lwc_geofencing',
   typeDefinitionPath: 'geofencing/geofencingService.d.ts',
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages geofencing facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the geofencing API of the mobile device, within the LWC.',
@@ -123,7 +123,7 @@ const LocationConfig: NativeCapabilityConfig = {
   description:
     'The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Location Service, laying the foundation for understanding mobile location and offering expert-level guidance for implementing the Location feature in a Lightning Web Component (LWC).',
   title: 'Salesforce Mobile Location Services LWC Native Capability',
-  toolId: 'sf-mobile-web-location',
+  toolId: 'create_mobile_lwc_location',
   typeDefinitionPath: 'location/locationService.d.ts',
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages location facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the location API of the mobile device, within the LWC.',
@@ -135,7 +135,7 @@ const NfcConfig: NativeCapabilityConfig = {
   description:
     'The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC NFC Service, laying the foundation for understanding mobile NFC and offering expert-level guidance for implementing the NFC feature in a Lightning Web Component (LWC).',
   title: 'Salesforce Mobile NFC Service LWC Native Capability',
-  toolId: 'sf-mobile-web-nfc',
+  toolId: 'create_mobile_lwc_nfc',
   typeDefinitionPath: 'nfc/nfcService.d.ts',
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages NFC facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the NFC API of the mobile device, within the LWC.',
@@ -147,7 +147,7 @@ const PaymentsConfig: NativeCapabilityConfig = {
   description:
     'The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Payments Service, laying the foundation for understanding mobile payments and offering expert-level guidance for implementing the Payments feature in a Lightning Web Component (LWC).',
   title: 'Salesforce Mobile Payments Service LWC Native Capability',
-  toolId: 'sf-mobile-web-payments',
+  toolId: 'create_mobile_lwc_payments',
   typeDefinitionPath: 'payments/paymentsService.d.ts',
   groundingDescription:
     'The following content provides grounding information for generating a Salesforce LWC that leverages payments facilities on mobile devices. Specifically, this context will cover the API types and methods available to leverage the payments API of the mobile device, within the LWC.',
