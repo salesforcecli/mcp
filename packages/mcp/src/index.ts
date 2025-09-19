@@ -85,12 +85,21 @@ You can also use special values to control access to orgs:
     }),
     toolsets: Flags.option({
       options: ['all', ...TOOLSETS] as const,
-      char: 't',
-      summary: 'Toolset to enable',
+      summary: 'Toolset(s) to enable. Set to "all" to enable every toolset',
       multiple: true,
       delimiter: ',',
-      exclusive: ['dynamic-toolsets'],
+      exclusive: ['dynamic-tools'],
     })(),
+    // It would be nice if we could get these as an Flags.option
+    // Since the tools need `services` passed in I am not sure we
+    // can get the list of tools this early. We could build a json
+    // manifest (pre-commit) that could be read from for tool names
+    tools: Flags.string({
+      summary: 'Tool(s) to enable',
+      multiple: true,
+      delimiter: ',',
+      exclusive: ['dynamic-tools'],
+    }),
     version: Flags.version(),
     'no-telemetry': Flags.boolean({
       summary: 'Disable telemetry',
@@ -111,19 +120,23 @@ You can also use special values to control access to orgs:
   public static examples = [
     {
       description: 'Start the server with all toolsets enabled and access only to the default org in the project',
-      command: '<%= config.bin %> --orgs DEFAULT_TARGET_ORG',
+      command: '<%= config.bin %> --toolsets all --orgs DEFAULT_TARGET_ORG',
     },
     {
-      description: 'Allow access to the default org and "my-alias" one with only "data" tools',
+      description: 'Allow access to the default target org and "my-alias" with only the "data" toolset',
       command: '<%= config.bin %> --orgs DEFAULT_TARGET_DEV_HUB,my-alias --toolsets data',
     },
     {
       description: 'Allow access to 3 specific orgs and enable all toolsets',
-      command: '<%= config.bin %> --orgs test-org@example.com,my-dev-hub,my-alias',
+      command: '<%= config.bin %> --toolsets all --orgs test-org@example.com,my-dev-hub,my-alias',
     },
     {
-      description: 'Allow tools that are not generally available (GA) to be registered with the server',
-      command: '<%= config.bin %> --orgs DEFAULT_TARGET_ORG --allow-non-ga-tools',
+      description: 'Start the server with the "data" toolset and also the "create_scratch_org" tool',
+      command: '<%= config.bin %> --orgs DEFAULT_TARGET_ORG --toolsets data --tools create_scratch_org',
+    },
+    {
+      description: 'Allow tools that are not generally available (NON-GA) to be registered with the server',
+      command: '<%= config.bin %> --toolsets all --orgs DEFAULT_TARGET_ORG --allow-non-ga-tools',
     },
   ];
 
@@ -174,7 +187,8 @@ You can also use special values to control access to orgs:
     });
 
     await registerToolsets(
-      flags.toolsets ?? ['all'],
+      flags.toolsets ?? [],
+      flags.tools ?? [],
       flags['dynamic-tools'] ?? false,
       flags['allow-non-ga-tools'] ?? false,
       server,
