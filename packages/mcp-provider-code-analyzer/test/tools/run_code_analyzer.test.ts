@@ -21,8 +21,8 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
         expect(tool.getReleaseState()).toEqual(ReleaseState.NON_GA);
     })
 
-    it("When getToolsets is called, then 'other' is returned", () => {
-        expect(tool.getToolsets()).toEqual([Toolset.OTHER]);
+    it("When getToolsets is called, then 'code-analysis' is returned", () => {
+        expect(tool.getToolsets()).toEqual([Toolset.CODE_ANALYSIS]);
     });
 
     it("When getName is called, then tool name is returned", () => {

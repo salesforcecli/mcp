@@ -16,7 +16,7 @@
     "@modelcontextprotocol/sdk": "^1.17.3",
     "eslint": "^9.35.0",
     "dedent": "^1.5.3",
-    "@salesforce/mcp-provider-api": "^0.2.2",
+    "@salesforce/mcp-provider-api": "^0.3.0",
     "@salesforce/eslint-plugin-lwc-graph-analyzer": "^1.0.0",
     "zod": "^3.25.76"
   },
