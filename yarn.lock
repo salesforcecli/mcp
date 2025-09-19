@@ -2203,24 +2203,6 @@
     zod "^3.23.8"
     zod-to-json-schema "^3.24.1"
 
-"@modelcontextprotocol/sdk@^1.16.0":
-  version "1.18.1"
-  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.18.1.tgz#cdc7e0809319b0466599b93fbf655dafa9f49ceb"
-  integrity sha512-d//GE8/Yh7aC3e7p+kZG8JqqEAwwDUmAfvH1quogtbk+ksS6E0RR6toKKESPYYZVre0meqkJb27zb+dhqE9Sgw==
-  dependencies:
-    ajv "^6.12.6"
-    content-type "^1.0.5"
-    cors "^2.8.5"
-    cross-spawn "^7.0.5"
-    eventsource "^3.0.2"
-    eventsource-parser "^3.0.0"
-    express "^5.0.1"
-    express-rate-limit "^7.5.0"
-    pkce-challenge "^5.0.0"
-    raw-body "^3.0.0"
-    zod "^3.23.8"
-    zod-to-json-schema "^3.24.1"
-
 "@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":
   version "5.1.1-v1"
   resolved "https://registry.yarnpkg.com/@nicolo-ribaudo/eslint-scope-5-internals/-/eslint-scope-5-internals-5.1.1-v1.tgz#dbf733a965ca47b1973177dc0bb6c889edcfb129"
@@ -3082,7 +3064,7 @@
     node-stream-zip "^1.15.0"
     retire "^5.3.0"
 
-"@salesforce/core@^8", "@salesforce/core@^8.10.3", "@salesforce/core@^8.18.0", "@salesforce/core@^8.22.0", "@salesforce/core@^8.23.0", "@salesforce/core@^8.23.1", "@salesforce/core@^8.8.0":
+"@salesforce/core@^8", "@salesforce/core@^8.10.3", "@salesforce/core@^8.22.0", "@salesforce/core@^8.23.0", "@salesforce/core@^8.23.1", "@salesforce/core@^8.8.0":
   version "8.23.1"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.23.1.tgz#89e04518d6d4033ef6a248380eb952328068797c"
   integrity sha512-/mQMu6g0gmkKQsl+G93VkkU+yrLEjnBzdUu0sPlS0WY5jM4M9sxg97LmRXa6dchECU3c/ugamsXaP6j6QmEfsQ==
@@ -3241,23 +3223,6 @@
     commander "^13.1.0"
     yaml "^2.6.0"
     zod "^3.24.2"
-
-"@salesforce/mcp-provider-dx-core@0.2.4":
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-dx-core/-/mcp-provider-dx-core-0.2.4.tgz#f0a1ada31840dac3673291f175b953fca82c0815"
-  integrity sha512-3VSpu7YJXlXBTjxvNIkk9T7DWaN5qiwQvmRJBBAu+ZqOjOrGjoka/V3fr29LTnhNC93AsqnENmbpamoxVSSEiA==
-  dependencies:
-    "@modelcontextprotocol/sdk" "^1.16.0"
-    "@salesforce/agents" "^0.15.4"
-    "@salesforce/apex-node" "^8.2.1"
-    "@salesforce/core" "^8.18.0"
-    "@salesforce/kit" "^3.1.6"
-    "@salesforce/mcp-provider-api" "^0.2.2"
-    "@salesforce/source-deploy-retrieve" "^12.22.0"
-    "@salesforce/source-tracking" "^7.4.8"
-    "@salesforce/ts-types" "^2.0.11"
-    open "^10.1.2"
-    zod "^3.25.76"
 
 "@salesforce/mcp-provider-lwc-experts@0.1.1":
   version "0.1.1"
@@ -6539,7 +6504,7 @@ eslint-visitor-keys@^4.2.0, eslint-visitor-keys@^4.2.1:
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-4.2.1.tgz#4cfea60fe7dd0ad8e816e1ed026c1d5251b512c1"
   integrity sha512-Uhdk5sfqcee/9H/rCOJikYz67o0a2Tw2hGRPOG2Y1R2dg7brRe1uG0yaNQDHu+TO/uQPF/5eCapvYSmHUjt7JQ==
 
-eslint@8.57.1, eslint@^8.56.0, eslint@^8.57.1:
+eslint@8.57.1, eslint@^8.56.0:
   version "8.57.1"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-8.57.1.tgz#7df109654aba7e3bbe5c8eae533c5e461d3c6ca9"
   integrity sha512-ypowyDxpVSYpkXr9WPv2PAZCtNip1Mv5KTW0SCurXv/9iOpcrH9PaqUElksqEB6pChqHGDRCFTyrZlGhnLNGiA==
