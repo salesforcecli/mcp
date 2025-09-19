@@ -52,7 +52,7 @@ export class DeleteOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
   }
 
   public getName(): string {
-    return 'sf-delete-org';
+    return 'delete_org';
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {

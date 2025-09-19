@@ -97,7 +97,7 @@ export class DeployMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
   }
 
   public getName(): string {
-    return 'sf-deploy-metadata';
+    return 'deploy_metadata';
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
@@ -134,7 +134,7 @@ Deploy X to my org and run A,B and C apex tests.`,
 
     if (!input.usernameOrAlias)
       return textResponse(
-        'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
+        'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool',
         true
       );
 
@@ -188,7 +188,7 @@ Deploy X to my org and run A,B and C apex tests.`,
       if (err.message.includes('timed out')) {
         return textResponse(
           `
-YOU MUST inform the user that the deploy timed out and if they want to resume the deploy, they can use the #sf-resume tool
+YOU MUST inform the user that the deploy timed out and if they want to resume the deploy, they can use the #resume_tool_operation tool
 and ${jobId} for the jobId parameter.`,
           true
         );

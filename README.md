@@ -248,18 +248,18 @@ This example shows how to enable the `orgs` and `metadata` toolsets, as well as 
 
 Includes these tools:
 
-- `sf-get-username` - Determines the appropriate username or alias for Salesforce operations, handling both default orgs and Dev Hubs.
-- `sf-resume` - Resumes a long-running operation that wasn't completed by another tool.
+- `get_username` - Determines the appropriate username or alias for Salesforce operations, handling both default orgs and Dev Hubs.
+- `resume_tool_operation` - Resumes a long-running operation that wasn't completed by another tool.
 
 #### Orgs Toolset
 
 Includes these tools:
 
-- `sf-list-all-orgs` - Lists all configured Salesforce orgs, with optional connection status checking.
-- `sf-create-org-snapshot` - (NON-GA) Create a scratch org snapshot. 
-- `sf-create-scratch-org` - (NON-GA) Create a scratch org. 
-- `sf-delete-org` - (NON-GA) Delete a locally-authorized Salesforce scratch org or sandbox.
-- `sf-org-open` - (NON-GA) Open an org in a browser. 
+- `list_all_orgs` - Lists all configured Salesforce orgs, with optional connection status checking.
+- `create_org_snapshot` - (NON-GA) Create a scratch org snapshot. 
+- `create_scratch_org` - (NON-GA) Create a scratch org. 
+- `delete_org` - (NON-GA) Delete a locally-authorized Salesforce scratch org or sandbox.
+- `org_open` - (NON-GA) Open an org in a browser. 
 
 **NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
 
@@ -267,27 +267,27 @@ Includes these tools:
 
 Includes this tool:
 
-- `sf-query-org` - Runs a SOQL query against a Salesforce org.
+- `run_soql_query` - Runs a SOQL query against a Salesforce org.
 
 #### Users Toolset
 
 Includes this tool:
 
-- `sf-assign-permission-set` - Assigns a permission set to the user or on behalf of another user.
+- `assign_permission_set` - Assigns a permission set to the user or on behalf of another user.
 
 #### Metadata Toolset
 
 Includes these tools:
 
-- `sf-deploy-metadata` - Deploys metadata from your DX project to an org.
-- `sf-retrieve-metadata` - Retrieves metadata from your org to your DX project.
+- `deploy_metadata` - Deploys metadata from your DX project to an org.
+- `retrieve_metadata` - Retrieves metadata from your org to your DX project.
 
 #### Testing Toolset
 
 Includes these tools:
 
-- `sf-test-agents` - Executes agent tests in your org.
-- `sf-test-apex` - Executes apex tests in your org.
+- `run_agent_test` - Executes agent tests in your org.
+- `run_apex_test` - Executes apex tests in your org.
 
 #### Mobile Toolset
 
@@ -321,12 +321,12 @@ Includes these essential mobile tools, which aren't yet generally available:
 
 **NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
 
-#### Other Toolset
+#### Code-Analyzer Toolset
 
 Includes these tools, which aren't yet generally available:
 
-- `sf-code-analyzer-run` - (NON-GA) Performs a static analysis of your code using Salesforce Code Analyzer. Includes validating that the code conforms to best practices, checking for security vulnerabilities, and identifying possible performance issues.
-- `sf-code-analyzer-describe-rule` - (NON-GA) Gets the description of a Salesforce Code Analyzer rule, including the engine it belongs to, its severity, and associated tags.
+- `run_code_analyzer` - (NON-GA) Performs a static analysis of your code using Salesforce Code Analyzer. Includes validating that the code conforms to best practices, checking for security vulnerabilities, and identifying possible performance issues.
+- `describe_code_analyzer_rule` - (NON-GA) Gets the description of a Salesforce Code Analyzer rule, including the engine it belongs to, its severity, and associated tags.
 
 
 **NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 

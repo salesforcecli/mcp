@@ -58,7 +58,7 @@ export class QueryOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
   }
 
   public getName(): string {
-    return 'sf-query-org';
+    return 'run_soql_query';
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
@@ -78,7 +78,7 @@ export class QueryOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
     try {
       if (!input.usernameOrAlias)
         return textResponse(
-          'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
+          'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool',
           true
         );
       process.chdir(input.directory);

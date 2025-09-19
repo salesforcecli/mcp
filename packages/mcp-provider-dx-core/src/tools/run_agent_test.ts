@@ -67,7 +67,7 @@ export class TestAgentsMcpTool extends McpTool<InputArgsShape, OutputArgsShape> 
   }
 
   public getName(): string {
-    return 'sf-test-agents';
+    return 'run_agent_test';
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
@@ -96,7 +96,7 @@ start myAgentTest and don't wait for results`,
   public async exec(input: InputArgs): Promise<CallToolResult> {
     if (!input.usernameOrAlias)
       return textResponse(
-        'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
+        'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool',
         true
       );
 

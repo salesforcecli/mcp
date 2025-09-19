@@ -47,7 +47,7 @@ export class OrgOpenMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
   }
 
   public getName(): string {
-    return 'sf-org-open';
+    return 'open_org';
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {

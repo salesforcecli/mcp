@@ -28,7 +28,7 @@ A username follows the <name@domain.com> format.
 If the user refers to an org with a string not following that format, it can be a valid alias.
 
 IMPORTANT:
-- If it is not clear what the username or alias is, run the #sf-get-username tool to resolve it.
+- If it is not clear what the username or alias is, run the #get_username tool to resolve it.
 - NEVER guess or make-up a username or alias.
 `);
 

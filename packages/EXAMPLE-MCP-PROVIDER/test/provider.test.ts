@@ -1,6 +1,6 @@
 import { McpProvider, McpTool, Services } from "@salesforce/mcp-provider-api";
 import { ExampleMcpProvider } from "../src/provider.js";
-import { ExampleMcpTool } from "../src/tools/sf-example-tool.js";
+import { ExampleMcpTool } from "../src/tools/example_tool.js";
 import { StubServices } from "./test-doubles.js";
 
 describe("Tests for ExampleMcpProvider", () => {

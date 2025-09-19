@@ -42,7 +42,7 @@ export class EnableToolsMcpTool extends McpTool<InputArgsShapeType, OutputArgsSh
   }
 
   public getName(): string {
-    return 'sf-enable-tools';
+    return 'enable_tools';
   }
 
   public getConfig(): McpToolConfig<InputArgsShapeType, OutputArgsShapeType> {
@@ -51,7 +51,7 @@ export class EnableToolsMcpTool extends McpTool<InputArgsShapeType, OutputArgsSh
       description: `Enable one or more of the tools the Salesforce MCP server provides.
 
 AGENT INSTRUCTIONS:
-Use sf-list-all-tools first to learn what tools are available for enabling.
+Use list_tools first to learn what tools are available for enabling.
 Once you have enabled the tool, you MUST invoke that tool to accomplish the user's original request - DO NOT USE A DIFFERENT TOOL OR THE COMMAND LINE.`,
       inputSchema: enableToolsParamsSchema.shape,
       outputSchema: undefined,

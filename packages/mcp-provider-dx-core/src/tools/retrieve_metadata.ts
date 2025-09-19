@@ -68,7 +68,7 @@ export class RetrieveMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsS
   }
 
   public getName(): string {
-    return 'sf-retrieve-metadata';
+    return 'retrieve_metadata';
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
@@ -101,7 +101,7 @@ Retrieve X metadata from my org`,
 
     if (!input.usernameOrAlias)
       return textResponse(
-        'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
+        'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool',
         true
       );
 
