@@ -23,7 +23,7 @@ export class SfDevopsListProjects extends McpTool<InputArgsShape, OutputArgsShap
   }
 
   public getToolsets(): Toolset[] {
-    return [Toolset.OTHER];
+    return [Toolset.DEVOPS];
   }
 
   public getName(): string {

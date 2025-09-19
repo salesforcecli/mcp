@@ -25,7 +25,7 @@ export class SfDevopsPromoteWorkItem extends McpTool<InputArgsShape, OutputArgsS
   }
 
   public getToolsets(): Toolset[] {
-    return [Toolset.OTHER];
+    return [Toolset.DEVOPS];
   }
 
   public getName(): string {

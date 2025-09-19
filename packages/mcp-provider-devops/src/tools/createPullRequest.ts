@@ -25,7 +25,7 @@ export class CreatePullRequest extends McpTool<InputArgsShape, OutputArgsShape> 
   }
 
   public getToolsets(): Toolset[] {
-    return [Toolset.OTHER];
+    return [Toolset.DEVOPS];
   }
 
   public getName(): string {

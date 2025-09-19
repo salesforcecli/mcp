@@ -28,7 +28,7 @@ export class SfDevopsDetectConflict extends McpTool<InputArgsShape, OutputArgsSh
   }
 
   public getToolsets(): Toolset[] {
-    return [Toolset.OTHER];
+    return [Toolset.DEVOPS];
   }
 
   public getName(): string {
