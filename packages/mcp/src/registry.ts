@@ -20,6 +20,7 @@ import { CodeAnalyzerMcpProvider } from '@salesforce/mcp-provider-code-analyzer'
 import { LwcExpertsMcpProvider } from '@salesforce/mcp-provider-lwc-experts';
 import { AuraExpertsMcpProvider } from '@salesforce/mcp-provider-aura-experts';
 import { MobileWebMcpProvider } from '@salesforce/mcp-provider-mobile-web';
+import { DevOpsMcpProvider } from '@salesforce/mcp-provider-devops';
 
 /** -------- ADD McpProvider INSTANCES HERE ------------------------------------------------------------------------- */
 
@@ -29,5 +30,6 @@ export const MCP_PROVIDER_REGISTRY: McpProvider[] = [
   new LwcExpertsMcpProvider(),
   new AuraExpertsMcpProvider(),
   new MobileWebMcpProvider(),
+  new DevOpsMcpProvider(),
   // Add new instances here
 ];
