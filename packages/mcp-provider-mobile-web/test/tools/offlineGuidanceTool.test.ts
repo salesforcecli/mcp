@@ -15,7 +15,8 @@
  */
 
 import { McpToolConfig, ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
-import { OfflineGuidanceTool } from '../../src/tools/offline-guidance/sf-mobile-web-offline-guidance.js';
+import { OfflineGuidanceTool } from '../../src/tools/offline-guidance/get_mobile_lwc_offline_guidance.js';
+import { ExpertsReviewInstructionsType } from '../../src/schemas/analysisSchema.js';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
 describe('Tests for OfflineGuidanceTool', () => {
@@ -33,8 +34,8 @@ describe('Tests for OfflineGuidanceTool', () => {
     expect(tool.getToolsets()).toEqual([Toolset.MOBILE, Toolset.MOBILE_CORE]);
   });
 
-  it("When getName is called, then 'sf-mobile-web-offline-guidance' is returned", () => {
-    expect(tool.getName()).toEqual('sf-mobile-web-offline-guidance');
+  it("When getName is called, then 'get_mobile_lwc_offline_guidance' is returned", () => {
+    expect(tool.getName()).toEqual('get_mobile_lwc_offline_guidance');
   });
 
   it('When getConfig is called, then the correct configuration is returned', () => {
@@ -67,7 +68,7 @@ describe('Tests for OfflineGuidanceTool', () => {
       expect(result.structuredContent).toBeDefined();
       expect(result.structuredContent).toHaveProperty('reviewInstructions');
       expect(result.structuredContent).toHaveProperty('orchestrationInstructions');
-      expect(Array.isArray((result.structuredContent as any).reviewInstructions)).toBe(true);
+      expect(Array.isArray((result.structuredContent as ExpertsReviewInstructionsType).reviewInstructions)).toBe(true);
     });
   });
 
@@ -107,7 +108,8 @@ describe('Tests for OfflineGuidanceTool', () => {
 
   describe('When getConditionalRenderingExpert is called...', () => {
     it('... then conditional rendering expert instructions are returned', () => {
-      const expert = (tool as any).getConditionalRenderingExpert();
+      // @ts-expect-error - Testing private method
+      const expert = tool.getConditionalRenderingExpert();
       expect(expert.expertReviewerName).toBe('Conditional Rendering Compatibility Expert');
       expect(expert.supportedFileTypes).toEqual(['HTML']);
       expect(expert.grounding).toContain('Komaci offline static analysis engine');
@@ -117,7 +119,8 @@ describe('Tests for OfflineGuidanceTool', () => {
 
   describe('When getGraphqlWireExpert is called...', () => {
     it('... then GraphQL wire expert instructions are returned', () => {
-      const expert = (tool as any).getGraphqlWireExpert();
+      // @ts-expect-error - Testing private method
+      const expert = tool.getGraphqlWireExpert();
       expect(expert.expertReviewerName).toBe('GraphQL Wire Configuration Expert');
       expect(expert.supportedFileTypes).toEqual(['JS']);
       expect(expert.grounding).toContain('GraphQL queries');
@@ -127,7 +130,7 @@ describe('Tests for OfflineGuidanceTool', () => {
 
   describe('When exec encounters an error...', () => {
     let result: CallToolResult;
-    let originalMethod: any;
+    let originalMethod: typeof tool.getExpertReviewInstructions;
 
     beforeEach(async () => {
       // Store original method and replace with error-throwing version

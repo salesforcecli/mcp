@@ -75,7 +75,7 @@ export class ResumeMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
   }
 
   public getName(): string {
-    return 'sf-resume';
+    return 'resume_tool_operation';
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
@@ -114,7 +114,7 @@ Report on my org snapshot`,
 
     if (!input.usernameOrAlias)
       return textResponse(
-        'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
+        'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool',
         true
       );
 

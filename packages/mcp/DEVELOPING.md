@@ -98,12 +98,12 @@ Then follow the steps for the type of testing you want to do: from the browser o
 1. Build the local server: `yarn build`.
 2. Use the MCP Inspector CLI to call a specific tool with its parameters.
 
-This example calls the `sf-query-org` tool from the context of a Salesforce DX project:
+This example calls the `run_soql_query` tool from the context of a Salesforce DX project:
 
 ```shell
 mcp-inspector --cli node bin/run.js --orgs DEFAULT_TARGET_ORG \
   --method tools/call \
-  --tool-name sf-query-org \
+  --tool-name run_soql_query \
   --tool-arg query="select id from account limit 5" \
   --tool-arg usernameOrAlias=dreamhouse \
   --tool-arg directory="/path/to/sfdx-project"
@@ -143,11 +143,11 @@ You can use the VS Code debugger with the MCP Inspector CLI to step through the 
 4. Call the tool using the MCP Inspector CLI.
 5. In the VS Code debugger, select the `Attach to Debug Hook Process` launch config and start debugging.
 
-Here's an example of calling the `sf-query-org` tool:
+Here's an example of calling the `run_soql_query` tool:
 
 ```shell
 MCP_SERVER_REQUEST_TIMEOUT=120000 mcp-inspector --cli node --inspect-brk bin/run.js -o DEFAULT_TARGET_ORG --no-telemetry --method tools/call \
-  --tool-name sf-query-org \
+  --tool-name run_soql_query \
   --tool-arg directory="/path/to/sfdx-project" \
   --tool-arg query="select name from Property__c order by name asc" \
   --tool-arg usernameOrAlias=dreamhouse

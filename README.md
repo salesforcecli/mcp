@@ -91,7 +91,7 @@ For the best getting-started experience, make sure that you have a Salesforce DX
 
    You can also configure the MCP server globally by editing the VS Code [settings.json](https://code.visualstudio.com/docs/configure/settings#_settings-file-locations) file and adding a similar JSON snippet but contained in an `mcp:servers` section.
 
-   The `--orgs` flag is required and specifies the authorized orgs you're allowing the MCP server to access. The `--toolsets` flag is optional and specifies the toolsets it should consult when determining the specific tool to run. See [Configure the DX MCP Server](README.md#configure-the-dx-mcp-server) for the available values for the two flags.
+   The `--orgs` flag is required and specifies the authorized orgs you're allowing the MCP server to access. The `--toolsets` and `--tools` flags are used to specify which tools the server will start with. See [Configure the DX MCP Server](README.md#configure-the-dx-mcp-server) for the available values for these flags.
 
 1. Open VS Code, go to **View -> Command Palette** and enter **MCP: List Servers**.
 
@@ -140,10 +140,11 @@ These are the available flags that you can pass to the `args` option.
 | Flag Name | Description | Required? |Notes |
 | -----------------| -------| ------- | ----- |
 | `--orgs` | One or more orgs that you've locally authorized. | Yes | You must specify at least one org. <br/> <br/>See [Configure Orgs](README.md#configure-orgs) for the values you can pass to this flag. |
-| `--toolsets` | Sets of tools, based on functionality, that you want to enable. | No | Default value is `all`, or enable all tools in all toolsets. <br/> <br/>See [Configure Toolsets](README.md#configure-toolsets) for the values you can pass to this flag.|
+| `--toolsets` | Sets of tools, based on functionality, that you want to enable. | No | Set to "all" to enable every tool in every toolset. <br/> <br/>See [Configure Toolsets](README.md#configure-toolsets) for the values you can pass to this flag.|
+| `--tools` | Individual tool names that you want to enable. | No | You can use this flag in combination with the `--toolsets` flag. For example, you can enable all tools in one toolset, and just one tool in a different toolset. |
 | `--no-telemetry` | Boolean flag to disable telemetry, the automatic collection of data for monitoring and analysis. | No | Telemetry is enabled by default, so specify this flag to disable it.  |
 | `--debug` | Boolean flag that requests that the DX MCP Server print debug logs. | No | Debug mode is disabled by default. <br/> <br/>**NOTE:** Not all MCP clients expose MCP logs, so this flag might not work for all IDEs. |
-| `--allow-non-ga-tools` |Boolean flag to allow the DX MCP Server to use both the generally available (GA) and NON-GA tools that are in the toolset you specify. | No | By default, the DX MCP server uses only the tools marked GA. |
+| `--allow-non-ga-tools` | Boolean flag to allow the DX MCP Server to use both the generally available (GA) and NON-GA tools that are in the toolsets or tools you specify. | No | By default, the DX MCP server uses only the tools marked GA. |
 | `--dynamic-tools` | (experimental) Boolean flag that enables dynamic tool discovery and loading. When specified, the DX MCP server starts with a minimal set of core tools and loads new tools as needed. | No| This flag is useful for reducing the initial context size and improving LLM performance. Dynamic tool discovery is disabled by default.<br/> <br/>**NOTE:** This feature works in VSCode and Cline but may not work in other environments.|
 
 ### Configure Orgs
@@ -187,13 +188,13 @@ This sample snippet shows how to configure access to two orgs for which you spec
 
 The Salesforce DX MCP Server supports **toolsets** - a way to selectively enable different groups of MCP tools based on your needs. This allows you to run the MCP server with only the tools you require, which in turn reduces the context.
 
-Use the `--toolsets` (or short name `-t`) flag to specify the toolsets when you configure the Salesforce DX MCP Server. Separate multiple toolsets with commas. The `--toolsets` flag is optional; if you don't specify it, the MCP server is configured with all toolsets.
+Use the `--toolsets` flag to specify the toolsets when you configure the Salesforce DX MCP Server. Separate multiple toolsets with commas. Set `--toolsets` to `all` to register every available toolset.
 
 These are the available toolsets.
 
 | Toolset| Description|
 | ----- | ----- |
-| `all` | Enables all available tools from all toolsets. This is the default value if you don't specify the `--toolsets` flag.|
+| `all` | Enables all available tools from all toolsets. |
 | `orgs` | [Tools to manage your authorized orgs.](README.md#orgs-toolset)|
 | `data` | [Tools to manage the data in your org, such as listing all accounts.](README.md#data-toolset)|
 | `users` | [Tools to manage org users, such as assigning a permission set.](README.md#users-toolset)|
@@ -215,22 +216,50 @@ This example shows how to enable the `data`, `orgs`, `metadata`, and `other` too
        }
 ```
 
+### Configure Tools
+
+The Salesforce DX MCP Server also supports registering individual **tools**. This can be used in combination with **toolsets** to further fine-tune registered tools.
+
+Use the `--tools` flag to enable specific tools when you configure the Salesforce DX MCP Server. Separate multiple tools with commas. The `--tools` flag is optional.
+
+This example shows how to enable the `orgs` and `metadata` toolsets, as well as the `run_soql_query` and `run_apex_test` tools when configuring the MCP server for VS Code:
+
+```json
+       "servers": {
+         "Salesforce DX": {
+           "type": "stdio",
+           "command": "npx",
+           "args": [
+              "-y",
+              "@salesforce/mcp", 
+              "--orgs", 
+              "DEFAULT_TARGET_ORG", 
+              "--toolsets",
+              "orgs,metadata"
+              "--tools",
+              "run_soql_query,run_apex_test"
+            ]
+         }
+       }
+```
+
+
 #### Core Toolset (always enabled)
 
 Includes these tools:
 
-- `sf-get-username` - Determines the appropriate username or alias for Salesforce operations, handling both default orgs and Dev Hubs.
-- `sf-resume` - Resumes a long-running operation that wasn't completed by another tool.
+- `get_username` - Determines the appropriate username or alias for Salesforce operations, handling both default orgs and Dev Hubs.
+- `resume_tool_operation` - Resumes a long-running operation that wasn't completed by another tool.
 
 #### Orgs Toolset
 
 Includes these tools:
 
-- `sf-list-all-orgs` - Lists all configured Salesforce orgs, with optional connection status checking.
-- `sf-create-org-snapshot` - (NON-GA) Create a scratch org snapshot. 
-- `sf-create-scratch-org` - (NON-GA) Create a scratch org. 
-- `sf-delete-org` - (NON-GA) Delete a locally-authorized Salesforce scratch org or sandbox.
-- `sf-org-open` - (NON-GA) Open an org in a browser. 
+- `list_all_orgs` - Lists all configured Salesforce orgs, with optional connection status checking.
+- `create_org_snapshot` - (NON-GA) Create a scratch org snapshot. 
+- `create_scratch_org` - (NON-GA) Create a scratch org. 
+- `delete_org` - (NON-GA) Delete a locally-authorized Salesforce scratch org or sandbox.
+- `org_open` - (NON-GA) Open an org in a browser. 
 
 **NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
 
@@ -238,45 +267,45 @@ Includes these tools:
 
 Includes this tool:
 
-- `sf-query-org` - Runs a SOQL query against a Salesforce org.
+- `run_soql_query` - Runs a SOQL query against a Salesforce org.
 
 #### Users Toolset
 
 Includes this tool:
 
-- `sf-assign-permission-set` - Assigns a permission set to the user or on behalf of another user.
+- `assign_permission_set` - Assigns a permission set to the user or on behalf of another user.
 
 #### Metadata Toolset
 
 Includes these tools:
 
-- `sf-deploy-metadata` - Deploys metadata from your DX project to an org.
-- `sf-retrieve-metadata` - Retrieves metadata from your org to your DX project.
+- `deploy_metadata` - Deploys metadata from your DX project to an org.
+- `retrieve_metadata` - Retrieves metadata from your org to your DX project.
 
 #### Testing Toolset
 
 Includes these tools:
 
-- `sf-test-agents` - Executes agent tests in your org.
-- `sf-test-apex` - Executes apex tests in your org.
+- `run_agent_test` - Executes agent tests in your org.
+- `run_apex_test` - Executes apex tests in your org.
 
 #### Mobile Toolset
 
 Includes these tools, which aren't yet generally available:
 
-- `sf-mobile-web-app-review` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC App Review Service, offering expert guidance for implementing app review features in Lightning Web Components.
-- `sf-mobile-web-ar-space-capture` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC AR Space Capture, offering expert guidance for implementing AR space capture features in Lightning Web Components.
-- `sf-mobile-web-barcode-scanner` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Barcode Scanner, offering expert guidance for implementing barcode scanning features in Lightning Web Components.
-- `sf-mobile-web-biometrics` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Biometrics Service, offering expert guidance for implementing biometric authentication features in Lightning Web Components.
-- `sf-mobile-web-calendar` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Calendar Service, offering expert guidance for implementing calendar integration features in Lightning Web Components.
-- `sf-mobile-web-contacts` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Contacts Service, offering expert guidance for implementing contacts management features in Lightning Web Components.
-- `sf-mobile-web-document-scanner` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Document Scanner, offering expert guidance for implementing document scanning features in Lightning Web Components.
-- `sf-mobile-web-geofencing` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Geofencing Service, offering expert guidance for implementing geofencing features in Lightning Web Components.
-- `sf-mobile-web-location` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Location Service, offering expert guidance for implementing location services in Lightning Web Components.
-- `sf-mobile-web-nfc` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC NFC Service, offering expert guidance for implementing NFC features in Lightning Web Components.
-- `sf-mobile-web-payments` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Payments Service, offering expert guidance for implementing payment processing features in Lightning Web Components.
-- `sf-mobile-web-offline-analysis` - (NON-GA) Analyzes Lightning Web Components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
-- `sf-mobile-web-offline-guidance` - (NON-GA) Provides structured review instructions to detect and remediate mobile offline code violations in Lightning Web Components for Salesforce Mobile Apps.
+- `create_mobile_lwc_app_review` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC App Review Service, offering expert guidance for implementing app review features in Lightning Web Components.
+- `create_mobile_lwc_ar_space_capture` - (NON-GA) Provides TypeScript API documentation for Salesforce L    WC AR Space Capture, offering expert guidance for implementing AR space capture features in Lightning Web Components.
+- `create_mobile_lwc_barcode_scanner` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Barcode Scanner, offering expert guidance for implementing barcode scanning features in Lightning Web Components.
+- `create_mobile_lwc_biometrics` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Biometrics Service, offering expert guidance for implementing biometric authentication features in Lightning Web Components.
+- `create_mobile_lwc_calendar` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Calendar Service, offering expert guidance for implementing calendar integration features in Lightning Web Components.
+- `create_mobile_lwc_contacts` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Contacts Service, offering expert guidance for implementing contacts management features in Lightning Web Components.
+- `create_mobile_lwc_document_scanner` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Document Scanner, offering expert guidance for implementing document scanning features in Lightning Web Components.
+- `create_mobile_lwc_geofencing` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Geofencing Service, offering expert guidance for implementing geofencing features in Lightning Web Components.
+- `create_mobile_lwc_location` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Location Service, offering expert guidance for implementing location services in Lightning Web Components.
+- `create_mobile_lwc_nfc` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC NFC Service, offering expert guidance for implementing NFC features in Lightning Web Components.
+- `create_mobile_lwc_payments` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Payments Service, offering expert guidance for implementing payment processing features in Lightning Web Components.
+- `get_mobile_lwc_offline_analysis` - (NON-GA) Analyzes Lightning Web Components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
+- `get_mobile_lwc_offline_guidance` - (NON-GA) Provides structured review instructions to detect and remediate mobile offline code violations in Lightning Web Components for Salesforce Mobile Apps.
 
 **NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
 
@@ -284,20 +313,20 @@ Includes these tools, which aren't yet generally available:
 
 Includes these essential mobile tools, which aren't yet generally available:
 
-- `sf-mobile-web-barcode-scanner` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Barcode Scanner, offering expert guidance for implementing barcode scanning features in Lightning Web Components.
-- `sf-mobile-web-biometrics` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Biometrics Service, offering expert guidance for implementing biometric authentication features in Lightning Web Components.
-- `sf-mobile-web-location` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Location Service, offering expert guidance for implementing location services in Lightning Web Components.
-- `sf-mobile-web-offline-analysis` - (NON-GA) Analyzes Lightning Web Components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
-- `sf-mobile-web-offline-guidance` - (NON-GA) Provides structured review instructions to detect and remediate mobile offline code violations in Lightning Web Components for Salesforce Mobile Apps.
+- `create_mobile_lwc_barcode_scanner` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Barcode Scanner, offering expert guidance for implementing barcode scanning features in Lightning Web Components.
+- `create_mobile_lwc_biometrics` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Biometrics Service, offering expert guidance for implementing biometric authentication features in Lightning Web Components.
+- `create_mobile_lwc_location` - (NON-GA) Provides TypeScript API documentation for Salesforce LWC Location Service, offering expert guidance for implementing location services in Lightning Web Components.
+- `get_mobile_lwc_offline_analysis` - (NON-GA) Analyzes Lightning Web Components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
+- `get_mobile_lwc_offline_guidance` - (NON-GA) Provides structured review instructions to detect and remediate mobile offline code violations in Lightning Web Components for Salesforce Mobile Apps.
 
 **NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
 
-#### Other Toolset
+#### Code-Analyzer Toolset
 
 Includes these tools, which aren't yet generally available:
 
-- `sf-code-analyzer-run` - (NON-GA) Performs a static analysis of your code using Salesforce Code Analyzer. Includes validating that the code conforms to best practices, checking for security vulnerabilities, and identifying possible performance issues.
-- `sf-code-analyzer-describe-rule` - (NON-GA) Gets the description of a Salesforce Code Analyzer rule, including the engine it belongs to, its severity, and associated tags.
+- `run_code_analyzer` - (NON-GA) Performs a static analysis of your code using Salesforce Code Analyzer. Includes validating that the code conforms to best practices, checking for security vulnerabilities, and identifying possible performance issues.
+- `describe_code_analyzer_rule` - (NON-GA) Gets the description of a Salesforce Code Analyzer rule, including the engine it belongs to, its severity, and associated tags.
 
 
 **NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 

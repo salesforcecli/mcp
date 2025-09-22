@@ -32,12 +32,20 @@ import { createDynamicServerTools } from '../main-server-provider.js';
 
 export async function registerToolsets(
   toolsets: Array<Toolset | 'all'>,
+  tools: string[],
   useDynamicTools: boolean,
   allowNonGaTools: boolean,
   server: SfMcpServer,
   services: Services
 ): Promise<void> {
+  // If no toolsets, tools, or dynamic tools flag was passed, throw an error
+  // NOTE: In the future we will also want to check for Personas here
+  if (!toolsets.length && !tools.length && !useDynamicTools) {
+    throw new Error('Tool registration error. Start server with one of the following flags: --toolsets, --tools, --dynamic-tools')
+  }
+
   if (useDynamicTools) {
+    // If --dynamic-tools flag was passed, register the tools needed to handle dynamic tool registration
     const dynamicTools = createDynamicServerTools(server);
     ux.stderr('Registering dynamic tools.');
     // eslint-disable-next-line no-await-in-loop
@@ -48,20 +56,41 @@ export async function registerToolsets(
 
   const toolsetsToEnable: Set<Toolset> = toolsets.includes('all')
     ? new Set(TOOLSETS)
+    // CORE toolset is always enabled
     : new Set([Toolset.CORE, ...(toolsets as Toolset[])]);
 
-  const newToolRegistry: Record<Toolset, McpTool[]> = await createToolRegistryFromProviders(
+  const toolsetRegistry: Record<Toolset, McpTool[]> = await createToolRegistryFromProviders(
     MCP_PROVIDER_REGISTRY,
     services
   );
 
+  ux.stderr('REGISTERING TOOLSETS (--toolsets)');
   for (const toolset of TOOLSETS) {
     if (toolsetsToEnable.has(toolset)) {
-      ux.stderr(`Registering tools from the '${toolset}' toolset.`);
+      ux.stderr(`Registering toolset: '${toolset}'`);
       // eslint-disable-next-line no-await-in-loop
-      await registerTools(newToolRegistry[toolset], server, useDynamicTools, allowNonGaTools);
+      await registerTools(toolsetRegistry[toolset], server, useDynamicTools, allowNonGaTools);
     } else {
-      ux.stderr(`Skipping registration of the tools from the '${toolset}' toolset.`);
+      ux.stderr(`   Skipping toolset: '${toolset}'`);
+    }
+  }
+
+  if (tools.length > 0) {
+    ux.stderr('REGISTERING TOOLS (--tools)');
+    // Build an array of available McpTools
+    const toolRegistry = Object.values(toolsetRegistry).flat();
+
+    // NOTE: This validation could be removed it we implemented Flags.option
+    const existingToolNames = new Set(toolRegistry.map(tool => tool.getName()));
+    // Validate that all requested tools exist
+    const invalidTools = tools.filter(toolName => !existingToolNames.has(toolName));
+    if (invalidTools.length > 0) throw new Error(`Invalid tool names provided to --tools: ${invalidTools.join(', ')}`);
+
+    for (const tool of toolRegistry) {
+      if (tools.includes(tool.getName())) {
+        // eslint-disable-next-line no-await-in-loop
+        await registerTools([tool], server, useDynamicTools, allowNonGaTools);
+      }
     }
   }
 }
@@ -92,7 +121,7 @@ async function registerTools(
       );
       registeredTool.disable();
     } else {
-      ux.stderr(`* Registering tool '${tool.getName()}'.`);
+      ux.stderr(`   Tool registered: '${tool.getName()}'`);
     }
     // eslint-disable-next-line no-await-in-loop
     await addTool(registeredTool, tool.getName());

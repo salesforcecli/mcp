@@ -42,9 +42,11 @@ export class ExampleMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
     return [Toolset.OTHER];
   }
 
-  // Must return the name of your tool. Your tool name should start with a 'sf-' prefix. The server may validate this.
+  // Must return the name of your tool.
+  // For internal naming guidelines see:
+  //  https://confluence.internal.salesforce.com/spaces/DOCTEAM/pages/1166876463/MCP+Server+Terminology+and+Style+Guide
   public getName(): string {
-    return "sf-example";
+    return "example_tool";
   }
 
   // Must return your tool's configuration

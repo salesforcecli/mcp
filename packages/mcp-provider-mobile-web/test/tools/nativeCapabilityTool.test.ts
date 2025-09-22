@@ -15,9 +15,11 @@
  */
 
 import { McpToolConfig, ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
-import { NativeCapabilityTool } from '../../src/tools/native-capabilities/sf-mobile-native-capability.js';
+import { NativeCapabilityTool } from '../../src/tools/native-capabilities/create_mobile_lwc_native_capabilities.js';
 import { AppReviewConfig } from '../../src/tools/native-capabilities/nativeCapabilityConfig.js';
+import { TextOutputSchema } from '../../src/schemas/lwcSchema.js';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { z } from 'zod';
 
 describe('Tests for NativeCapabilityTool', () => {
   let tool: NativeCapabilityTool;
@@ -64,18 +66,20 @@ describe('Tests for NativeCapabilityTool', () => {
       expect(result).toHaveProperty('structuredContent');
       expect(result.structuredContent).toBeDefined();
       expect(result.structuredContent).toHaveProperty('content');
-      expect(typeof (result.structuredContent as any).content).toBe('string');
+      expect(typeof (result.structuredContent as z.infer<typeof TextOutputSchema>).content).toBe('string');
     });
   });
 
   describe('When exec encounters a file reading error...', () => {
     let result: CallToolResult;
-    let originalReadTypeDefinitionFile: any;
+    let originalReadTypeDefinitionFile: () => Promise<string>;
 
     beforeEach(async () => {
       // Store original method and replace with error-throwing version
-      originalReadTypeDefinitionFile = (tool as any).readTypeDefinitionFile;
-      (tool as any).readTypeDefinitionFile = async () => {
+      // @ts-expect-error - Testing private method
+      originalReadTypeDefinitionFile = tool.readTypeDefinitionFile;
+      // @ts-expect-error - Testing private method
+      tool.readTypeDefinitionFile = async () => {
         throw new Error('File not found');
       };
 
@@ -84,7 +88,8 @@ describe('Tests for NativeCapabilityTool', () => {
 
     afterEach(() => {
       // Restore the original method
-      (tool as any).readTypeDefinitionFile = originalReadTypeDefinitionFile;
+      // @ts-expect-error - Restoring private method
+      tool.readTypeDefinitionFile = originalReadTypeDefinitionFile;
     });
 
     it('... then an error result is returned', () => {
@@ -101,7 +106,7 @@ describe('Tests for NativeCapabilityTool', () => {
       expect(result).toHaveProperty('structuredContent');
       expect(result.structuredContent).toBeDefined();
       expect(result.structuredContent).toHaveProperty('content');
-      expect((result.structuredContent as any).content).toContain('Error: Unable to load');
+      expect((result.structuredContent as z.infer<typeof TextOutputSchema>).content).toContain('Error: Unable to load');
     });
   });
 });

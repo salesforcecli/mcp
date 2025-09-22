@@ -15,19 +15,19 @@
  */
 
 import { McpProvider, McpTool, Services } from '@salesforce/mcp-provider-api';
-import { AssignPermissionSetMcpTool } from './tools/sf-assign-permission-set.js';
-import { CreateOrgSnapshotMcpTool } from './tools/sf-create-org-snapshot.js';
-import { CreateScratchOrgMcpTool } from './tools/sf-create-scratch-org.js';
-import { DeleteOrgMcpTool } from './tools/sf-delete-org.js';
-import { DeployMetadataMcpTool } from './tools/sf-deploy-metadata.js';
-import { GetUsernameMcpTool } from './tools/sf-get-username.js';
-import { ListAllOrgsMcpTool } from './tools/sf-list-all-orgs.js';
-import { OrgOpenMcpTool } from './tools/sf-org-open.js';
-import { QueryOrgMcpTool } from './tools/sf-query-org.js';
-import { ResumeMcpTool } from './tools/sf-resume.js';
-import { RetrieveMetadataMcpTool } from './tools/sf-retrieve-metadata.js';
-import { TestAgentsMcpTool } from './tools/sf-test-agents.js';
-import { TestApexMcpTool } from './tools/sf-test-apex.js';
+import { AssignPermissionSetMcpTool } from './tools/assign_permission_set.js';
+import { CreateOrgSnapshotMcpTool } from './tools/create_org_snapshot.js';
+import { CreateScratchOrgMcpTool } from './tools/create_scratch_org.js';
+import { DeleteOrgMcpTool } from './tools/delete_org.js';
+import { DeployMetadataMcpTool } from './tools/deploy_metadata.js';
+import { GetUsernameMcpTool } from './tools/get_username.js';
+import { ListAllOrgsMcpTool } from './tools/list_all_orgs.js';
+import { OrgOpenMcpTool } from './tools/open_org.js';
+import { QueryOrgMcpTool } from './tools/run_soql_query.js';
+import { ResumeMcpTool } from './tools/resume_tool_operation.js';
+import { RetrieveMetadataMcpTool } from './tools/retrieve_metadata.js';
+import { TestAgentsMcpTool } from './tools/run_agent_test.js';
+import { TestApexMcpTool } from './tools/run_apex_test.js';
 
 export class DxCoreMcpProvider extends McpProvider {
   public getName(): string {

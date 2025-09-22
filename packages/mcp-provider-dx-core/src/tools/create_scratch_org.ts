@@ -49,7 +49,7 @@ import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
 const createScratchOrgParams = z.object({
   directory: directoryParam,
   devHub: usernameOrAliasParam.describe(
-    'The default devhub username, use the #sf-get-username tool to get the default devhub if unsure'
+    'The default devhub username, use the #get_username tool to get the default devhub if unsure'
   ),
   duration: z.number().default(7).describe('number of days before the org expires'),
   edition: z
@@ -104,7 +104,7 @@ export class CreateScratchOrgMcpTool extends McpTool<InputArgsShape, OutputArgsS
   }
 
   public getName(): string {
-    return 'sf-create-scratch-org';
+    return 'create_scratch_org';
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
@@ -154,7 +154,7 @@ create a scratch org aliased as MyNewOrg and set as default and don't wait for i
         return textResponse(
           `Successfully enqueued scratch org with job Id: ${JSON.stringify(
             result.scratchOrgInfo?.Id
-          )} use the #sf-resume tool to resume this operation`
+          )} use the #resume_tool_operation tool to resume this operation`
         );
       } else {
         return textResponse(`Successfully created scratch org  ${JSON.stringify(result)}`);

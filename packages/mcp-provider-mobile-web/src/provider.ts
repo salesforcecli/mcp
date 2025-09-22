@@ -15,9 +15,9 @@
  */
 
 import { McpProvider, McpTool, Services } from '@salesforce/mcp-provider-api';
-import { NativeCapabilityTool } from './tools/native-capabilities/sf-mobile-native-capability.js';
-import { OfflineAnalysisTool } from './tools/offline-analysis/sf-mobile-web-offline-analysis.js';
-import { OfflineGuidanceTool } from './tools/offline-guidance/sf-mobile-web-offline-guidance.js';
+import { NativeCapabilityTool } from './tools/native-capabilities/create_mobile_lwc_native_capabilities.js';
+import { OfflineAnalysisTool } from './tools/offline-analysis/get_mobile_lwc_offline_analysis.js';
+import { OfflineGuidanceTool } from './tools/offline-guidance/get_mobile_lwc_offline_guidance.js';
 import { nativeCapabilityConfigs } from './tools/native-capabilities/nativeCapabilityConfig.js';
 
 export class MobileWebMcpProvider extends McpProvider {

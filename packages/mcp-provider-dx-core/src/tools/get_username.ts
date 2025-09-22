@@ -101,7 +101,7 @@ export class GetUsernameMcpTool extends McpTool<InputArgsShape, OutputArgsShape>
   }
 
   public getName(): string {
-    return 'sf-get-username';
+    return 'get_username';
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {

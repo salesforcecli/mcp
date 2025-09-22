@@ -54,7 +54,7 @@ export class ListAllOrgsMcpTool extends McpTool<InputArgsShape, OutputArgsShape>
   }
 
   public getName(): string {
-    return 'sf-list-all-orgs';
+    return 'list_all_orgs';
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
@@ -63,7 +63,7 @@ export class ListAllOrgsMcpTool extends McpTool<InputArgsShape, OutputArgsShape>
       description: `Lists all configured Salesforce orgs.
 
 AGENT INSTRUCTIONS:
-DO NOT use this tool to try to determine which org a user wants, use #sf-get-username instead. Only use it if the user explicitly asks for a list of orgs.
+DO NOT use this tool to try to determine which org a user wants, use #get_username instead. Only use it if the user explicitly asks for a list of orgs.
 
 Example usage:
 Can you list all Salesforce orgs for me

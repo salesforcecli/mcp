@@ -1,3 +1,12 @@
+## [0.3.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.3.0...mcp-provider-dx-core@0.3.1) (2025-09-19)
+
+
+### Bug Fixes
+
+* remove sf prefix -W-19676410 ([#228](https://github.com/salesforcecli/mcp/issues/228)) ([9b02795](https://github.com/salesforcecli/mcp/commit/9b02795e72ee8fc716dcca643ede1ca8e1c3e378))
+
+
+
 # [0.3.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.2.4...mcp-provider-dx-core@0.3.0) (2025-09-19)
 
 

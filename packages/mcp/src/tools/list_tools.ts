@@ -28,7 +28,7 @@ export class ListToolsMcpTool extends McpTool {
   }
 
   public getName(): string {
-    return 'sf-list-tools';
+    return 'list_tools';
   }
 
   public getConfig(): McpToolConfig {
@@ -43,9 +43,9 @@ ONLY use this tool if:
 2. You genuinely don't know what tools are available for a specific task
 3. You need to discover new tools for an unfamiliar use case
 
-If you find one or more tools you want to enable, call sf-enable-tools with all the tool names.
+If you find one or more tools you want to enable, call enable_tools with all the tool names.
 Once you have enabled a tool, you MUST invoke the tool to accomplish the user's original request - DO NOT USE A DIFFERENT TOOL OR THE COMMAND LINE.
-Once a tool has been enabled, you do not need to call sf-list-tools again - instead, invoke the desired tool directly.`,
+Once a tool has been enabled, you do not need to call list_tools again - instead, invoke the desired tool directly.`,
       inputSchema: undefined,
       outputSchema: undefined,
       annotations: {

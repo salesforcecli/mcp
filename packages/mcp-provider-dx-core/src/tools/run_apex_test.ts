@@ -101,7 +101,7 @@ export class TestApexMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
   }
 
   public getName(): string {
-    return 'sf-test-apex';
+    return 'run_apex_test';
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
@@ -143,7 +143,7 @@ What are the results for 707XXXXXXXXXXXX`,
 
     if (!input.usernameOrAlias)
       return textResponse(
-        'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
+        'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool',
         true
       );
 

@@ -51,7 +51,7 @@ Set the perm set MyPermSet`),
 
 AGENT INSTRUCTIONS:
 If the user does not specifically say "on behalf of" this will be empty.
-If the user does specifically say "on behalf of", but it is unclear what the target-org is, run the #sf-get-username tool.
+If the user does specifically say "on behalf of", but it is unclear what the target-org is, run the #get_username tool.
 In that case, use the usernameOrAlias parameter as the org to assign the permission set to.
 
 USAGE EXAMPLE:
@@ -79,7 +79,7 @@ export class AssignPermissionSetMcpTool extends McpTool<InputArgsShape, OutputAr
   }
 
   public getName(): string {
-    return 'sf-assign-permission-set';
+    return 'assign_permission_set';
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
@@ -98,7 +98,7 @@ export class AssignPermissionSetMcpTool extends McpTool<InputArgsShape, OutputAr
     try {
       if (!input.usernameOrAlias)
         return textResponse(
-          'The usernameOrAlias parameter is required, if the user did not specify one use the #sf-get-username tool',
+          'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool',
           true
         );
       process.chdir(input.directory);
