@@ -1,0 +1,49 @@
+{
+  "name": "@salesforce/mcp-provider-devops",
+  "description": "MCP provider for DevOps tools and operations",
+  "version": "0.0.1-alpha.1",
+  "author": "Salesforce",
+  "license": "Apache-2.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/salesforcecli/mcp.git",
+    "directory": "packages/mcp-provider-devops"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.0",
+    "@salesforce/mcp-provider-api": "^0.4.0",
+    "@salesforce/core": "^8.17.0",
+    "@salesforce/source-deploy-retrieve": "^12.22.13",
+    "@salesforce/ts-types": "^2.0.12",
+    "axios": "^1.10.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.35.0",
+    "@types/node": "^22.16.5",
+    "@vitest/coverage-istanbul": "^3.2.4",
+    "eslint": "^9.35.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.44.0",
+    "vite": "^7.1.5",
+    "vitest": "^3.2.4"
+  },
+  "files": [
+    "dist",
+    "LICENSE.txt",
+    "package.json"
+  ],
+  "scripts": {
+    "build": "tsc --build tsconfig.build.json --verbose",
+    "clean": "tsc --build tsconfig.build.json --clean",
+    "clean-all": "yarn clean && rimraf node_modules",
+    "lint": "eslint **/*.ts",
+    "postclean": "rimraf dist && rimraf ./*.tgz",
+    "package": "yarn pack",
+    "test": "tsc --build tsconfig.json --noEmit && vitest run --coverage"
+  }
+}
