@@ -74,9 +74,9 @@ describe('get_username', () => {
     expect(result.content[0].type).to.equal('text');
 
     const responseText = result.content[0].text;
-    expect(responseText).to.contain('ALWAYS notify the user the following 3 (maybe 4) pieces of information:');
+    expect(responseText).to.contain('ALWAYS notify the user the following 3 pieces of information:');
     expect(responseText).to.contain(
-      'UNLESS THE USER SPECIFIES OTHERWISE, use this username for the "usernameOrAlias" parameter in future Tool calls.'
+      'UNLESS THE USER SPECIFIES OTHERWISE, use this username (.value) for the "usernameOrAlias" parameter in future Tool calls.'
     );
 
     // Extract and parse the config JSON from the response
@@ -108,9 +108,9 @@ describe('get_username', () => {
     expect(result.content[0].type).to.equal('text');
 
     const responseText = result.content[0].text;
-    expect(responseText).to.contain('ALWAYS notify the user the following 3 (maybe 4) pieces of information:');
+    expect(responseText).to.contain('ALWAYS notify the user the following 3 pieces of information:');
     expect(responseText).to.contain(
-      'UNLESS THE USER SPECIFIES OTHERWISE, use this username for the "usernameOrAlias" parameter in future Tool calls.'
+      'UNLESS THE USER SPECIFIES OTHERWISE, use this username (.value) for the "usernameOrAlias" parameter in future Tool calls.'
     );
 
     // Extract and parse the config JSON from the response

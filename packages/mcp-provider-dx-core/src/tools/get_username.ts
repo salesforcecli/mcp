@@ -130,15 +130,14 @@ If it's not clear which type of org to resolve, set both defaultTargetOrg and de
       process.chdir(input.directory);
 
       const generateResponse = (defaultFromConfig: OrgConfigInfo | undefined): ToolTextResponse =>
-        textResponse(`ALWAYS notify the user the following 3 (maybe 4) pieces of information:
+        textResponse(`ALWAYS notify the user the following 3 pieces of information:
 1. If it is default target-org or target-dev-hub ('.key' on the config)
 2. The value of '.location' on the config
 3. The value of '.value' on the config
-4. IF '.cached' IS TRUE, tell then we are using a cached value and if they have changed it, restart the MCP Server
 
 - Full config: ${JSON.stringify(defaultFromConfig, null, 2)}
 
-UNLESS THE USER SPECIFIES OTHERWISE, use this username for the "usernameOrAlias" parameter in future Tool calls.`);
+UNLESS THE USER SPECIFIES OTHERWISE, use this username (.value) for the "usernameOrAlias" parameter in future Tool calls.`);
 
       const orgService = this.services.getOrgService();
       // Case 1: User explicitly asked for default target org
