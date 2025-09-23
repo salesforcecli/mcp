@@ -38,7 +38,7 @@ import { textResponse } from '../shared/utils.js';
  * - textResponse: Retrieve result.
  */
 
-const retrieveMetadataParams = z.object({
+export const retrieveMetadataParams = z.object({
   sourceDir: z
     .array(z.string())
     .describe(
