@@ -29,13 +29,26 @@ export class CheckCommitStatus extends McpTool<InputArgsShape, OutputArgsShape> 
   }
 
   public getName(): string {
-    return "check_commit_status";
+    return "check_devops_center_commit_status";
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: "Check Commit Status",
-      description: `Checks the status of a commit operation using the request ID returned from a previous commit operation.`,
+      description: `Check the current status of a work item committed to DevOps Center.
+
+        **Use this tool to:**
+        - Check the status of a specific commit using its Request Id
+        - Verify commit processing completion before creating a pull request
+        - Ensure commits are ready for PR creation
+
+        **Input Parameters:**
+        - username: The username of the DevOps Center org to authenticate with
+        - requestId: The specific request Id to check status for (REQUIRED)
+
+        **Output:**
+        - Status field value for the specified request Id
+        - Request Id and associated status information`,
       inputSchema: inputSchema.shape,
       outputSchema: undefined,
     };

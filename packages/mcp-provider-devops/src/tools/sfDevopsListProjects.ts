@@ -27,13 +27,15 @@ export class SfDevopsListProjects extends McpTool<InputArgsShape, OutputArgsShap
   }
 
   public getName(): string {
-    return "list_projects";
+    return "list_devops_center_projects";
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: "List DevOps Projects",
-      description: `**MANDATORY:** If the DevOps Center org is not given, use the 'sf-list-all-orgs' tool to list all orgs. 
+      description: `List all DevOps Center projects in a specific org
+      
+      **MANDATORY:** If the DevOps Center org is not given, use the 'list_all_orgs' tool to list all orgs. 
       The list will indicate which org is DevOps Center, or Sandbox if possible. If these details are not provided in the list, 
       ask the user to specify which org is DevOps Center org. Only proceed after the user has selected the DevOps Center org.
 

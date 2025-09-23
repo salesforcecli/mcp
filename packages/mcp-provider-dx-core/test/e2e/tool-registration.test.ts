@@ -54,14 +54,14 @@ describe('specific tool registration', () => {
 
   it('should not enable NON_GA tools if --allow-non-ga-tools is not specified', async () => {
     const client = await getMcpClient({
-      args: ['--orgs', 'ALLOW_ALL_ORGS', '--tools', 'run_soql_query, list_workitems', '--no-telemetry']
+      args: ['--orgs', 'ALLOW_ALL_ORGS', '--tools', 'run_soql_query, list_devops_center_work_items', '--no-telemetry']
     })
 
     try {
       const initialTools = (await client.listTools()).tools.map((t) => t.name).sort();
 
       expect(initialTools.length).to.equal(3);
-      // assert that devops's `list_workitems` tool isn't included.
+      // assert that devops's `list_devops_center_work_items` tool isn't included.
       expect(initialTools).to.deep.equal(['run_soql_query', 'get_username', 'resume_tool_operation'].sort());
     } catch (err) {
       console.error(err)
@@ -80,7 +80,6 @@ describe('specific tool registration', () => {
       const initialTools = (await client.listTools()).tools.map((t) => t.name).sort();
 
       expect(initialTools.length).to.equal(5);
-      // assert that devops's `list_workitems` tool isn't included.
       expect(initialTools).to.deep.equal(['run_soql_query', 'get_username', 'resume_tool_operation','describe_code_analyzer_rule','run_code_analyzer'].sort());
     } catch (err) {
       console.error(err)
