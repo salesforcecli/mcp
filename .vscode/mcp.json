@@ -5,7 +5,9 @@
       "args": [
         "${workspaceFolder}/packages/mcp/bin/run.js",
         "--toolsets",
-        "all",
+        "orgs",
+        "--tools",
+        "get_foo,set_bar",
         "--orgs",
         "DEFAULT_TARGET_ORG",
         "--no-telemetry",
