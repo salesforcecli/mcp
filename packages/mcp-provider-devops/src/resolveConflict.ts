@@ -5,20 +5,23 @@ export interface ResolveConflictParams {
   localPath?: string;
 }
 
+
 export async function resolveConflict({
   workItem,
   localPath
 }: ResolveConflictParams): Promise<{ content: ({ type: "text"; text: string; [x: string]: unknown })[] }> {
   
+  // If no workItem is provided, we need to fetch work items and ask user to select one
   if (!workItem) {
     return {
       content: [{
         type: "text",
-        text: "Error: Please provide a workItem to check for conflicts. Use the list_workitems tool to fetch work items first."
+        text: "Error: Please provide a workItem to check for conflicts. Use the list_devops_center_work_items tool to fetch work items first."
       }]
     };
   }
 
+  // Validate workItem has required properties
   if (!workItem.WorkItemBranch || !workItem.TargetBranch || !workItem.SourceCodeRepository?.repoUrl) {
     return {
       content: [{
@@ -37,35 +40,35 @@ export async function resolveConflict({
     return {
       content: [{
         type: "text",
-        text: `Check for conflicts: for the work item — ${workItem.name} (branch: ${workItemBranch}) against target branch ${targetBranch}.
+        text: `Resolve merge conflicts for work item "${workItem.name}" (branch: ${workItemBranch}) against target branch "${targetBranch}" in repo ${repoUrl} at path: ${repoPath}.
 
-LLM Agent Instruction:
-You must now:
+Agent execution guide (perform these steps now):
 
-1. Only if there is conflict:
-   - If there are conflicts:
-       - Run 'git status' to identify conflicted files
-       - For each conflicted file, read and display the conflict markers
-       - If not explained already: 
-        - Explain the conflict in simple terms: "This conflict occurs because ${workItemBranch} and ${targetBranch} both modified the same code..."
-        - Show the user the three sections in each conflicted file:
-            * "Current changes" (${workItemBranch} changes)
-            * "Incoming changes" (${targetBranch} changes) 
-            * "Common ancestor" (the original code both branches started from)
-       - For each conflicted file, ask the user to choose:
-           * "Keep current changes" (${workItemBranch})
-               - Use command: 'git checkout --ours <file>'
-               - This accepts changes from the ${workItemBranch}
-          * "Keep incoming changes" (${targetBranch})
-              - Use command: 'git checkout --theirs <file>'
-              - This accepts changes from the ${targetBranch}
-       - IMPORTANT: Do NOT proceed with conflict resolution until the user explicitly tells you which option they want to choose for each conflicted file
-       - IMPORTANT: Do NOT push the changes to the target branch (${targetBranch})
+1) Preconditions
+   - Verify your current working directory equals '${repoPath}'. Do not change directories automatically. If it does not match, STOP and report the mismatch; ask the user to navigate to '${repoPath}' or re-run with the correct localPath.
+   - Verify current branch: 'git rev-parse --abbrev-ref HEAD'. If not '${workItemBranch}', run: 'git checkout ${workItemBranch}'. If checkout fails, STOP here, report the exact error, and ask the user to use the checkout_devops_center_work_item tool to set up the branch. Do not create a new branch.
 
-Goal:
-${workItemBranch} should be conflict-free with ${targetBranch}, so it can be merged without issues.
+2) Confirm a conflicted state
+   - List conflicted files: 'git --no-pager diff --name-only --diff-filter=U'. If this returns no files, state clearly: 'No merge conflicts remain to resolve.' and stop.
+   - Optionally, also run: 'git status --porcelain=v1' and show lines with 'U' or conflict indicators for context.
 
-You must execute these git commands yourself using available tools, but always ask for user input when resolving conflicts. Present all results and status updates here.`,
+3) Resolve each conflicted file (no re-explanation needed)
+   - For each file, ask the user to choose one option, then apply it:
+     - Keep current (${workItemBranch}): 'git checkout --ours -- "<file>"'
+     - Keep incoming (${targetBranch}): 'git checkout --theirs -- "<file>"'
+   - After applying the user's choice, stage the file: 'git add -- "<file>"'
+   - Do not proceed without explicit user choice for each file.
+
+5) Finalize the resolution
+   - Verify no conflicts remain: 'git --no-pager diff --name-only --diff-filter=U' (should be empty).
+   - Commit locally: 'git commit -m "Resolve merge conflicts between ${workItemBranch} and ${targetBranch}"'. If nothing to commit, report that the index is clean.
+
+Important constraints:
+- Do NOT push changes. Keep all operations local.
+- Do NOT create new branches.
+- Do NOT attempt a 'keep both' manual merge in this tool; only the two options above are supported.
+- Use cross-platform commands (work on macOS and Windows). Avoid shell pipes and non-portable constructs.
+- Execute git commands yourself using available tools and present outputs and status updates here. Always get explicit user confirmation for each per-file resolution.`,
         actionRequired: true
       }]
     };

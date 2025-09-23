@@ -94,7 +94,6 @@ type InputArgsShape = typeof createScratchOrgParams.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class CreateScratchOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
-  
   public getReleaseState(): ReleaseState {
     return ReleaseState.NON_GA;
   }

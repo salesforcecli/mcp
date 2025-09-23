@@ -29,13 +29,48 @@ export class SfDevopsPromoteWorkItem extends McpTool<InputArgsShape, OutputArgsS
   }
 
   public getName(): string {
-    return "promote_workitem";
+    return "promote_devops_center_work_item";
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: "Promote Work Item",
-      description: `Promotes approved Salesforce DevOps Work Items to the next pipeline stage/environment in the DevOps Center org. Fetches Work Items by Name and derives PipelineId and TargetStageId automatically. Returns promotion requestId for tracking.`,
+      description: `Promote an approved work item to the next stage in the DevOps Center pipeline.
+
+      **Use when user asks (examples):**
+      - "Promote WI-123 to UAT"
+      - "Promote my approved work item"
+      - "Release WI-456 to next stage"
+
+      **Prerequisites:**
+      - This tool must be used only for the DevOps Center org.
+      - The user must provide: username (DevOps Center) and a list of Work Item Names.
+
+      **Input Parameters:**
+      - username: DevOps Center org username. If missing, use 'list_all_orgs' and ask user to select the DevOps Center org.
+      - workItemNames: Array of exact Work Item Names to promote.
+
+      **Behavior:**
+      1. Fetches the specified Work Items by Name and derives PipelineId and TargetStageId automatically.
+      2. Validates that each Work Item has PipelineStageId and a resolvable TargetStageId.
+      3. Calls the promotion API with the resolved ids.
+
+
+      **Safety and guidance for the LLM:**
+      - Do not auto-select a non-DevOps Center org; always confirm with the user.
+      - If any Work Item is not found or missing required pipeline data, return an actionable error listing which names failed.
+      - Never promote without explicit user confirmation of workitems.
+
+      **Output:**
+      - JSON with promotion requestId (if available) and any error details.
+
+      **Next steps:**
+      - Suggest how to track promotion status using the returned requestId or the DevOps Center UI.
+      - If applicable, prompt the user to promote to the next stage after validation.
+
+      **Output:**
+      A JSON object containing the promotion request ID, the org details, and any relevant status or tracking information.
+      `,
       inputSchema: inputSchema.shape,
       outputSchema: undefined,
     };

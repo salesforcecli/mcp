@@ -33,7 +33,7 @@ import { directoryParam, usernameOrAliasParam, useToolingApiParam } from '../sha
  * - textResponse: SOQL query results
  */
 
-const queryOrgParamsSchema = z.object({
+export const queryOrgParamsSchema = z.object({
   query: z.string().describe('SOQL query to run'),
   usernameOrAlias: usernameOrAliasParam,
   directory: directoryParam,
