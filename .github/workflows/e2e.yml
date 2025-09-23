@@ -1,0 +1,108 @@
+on:
+  workflow_call:
+    secrets:
+      SF_CHANGE_CASE_SFDX_AUTH_URL:
+        description: "SFDX_AUTH_URL for the CTC org. Only useful for the CTC NUTs."
+        required: false
+      SF_CHANGE_CASE_TEMPLATE_ID:
+        required: false
+        description: "Template ID for the CTC org. Only useful for the CTC NUTs."
+      SF_CHANGE_CASE_CONFIGURATION_ITEM:
+        required: false
+        description: "Configuration Item for the CTC org. Only useful for the CTC NUTs."
+      ONEGP_TESTKIT_AUTH_URL:
+        description: "SFDX_AUTH_URL for the 1GP org. Only useful for the 1GP NUTs in packaging"
+        required: false
+      TESTKIT_AUTH_URL:
+        required: false
+      TESTKIT_HUB_USERNAME:
+        required: false
+      TESTKIT_JWT_CLIENT_ID:
+        required: false
+      TESTKIT_JWT_KEY:
+        required: false
+      TESTKIT_HUB_INSTANCE:
+        required: false
+
+    inputs:
+      dxMcpVersion:
+        required: false
+        type: string
+        description: "DX MCP version to use for E2E tests. Will use the local MCP build in branch if version isn't specified."
+      provider:
+        required: true
+        type: string
+        default: mcp-provider-dx-core
+        description: "provider package with e2e tests"
+      command:
+        required: false
+        type: string
+        default: yarn test:nuts
+        description: "command to execute (ex: yarn test:e2e)"
+      os:
+        required: false
+        description: "runs-on property, ex: ubuntu-latest, windows-latest"
+        type: string
+        default: "ubuntu-latest"
+      retries:
+        required: false
+        type: number
+        default: 3
+        description: "Number of times to attempt NUTs"
+
+jobs:
+  e2e:
+    name: ${{ inputs.command }}
+    runs-on: ${{ inputs.os }}
+    steps:
+      - name: Configure git longpaths if on Windows
+        if: ${{ runner.os == 'Windows' }}
+        run: git config --system core.longpaths true
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: yarn
+
+      - name: Install sf CLI 
+        uses: salesforcecli/github-workflows/.github/actions/retry@main
+        with:
+          max_attempts: ${{ inputs.retries }}
+          command: npm install @salesforce/cli@nightly -g
+
+      - name: Install DX MCP
+        if: inputs.dxMcpVersion
+        uses: salesforcecli/github-workflows/.github/actions/retry@main
+        with:
+          max_attempts: ${{ inputs.retries }}
+          command: npm install -g @salesforce/mcp@${{ inputs.dxMcpVersion }}
+
+      - name: Set SF_MCP_SERVER_BIN env var
+        if: inputs.dxMcpVersion
+        run: echo "SF_MCP_SERVER_BIN=$(which sf-mcp-server)" >> $GITHUB_ENV
+        shell: bash
+
+      - uses: salesforcecli/github-workflows/.github/actions/yarnInstallWithRetries@main
+
+      - run: yarn build
+
+      - name: E2E tests with ${{ inputs.retries }} attempts
+        run: |
+          cd packages/${{ inputs.provider }}
+          ${{ inputs.command }}
+        shell: bash
+        env:
+          TESTKIT_AUTH_URL: ${{ secrets.TESTKIT_AUTH_URL}}
+          TESTKIT_HUB_USERNAME: ${{ secrets.TESTKIT_HUB_USERNAME }}
+          TESTKIT_JWT_CLIENT_ID: ${{ secrets.TESTKIT_JWT_CLIENT_ID }}
+          TESTKIT_JWT_KEY: ${{ secrets.TESTKIT_JWT_KEY }}
+          TESTKIT_HUB_INSTANCE: ${{ secrets.TESTKIT_HUB_INSTANCE }}
+          ONEGP_TESTKIT_AUTH_URL: ${{ secrets.ONEGP_TESTKIT_AUTH_URL }}
+          SF_CHANGE_CASE_SFDX_AUTH_URL: ${{ secrets.SF_CHANGE_CASE_SFDX_AUTH_URL }}
+          SF_CHANGE_CASE_TEMPLATE_ID: ${{ secrets.SF_CHANGE_CASE_TEMPLATE_ID}}
+          SF_CHANGE_CASE_CONFIGURATION_ITEM: ${{ secrets.SF_CHANGE_CASE_CONFIGURATION_ITEM}}
+          TESTKIT_SETUP_RETRIES: 2
+          SF_DISABLE_TELEMETRY: true
+          DEBUG: ${{ vars.DEBUG }}

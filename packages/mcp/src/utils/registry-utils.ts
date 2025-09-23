@@ -47,6 +47,12 @@ export async function registerToolsets(
   if (useDynamicTools) {
     // If --dynamic-tools flag was passed, register the tools needed to handle dynamic tool registration
     const dynamicTools = createDynamicServerTools(server);
+
+    // This should always be true because using `--dynamic-tools` and `--toolsets` is blocked.
+    // If that doesn't change after GA, this can be just `toolsets.push('all')`
+    const isAllToolsetEnabled = toolsets.includes('all')
+    if (!isAllToolsetEnabled) toolsets.push('all')
+
     ux.stderr('Registering dynamic tools.');
     // eslint-disable-next-line no-await-in-loop
     await registerTools(dynamicTools, server, useDynamicTools, allowNonGaTools);
