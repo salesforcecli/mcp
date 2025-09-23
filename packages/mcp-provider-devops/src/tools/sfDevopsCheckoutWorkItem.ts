@@ -31,13 +31,40 @@ export class SfDevopsCheckoutWorkItem extends McpTool<InputArgsShape, OutputArgs
   }
 
   public getName(): string {
-    return "checkout_workitem";
+    return "checkout_devops_center_work_item";
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: "Checkout Work Item",
-      description: `Checks out the branch associated with a selected work item by name. Always ask the user to provide the local path (repoPath) to the checked-out repository. Takes the DevOps Center org username and the exact Work Item Name, looks up the Work Item to retrieve its repository URL and branch, and then checks out that branch.`,
+      description: `Checks out the branch associated with a selected work item by name.
+
+**MANDATORY:** Always ask the user to provide the local path (repoPath) to the checked-out repository. 
+You may show the current working directory as an option, but do not proceed until the user has explicitly chosen a repo path. 
+Never assume or default to a path without user confirmation.
+
+This tool takes the DevOps Center org username and the exact Work Item Name, looks up the Work Item to retrieve its repository URL and branch, and then checks out that branch. If localPath is not provided, the current working directory will be used. It clones the repository to the specified local path if it does not exist there, and checks out the specified branch. Assumes the user is already authenticated with the git CLI.
+
+**How to use this tool:**
+
+1. **Work Item Name Required:**
+   - Provide the exact Work Item Name and the DevOps Center org username. The tool will fetch the Work Item and derive repo URL and branch automatically.
+
+2. **Input Parameters:**
+   - "username": The username of the DevOps Center org.
+   - "workItemName": The exact Name of the Work Item whose branch to check out.
+   - "localPath" (mandatory): The directory path where the repository should be cloned/checked out. Must be provided by the user. The current working directory can be shown as an option, but do not proceed until the user chooses.
+
+3. **Operation:**
+   - If the repository does not exist at the specified local path, the tool will clone it there.
+   - The tool will then check out the specified branch in that directory.
+   - The output will explicitly show the path where the repository is cloned.
+
+**Typical workflow:**
+- Provide Work Item Name and local path, then run this tool to clone and check out the correct branch.
+
+**Output:**
+- Success or error message indicating the result of the clone and checkout operations, including the path where the repository is cloned.`,
       inputSchema: inputSchema.shape,
       outputSchema: undefined,
     };

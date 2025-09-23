@@ -1,3 +1,12 @@
+## [0.3.2](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.3.1...mcp-provider-dx-core@0.3.2) (2025-09-23)
+
+
+### Bug Fixes
+
+* **devops:** tool rename ([#242](https://github.com/salesforcecli/mcp/issues/242)) ([199a45f](https://github.com/salesforcecli/mcp/commit/199a45fe3bf96931299a75ae8c434651383b1b58))
+
+
+
 ## [0.3.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.3.0...mcp-provider-dx-core@0.3.1) (2025-09-19)
 
 

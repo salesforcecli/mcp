@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { EOL } from 'node:os';
 import { ux } from '@oclif/core';
 import {
   MCP_PROVIDER_API_VERSION,
@@ -47,6 +48,12 @@ export async function registerToolsets(
   if (useDynamicTools) {
     // If --dynamic-tools flag was passed, register the tools needed to handle dynamic tool registration
     const dynamicTools = createDynamicServerTools(server);
+
+    // This should always be true because using `--dynamic-tools` and `--toolsets` is blocked.
+    // If that doesn't change after GA, this can be just `toolsets.push('all')`
+    const isAllToolsetEnabled = toolsets.includes('all')
+    if (!isAllToolsetEnabled) toolsets.push('all')
+
     ux.stderr('Registering dynamic tools.');
     // eslint-disable-next-line no-await-in-loop
     await registerTools(dynamicTools, server, useDynamicTools, allowNonGaTools);
@@ -71,7 +78,7 @@ export async function registerToolsets(
       // eslint-disable-next-line no-await-in-loop
       await registerTools(toolsetRegistry[toolset], server, useDynamicTools, allowNonGaTools);
     } else {
-      ux.stderr(`   Skipping toolset: '${toolset}'`);
+      ux.stderr(`!! Skipping toolset: '${toolset}'`);
     }
   }
 
@@ -84,7 +91,9 @@ export async function registerToolsets(
     const existingToolNames = new Set(toolRegistry.map(tool => tool.getName()));
     // Validate that all requested tools exist
     const invalidTools = tools.filter(toolName => !existingToolNames.has(toolName));
-    if (invalidTools.length > 0) throw new Error(`Invalid tool names provided to --tools: ${invalidTools.join(', ')}`);
+    if (invalidTools.length > 0) throw new Error(`Invalid tool names provided to --tools: "${invalidTools.join('", "')}"
+Valid tools include:
+- ${Array.from(existingToolNames).join(`${EOL}- `)}`);
 
     for (const tool of toolRegistry) {
       if (tools.includes(tool.getName())) {
@@ -121,7 +130,7 @@ async function registerTools(
       );
       registeredTool.disable();
     } else {
-      ux.stderr(`   Tool registered: '${tool.getName()}'`);
+      ux.stderr(`-> Registering tool: '${tool.getName()}'`);
     }
     // eslint-disable-next-line no-await-in-loop
     await addTool(registeredTool, tool.getName());
@@ -161,10 +170,8 @@ async function createToolRegistryFromProviders(
 function validateMcpProviderVersion(provider: Versioned): void {
   if (provider.getVersion().major !== MCP_PROVIDER_API_VERSION.major) {
     throw new Error(
-      `The version '${provider
-        .getVersion()
-        .toString()}' for '${provider.getName()}' is incompatible with this MCP Server.\n` +
-        `Expected the major version to be '${MCP_PROVIDER_API_VERSION.major}'.`
+      `The version '${provider.getVersion().toString()}' for '${provider.getName()}' is incompatible with this MCP Server.
+Expected the major version to be '${MCP_PROVIDER_API_VERSION.major}'.`
     );
   }
 }
