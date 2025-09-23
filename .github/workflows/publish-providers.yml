@@ -38,7 +38,7 @@ jobs:
           AUTO_PUBLISHABLE_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core" "mcp-provider-mobile-web")
           
           # All available provider packages
-          ALL_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core" "mcp-provider-code-analyzer" "mcp-provider-mobile-web", "mcp-provider-devops")
+          ALL_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core" "mcp-provider-code-analyzer" "mcp-provider-mobile-web" "mcp-provider-devops")
           
           # Initialize packages array
           PACKAGES='[]'
