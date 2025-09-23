@@ -10,15 +10,17 @@ export async function detectConflict({
   localPath
 }: DetectConflictParams): Promise<{ content: ({ type: "text"; text: string; [x: string]: unknown })[] }> {
   
+  // If no workItem is provided, we need to fetch work items and ask user to select one
   if (!workItem) {
     return {
       content: [{
         type: "text",
-        text: "Error: Please provide a workItem to check for conflicts. Use the list_workitems tool to fetch work items first."
+        text: "Error: Please provide a workItem to check for conflicts. Use the list_devops_center_work_items tool to fetch work items first."
       }]
     };
   }
 
+  // Validate workItem has required properties
   if (!workItem.WorkItemBranch || !workItem.TargetBranch || !workItem.SourceCodeRepository?.repoUrl) {
     return {
       content: [{
@@ -37,27 +39,41 @@ export async function detectConflict({
     return {
       content: [{
         type: "text",
-        text: `Check for conflicts: for the work item — ${workItem.name} (branch: ${workItemBranch}) against target branch ${targetBranch}.
+        text: `Detect merge conflicts for work item "${workItem.name}" (branch: ${workItemBranch}) against target branch "${targetBranch}" in repo ${repoUrl} at path: ${repoPath}.
 
-        LLM Agent Instruction:
-        You must now:
+Agent execution guide (perform these steps now):
 
-        1. For work item branch (${workItemBranch}):
-          - Checkout the branch: 'git checkout ${workItemBranch}'
-          - Merge the target branch into your workitem branch:
-              - 'git fetch origin'
-              - 'git merge origin/${targetBranch}'
-          - If there are conflicts:
-              - Run 'git status' to identify conflicted files
-              - For each conflicted file, read and display the conflict markers
-              - Explain the conflict in simple terms: "This conflict occurs because ${workItemBranch} and ${targetBranch} both modified the same code..."
-              - After these steps, call the resolve_conflict tool to resolve the conflicts.
-        - IMPORTANT: Do not provide resolution instructions, call the resolve_conflict tool to resolve the conflicts.
+1) Prepare repository context
+   - Ensure your working directory is: '${repoPath}' (use 'cd' on macOS/Windows)
+   - Update refs: 'git fetch --all --prune'
 
-Goal:
-explain conflict in ${workItemBranch} with ${targetBranch} in simple langugae and call resolve_conflict tool to resolve the conflicts.
+2) Check out the work item branch
+   - Run: 'git checkout ${workItemBranch}'
+   - If this fails, STOP here. Report the exact error output and inform the user that the branch must exist locally. Do not create a new branch or auto-track a remote. Suggest using the checkout_devops_center_work_item tool to set up the branch, then re-run conflict detection.
 
-You must execute these git commands yourself using available tools, but always ask for user input when resolving conflicts. Present all results and status updates here.`,
+3) Attempt to merge the target branch into the work item branch (for detection only)
+   - Run: 'git merge --no-ff --no-edit origin/${targetBranch}' (allow failure to indicate conflicts)
+
+4) If conflicts are reported, produce a concise, readable report:
+   - List conflicted files: 'git --no-pager diff --name-only --diff-filter=U'
+   - For each conflicted file:
+     - Preview the conflict: 'git --no-pager diff --relative -- <file>' and/or read the file and extract the first block between '<<<<<<<', '=======', '>>>>>>>'. Limit output to ~120 lines. If binary, state 'binary file conflict'.
+     - Classify the conflict (e.g., both modified, add/add, rename/delete) using 'git status --porcelain=v1' and/or 'git ls-files -u'.
+     - Explain in plain language why the conflict happened, using branch names "${workItemBranch}" (current) and "${targetBranch}" (incoming). Example: "Both branches changed the same function signature differently."
+
+5) Output format (keep it user-friendly):
+   - A one-line summary: 'Conflicts found between ${workItemBranch} and ${targetBranch}'
+   - A bullet list of conflicted files with conflict type
+   - For each file: a brief explanation (1–2 sentences) and the excerpt with conflict markers
+   - End with a clear next step: suggest calling the resolve_devops_center_merge_conflict tool to proceed
+
+6) If no conflicts are found:
+   - State clearly: 'No merge conflicts detected. It is safe to proceed with merge.'
+
+Important constraints:
+- Do NOT provide manual resolution steps and do NOT modify files. After summarizing, suggest using the resolve_devops_center_merge_conflict tool to resolve the conflicts.
+- Do NOT create new branches or make commits during detection.
+- Execute the git commands yourself using available tools. Present command outputs and status updates here.`,
         actionRequired: true
       }]
     };

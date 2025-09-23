@@ -32,13 +32,35 @@ export class SfDevopsResolveConflict extends McpTool<InputArgsShape, OutputArgsS
   }
 
   public getName(): string {
-    return "resolve_conflict";
+    return "resolve_devops_center_merge_conflict";
   }
 
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: "Resolve Conflict",
-      description: `Provides guidance to resolve merge conflicts for a selected work item by name. Use after conflicts have been detected. Provides step-by-step instructions for resolving conflicts between the work item branch and target branch.`,
+      description: `Resolves merge conflicts for a selected work item by name.
+
+      **When to use:**
+      - After running 'detect_devops_center_merge_conflict' and conflicts were found.
+
+      **MANDATORY input:**
+      - workItemName (exact Name of the Work Item) and username of the DevOps Center org.
+
+      **Behavior:**
+      - Looks up the Work Item by Name, validates required fields, and prepares per-file resolution commands.
+      - If branch/target branch/repo URL are missing, returns actionable guidance to fix inputs first.
+
+      **What this tool does:**
+      1. Confirms the repo is in a conflicted state
+      2. Lists conflicted files
+      3. For each file, provides choices (keep current / keep incoming / keep both ) with exact git commands
+      4. Guides removing conflict markers, staging, and committing
+
+      **Output:**
+      - If conflicts exist: per-file action plan with commands
+      - If no conflicts: confirms the repo is clean
+      - On error: actionable troubleshooting
+`,
       inputSchema: inputSchema.shape,
       outputSchema: undefined,
     };
