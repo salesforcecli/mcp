@@ -1,3 +1,21 @@
+# [0.21.0](https://github.com/salesforcecli/mcp/compare/0.20.1...0.21.0) (2025-09-23)
+
+
+### Bug Fixes
+
+* **devops:** tool rename ([#242](https://github.com/salesforcecli/mcp/issues/242)) ([199a45f](https://github.com/salesforcecli/mcp/commit/199a45fe3bf96931299a75ae8c434651383b1b58))
+* remove sf prefix -W-19676410 ([#228](https://github.com/salesforcecli/mcp/issues/228)) ([9b02795](https://github.com/salesforcecli/mcp/commit/9b02795e72ee8fc716dcca643ede1ca8e1c3e378))
+
+
+### Features
+
+* add `--tools` flag ([#231](https://github.com/salesforcecli/mcp/issues/231)) ([3effd2a](https://github.com/salesforcecli/mcp/commit/3effd2ac5ac72d9e8413a9f9402bb0f35ecb20d2)), closes [#234](https://github.com/salesforcecli/mcp/issues/234)
+* add aura and LWC toolset @W-19627145 ([#229](https://github.com/salesforcecli/mcp/issues/229)) ([8e7681f](https://github.com/salesforcecli/mcp/commit/8e7681fb80b5b53e2a8977b07f108bc7efed14e5))
+* add devops tools W-19616705 ([#232](https://github.com/salesforcecli/mcp/issues/232)) ([06d3e5e](https://github.com/salesforcecli/mcp/commit/06d3e5e1f5847b795da88156e086eb77401434cb)), closes [#227](https://github.com/salesforcecli/mcp/issues/227)
+* add lwc security guide mcp tool ([#245](https://github.com/salesforcecli/mcp/issues/245)) ([41b3bd4](https://github.com/salesforcecli/mcp/commit/41b3bd4c7c7d3263ced0806558be6ce9e0ae1bd0))
+
+
+
 ## [0.20.1](https://github.com/salesforcecli/mcp/compare/0.20.0...0.20.1) (2025-09-16)
 
 
@@ -24,7 +42,7 @@
 
 ### Bug Fixes
 
-* improve get_username instructions W-19472383 ([#181](https://github.com/salesforcecli/mcp/issues/181)) ([ce845f8](https://github.com/salesforcecli/mcp/commit/ce845f8a956dece92cf2d67e29cc868c8ac69b92))
+* improve sf-get-username instructions W-19472383 ([#181](https://github.com/salesforcecli/mcp/issues/181)) ([ce845f8](https://github.com/salesforcecli/mcp/commit/ce845f8a956dece92cf2d67e29cc868c8ac69b92))
 
 
 
