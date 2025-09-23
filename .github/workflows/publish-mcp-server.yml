@@ -111,6 +111,10 @@ jobs:
     # Logic: Run if (manual release) OR (provider updates were requested AND updates were found)
     if: always() && (needs.update-dependencies.result == 'success' || needs.update-dependencies.result == 'skipped') && (!inputs.update-providers || needs.update-dependencies.outputs.has-updates == 'true')
     runs-on: ubuntu-latest
+    outputs:
+      skipped: ${{ steps.changelog.outputs.skipped }}
+      release-id: ${{ steps.release.outputs.id }}
+      version: ${{ steps.changelog.outputs.version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -186,20 +190,23 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Run E2E test with latest MCP 
-        if: ${{ steps.changelog.outputs.skipped == 'false' && steps.release.outputs.id != '' }}
-        uses: ./.github/workflows/e2e.yml
-        strategy:
-          matrix:
-            os: [ubuntu-latest, windows-latest]
-            command:
-              - 'yarn test:e2e'
-            provider:
-              - 'mcp-provider-dx-core'
-          fail-fast: false
+  e2e-test:
+    needs: [publish-server]
+    if: ${{ needs.publish-server.outputs.skipped == 'false' && needs.publish-server.outputs.release-id != '' }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        command:
+          - 'yarn test:e2e'
+        provider:
+          - 'mcp-provider-dx-core'
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: ./.github/workflows/e2e.yml
         with:
           os: ${{ matrix.os }}
           command: ${{ matrix.command }}
           provider: ${{ matrix.provider }}
-          dxMcpVersion: ${{ steps.changelog.outputs.version }}
+          dxMcpVersion: ${{ needs.publish-server.outputs.version }}
 
