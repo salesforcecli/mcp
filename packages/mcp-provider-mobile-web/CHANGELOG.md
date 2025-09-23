@@ -1,3 +1,7 @@
+## [0.1.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-mobile-web@0.1.0...mcp-provider-mobile-web@0.1.1) (2025-09-23)
+
+
+
 # [0.1.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-mobile-web@0.0.3...mcp-provider-mobile-web@0.1.0) (2025-09-19)
 
 
