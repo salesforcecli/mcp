@@ -419,6 +419,7 @@ describe('auth tests', () => {
       configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(targetOrgConfig);
       configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(emptyDevHubConfig);
 
+      // allowed orgs cache
       sandbox.stub(Cache, 'safeGet').resolves(new Set(['DEFAULT_TARGET_ORG']));
 
       const result = await getAllAllowedOrgs();
@@ -457,6 +458,7 @@ describe('auth tests', () => {
       configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(emptyTargetOrgConfig);
       configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(devHubConfig);
 
+      // allowed orgs cache
       sandbox.stub(Cache, 'safeGet').resolves(new Set(['DEFAULT_TARGET_DEV_HUB']));
 
       const result = await getAllAllowedOrgs();
@@ -636,7 +638,7 @@ describe('auth tests', () => {
 
       const result = await getDefaultTargetOrg();
 
-      // Expect our simplified ConfigInfoWithCache structure
+      // Expect the simplified OrgConfigInfo structure
       expect(result).to.deep.equal({
         key: OrgConfigProperties.TARGET_ORG,
         value: 'test-org@example.com',
@@ -686,41 +688,7 @@ describe('auth tests', () => {
       expect(configAggregatorCreateStub.calledOnce).to.be.true;
     });
 
-    it('should use cache on subsequent calls from the same directory', async () => {
-      const mockConfig: ConfigInfo = {
-        key: OrgConfigProperties.TARGET_ORG,
-        value: 'test-org@example.com',
-        location: ConfigAggregator.Location.LOCAL,
-        path: '/test/path/cache1',
-        isLocal: () => true,
-        isGlobal: () => false,
-        isEnvVar: () => false,
-      };
-
-      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(mockConfig);
-
-      // First call
-      const result1 = await getDefaultTargetOrg();
-      expect(result1).to.deep.equal({
-        key: OrgConfigProperties.TARGET_ORG,
-        value: 'test-org@example.com',
-        location: ConfigAggregator.Location.LOCAL,
-        path: '/test/path/cache1',
-      });
-      expect(configAggregatorCreateStub.calledOnce).to.be.true;
-
-      // Second call should use cache based on path
-      const result2 = await getDefaultTargetOrg();
-      expect(result2).to.deep.equal({
-        key: OrgConfigProperties.TARGET_ORG,
-        value: 'test-org@example.com',
-        location: ConfigAggregator.Location.LOCAL,
-        path: '/test/path/cache1',
-      });
-      expect(configAggregatorCreateStub.calledTwice).to.be.true; // ConfigAggregator is called every time to get the path.
-    });
-
-    it('should not use cache when config path changes', async () => {
+    it('should return different values when config path changes', async () => {
       const mockConfig1: ConfigInfo = {
         key: OrgConfigProperties.TARGET_ORG,
         value: 'test-org1@example.com',
@@ -752,7 +720,7 @@ describe('auth tests', () => {
       });
       expect(configAggregatorCreateStub.calledOnce).to.be.true;
 
-      // Second call with different config path should not use cache
+      // Second call with different config path
       configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(mockConfig2);
       const result2 = await getDefaultTargetOrg();
       expect(result2).to.deep.equal({
@@ -764,12 +732,12 @@ describe('auth tests', () => {
       expect(configAggregatorCreateStub.calledTwice).to.be.true;
     });
 
-    it('should use cache when same config path is returned (ignores new value)', async () => {
+    it('should detect a new default target org value if it is updated (uses new value)', async () => {
       const mockConfig1: ConfigInfo = {
         key: OrgConfigProperties.TARGET_ORG,
         value: 'test-org@example.com',
         location: ConfigAggregator.Location.LOCAL,
-        path: '/test/path/cache2',
+        path: '/test/path1',
         isLocal: () => true,
         isGlobal: () => false,
         isEnvVar: () => false,
@@ -779,31 +747,31 @@ describe('auth tests', () => {
         key: OrgConfigProperties.TARGET_ORG,
         value: 'CHANGED_VALUE@example.com',
         location: ConfigAggregator.Location.LOCAL,
-        path: '/test/path/cache2',
+        path: '/test/path1',
         isLocal: () => true,
         isGlobal: () => false,
         isEnvVar: () => false,
       };
 
-      // First call - should cache the config by path
+      // First call
       configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(mockConfig1);
       const result1 = await getDefaultTargetOrg();
       expect(result1).to.deep.equal({
         key: OrgConfigProperties.TARGET_ORG,
         value: 'test-org@example.com',
         location: ConfigAggregator.Location.LOCAL,
-        path: '/test/path/cache2',
+        path: '/test/path1',
       });
       expect(configAggregatorCreateStub.calledOnce).to.be.true;
 
-      // Second call with same path should use cache
+      // Second call with same path should use new value
       configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(mockConfig2);
       const result2 = await getDefaultTargetOrg();
       expect(result2).to.deep.equal({
         key: OrgConfigProperties.TARGET_ORG,
-        value: 'test-org@example.com',
+        value: 'CHANGED_VALUE@example.com',
         location: ConfigAggregator.Location.LOCAL,
-        path: '/test/path/cache2',
+        path: '/test/path1',
       });
       expect(configAggregatorCreateStub.calledTwice).to.be.true; // ConfigAggregator is called every time to get the path.
     });
@@ -885,41 +853,7 @@ describe('auth tests', () => {
       expect(configAggregatorCreateStub.calledOnce).to.be.true;
     });
 
-    it('should use cache on subsequent calls from the same directory', async () => {
-      const mockConfig: ConfigInfo = {
-        key: OrgConfigProperties.TARGET_DEV_HUB,
-        value: 'devhub@example.com',
-        location: ConfigAggregator.Location.GLOBAL,
-        path: '/global/path/cache1',
-        isLocal: () => false,
-        isGlobal: () => true,
-        isEnvVar: () => false,
-      };
-
-      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(mockConfig);
-
-      // First call
-      const result1 = await getDefaultTargetDevHub();
-      expect(result1).to.deep.equal({
-        key: OrgConfigProperties.TARGET_DEV_HUB,
-        value: 'devhub@example.com',
-        location: ConfigAggregator.Location.GLOBAL,
-        path: '/global/path/cache1',
-      });
-      expect(configAggregatorCreateStub.calledOnce).to.be.true;
-
-      // Second call should use cache based on path
-      const result2 = await getDefaultTargetDevHub();
-      expect(result2).to.deep.equal({
-        key: OrgConfigProperties.TARGET_DEV_HUB,
-        value: 'devhub@example.com',
-        location: ConfigAggregator.Location.GLOBAL,
-        path: '/global/path/cache1',
-      });
-      expect(configAggregatorCreateStub.calledTwice).to.be.true; // ConfigAggregator is called every time to get the path.
-    });
-
-    it('should not use cache when config path changes', async () => {
+    it('should return different values when config path changes', async () => {
       const mockConfig1: ConfigInfo = {
         key: OrgConfigProperties.TARGET_DEV_HUB,
         value: 'devhub1@example.com',
@@ -951,7 +885,7 @@ describe('auth tests', () => {
       });
       expect(configAggregatorCreateStub.calledOnce).to.be.true;
 
-      // Second call with different config path should not use cache
+      // Second call with different config path
       configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(mockConfig2);
       const result2 = await getDefaultTargetDevHub();
       expect(result2).to.deep.equal({
@@ -963,12 +897,12 @@ describe('auth tests', () => {
       expect(configAggregatorCreateStub.calledTwice).to.be.true;
     });
 
-    it('should use cache when same config path is returned (ignores new value)', async () => {
+    it('should detect a new default target dev hub value if it is updated (uses new value)', async () => {
       const mockConfig1: ConfigInfo = {
         key: OrgConfigProperties.TARGET_DEV_HUB,
         value: 'devhub@example.com',
         location: ConfigAggregator.Location.GLOBAL,
-        path: '/global/path/cache2',
+        path: '/global/path2',
         isLocal: () => false,
         isGlobal: () => true,
         isEnvVar: () => false,
@@ -978,95 +912,33 @@ describe('auth tests', () => {
         key: OrgConfigProperties.TARGET_DEV_HUB,
         value: 'CHANGED_DEVHUB@example.com',
         location: ConfigAggregator.Location.GLOBAL,
-        path: '/global/path/cache2',
+        path: '/global/path2',
         isLocal: () => false,
         isGlobal: () => true,
         isEnvVar: () => false,
       };
 
-      // First call - should cache the config by path
+      // First call
       configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(mockConfig1);
       const result1 = await getDefaultTargetDevHub();
       expect(result1).to.deep.equal({
         key: OrgConfigProperties.TARGET_DEV_HUB,
         value: 'devhub@example.com',
         location: ConfigAggregator.Location.GLOBAL,
-        path: '/global/path/cache2',
+        path: '/global/path2',
       });
       expect(configAggregatorCreateStub.calledOnce).to.be.true;
 
-      // Second call with same path should use cache
+      // Second call with same path should use new value
       configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(mockConfig2);
       const result2 = await getDefaultTargetDevHub();
       expect(result2).to.deep.equal({
         key: OrgConfigProperties.TARGET_DEV_HUB,
-        value: 'devhub@example.com',
+        value: 'CHANGED_DEVHUB@example.com',
         location: ConfigAggregator.Location.GLOBAL,
-        path: '/global/path/cache2',
+        path: '/global/path2',
       });
       expect(configAggregatorCreateStub.calledTwice).to.be.true; // ConfigAggregator is called every time to get the path.
-    });
-
-    it('should maintain separate caches for target org and dev hub', async () => {
-      const mockTargetOrgConfig: ConfigInfo = {
-        key: OrgConfigProperties.TARGET_ORG,
-        value: 'target-org@example.com',
-        location: ConfigAggregator.Location.LOCAL,
-        path: '/test/path/isolation1',
-        isLocal: () => true,
-        isGlobal: () => false,
-        isEnvVar: () => false,
-      };
-
-      const mockDevHubConfig: ConfigInfo = {
-        key: OrgConfigProperties.TARGET_DEV_HUB,
-        value: 'devhub@example.com',
-        location: ConfigAggregator.Location.GLOBAL,
-        path: '/global/path/isolation1',
-        isLocal: () => false,
-        isGlobal: () => true,
-        isEnvVar: () => false,
-      };
-
-      // Set up different responses for different properties
-      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_ORG).returns(mockTargetOrgConfig);
-      configAggregatorGetInfoStub.withArgs(OrgConfigProperties.TARGET_DEV_HUB).returns(mockDevHubConfig);
-
-      // First calls
-      const targetOrgResult1 = await getDefaultTargetOrg();
-      const devHubResult1 = await getDefaultTargetDevHub();
-
-      expect(targetOrgResult1).to.deep.equal({
-        key: OrgConfigProperties.TARGET_ORG,
-        value: 'target-org@example.com',
-        location: ConfigAggregator.Location.LOCAL,
-        path: '/test/path/isolation1',
-      });
-      expect(devHubResult1).to.deep.equal({
-        key: OrgConfigProperties.TARGET_DEV_HUB,
-        value: 'devhub@example.com',
-        location: ConfigAggregator.Location.GLOBAL,
-        path: '/global/path/isolation1',
-      });
-      expect(configAggregatorCreateStub.calledTwice).to.be.true;
-
-      // Second calls should use cache for both
-      const targetOrgResult2 = await getDefaultTargetOrg();
-      const devHubResult2 = await getDefaultTargetDevHub();
-
-      expect(targetOrgResult2).to.deep.equal({
-        key: OrgConfigProperties.TARGET_ORG,
-        value: 'target-org@example.com',
-        location: ConfigAggregator.Location.LOCAL,
-        path: '/test/path/isolation1',
-      });
-      expect(devHubResult2).to.deep.equal({
-        key: OrgConfigProperties.TARGET_DEV_HUB,
-        value: 'devhub@example.com',
-        location: ConfigAggregator.Location.GLOBAL,
-        path: '/global/path/isolation1',
-      });
-      expect(configAggregatorCreateStub.callCount).to.equal(4); // Called twice for each function (4 total)
     });
   });
 });

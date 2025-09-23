@@ -123,19 +123,15 @@ export async function filterAllowedOrgs(
   });
 }
 
-const defaultOrgMaps = {
-  [OrgConfigProperties.TARGET_ORG]: new Map<string, OrgConfigInfo>(),
-  [OrgConfigProperties.TARGET_DEV_HUB]: new Map<string, OrgConfigInfo>(),
-};
-
 // Helper function to get default config for a property
 // Values are cached based on ConfigInfo path after first retrieval
 // This is to prevent manipulation of the config file after server start
 async function getDefaultConfig(
   property: OrgConfigProperties.TARGET_ORG | OrgConfigProperties.TARGET_DEV_HUB
 ): Promise<OrgConfigInfo | undefined> {
-  // If the directory changes, the singleton instance of ConfigAggregator is not updated.
-  // It continues to use the old local or global config.
+  // If the directory changes, the ConfigAggregator singleton does not update.
+  // It continues to use the old local or global config instead.
+  // We call clearInstance on the singleton to read the new config.
   await ConfigAggregator.clearInstance();
   const aggregator = await ConfigAggregator.create();
   const config = aggregator.getInfo(property);
@@ -144,18 +140,9 @@ async function getDefaultConfig(
 
   if (!value || typeof value !== 'string' || !path) return undefined;
 
-  // Create a typed config object with the necessary properties
+  // Return an typed object with only the necessary properties
   // This reduces assertions and lowers context returned to the LLM
-  const typedConfig = { key, location, value, path } as OrgConfigInfo;
-
-  if (defaultOrgMaps[property].has(path)) {
-    // If the cache has the config's path set, use the cached config
-    const cachedConfig = defaultOrgMaps[property].get(path)!;
-    return cachedConfig;
-  } else {
-    defaultOrgMaps[property].set(path, typedConfig);
-    return typedConfig;
-  }
+  return { key, location, value, path } as OrgConfigInfo;
 }
 
 export async function getDefaultTargetOrg(): Promise<OrgConfigInfo | undefined> {
