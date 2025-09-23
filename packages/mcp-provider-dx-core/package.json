@@ -19,8 +19,6 @@
     "lint-fix": "yarn sf-lint --fix",
     "package": "yarn pack",
     "postpack": "sf-clean --ignore-signing-artifacts",
-    "prepack": "sf-prepack",
-    "prepare": "sf-install",
     "test": "wireit",
     "test:e2e": "nyc mocha \"./test/e2e/**/*.test.ts\" --slow 4500 --timeout 600000 --parallel --jobs 20",
     "test:only": "wireit"
