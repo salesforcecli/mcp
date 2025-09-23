@@ -353,6 +353,7 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
  - `lwc_guide_rtl` - (GA) Right-to-Left internationalization support and RTL development guidance
  - `lwc_guide_uplift_ai_metadata` - (GA) AI metadata enhancement for LWC components
  - `lwc_guide_slds2_uplift_linter_fixes` - (GA) Analyzes the given LWC code along with the slds-linter output to fix issues using the SLDS2 knowledge
+ - `lwc_guide_security` - (GA) Comprehensive security analysis in accordance with Product Security Guidelines and Lightning Web Security Guidelines
 
 ##### Workflow Tools
  - `lwc_workflow_component_creation` - (GA) Step-by-step component creation workflow guidance
