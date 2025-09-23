@@ -47,7 +47,7 @@ When user asks to "commit work item" or "commit changes", DO NOT use this tool d
 **THIS TOOL IS ONLY USED AS THE FINAL STEP AFTER COMPLETING ALL PREREQUISITES**
 
 **MANDATORY workflow for committing work items: DO NOT skip any of the steps and DO NOT move to the next step until the current step is completed.**
-1. **MANDATORY:**If the DevOps Center org and Sandbox org are not given, use the 'sf-devopslist-orgs' tool to list all orgs. 
+1. **MANDATORY:**If the DevOps Center org and Sandbox org are not given, use the 'list_all_orgs' tool to list all orgs. 
    The list will indicate which org is DevOps Center and a Sandbox. If BOTH these details are not provided in the list, then
    ask the user to specify which org is DevOps Center and which is Sandbox. Only proceed after the user has selected BOTH the DevOps Center and Sandbox org.
 2. **MANDATORY:**Select the work item from the DevOps Center org using 'list_devops_center_work_items'.
@@ -70,7 +70,7 @@ When user asks to "commit work item" or "commit changes", DO NOT use this tool d
 
 **Org selection requirements:**
 - The inputs 'doceHubUsername' and 'sandboxUsername' are REQUIRED. If you don't have them yet:
-  1) Use the 'sf-devopslist-orgs' tool to list all authenticated orgs
+  1) Use the 'list_all_orgs' tool to list all authenticated orgs
   2) Ask the user to select which username is the DevOps Center org and which is the Sandbox org
   3) Pass those selections here as 'doceHubUsername' and 'sandboxUsername'
 

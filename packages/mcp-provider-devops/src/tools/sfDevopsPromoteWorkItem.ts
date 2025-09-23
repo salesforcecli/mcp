@@ -47,7 +47,7 @@ export class SfDevopsPromoteWorkItem extends McpTool<InputArgsShape, OutputArgsS
       - The user must provide: username (DevOps Center) and a list of Work Item Names.
 
       **Input Parameters:**
-      - username: DevOps Center org username. If missing, use 'sf-devopslist-orgs' and ask user to select the DevOps Center org.
+      - username: DevOps Center org username. If missing, use 'list_all_orgs' and ask user to select the DevOps Center org.
       - workItemNames: Array of exact Work Item Names to promote.
 
       **Behavior:**

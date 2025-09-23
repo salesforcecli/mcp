@@ -44,7 +44,7 @@ export class CreatePullRequest extends McpTool<InputArgsShape, OutputArgsShape> 
       **THIS TOOL IS ONLY USED AS THE FINAL STEP AFTER COMPLETING ALL PREREQUISITES**
 
       **MANDATORY workflow for creating pull requests: DO NOT skip any of the steps and DO NOT move to the next step until the current step is completed.**
-      1. **MANDATORY:** If the DevOps Center org is not given, use the 'sf-devopslist-orgs' tool to list all orgs. 
+      1. **MANDATORY:** If the DevOps Center org is not given, use the 'list_all_orgs' tool to list all orgs. 
             The list will indicate which org is DevOps Center. If this detail is not provided in the list, then
             ask the user to specify which org is DevOps Center. Only proceed after the user has selected the DevOps Center org.
       2. **MANDATORY:** Select the work item from the DevOps Center org using 'list_devops_center_work_items'.
