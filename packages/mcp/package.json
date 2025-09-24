@@ -144,7 +144,8 @@
         ".nycrc"
       ],
       "dependencies": [
-        "test:compile"
+        "test:compile",
+        "lint"
       ],
       "output": []
     }
