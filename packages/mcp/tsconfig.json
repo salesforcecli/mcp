@@ -13,6 +13,15 @@
       "path": "../mcp-provider-api/tsconfig.json"
     },
     {
+      "path": "../mcp-provider-dx-core/tsconfig.json"
+    },
+    {
+      "path": "../mcp-provider-devops/tsconfig.build.json"
+    },
+    {
+      "path": "../mcp-provider-mobile-web/tsconfig.build.json"
+    },
+    {
       "path": "../mcp-provider-code-analyzer/tsconfig.build.json"
     }
   ]

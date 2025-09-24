@@ -8,7 +8,7 @@
   "scripts": {
     "build": "wireit",
     "build:watch": "yarn build --watch",
-    "clean": "tsc --build tsconfig.build.json --clean",
+    "clean": "tsc --build --clean",
     "format": "wireit",
     "lint": "wireit",
     "test": "wireit",

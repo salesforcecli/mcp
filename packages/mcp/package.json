@@ -11,8 +11,7 @@
   "scripts": {
     "build": "wireit",
     "build:watch": "yarn build --watch",
-    "clean": "tsc --build tsconfig.build.json --clean",
-    "compile": "wireit",
+    "clean": "tsc --build --clean",
     "fix-license": "eslint src test --fix --rule \"header/header: [2]\"",
     "format": "wireit",
     "link-check": "wireit",
@@ -88,12 +87,7 @@
   },
   "wireit": {
     "build": {
-      "dependencies": [
-        "compile"
-      ]
-    },
-    "compile": {
-      "command": "tsc -p . --pretty --incremental",
+      "command": "tsc --build --pretty --incremental --verbose",
       "files": [
         "src/**/*.ts",
         "**/tsconfig.json"
