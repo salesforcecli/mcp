@@ -1,3 +1,12 @@
+## [0.3.4](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.3.3...mcp-provider-dx-core@0.3.4) (2025-09-24)
+
+
+### Bug Fixes
+
+* remove dev-scripts scripts ([b0e096f](https://github.com/salesforcecli/mcp/commit/b0e096ffc70572a777243d2bdd2dd3eec0e1d978))
+
+
+
 ## [0.3.3](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.3.2...mcp-provider-dx-core@0.3.3) (2025-09-23)
 
 
