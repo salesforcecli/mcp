@@ -115,7 +115,7 @@ Report on my org snapshot`,
     if (!input.usernameOrAlias)
       return textResponse(
         'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool',
-        true
+        true,
       );
 
     process.chdir(input.directory);
@@ -155,7 +155,7 @@ async function resumeOrgSnapshot(connection: Connection, jobId: string, wait: nu
         const queryResult = await connection.singleRecordQuery<{
           Status: 'Active' | 'Error' | 'Expired' | 'In Progress' | 'New';
         }>(
-          `SELECT Status, Id, SnapshotName, Description, ExpirationDate, CreatedDate FROM OrgSnapshot WHERE Id = '${jobId}'`
+          `SELECT Status, Id, SnapshotName, Description, ExpirationDate, CreatedDate FROM OrgSnapshot WHERE Id = '${jobId}'`,
         );
         if (queryResult.Status !== 'In Progress') {
           // either done or error
@@ -170,7 +170,7 @@ async function resumeOrgSnapshot(connection: Connection, jobId: string, wait: nu
   } catch (error) {
     return textResponse(
       `Resumed org snapshot failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      true
+      true,
     );
   }
 }
@@ -182,7 +182,7 @@ async function resumeScratchOrg(jobId: string, wait: number): Promise<ToolTextRe
   } catch (error) {
     return textResponse(
       `Resumed scratch org creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      true
+      true,
     );
   }
 }

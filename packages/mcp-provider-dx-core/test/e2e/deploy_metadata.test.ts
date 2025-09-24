@@ -15,7 +15,7 @@
  */
 
 import path from 'node:path';
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import { McpTestClient, DxMcpTransport } from '@salesforce/mcp-test-client';
 import { TestSession } from '@salesforce/cli-plugins-testkit';
 import { z } from 'zod';
@@ -24,7 +24,7 @@ import { deployMetadataParams } from '../../src/tools/deploy_metadata.js';
 
 describe('deploy_metadata', () => {
   const client = new McpTestClient({
-    timeout: 60000,
+    timeout: 120_000,
   });
 
   let testSession: TestSession;
@@ -36,24 +36,19 @@ describe('deploy_metadata', () => {
   };
 
   before(async () => {
-    try {
-      testSession = await TestSession.create({
-        project: { gitClone: 'https://github.com/trailheadapps/dreamhouse-lwc' },
-        scratchOrgs: [{ setDefault: true, config: path.join('config', 'project-scratch-def.json') }],
-        devhubAuthStrategy: 'AUTO',
-      });
+    testSession = await TestSession.create({
+      project: { gitClone: 'https://github.com/trailheadapps/dreamhouse-lwc' },
+      scratchOrgs: [{ setDefault: true, config: path.join('config', 'project-scratch-def.json') }],
+      devhubAuthStrategy: 'AUTO',
+    });
 
-      orgUsername = [...testSession.orgs.keys()][0];
+    orgUsername = [...testSession.orgs.keys()][0];
 
-      const transport = DxMcpTransport({
-        orgUsername: ensureString(orgUsername),
-      });
+    const transport = DxMcpTransport({
+      orgUsername: ensureString(orgUsername),
+    });
 
-      await client.connect(transport);
-    } catch (error) {
-      console.error('Setup failed:', error);
-      throw error;
-    }
+    await client.connect(transport);
   });
 
   after(async () => {
@@ -76,17 +71,20 @@ describe('deploy_metadata', () => {
 
     expect(result.isError).to.equal(false);
     expect(result.content.length).to.equal(1);
-    expect(result.content[0].type).to.equal('text');
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('Deploy result:');
 
     // Parse the deploy result JSON
-    // @ts-ignore
     const deployMatch = responseText.match(/Deploy result: ({.*})/);
     expect(deployMatch).to.not.be.null;
 
-    const deployResult = JSON.parse(deployMatch![1]);
+    const deployResult = JSON.parse(deployMatch![1]) as {
+      success: boolean;
+      done: boolean;
+      numberComponentsDeployed: number;
+    };
     expect(deployResult.success).to.be.true;
     expect(deployResult.done).to.be.true;
     expect(deployResult.numberComponentsDeployed).to.equal(93);
@@ -100,7 +98,7 @@ describe('deploy_metadata', () => {
       'main',
       'default',
       'classes',
-      'GeocodingService.cls'
+      'GeocodingService.cls',
     );
 
     const result = await client.callTool(deployMetadataSchema, {
@@ -115,17 +113,27 @@ describe('deploy_metadata', () => {
 
     expect(result.isError).to.be.false;
     expect(result.content.length).to.equal(1);
-    expect(result.content[0].type).to.equal('text');
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('Deploy result:');
 
     // Parse the deploy result JSON
-    // @ts-ignore
     const deployMatch = responseText.match(/Deploy result: ({.*})/);
     expect(deployMatch).to.not.be.null;
 
-    const deployResult = JSON.parse(deployMatch![1]);
+    const deployResult = JSON.parse(deployMatch![1]) as {
+      success: boolean;
+      done: boolean;
+      numberComponentsDeployed: number;
+      runTestsEnabled: boolean;
+      numberTestsCompleted: number;
+      details: {
+        runTestResult: {
+          successes: Array<{ name: string; methodName: string }>;
+        };
+      };
+    };
     expect(deployResult.success).to.be.true;
     expect(deployResult.done).to.be.true;
     expect(deployResult.numberComponentsDeployed).to.equal(1);
@@ -139,7 +147,7 @@ describe('deploy_metadata', () => {
     expectedMethods.forEach((method) => {
       const testRun = testSuccesses.find(
         (success: { name: string; methodName: string }) =>
-          success.methodName === method && success.name === 'GeocodingServiceTest'
+          success.methodName === method && success.name === 'GeocodingServiceTest',
       );
       expect(testRun).to.not.be.undefined;
     });
@@ -153,7 +161,7 @@ describe('deploy_metadata', () => {
       'main',
       'default',
       'classes',
-      'GeocodingService.cls'
+      'GeocodingService.cls',
     );
 
     const result = await client.callTool(deployMetadataSchema, {
@@ -169,7 +177,7 @@ describe('deploy_metadata', () => {
 
     expect(result.isError).to.be.true;
     expect(result.content.length).to.equal(1);
-    expect(result.content[0].type).to.equal('text');
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain("You can't specify both `apexTests` and `apexTestLevel` parameters.");
@@ -183,7 +191,7 @@ describe('deploy_metadata', () => {
       'main',
       'default',
       'classes',
-      'PropertyController.cls'
+      'PropertyController.cls',
     );
 
     const result = await client.callTool(deployMetadataSchema, {
@@ -197,17 +205,22 @@ describe('deploy_metadata', () => {
     });
 
     expect(result.content.length).to.equal(1);
-    expect(result.content[0].type).to.equal('text');
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('Deploy result:');
 
     // Parse the deploy result JSON
-    // @ts-ignore
     const deployMatch = responseText.match(/Deploy result: ({.*})/);
     expect(deployMatch).to.not.be.null;
 
-    const deployResult = JSON.parse(deployMatch![1]);
+    const deployResult = JSON.parse(deployMatch![1]) as {
+      success: boolean;
+      done: boolean;
+      numberComponentsDeployed: number;
+      numberTestsCompleted: number;
+      runTestsEnabled: boolean;
+    };
     expect(deployResult.success).to.be.true;
     expect(deployResult.done).to.be.true;
     expect(deployResult.numberComponentsDeployed).to.equal(1);

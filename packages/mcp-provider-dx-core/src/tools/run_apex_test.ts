@@ -46,7 +46,7 @@ Choose the correct value based on what tests are meant to be executed in some of
 RunLocalTests="Run all tests in the org, except the ones that originate from installed managed and unlocked packages."
 RunAllTestsInOrg="Run all tests in the org, including tests of managed packages"
 RunSpecifiedTests="Run the Apex tests I specify, these will be specified in the classNames parameter"
-`
+`,
   ),
   classNames: z
     .array(z.string())
@@ -54,20 +54,20 @@ RunSpecifiedTests="Run the Apex tests I specify, these will be specified in the 
       `Apex tests classes to run.
             if Running all tests, all tests should be listed
             Run the tests, find apex classes matching the pattern **/classes/*.cls, that include the @isTest decorator in the file and then join their test names together with ','
-`
+`,
     )
     .optional(),
   methodNames: z
     .array(z.string())
     .describe(
-      'Specific test method names, functions inside of an apex test class, must be joined with the Apex tests name'
+      'Specific test method names, functions inside of an apex test class, must be joined with the Apex tests name',
     )
     .optional(),
   async: z
     .boolean()
     .default(false)
     .describe(
-      'Weather to wait for the test to finish (false) or enque the Apex tests and return the test run id (true)'
+      'Weather to wait for the test to finish (false) or enque the Apex tests and return the test run id (true)',
     ),
   suiteName: z.string().describe('a suite of apex test classes to run').optional(),
   testRunId: z.string().default('an id of an in-progress, or completed apex test run').optional(),
@@ -144,7 +144,7 @@ What are the results for 707XXXXXXXXXXXX`,
     if (!input.usernameOrAlias)
       return textResponse(
         'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool',
-        true
+        true,
       );
 
     // needed for org allowlist to work
@@ -164,7 +164,7 @@ What are the results for 707XXXXXXXXXXXX`,
           input.testLevel,
           input.methodNames?.join(','),
           input.classNames?.join(','),
-          input.suiteName
+          input.suiteName,
         );
         result = await testService.runTestAsynchronous(
           payload,
@@ -172,7 +172,7 @@ What are the results for 707XXXXXXXXXXXX`,
           input.async,
           undefined,
           undefined,
-          Duration.minutes(10)
+          Duration.minutes(10),
         );
         if (input.async) {
           return textResponse(`Test Run Id: ${JSON.stringify(result)}`);

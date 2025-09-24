@@ -79,7 +79,7 @@ export class QueryOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
       if (!input.usernameOrAlias)
         return textResponse(
           'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool',
-          true
+          true,
         );
       process.chdir(input.directory);
       const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);

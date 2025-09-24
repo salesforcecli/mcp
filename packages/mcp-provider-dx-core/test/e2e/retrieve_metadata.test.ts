@@ -16,7 +16,7 @@
 
 import path from 'node:path';
 import fs from 'node:fs';
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import { McpTestClient, DxMcpTransport } from '@salesforce/mcp-test-client';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { z } from 'zod';
@@ -37,29 +37,24 @@ describe('retrieve_metadata', () => {
   };
 
   before(async () => {
-    try {
-      testSession = await TestSession.create({
-        project: { gitClone: 'https://github.com/trailheadapps/dreamhouse-lwc' },
-        scratchOrgs: [{ setDefault: true, config: path.join('config', 'project-scratch-def.json') }],
-        devhubAuthStrategy: 'AUTO',
-      });
+    testSession = await TestSession.create({
+      project: { gitClone: 'https://github.com/trailheadapps/dreamhouse-lwc' },
+      scratchOrgs: [{ setDefault: true, config: path.join('config', 'project-scratch-def.json') }],
+      devhubAuthStrategy: 'AUTO',
+    });
 
-      execCmd('project deploy start', {
-        cli: 'sf',
-        ensureExitCode: 0,
-      });
+    execCmd('project deploy start', {
+      cli: 'sf',
+      ensureExitCode: 0,
+    });
 
-      orgUsername = [...testSession.orgs.keys()][0];
+    orgUsername = [...testSession.orgs.keys()][0];
 
-      const transport = DxMcpTransport({
-        orgUsername: ensureString(orgUsername),
-      });
+    const transport = DxMcpTransport({
+      orgUsername: ensureString(orgUsername),
+    });
 
-      await client.connect(transport);
-    } catch (error) {
-      console.error('Setup failed:', error);
-      throw error;
-    }
+    await client.connect(transport);
   });
 
   after(async () => {
@@ -84,7 +79,7 @@ describe('retrieve_metadata', () => {
 
     expect(result.isError).to.be.true;
     expect(result.content.length).to.equal(1);
-    expect(result.content[0].type).to.equal('text');
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain("You can't specify both `sourceDir` and `manifest` parameters.");
@@ -104,26 +99,33 @@ describe('retrieve_metadata', () => {
 
     expect(result.isError).to.equal(false);
     expect(result.content.length).to.equal(1);
-    expect(result.content[0].type).to.equal('text');
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('Retrieve result:');
 
     // Parse the retrieve result JSON
-    // @ts-ignore
     const retrieveMatch = responseText.match(/Retrieve result: ({.*})/);
     expect(retrieveMatch).to.not.be.null;
 
-    const retrieveResult = JSON.parse(retrieveMatch![1]);
+    const retrieveResult = JSON.parse(retrieveMatch![1]) as {
+      success: boolean;
+      done: boolean;
+      fileProperties: Array<{
+        type: string;
+        fullName: string;
+        fileName: string;
+      }>;
+    };
     expect(retrieveResult.success).to.be.true;
     expect(retrieveResult.done).to.be.true;
     expect(retrieveResult.fileProperties.length).to.equal(2); // Updated to match the response
 
     // Check the properties of the retrieved ApexClass
     const apexClass = retrieveResult.fileProperties.find(
-      (fp: { type: string; fullName: string }) => fp.type === 'ApexClass'
+      (fp: { type: string; fullName: string }) => fp.type === 'ApexClass',
     );
-    expect(apexClass).to.not.be.undefined;
+    if (!apexClass) assert.fail();
     expect(apexClass.fullName).to.equal('GeocodingService');
     expect(apexClass.fileName).to.equal('unpackaged/classes/GeocodingService.cls');
   });
@@ -153,25 +155,30 @@ describe('retrieve_metadata', () => {
 
     expect(result.isError).to.equal(false);
     expect(result.content.length).to.equal(1);
-    expect(result.content[0].type).to.equal('text');
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('Retrieve result:');
 
     // Parse the retrieve result JSON
-    // @ts-ignore
     const retrieveMatch = responseText.match(/Retrieve result: ({.*})/);
     expect(retrieveMatch).to.not.be.null;
 
-    const retrieveResult = JSON.parse(retrieveMatch![1]);
+    const retrieveResult = JSON.parse(retrieveMatch![1]) as {
+      success: boolean;
+      done: boolean;
+      fileProperties: Array<{
+        type: string;
+      }>;
+    };
     expect(retrieveResult.success).to.be.true;
     expect(retrieveResult.done).to.be.true;
     // Should retrieve all apex classes (there are multiple in dreamhouse) + package.xml
     expect(retrieveResult.fileProperties.length).to.equal(10);
 
     // Verify we got 9 Apex classes and 1 package.xml
-    const apexClasses = retrieveResult.fileProperties.filter((fp: { type: string }) => fp.type === 'ApexClass');
-    const packageXml = retrieveResult.fileProperties.filter((fp: { type: string }) => fp.type === 'Package');
+    const apexClasses = retrieveResult.fileProperties.filter((fp) => fp.type === 'ApexClass');
+    const packageXml = retrieveResult.fileProperties.filter((fp) => fp.type === 'Package');
     expect(apexClasses.length).to.equal(9);
     expect(packageXml.length).to.equal(1);
   });

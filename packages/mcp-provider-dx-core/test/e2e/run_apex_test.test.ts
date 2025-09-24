@@ -15,7 +15,7 @@
  */
 
 import path from 'node:path';
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import { TestLevel } from '@salesforce/apex-node';
 import { McpTestClient, DxMcpTransport } from '@salesforce/mcp-test-client';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
@@ -35,30 +35,25 @@ describe('run_apex_test', () => {
   };
 
   before(async () => {
-    try {
-      testSession = await TestSession.create({
-        project: { gitClone: 'https://github.com/trailheadapps/dreamhouse-lwc' },
-        scratchOrgs: [{ setDefault: true, config: path.join('config', 'project-scratch-def.json') }],
-        devhubAuthStrategy: 'AUTO',
-      });
+    testSession = await TestSession.create({
+      project: { gitClone: 'https://github.com/trailheadapps/dreamhouse-lwc' },
+      scratchOrgs: [{ setDefault: true, config: path.join('config', 'project-scratch-def.json') }],
+      devhubAuthStrategy: 'AUTO',
+    });
 
-      // Deploy the project first so we have tests to run
-      execCmd('project deploy start', {
-        cli: 'sf',
-        ensureExitCode: 0,
-      });
+    // Deploy the project first so we have tests to run
+    execCmd('project deploy start', {
+      cli: 'sf',
+      ensureExitCode: 0,
+    });
 
-      orgUsername = [...testSession.orgs.keys()][0];
+    orgUsername = [...testSession.orgs.keys()][0];
 
-      const transport = DxMcpTransport({
-        orgUsername: ensureString(orgUsername),
-      });
+    const transport = DxMcpTransport({
+      orgUsername: ensureString(orgUsername),
+    });
 
-      await client.connect(transport);
-    } catch (error) {
-      console.error('Setup failed:', error);
-      throw error;
-    }
+    await client.connect(transport);
   });
 
   after(async () => {
@@ -82,17 +77,22 @@ describe('run_apex_test', () => {
 
     expect(result.isError).to.equal(false);
     expect(result.content.length).to.equal(1);
-    expect(result.content[0].type).to.equal('text');
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('Test result:');
 
     // Parse the test result JSON
-    // @ts-ignore
     const testMatch = responseText.match(/Test result: ({.*})/);
     expect(testMatch).to.not.be.null;
 
-    const testResult = JSON.parse(testMatch![1]);
+    const testResult = JSON.parse(testMatch![1]) as {
+      summary: {
+        outcome: string;
+        testsRan: number;
+        skipped: number;
+      };
+    };
     expect(testResult.summary).to.not.be.undefined;
     expect(testResult.summary.outcome).to.equal('Passed');
 
@@ -114,17 +114,21 @@ describe('run_apex_test', () => {
 
     expect(result.isError).to.equal(false);
     expect(result.content.length).to.equal(1);
-    expect(result.content[0].type).to.equal('text');
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('Test result:');
 
     // Parse the test result JSON
-    // @ts-ignore
     const testMatch = responseText.match(/Test result: ({.*})/);
     expect(testMatch).to.not.be.null;
 
-    const testResult = JSON.parse(testMatch![1]);
+    const testResult = JSON.parse(testMatch![1]) as {
+      summary: {
+        outcome: string;
+      };
+      tests: Array<{ fullName: string }>;
+    };
     expect(testResult.summary).to.not.be.undefined;
     expect(testResult.summary.outcome).to.equal('Passed');
 
@@ -132,7 +136,7 @@ describe('run_apex_test', () => {
     expect(testResult.tests.length).to.equal(3);
 
     // Verify all tests are from GeocodingServiceTest
-    testResult.tests.forEach((test: { fullName: string }) => {
+    testResult.tests.forEach((test) => {
       expect(test.fullName).to.contain('GeocodingServiceTest');
     });
   });
@@ -150,11 +154,11 @@ describe('run_apex_test', () => {
 
     expect(result.isError).to.equal(true);
     expect(result.content.length).to.equal(1);
-    expect(result.content[0].type).to.equal('text');
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain(
-      "You can't specify which tests to run without setting testLevel='RunSpecifiedTests'"
+      "You can't specify which tests to run without setting testLevel='RunSpecifiedTests'",
     );
   });
 });

@@ -8,17 +8,9 @@
   "scripts": {
     "build": "wireit",
     "build:watch": "yarn build --watch",
-    "clean": "sf-clean",
-    "clean-all": "sf-clean all",
-    "compile": "wireit",
-    "docs": "sf-docs",
-    "fix-license": "eslint src test --fix --rule \"header/header: [2]\"",
+    "clean": "tsc --build --clean",
     "format": "wireit",
-    "link-check": "wireit",
     "lint": "wireit",
-    "lint-fix": "yarn sf-lint --fix",
-    "package": "yarn pack",
-    "postpack": "sf-clean --ignore-signing-artifacts",
     "test": "wireit",
     "test:e2e": "nyc mocha \"./test/e2e/**/*.test.ts\" --slow 4500 --timeout 600000 --parallel --jobs 20",
     "test:only": "wireit"
@@ -56,15 +48,22 @@
   },
   "devDependencies": {
     "@salesforce/mcp-test-client": "0.0.1",
-    "@modelcontextprotocol/inspector": "^0.15.0",
+    "@salesforce/dev-config": "^4.3.2",
     "@salesforce/cli-plugins-testkit": "^5.3.39",
-    "@salesforce/dev-scripts": "11.0.2",
     "@types/node": "^22.16.5",
+    "wireit": "^0.14.12",
     "eslint": "^8.57.1",
+    "mocha": "11.7.2",
+    "chai": "^4.3.10",
+    "@types/mocha": "^10.0.10",
+    "@types/chai": "^4.3.14",
+    "@types/sinon": "^10.0.20",
+    "sinon": "10.0.0",
+    "nyc": "^17.0.0",
     "eslint-config-salesforce-license": "^1.0.1",
-    "eslint-plugin-sf-plugin": "^1.20.26",
+    "eslint-config-salesforce-typescript": "4.0.1",
+    "@salesforce/prettier-config": "^0.0.3",
     "ts-node": "^10.9.2",
-    "ts-patch": "^3.3.0",
     "typescript": "^5.8.3"
   },
   "publishConfig": {
@@ -72,9 +71,6 @@
   },
   "wireit": {
     "build": {
-      "command": "yarn compile"
-    },
-    "compile": {
       "command": "tsc --build --pretty --incremental --verbose",
       "files": [
         "src/**/*.ts",
@@ -88,12 +84,10 @@
       "clean": "if-file-deleted"
     },
     "format": {
-      "command": "prettier --write \"+(src|test|schemas)/**/*.+(ts|js|json)|command-snapshot.json\"",
+      "command": "prettier --write \"+(src|test)/**/*.+(ts|js|json)\"",
       "files": [
         "src/**/*.ts",
         "test/**/*.ts",
-        "schemas/**/*.json",
-        "command-snapshot.json",
         ".prettier*"
       ],
       "output": []
@@ -103,7 +97,6 @@
       "files": [
         "src/**/*.ts",
         "test/**/*.ts",
-        "messages/**",
         "**/.eslint*",
         "**/tsconfig.json"
       ],
@@ -118,12 +111,6 @@
       "output": []
     },
     "test": {
-      "dependencies": [
-        "test:only",
-        "test:compile"
-      ]
-    },
-    "test:only": {
       "command": "nyc mocha \"test/**/*.test.ts\" --exclude \"test/e2e/**/*.test.ts\"",
       "env": {
         "FORCE_COLOR": "2"
@@ -133,8 +120,11 @@
         "src/**/*.ts",
         "**/tsconfig.json",
         ".mocha*",
-        "!*.nut.ts",
         ".nycrc"
+      ],
+      "dependencies": [
+        "test:compile",
+        "lint"
       ],
       "output": []
     }

@@ -42,7 +42,7 @@ export const retrieveMetadataParams = z.object({
   sourceDir: z
     .array(z.string())
     .describe(
-      'Path to the local source files to retrieve. Leave this unset if the user is vague about what to retrieve.'
+      'Path to the local source files to retrieve. Leave this unset if the user is vague about what to retrieve.',
     )
     .optional(),
   manifest: z.string().describe('Full file path for manifest (XML file) of components to retrieve.').optional(),
@@ -102,7 +102,7 @@ Retrieve X metadata from my org`,
     if (!input.usernameOrAlias)
       return textResponse(
         'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool',
-        true
+        true,
       );
 
     // needed for org allowlist to work
@@ -116,7 +116,7 @@ Retrieve X metadata from my org`,
     if (!input.sourceDir && !input.manifest && !(await org.tracksSource())) {
       return textResponse(
         'This org does not have source-tracking enabled or does not support source-tracking. You should specify the files or a manifest to retrieve.',
-        true
+        true,
       );
     }
 
@@ -154,7 +154,7 @@ Retrieve X metadata from my org`,
     } catch (error) {
       return textResponse(
         `Failed to retrieve metadata: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        true
+        true,
       );
     }
   }
@@ -165,7 +165,7 @@ async function buildRetrieveComponentSet(
   project: SfProject,
   stl: SourceTracking,
   sourceDir?: string[],
-  manifestPath?: string
+  manifestPath?: string,
 ): Promise<ComponentSet> {
   if (sourceDir || manifestPath) {
     return ComponentSetBuilder.build({

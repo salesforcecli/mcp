@@ -15,7 +15,8 @@
  */
 
 import path from 'node:path';
-import { expect } from 'chai';
+import { QueryResult, Record as jsforceRecord } from '@jsforce/jsforce-node';
+import { expect, assert } from 'chai';
 import { McpTestClient, DxMcpTransport } from '@salesforce/mcp-test-client';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { z } from 'zod';
@@ -91,17 +92,16 @@ describe('run_soql_query', () => {
 
     expect(result.isError).to.equal(false);
     expect(result.content.length).to.equal(1);
-    expect(result.content[0].type).to.equal('text');
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('SOQL query results:');
 
     // Parse the query result JSON
-    // @ts-ignore
     const queryMatch = responseText.match(/SOQL query results:\s*({[\s\S]*})/);
     expect(queryMatch).to.not.be.null;
 
-    const queryResult = JSON.parse(queryMatch![1]);
+    const queryResult = JSON.parse(queryMatch![1]) as QueryResult<jsforceRecord & { Name: string }>;
     expect(queryResult.totalSize).to.equal(8);
     expect(queryResult.done).to.be.true;
     expect(queryResult.records).to.be.an('array');
@@ -119,7 +119,7 @@ describe('run_soql_query', () => {
       'Victor Ochoa',
     ];
 
-    const actualBrokerNames = queryResult.records.map((record: any) => record.Name).sort();
+    const actualBrokerNames = queryResult.records.map((record) => record.Name).sort();
     expect(actualBrokerNames).to.deep.equal(expectedBrokerNames.sort());
   });
 
@@ -136,24 +136,35 @@ describe('run_soql_query', () => {
 
     expect(result.isError).to.equal(false);
     expect(result.content.length).to.equal(1);
-    expect(result.content[0].type).to.equal('text');
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('SOQL query results:');
 
     // Parse the query result JSON
-    // @ts-ignore
     const queryMatch = responseText.match(/SOQL query results:\s*({[\s\S]*})/);
     expect(queryMatch).to.not.be.null;
 
-    const queryResult = JSON.parse(queryMatch![1]);
+    const queryResult = JSON.parse(queryMatch![1]) as QueryResult<jsforceRecord>;
     expect(queryResult.done).to.be.true;
     expect(queryResult.records).to.be.an('array');
     expect(queryResult.records.length).to.equal(1);
     expect(queryResult.totalSize).to.equal(1);
 
     // Verify FileUtilities ApexClass record
-    const fileUtilitiesClass = queryResult.records[0];
+    const fileUtilitiesClass = queryResult.records[0] as {
+      attributes: { type: string; url: string };
+      SymbolTable: {
+        id: string;
+        name: string;
+        methods: Array<{
+          name: string;
+          returnType: string;
+          parameters: Array<{ name: string; type: string }>;
+        }>;
+        variables: Array<{ name: string; type: string }>;
+      };
+    };
     expect(fileUtilitiesClass).to.have.nested.property('attributes.type', 'ApexClass');
     expect(fileUtilitiesClass).to.have.nested.property('attributes.url').that.is.a('string');
     expect(fileUtilitiesClass).to.have.nested.property('SymbolTable.id', 'FileUtilities');
@@ -168,15 +179,16 @@ describe('run_soql_query', () => {
     expect(method.parameters[1]).to.deep.include({ name: 'filename', type: 'String' });
     expect(method.parameters[2]).to.deep.include({ name: 'recordId', type: 'String' });
 
-    expect(fileUtilitiesClass.SymbolTable.variables).to.be.an('array').with.lengthOf(5);
-    expect(fileUtilitiesClass.SymbolTable.variables[0]).to.deep.include({ name: 'base64data', type: 'String' });
-    expect(fileUtilitiesClass.SymbolTable.variables[1]).to.deep.include({ name: 'filename', type: 'String' });
-    expect(fileUtilitiesClass.SymbolTable.variables[2]).to.deep.include({ name: 'recordId', type: 'String' });
-    expect(fileUtilitiesClass.SymbolTable.variables[3]).to.deep.include({
+    const variables = fileUtilitiesClass.SymbolTable.variables;
+    expect(variables).to.be.an('array').with.lengthOf(5);
+    expect(variables[0]).to.deep.include({ name: 'base64data', type: 'String' });
+    expect(variables[1]).to.deep.include({ name: 'filename', type: 'String' });
+    expect(variables[2]).to.deep.include({ name: 'recordId', type: 'String' });
+    expect(variables[3]).to.deep.include({
       name: 'contentVersion',
       type: 'ContentVersion',
     });
-    expect(fileUtilitiesClass.SymbolTable.variables[4]).to.deep.include({
+    expect(variables[4]).to.deep.include({
       name: 'contentDocumentLink',
       type: 'ContentDocumentLink',
     });
@@ -217,7 +229,7 @@ describe('run_soql_query', () => {
 
     const responseText = result.content[0].text;
     expect(responseText).to.equal(
-      'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool'
+      'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool',
     );
   });
 });
