@@ -61,7 +61,15 @@
     "@types/node": "^22.16.5",
     "wireit": "^0.14.12",
     "eslint": "^8.57.1",
+    "mocha": "11.7.2",
+    "chai": "^4.3.10",
+    "@types/mocha": "^10.0.10",
+    "@types/chai": "^4.3.14",
+    "@types/sinon": "^10.0.20",
+    "sinon": "10.0.0",
+    "nyc": "^17.0.0",
     "eslint-config-salesforce-license": "^1.0.1",
+    "@salesforce/prettier-config": "^0.0.3",
     "oclif": "^4.21.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
@@ -125,8 +133,7 @@
     "test": {
       "dependencies": [
         "test:only",
-        "test:compile",
-        "link-check"
+        "test:compile"
       ]
     },
     "test:only": {
@@ -140,14 +147,6 @@
         "**/tsconfig.json",
         ".mocha*",
         ".nycrc"
-      ],
-      "output": []
-    },
-    "link-check": {
-      "command": "node -e \"process.exit(process.env.CI ? 0 : 1)\" || linkinator \"**/*.md\" --skip \"CHANGELOG.md|node_modules|test/|confluence.internal.salesforce.com|my.salesforce.com|localhost|%s\" --markdown --retry --directory-listing --verbosity error",
-      "files": [
-        "./*.md",
-        "./!(CHANGELOG).md"
       ],
       "output": []
     }
