@@ -61,6 +61,7 @@
     "sinon": "10.0.0",
     "nyc": "^17.0.0",
     "eslint-config-salesforce-license": "^1.0.1",
+    "eslint-config-salesforce-typescript": "4.0.1",
     "@salesforce/prettier-config": "^0.0.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"

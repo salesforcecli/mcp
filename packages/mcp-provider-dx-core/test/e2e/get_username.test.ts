@@ -15,7 +15,7 @@
  */
 
 import path from 'node:path';
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import { McpTestClient, DxMcpTransport } from '@salesforce/mcp-test-client';
 import { TestSession } from '@salesforce/cli-plugins-testkit';
 import { z } from 'zod';
@@ -71,7 +71,7 @@ describe('get_username', () => {
     });
 
     expect(result.content.length).to.equal(1);
-    expect(result.content[0].type).to.equal('text');
+    if (result.content[0].type !== 'text') assert.fail()
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('ALWAYS notify the user the following 3 pieces of information:');
@@ -80,11 +80,15 @@ describe('get_username', () => {
     );
 
     // Extract and parse the config JSON from the response
-    // @ts-ignore
     const configMatch = responseText.match(/Full config: ({[\s\S]*?})/);
     expect(configMatch).to.not.be.null;
 
-    const actualConfig = JSON.parse(configMatch![1]);
+    const actualConfig = JSON.parse(configMatch![1]) as {
+      key: string;
+      location: string;
+      value: string;
+      path: string;
+    };
     const expectedConfig = {
       key: 'target-org',
       location: 'Local',
@@ -105,7 +109,7 @@ describe('get_username', () => {
     });
 
     expect(result.content.length).to.equal(1);
-    expect(result.content[0].type).to.equal('text');
+    if (result.content[0].type !== 'text') assert.fail()
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('ALWAYS notify the user the following 3 pieces of information:');
@@ -114,11 +118,15 @@ describe('get_username', () => {
     );
 
     // Extract and parse the config JSON from the response
-    // @ts-ignore
     const configMatch = responseText.match(/Full config: ({[\s\S]*?})/);
     expect(configMatch).to.not.be.null;
 
-    const actualConfig = JSON.parse(configMatch![1]);
+    const actualConfig = JSON.parse(configMatch![1]) as {
+      key: string;
+      location: string;
+      value: string;
+      path: string;
+    };
     const expectedConfig = {
       key: 'target-dev-hub',
       location: 'Local',

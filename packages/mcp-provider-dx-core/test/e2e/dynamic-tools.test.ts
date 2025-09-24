@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { DxMcpTransport } from '@salesforce/mcp-test-client';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
 describe('sf-dynamic-tools', () => {
   const client = new Client({
@@ -47,11 +48,12 @@ describe('sf-dynamic-tools', () => {
       arguments: {
         tools: ['run_soql_query', 'deploy_metadata'],
       },
-    });
+    }) as CallToolResult;
 
-    console.log(result)
     expect(result.isError).to.be.false;
-    // @ts-ignore
+    expect(result.content.length).to.equal(1);
+    if (result.content[0].type !== 'text') assert.fail()
+
     expect(result.content[0].text).to.equal('Tool run_soql_query enabled\nTool deploy_metadata enabled');
 
     const updatedTools = (await client.listTools()).tools.map((t) => t.name).sort();
@@ -64,11 +66,16 @@ describe('sf-dynamic-tools', () => {
   it('should list available tools to be enabled', async () => {
     const result = await client.callTool({
       name: 'list_tools',
-    });
+    }) as CallToolResult;
 
     expect(result.isError).to.be.false;
-    // @ts-ignore
-    const tools = JSON.parse(result.content[0].text);
+    expect(result.content.length).to.equal(1);
+    if (result.content[0].type !== 'text') assert.fail()
+    const tools = JSON.parse(result.content[0].text) as [{
+        name: string;
+        enabled: boolean;
+        description: string;
+    }];
     expect(tools.length).to.be.greaterThanOrEqual(11);
   });
 });
