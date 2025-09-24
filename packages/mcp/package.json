@@ -11,17 +11,12 @@
   "scripts": {
     "build": "wireit",
     "build:watch": "yarn build --watch",
-    "clean": "sf-clean",
-    "clean-all": "sf-clean all",
+    "clean": "tsc --build tsconfig.build.json --clean",
     "compile": "wireit",
-    "docs": "sf-docs",
     "fix-license": "eslint src test --fix --rule \"header/header: [2]\"",
     "format": "wireit",
     "link-check": "wireit",
     "lint": "wireit",
-    "lint-fix": "yarn sf-lint --fix",
-    "package": "yarn pack",
-    "postpack": "sf-clean --ignore-signing-artifacts",
     "start": "yarn build && npm link && mcp-inspector sf-mcp-server",
     "test": "wireit",
     "test:only": "wireit"
@@ -60,15 +55,15 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@modelcontextprotocol/inspector": "^0.15.0",
     "@salesforce/cli-plugins-testkit": "^5.3.39",
-    "@salesforce/dev-scripts": "11.0.2",
+    "@salesforce/dev-config": "^4.3.2",
+    "prettier": "^2.8.8",
     "@types/node": "^22.16.5",
+    "wireit": "^0.14.12",
+    "eslint": "^8.57.1",
     "eslint-config-salesforce-license": "^1.0.1",
-    "eslint-plugin-sf-plugin": "^1.20.26",
     "oclif": "^4.21.0",
     "ts-node": "^10.9.2",
-    "ts-patch": "^3.3.0",
     "typescript": "^5.8.3"
   },
   "publishConfig": {
@@ -85,16 +80,14 @@
   "wireit": {
     "build": {
       "dependencies": [
-        "compile",
-        "lint"
+        "compile"
       ]
     },
     "compile": {
       "command": "tsc -p . --pretty --incremental",
       "files": [
         "src/**/*.ts",
-        "**/tsconfig.json",
-        "messages/**"
+        "**/tsconfig.json"
       ],
       "output": [
         "lib/**",
@@ -103,12 +96,10 @@
       "clean": "if-file-deleted"
     },
     "format": {
-      "command": "prettier --write \"+(src|test|schemas)/**/*.+(ts|js|json)|command-snapshot.json\"",
+      "command": "prettier --write \"+(src|test)/**/*.+(ts|js|json)\"",
       "files": [
         "src/**/*.ts",
         "test/**/*.ts",
-        "schemas/**/*.json",
-        "command-snapshot.json",
         ".prettier*"
       ],
       "output": []
@@ -118,7 +109,6 @@
       "files": [
         "src/**/*.ts",
         "test/**/*.ts",
-        "messages/**",
         "**/.eslint*",
         "**/tsconfig.json"
       ],
@@ -149,7 +139,6 @@
         "src/**/*.ts",
         "**/tsconfig.json",
         ".mocha*",
-        "!*.nut.ts",
         ".nycrc"
       ],
       "output": []
@@ -158,37 +147,7 @@
       "command": "node -e \"process.exit(process.env.CI ? 0 : 1)\" || linkinator \"**/*.md\" --skip \"CHANGELOG.md|node_modules|test/|confluence.internal.salesforce.com|my.salesforce.com|localhost|%s\" --markdown --retry --directory-listing --verbosity error",
       "files": [
         "./*.md",
-        "./!(CHANGELOG).md",
-        "messages/**/*.md"
-      ],
-      "output": []
-    },
-    "test:command-reference": {
-      "command": "node --loader ts-node/esm --no-warnings=ExperimentalWarning \"./bin/dev.js\" commandreference:generate --erroronwarnings",
-      "files": [
-        "src/**/*.ts",
-        "messages/**",
-        "package.json"
-      ],
-      "output": [
-        "tmp/root"
-      ]
-    },
-    "test:deprecation-policy": {
-      "command": "node --loader ts-node/esm --no-warnings=ExperimentalWarning \"./bin/dev.js\" snapshot:compare",
-      "files": [
-        "src/**/*.ts"
-      ],
-      "output": [],
-      "dependencies": [
-        "compile"
-      ]
-    },
-    "test:json-schema": {
-      "command": "node --loader ts-node/esm --no-warnings=ExperimentalWarning \"./bin/dev.js\" schema:compare",
-      "files": [
-        "src/**/*.ts",
-        "schemas"
+        "./!(CHANGELOG).md"
       ],
       "output": []
     }
