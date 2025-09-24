@@ -111,12 +111,6 @@
       "output": []
     },
     "test": {
-      "dependencies": [
-        "test:only",
-        "test:compile"
-      ]
-    },
-    "test:only": {
       "command": "nyc mocha \"test/**/*.test.ts\" --exclude \"test/e2e/**/*.test.ts\"",
       "env": {
         "FORCE_COLOR": "2"
@@ -127,6 +121,9 @@
         "**/tsconfig.json",
         ".mocha*",
         ".nycrc"
+      ],
+      "dependencies": [
+        "test:compile"
       ],
       "output": []
     }

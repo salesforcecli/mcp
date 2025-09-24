@@ -125,7 +125,7 @@ describe('retrieve_metadata', () => {
     const apexClass = retrieveResult.fileProperties.find(
       (fp: { type: string; fullName: string }) => fp.type === 'ApexClass',
     );
-    expect(apexClass).to.not.be.undefined;
+    if (!apexClass) assert.fail();
     expect(apexClass.fullName).to.equal('GeocodingService');
     expect(apexClass.fileName).to.equal('unpackaged/classes/GeocodingService.cls');
   });
