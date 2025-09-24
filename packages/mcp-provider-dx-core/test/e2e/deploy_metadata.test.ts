@@ -71,7 +71,7 @@ describe('deploy_metadata', () => {
 
     expect(result.isError).to.equal(false);
     expect(result.content.length).to.equal(1);
-    if (result.content[0].type !== 'text') assert.fail()
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('Deploy result:');
@@ -98,7 +98,7 @@ describe('deploy_metadata', () => {
       'main',
       'default',
       'classes',
-      'GeocodingService.cls'
+      'GeocodingService.cls',
     );
 
     const result = await client.callTool(deployMetadataSchema, {
@@ -113,7 +113,7 @@ describe('deploy_metadata', () => {
 
     expect(result.isError).to.be.false;
     expect(result.content.length).to.equal(1);
-    if (result.content[0].type !== 'text') assert.fail()
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('Deploy result:');
@@ -147,7 +147,7 @@ describe('deploy_metadata', () => {
     expectedMethods.forEach((method) => {
       const testRun = testSuccesses.find(
         (success: { name: string; methodName: string }) =>
-          success.methodName === method && success.name === 'GeocodingServiceTest'
+          success.methodName === method && success.name === 'GeocodingServiceTest',
       );
       expect(testRun).to.not.be.undefined;
     });
@@ -161,7 +161,7 @@ describe('deploy_metadata', () => {
       'main',
       'default',
       'classes',
-      'GeocodingService.cls'
+      'GeocodingService.cls',
     );
 
     const result = await client.callTool(deployMetadataSchema, {
@@ -177,7 +177,7 @@ describe('deploy_metadata', () => {
 
     expect(result.isError).to.be.true;
     expect(result.content.length).to.equal(1);
-    if (result.content[0].type !== 'text') assert.fail()
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain("You can't specify both `apexTests` and `apexTestLevel` parameters.");
@@ -191,7 +191,7 @@ describe('deploy_metadata', () => {
       'main',
       'default',
       'classes',
-      'PropertyController.cls'
+      'PropertyController.cls',
     );
 
     const result = await client.callTool(deployMetadataSchema, {
@@ -205,7 +205,7 @@ describe('deploy_metadata', () => {
     });
 
     expect(result.content.length).to.equal(1);
-    if (result.content[0].type !== 'text') assert.fail()
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('Deploy result:');

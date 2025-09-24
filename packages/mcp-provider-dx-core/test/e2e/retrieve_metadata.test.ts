@@ -79,7 +79,7 @@ describe('retrieve_metadata', () => {
 
     expect(result.isError).to.be.true;
     expect(result.content.length).to.equal(1);
-    if (result.content[0].type !== 'text') assert.fail()
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain("You can't specify both `sourceDir` and `manifest` parameters.");
@@ -99,7 +99,7 @@ describe('retrieve_metadata', () => {
 
     expect(result.isError).to.equal(false);
     expect(result.content.length).to.equal(1);
-    if (result.content[0].type !== 'text') assert.fail()
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('Retrieve result:');
@@ -123,7 +123,7 @@ describe('retrieve_metadata', () => {
 
     // Check the properties of the retrieved ApexClass
     const apexClass = retrieveResult.fileProperties.find(
-      (fp: { type: string; fullName: string }) => fp.type === 'ApexClass'
+      (fp: { type: string; fullName: string }) => fp.type === 'ApexClass',
     );
     expect(apexClass).to.not.be.undefined;
     expect(apexClass.fullName).to.equal('GeocodingService');
@@ -155,7 +155,7 @@ describe('retrieve_metadata', () => {
 
     expect(result.isError).to.equal(false);
     expect(result.content.length).to.equal(1);
-    if (result.content[0].type !== 'text') assert.fail()
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('Retrieve result:');

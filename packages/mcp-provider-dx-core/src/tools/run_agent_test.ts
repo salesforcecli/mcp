@@ -39,7 +39,7 @@ const runAgentTestsParam = z.object({
     `Agent test to run
             if unsure, list all files matching the pattern **/aiEvaluationDefinitions/*.aiEvaluationDefinition-meta.xml
             only one test can be executed at a time
-`
+`,
   ),
   usernameOrAlias: usernameOrAliasParam,
   directory: directoryParam,
@@ -97,7 +97,7 @@ start myAgentTest and don't wait for results`,
     if (!input.usernameOrAlias)
       return textResponse(
         'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool',
-        true
+        true,
       );
 
     // needed for org allowlist to work

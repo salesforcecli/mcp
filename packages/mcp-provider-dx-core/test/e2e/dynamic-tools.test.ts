@@ -43,39 +43,48 @@ describe('sf-dynamic-tools', () => {
     expect(initialTools.length).to.equal(4);
     expect(initialTools).to.deep.equal(['enable_tools', 'get_username', 'list_tools', 'resume_tool_operation'].sort());
 
-    const result = await client.callTool({
+    const result = (await client.callTool({
       name: 'enable_tools',
       arguments: {
         tools: ['run_soql_query', 'deploy_metadata'],
       },
-    }) as CallToolResult;
+    })) as CallToolResult;
 
     expect(result.isError).to.be.false;
     expect(result.content.length).to.equal(1);
-    if (result.content[0].type !== 'text') assert.fail()
+    if (result.content[0].type !== 'text') assert.fail();
 
     expect(result.content[0].text).to.equal('Tool run_soql_query enabled\nTool deploy_metadata enabled');
 
     const updatedTools = (await client.listTools()).tools.map((t) => t.name).sort();
 
     expect(updatedTools).to.deep.equal(
-      ['enable_tools', 'get_username', 'list_tools', 'resume_tool_operation', 'run_soql_query', 'deploy_metadata'].sort()
+      [
+        'enable_tools',
+        'get_username',
+        'list_tools',
+        'resume_tool_operation',
+        'run_soql_query',
+        'deploy_metadata',
+      ].sort(),
     );
   });
 
   it('should list available tools to be enabled', async () => {
-    const result = await client.callTool({
+    const result = (await client.callTool({
       name: 'list_tools',
-    }) as CallToolResult;
+    })) as CallToolResult;
 
     expect(result.isError).to.be.false;
     expect(result.content.length).to.equal(1);
-    if (result.content[0].type !== 'text') assert.fail()
-    const tools = JSON.parse(result.content[0].text) as [{
+    if (result.content[0].type !== 'text') assert.fail();
+    const tools = JSON.parse(result.content[0].text) as [
+      {
         name: string;
         enabled: boolean;
         description: string;
-    }];
+      },
+    ];
     expect(tools.length).to.be.greaterThanOrEqual(11);
   });
 });

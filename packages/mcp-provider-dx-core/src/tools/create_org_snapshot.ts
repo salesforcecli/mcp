@@ -37,10 +37,10 @@ import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
 const createOrgSnapshotParams = z.object({
   directory: directoryParam,
   devHub: usernameOrAliasParam.describe(
-    'The default devhub username, use the #get_username tool to get the default devhub if unsure'
+    'The default devhub username, use the #get_username tool to get the default devhub if unsure',
   ),
   sourceOrg: usernameOrAliasParam.describe(
-    'The org username or alias to create a snapshot of, use the #get_username tool to get the default target org if unsure'
+    'The org username or alias to create a snapshot of, use the #get_username tool to get the default target org if unsure',
   ),
   description: z.string().describe(' Description of snapshot.').optional(),
   name: z.string().describe('Unique name of snapshot').max(15).default(Date.now().toString().substring(0, 15)),

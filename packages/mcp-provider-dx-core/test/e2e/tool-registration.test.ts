@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { expect,assert } from 'chai';
+import { expect, assert } from 'chai';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { DxMcpTransport } from '@salesforce/mcp-test-client';
 
@@ -30,32 +30,34 @@ async function getMcpClient(opts: { args: string[] }) {
 
   await client.connect(transport);
 
-  return client
+  return client;
 }
 
 describe('specific tool registration', () => {
   it('should enable 2 tools', async () => {
     const client = await getMcpClient({
-      args: ['--orgs', 'ALLOW_ALL_ORGS', '--tools', 'run_soql_query, deploy_metadata', '--no-telemetry']
-    })
+      args: ['--orgs', 'ALLOW_ALL_ORGS', '--tools', 'run_soql_query, deploy_metadata', '--no-telemetry'],
+    });
 
     try {
       const initialTools = (await client.listTools()).tools.map((t) => t.name).sort();
 
       expect(initialTools.length).to.equal(4);
-      expect(initialTools).to.deep.equal(['run_soql_query', 'deploy_metadata','get_username', 'resume_tool_operation'].sort());
+      expect(initialTools).to.deep.equal(
+        ['run_soql_query', 'deploy_metadata', 'get_username', 'resume_tool_operation'].sort(),
+      );
     } catch (err) {
-      console.error(err) 
-      assert.fail()
+      console.error(err);
+      assert.fail();
     } finally {
-      await client.close()
+      await client.close();
     }
   });
 
   it('should not enable NON_GA tools if --allow-non-ga-tools is not specified', async () => {
     const client = await getMcpClient({
-      args: ['--orgs', 'ALLOW_ALL_ORGS', '--tools', 'run_soql_query, list_devops_center_work_items', '--no-telemetry']
-    })
+      args: ['--orgs', 'ALLOW_ALL_ORGS', '--tools', 'run_soql_query, list_devops_center_work_items', '--no-telemetry'],
+    });
 
     try {
       const initialTools = (await client.listTools()).tools.map((t) => t.name).sort();
@@ -64,28 +66,45 @@ describe('specific tool registration', () => {
       // assert that devops's `list_devops_center_work_items` tool isn't included.
       expect(initialTools).to.deep.equal(['run_soql_query', 'get_username', 'resume_tool_operation'].sort());
     } catch (err) {
-      console.error(err)
-      assert.fail()
+      console.error(err);
+      assert.fail();
     } finally {
-      await client.close()
+      await client.close();
     }
-  })
+  });
 
   it('should enable 1 tool and a toolset', async () => {
     const client = await getMcpClient({
-      args: ['--orgs', 'ALLOW_ALL_ORGS', '--tools', 'run_soql_query', '--toolsets', 'code-analysis', '--allow-non-ga-tools','--no-telemetry']
-    })
+      args: [
+        '--orgs',
+        'ALLOW_ALL_ORGS',
+        '--tools',
+        'run_soql_query',
+        '--toolsets',
+        'code-analysis',
+        '--allow-non-ga-tools',
+        '--no-telemetry',
+      ],
+    });
 
     try {
       const initialTools = (await client.listTools()).tools.map((t) => t.name).sort();
 
       expect(initialTools.length).to.equal(5);
-      expect(initialTools).to.deep.equal(['run_soql_query', 'get_username', 'resume_tool_operation','describe_code_analyzer_rule','run_code_analyzer'].sort());
+      expect(initialTools).to.deep.equal(
+        [
+          'run_soql_query',
+          'get_username',
+          'resume_tool_operation',
+          'describe_code_analyzer_rule',
+          'run_code_analyzer',
+        ].sort(),
+      );
     } catch (err) {
-      console.error(err)
-      assert.fail()
+      console.error(err);
+      assert.fail();
     } finally {
-      await client.close()
+      await client.close();
     }
-  })
+  });
 });

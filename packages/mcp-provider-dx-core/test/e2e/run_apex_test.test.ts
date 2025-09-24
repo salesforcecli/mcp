@@ -77,7 +77,7 @@ describe('run_apex_test', () => {
 
     expect(result.isError).to.equal(false);
     expect(result.content.length).to.equal(1);
-    if (result.content[0].type !== 'text') assert.fail()
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('Test result:');
@@ -114,7 +114,7 @@ describe('run_apex_test', () => {
 
     expect(result.isError).to.equal(false);
     expect(result.content.length).to.equal(1);
-    if (result.content[0].type !== 'text') assert.fail()
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('Test result:');
@@ -154,11 +154,11 @@ describe('run_apex_test', () => {
 
     expect(result.isError).to.equal(true);
     expect(result.content.length).to.equal(1);
-    if (result.content[0].type !== 'text') assert.fail()
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain(
-      "You can't specify which tests to run without setting testLevel='RunSpecifiedTests'"
+      "You can't specify which tests to run without setting testLevel='RunSpecifiedTests'",
     );
   });
 });

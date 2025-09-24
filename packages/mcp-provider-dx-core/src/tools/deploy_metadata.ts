@@ -64,7 +64,7 @@ RunLocalTests="Run all tests in the org, except the ones that originate from ins
 RunAllTestsInOrg="Run all tests in the org, including tests of managed packages"
 
 Don't set this param if "apexTests" is also set.
-`
+`,
     ),
   apexTests: z
     .array(z.string())
@@ -72,7 +72,7 @@ Don't set this param if "apexTests" is also set.
       `Apex tests classes to run.
 
 Set this param if the user ask an Apex test to be run during deployment.
-`
+`,
     )
     .optional(),
   usernameOrAlias: usernameOrAliasParam,
@@ -135,7 +135,7 @@ Deploy X to my org and run A,B and C apex tests.`,
     if (!input.usernameOrAlias)
       return textResponse(
         'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool',
-        true
+        true,
       );
 
     // needed for org allowlist to work
@@ -149,7 +149,7 @@ Deploy X to my org and run A,B and C apex tests.`,
     if (!input.sourceDir && !input.manifest && !(await org.tracksSource())) {
       return textResponse(
         'This org does not have source-tracking enabled or does not support source-tracking. You should specify the files or a manifest to deploy.',
-        true
+        true,
       );
     }
 
@@ -190,7 +190,7 @@ Deploy X to my org and run A,B and C apex tests.`,
           `
 YOU MUST inform the user that the deploy timed out and if they want to resume the deploy, they can use the #resume_tool_operation tool
 and ${jobId} for the jobId parameter.`,
-          true
+          true,
         );
       }
       return textResponse(`Failed to deploy metadata: ${err.message}`, true);
@@ -203,7 +203,7 @@ async function buildDeployComponentSet(
   project: SfProject,
   stl: SourceTracking,
   sourceDir?: string[],
-  manifestPath?: string
+  manifestPath?: string,
 ): Promise<ComponentSet> {
   if (sourceDir || manifestPath) {
     return ComponentSetBuilder.build({

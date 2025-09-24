@@ -15,8 +15,8 @@
  */
 
 import path from 'node:path';
-import { QueryResult,Record as jsforceRecord } from '@jsforce/jsforce-node'
-import { expect,assert } from 'chai';
+import { QueryResult, Record as jsforceRecord } from '@jsforce/jsforce-node';
+import { expect, assert } from 'chai';
 import { McpTestClient, DxMcpTransport } from '@salesforce/mcp-test-client';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { z } from 'zod';
@@ -92,8 +92,7 @@ describe('run_soql_query', () => {
 
     expect(result.isError).to.equal(false);
     expect(result.content.length).to.equal(1);
-    if (result.content[0].type !== 'text') assert.fail()
-
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('SOQL query results:');
@@ -137,7 +136,7 @@ describe('run_soql_query', () => {
 
     expect(result.isError).to.equal(false);
     expect(result.content.length).to.equal(1);
-    if (result.content[0].type !== 'text') assert.fail()
+    if (result.content[0].type !== 'text') assert.fail();
 
     const responseText = result.content[0].text;
     expect(responseText).to.contain('SOQL query results:');
@@ -230,7 +229,7 @@ describe('run_soql_query', () => {
 
     const responseText = result.content[0].text;
     expect(responseText).to.equal(
-      'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool'
+      'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool',
     );
   });
 });

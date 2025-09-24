@@ -82,7 +82,7 @@ You can specify a metadata file you want to open.`,
       return textResponse(
         metadataBuilderUrl.includes('FlexiPageList')
           ? "Opened the org in your browser. This metadata file doesn't have a builder UI, opened Lightning App Builder instead."
-          : 'Opened this metadata in your browser'
+          : 'Opened this metadata in your browser',
       );
     }
 

@@ -99,7 +99,7 @@ export class AssignPermissionSetMcpTool extends McpTool<InputArgsShape, OutputAr
       if (!input.usernameOrAlias)
         return textResponse(
           'The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool',
-          true
+          true,
         );
       process.chdir(input.directory);
       // We build the connection from the usernameOrAlias
@@ -110,7 +110,7 @@ export class AssignPermissionSetMcpTool extends McpTool<InputArgsShape, OutputAr
       await StateAggregator.clearInstanceAsync();
       // Must NOT be nullish coalescing (??) In case the LLM uses and empty string
       const assignTo = (await StateAggregator.getInstance()).aliases.resolveUsername(
-        input.onBehalfOf || input.usernameOrAlias
+        input.onBehalfOf || input.usernameOrAlias,
       );
 
       if (!assignTo.includes('@')) {
@@ -120,7 +120,7 @@ export class AssignPermissionSetMcpTool extends McpTool<InputArgsShape, OutputAr
       const org = await Org.create({ connection });
       const user = await User.create({ org });
       const queryResult = await connection.singleRecordQuery<{ Id: string }>(
-        `SELECT Id FROM User WHERE Username='${assignTo}'`
+        `SELECT Id FROM User WHERE Username='${assignTo}'`,
       );
 
       await user.assignPermissionSets(queryResult.Id, [input.permissionSetName]);
@@ -129,7 +129,7 @@ export class AssignPermissionSetMcpTool extends McpTool<InputArgsShape, OutputAr
     } catch (error) {
       return textResponse(
         `Failed to assign permission set: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        true
+        true,
       );
     }
   }

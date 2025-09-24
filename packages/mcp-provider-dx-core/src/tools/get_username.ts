@@ -152,7 +152,7 @@ UNLESS THE USER SPECIFIES OTHERWISE, use this username (.value) for the "usernam
       if (!suggestedUsername) {
         return textResponse(
           "No suggested username found. Please specify a username or alias explicitly. Also check the MCP server's startup args for allowlisting orgs.",
-          true
+          true,
         );
       }
 
@@ -165,7 +165,7 @@ UNLESS THE USER SPECIFIES OTHERWISE, use this username for the "usernameOrAlias"
     } catch (error) {
       return textResponse(
         `Failed to determine appropriate username: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        true
+        true,
       );
     }
   }
