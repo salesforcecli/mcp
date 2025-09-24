@@ -1,3 +1,12 @@
+## [0.21.2](https://github.com/salesforcecli/mcp/compare/0.21.1...0.21.2) (2025-09-24)
+
+
+### Bug Fixes
+
+* update tool names of LWC and Aura experts ([#247](https://github.com/salesforcecli/mcp/issues/247)) ([1d42c4c](https://github.com/salesforcecli/mcp/commit/1d42c4c90fbdbc41003cea71e0dd82708b91d085))
+
+
+
 ## [0.21.1](https://github.com/salesforcecli/mcp/compare/0.21.0...0.21.1) (2025-09-23)
 
 
