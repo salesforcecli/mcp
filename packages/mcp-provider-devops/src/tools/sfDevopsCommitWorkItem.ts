@@ -4,13 +4,14 @@ import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from 
 import { commitWorkItem } from "../commitWorkItem.js";
 import { fetchWorkItemByName } from "../getWorkItems.js";
 import { normalizeAndValidateRepoPath } from "../shared/pathUtils.js";
+import { randomUUID } from 'crypto';
 
 const inputSchema = z.object({
   doceHubUsername: z.string().describe("DevOps Center org username (required; list orgs and select if unknown)"),
   sandboxUsername: z.string().describe("Sandbox org username (required; list orgs and select if unknown)"),
   workItemName: z.string().min(1).describe("Exact Work Item Name to commit workitem."),
   commitMessage: z.string().describe("Commit message describing the changes (ask user for input)"),
-  repoPath: z.string().optional().describe("Optional: Absolute path to the git repository root. Defaults to current working directory.")
+  repoPath: z.string().describe("Absolute path to the git repository root. Defaults to current working directory.")
 });
 type InputArgs = z.infer<typeof inputSchema>;
 type InputArgsShape = typeof inputSchema.shape;
@@ -89,7 +90,19 @@ When user asks to "commit work item" or "commit changes", DO NOT use this tool d
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
     try {
+      
+      if (!input.repoPath || input.repoPath.trim().length === 0) {
+        return {
+          content: [{
+            type: "text",
+            text: `Error: Repository path is required. Please provide the absolute path to the git repository root.`
+          }]
+        };
+      }
+
+      
       const safeRepoPath = input.repoPath ? normalizeAndValidateRepoPath(input.repoPath) : undefined;
+
 
       const workItem = await fetchWorkItemByName(input.doceHubUsername, input.workItemName);
       
@@ -120,7 +133,6 @@ When user asks to "commit work item" or "commit changes", DO NOT use this tool d
         };
       }
 
-      const { randomUUID } = require('crypto');
       const requestId = randomUUID();
       
       const result = await commitWorkItem({

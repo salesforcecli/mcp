@@ -5,11 +5,12 @@ import { detectConflict } from "../detectConflict.js";
 import { fetchWorkItemByName } from "../getWorkItems.js";
 import { fetchWorkItemByNameMP } from "../getWorkItemsMP.js";
 import { isManagedPackageDevopsOrg } from "../shared/orgType.js";
+import { normalizeAndValidateRepoPath } from "../shared/pathUtils.js";
 
 const inputSchema = z.object({
   username: z.string().describe("Username of the DevOps Center org"),
   workItemName: z.string().min(1).describe("Exact Work Item Name (mandatory)"),
-  localPath: z.string().optional().describe("Local path to the repository (defaults to current working directory)")
+  localPath: z.string().describe("Local path to the repository (defaults to current working directory)")
 });
 type InputArgs = z.infer<typeof inputSchema>;
 type InputArgsShape = typeof inputSchema.shape;
@@ -24,7 +25,7 @@ export class SfDevopsDetectConflict extends McpTool<InputArgsShape, OutputArgsSh
   }
 
   public getReleaseState(): ReleaseState {
-    return ReleaseState.NON_GA;
+    return ReleaseState.GA;
   }
 
   public getToolsets(): Toolset[] {
@@ -73,9 +74,18 @@ export class SfDevopsDetectConflict extends McpTool<InputArgsShape, OutputArgsSh
       ? await fetchWorkItemByNameMP(input.username, input.workItemName)
       : await fetchWorkItemByName(input.username, input.workItemName);
     
+    if (!input.localPath || input.localPath.trim().length === 0) {
+      return {
+        content: [{
+          type: "text",
+          text: `Error: Repository path is required. Please provide the absolute path to the git repository root.`
+        }]
+      };
+    }
+    
     const result = await detectConflict({
       workItem,
-      localPath: input.localPath
+      localPath: input.localPath ? normalizeAndValidateRepoPath(input.localPath) : undefined
     });
     
     return {

@@ -1,5 +1,6 @@
 import path from "path";
 import { exec } from "child_process";
+import fs from 'fs';
 
 export interface PushWorkitemBranchChangesParams {
   repoPath: string;
@@ -10,11 +11,9 @@ export interface PushWorkitemBranchChangesParams {
 export async function checkoutWorkitemBranch(
   { repoUrl, branchName, localPath }: { repoUrl: string; branchName: string; localPath?: string }
 ): Promise<{ content: ({ type: "text"; text: string; [x: string]: unknown })[] }> {
-  const fs = require('fs');
-  const isGitRepo = fs.existsSync(path.join(process.cwd(), '.git'));
   let targetPath = localPath || process.cwd();
 
-  if (!localPath && isGitRepo) {
+  if (!localPath && fs.existsSync(path.join(process.cwd(), '.git'))) {
     return {
       content: [{
         type: "text",

@@ -4,6 +4,7 @@ import { execFileSync } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 import { normalizeAndValidateRepoPath } from './shared/pathUtils.js';
+import { randomUUID } from 'crypto';
 
 interface Change {
     fullName: string;
@@ -95,14 +96,20 @@ export async function commitWorkItem({
     const untrackedAbs = new Set<string>(untrackedRel.map(rel => path.resolve(workingDir, rel)));
 
     const computedChanges: Change[] = [];
+    const deployFilePaths = new Set(files.map(f => path.resolve(workingDir, f.filePath)));
+
     for (const { type, fullName, states, filePaths } of compIndex.values()) {
         let operation: 'delete' | 'add' | 'modify' | undefined;
-        for (const p of filePaths) { if (deletedAbs.has(p)) { operation = 'delete'; break; } }
-        if (!operation) {
-            for (const p of filePaths) { if (untrackedAbs.has(p)) { operation = 'add'; break; } }
-        }
-        if (!operation) {
-            for (const p of filePaths) { if (modifiedAbs.has(p)) { operation = 'modify'; break; } }
+        for (const p of filePaths) {
+            if (deployFilePaths.has(p)) { // Ensure the file is in deployJson
+                if (deletedAbs.has(p)) { operation = 'delete'; break; }
+                if (!operation) {
+                    if (untrackedAbs.has(p)) { operation = 'add'; break; }
+                }
+                if (!operation) {
+                    if (modifiedAbs.has(p)) { operation = 'modify'; break; }
+                }
+            }
         }
         if (!operation) {
             const hasCreated = Array.from(states).some(s => String(s).toLowerCase() === 'created');
@@ -111,7 +118,9 @@ export async function commitWorkItem({
             else if (hasChanged) operation = 'modify';
             else operation = 'modify';
         }
-        computedChanges.push({ fullName, type, operation });
+        if (operation) { // Only add if an operation was determined
+            computedChanges.push({ fullName, type, operation });
+        }
     }
 
 

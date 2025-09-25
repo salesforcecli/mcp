@@ -8,7 +8,7 @@ import { normalizeAndValidateRepoPath } from "../shared/pathUtils.js";
 const inputSchema = z.object({
   username: z.string().describe("The username of the DevOps Center org."),
   workItemName: z.string().min(1).describe("Exact Work Item Name to check out."),
-  localPath: z.string().optional().describe("The directory path where the repository should be cloned/checked out. If not provided, ask user to provide the path where project is cloned.")
+  localPath: z.string().describe("The directory path where the repository should be cloned/checked out. If not provided, ask user to provide the path where project is cloned.")
 });
 type InputArgs = z.infer<typeof inputSchema>;
 type InputArgsShape = typeof inputSchema.shape;
@@ -73,6 +73,15 @@ This tool takes the DevOps Center org username and the exact Work Item Name, loo
   public async exec(input: InputArgs): Promise<CallToolResult> {
     let safeLocalPath: string | undefined = undefined;
     try {
+      if (!input.localPath || input.localPath.trim().length === 0) {
+        return {
+          content: [{
+            type: "text",
+            text: `Error: Repository path is required. Please provide the absolute path to the git repository root.`
+          }]
+        };
+      }
+
       safeLocalPath = input.localPath ? normalizeAndValidateRepoPath(input.localPath) : undefined;
     } catch (e: any) {
       return {
