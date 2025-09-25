@@ -1,0 +1,117 @@
+name: promote-mcp-server
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: 'Semver version to promote. Example: 2.1.1'
+      old-channel:
+        type: string
+        description: 'Existing channel to promote. Example: Promote **rc** to latest'
+      new-channel:
+        type: string
+        description: 'The channel to promote to. Example: Promote rc to **latest**'
+        required: true
+
+jobs:
+  validate-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure either 'version' or 'old-channel' is passed"
+        if: ${{ !inputs.version && !inputs.old-channel }}
+        run: |
+          echo "ERROR: You must pass either 'version' or 'old-channel' to promote from."
+          echo "-> Use 'version' if you are promoting a new semver version to a channel. Example: I want to promote version '2.1.1' to channel 'dev'.
+          echo "-> Use 'old-channel' if you are promoting an existing channel to another channel. Example: I want to promote channel 'rc' to channel 'latest'.
+          exit 1
+      - name: Ensure only one "starting point"
+        if: ${{ inputs.version && inputs.old-channel }}
+        run: |
+          echo "ERROR: Inputs 'version' and 'old-channel' cannot both be passed (exactlyOne)."
+          echo "-> Use 'version' if you are promoting a new semver version to a channel. Example: I want to promote version '2.1.1' to channel 'dev'.
+          echo "-> Use 'old-channel' if you are promoting an existing channel to another channel. Example: I want to promote channel 'rc' to channel 'latest'.
+          exit 1
+      - name: Ensure channels do not include "stable"
+        if: ${{ contains(inputs.old-channel, 'stable') || contains(inputs.new-channel, 'stable') }}
+        run: |
+          echo "ERROR: Do not use 'stable' in channel names. Use 'latest' instead.
+          exit 1
+
+  # Needed to look up the semver version if a "channel" is passed
+  get-package-info:
+    needs: [validate-inputs]
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version-info.outputs.version }}
+    steps:
+      - uses: salesforcecli/github-workflows/.github/actions/versionInfo@main
+        id: version-info
+        with:
+          npmPackage: '@salesforce/mcp'
+          version: ${{ inputs.version || inputs.old-channel }}
+
+  # CTC is only needed for promotions to 'latest'
+  # Note: "Optional" GHA jobs are tricky to get right. Edit with caution.
+  # Working example: https://github.com/iowillhoit/gha-sandbox/blob/main/.github/workflows/needing-an-optional-job-alternate.yml
+  open-ctc-or-skip:
+    needs: [get-package-info]
+    runs-on: static-ip-ubuntu-24-runners
+    outputs:
+      changeCaseId: ${{ steps.open-ctc.outputs.changeCaseId }}
+    steps:
+      - name: Open CTC
+        id: open-ctc
+        if: inputs.new-channel == 'latest'
+        uses: salesforcecli/github-workflows/.github/actions/ctcOpen@main
+        with:
+          SF_CHANGE_CASE_SFDX_AUTH_URL: ${{ secrets.SF_CHANGE_CASE_SFDX_AUTH_URL }}
+          SF_CHANGE_CASE_TEMPLATE_ID: ${{ secrets.SF_CHANGE_CASE_TEMPLATE_ID }}
+          SF_CHANGE_CASE_CONFIGURATION_ITEM: ${{ secrets.SF_CHANGE_CASE_CONFIGURATION_ITEM }}
+          SVC_CLI_BOT_GITHUB_TOKEN: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
+          githubTag: ${{ needs.get-package-info.outputs.version }}
+
+      - name: Check open-ctc status
+        if: always()
+        run: |
+          RESULT=${{ steps.open-ctc.outcome }}
+          if [[ "$RESULT" != 'success' && "$RESULT" != 'skipped' ]]; then
+            echo "Step 'open-ctc' failed! Exiting."
+            exit 1
+          else
+            echo "Step 'open-ctc' was successful or was skipped, proceeding."
+          fi
+
+  npm-promote:
+    needs: [open-ctc-or-skip, get-package-info]
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ vars.NODE_VERSION_OVERRIDE || 'lts/*' }}
+      # NOTE: If you try to use yarn here, it will use the wrong registry and throw 401s
+      - run: |
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          npm dist-tag add "@salesforce/mcp@$NEEDS_GET_PACKAGE_INFO_VERSION" "$INPUTS_NEW_CHANNEL"
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NEEDS_GET_PACKAGE_INFO_VERSION: ${{ needs.get-package-info.outputs.version }}
+          INPUTS_NEW_CHANNEL: ${{ inputs.new-channel }}
+
+  ctcCloseSuccess:
+    needs: [open-ctc-or-skip, npm-promote]
+    if: needs.open-ctc-or-skip.result == 'success' && needs.open-ctc-or-skip.outputs.changeCaseId && needs.npm-promote.result == 'success'
+    uses: salesforcecli/github-workflows/.github/workflows/ctcClose.yml@main
+    secrets: inherit
+    with:
+      changeCaseId: ${{ needs.open-ctc-or-skip.outputs.changeCaseId }}
+
+  ctcCloseFail:
+    needs: [open-ctc-or-skip, npm-promote]
+    if: always() && needs.open-ctc-or-skip.outputs.changeCaseId && (needs.open-ctc-or-skip.result != 'success' || needs.npm-promote.result != 'success')
+    uses: salesforcecli/github-workflows/.github/workflows/ctcClose.yml@main
+    secrets: inherit
+    with:
+      changeCaseId: ${{ needs.open-ctc-or-skip.outputs.changeCaseId }}
+      status: Not Implemented
