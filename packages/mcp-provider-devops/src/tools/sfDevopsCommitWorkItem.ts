@@ -4,6 +4,7 @@ import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from 
 import { commitWorkItem } from "../commitWorkItem.js";
 import { fetchWorkItemByName } from "../getWorkItems.js";
 import { normalizeAndValidateRepoPath } from "../shared/pathUtils.js";
+import { randomUUID } from 'crypto';
 
 const inputSchema = z.object({
   doceHubUsername: z.string().describe("DevOps Center org username (required; list orgs and select if unknown)"),
@@ -132,7 +133,6 @@ When user asks to "commit work item" or "commit changes", DO NOT use this tool d
         };
       }
 
-      const { randomUUID } = require('crypto');
       const requestId = randomUUID();
       
       const result = await commitWorkItem({
