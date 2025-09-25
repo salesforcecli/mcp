@@ -47,6 +47,7 @@
     "lint": "eslint **/*.ts",
     "postclean": "rimraf dist && rimraf ./*.tgz",
     "package": "yarn pack",
-    "test": "tsc --build tsconfig.json --noEmit && vitest run --coverage"
+    "test": "tsc --build tsconfig.json --noEmit && vitest run --coverage --exclude \"test/e2e/**/*.test.ts\"",
+    "test:e2e": "tsc --build tsconfig.json --noEmit && vitest run \"test/e2e\""
   }
 }

@@ -200,6 +200,7 @@ jobs:
           - 'yarn test:e2e'
         provider:
           - 'mcp-provider-dx-core'
+          - 'mcp-provider-code-analyzer'
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
