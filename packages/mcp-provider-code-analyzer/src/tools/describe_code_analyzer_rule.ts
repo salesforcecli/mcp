@@ -15,7 +15,7 @@ const DESCRIPTION: string = `A tool for getting the description of a Code Analyz
     `- When the results file from the ${CodeAnalyzerRunMcpTool.NAME} tool does not provide enough information to fix a violation yourself.\n` +
     `- When the user asks for information about a specific rule or violation.`;
 
-const inputSchema = z.object({
+export const inputSchema = z.object({
     ruleName: z.string().describe('The name of a rule about which more information is required'),
     engineName: z.string().describe('The engine to which the rule belongs. Resolves ambiguity when rules have the same name.')
 });
