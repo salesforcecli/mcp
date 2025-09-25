@@ -1,4 +1,4 @@
-name: promote
+name: promote-mcp-server
 
 on:
   workflow_dispatch:
