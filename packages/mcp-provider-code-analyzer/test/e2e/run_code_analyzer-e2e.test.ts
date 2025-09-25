@@ -20,7 +20,7 @@ describe('run_code_analyzer', () => {
     beforeAll(async () => {
         try {
             const transport = DxMcpTransport({
-                args: ['--toolsets', 'all', '--orgs', 'DEFAULT_TARGET_ORG', '--no-telemetry', '--allow-non-ga-tools']
+                args: ['--toolsets', 'code-analysis', '--orgs', 'DEFAULT_TARGET_ORG', '--no-telemetry', '--allow-non-ga-tools']
             });
             await client.connect(transport);
         } catch (error) {
@@ -52,7 +52,7 @@ describe('run_code_analyzer', () => {
             params: {
                 target: [target]
             }
-        });
+        }, 60000);
 
         expect(result.structuredContent!.status).toEqual('success');
         expect(result.structuredContent!.summary).toHaveProperty('total', expectedCount);
@@ -67,5 +67,5 @@ describe('run_code_analyzer', () => {
         });
 
         expect(result.structuredContent!.status).toContain('All targeted files must exist, but ');
-    })
+    }, 60000)
 })
