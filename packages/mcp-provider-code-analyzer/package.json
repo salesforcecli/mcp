@@ -20,6 +20,7 @@
     "@salesforce/code-analyzer-pmd-engine": "^0.30.0",
     "@salesforce/code-analyzer-regex-engine": "^0.27.0",
     "@salesforce/code-analyzer-retirejs-engine": "^0.26.0",
+    "@salesforce/mcp-test-client": "0.0.1",
     "@salesforce/mcp-provider-api": "^0.4.0",
     "zod": "^3.25.76"
   },
@@ -46,6 +47,7 @@
     "lint": "eslint **/*.ts",
     "postclean": "rimraf dist && rimraf ./*.tgz",
     "package": "yarn pack",
-    "test": "tsc --build tsconfig.json --noEmit && vitest run --coverage"
+    "test": "tsc --build tsconfig.json --noEmit && vitest run --coverage --exclude \"test/e2e/**/*.test.ts\"",
+    "test:e2e": "tsc --build tsconfig.json --noEmit && vitest run \"test/e2e\""
   }
 }
