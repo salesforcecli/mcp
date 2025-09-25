@@ -24,7 +24,7 @@ export class SfDevopsDetectConflict extends McpTool<InputArgsShape, OutputArgsSh
   }
 
   public getReleaseState(): ReleaseState {
-    return ReleaseState.NON_GA;
+    return ReleaseState.GA;
   }
 
   public getToolsets(): Toolset[] {
