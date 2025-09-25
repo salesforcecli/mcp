@@ -1,3 +1,12 @@
+## [0.1.2](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.1...mcp-provider-devops@0.1.2) (2025-09-25)
+
+
+### Bug Fixes
+
+* make merge conflict tools GA and add validations ([#249](https://github.com/salesforcecli/mcp/issues/249)) ([9463be3](https://github.com/salesforcecli/mcp/commit/9463be30262e493dddf2b736851305a0f6dc8179))
+
+
+
 ## [0.1.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.0...mcp-provider-devops@0.1.1) (2025-09-23)
 
 
