@@ -76,7 +76,6 @@ function mapRawItemToWorkItem(item: any, ctx: ProjectStagesContext): WorkItem {
 
 export async function fetchWorkItems(username: string, projectId: string): Promise<WorkItem[] | any> {
     try {
-        debugger;
         const connection = await getConnection(username);
         const query = `
             SELECT
