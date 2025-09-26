@@ -39,7 +39,7 @@ export function TaskRunner(model: LanguageModel = defaultModel) {
         const mcpClient = await experimental_createMCPClient({
             transport: new Experimental_StdioMCPTransport({
                 command: 'node',
-                args: [path.join(import.meta.dirname, '../../bin/run.js'), '--toolsets', 'all', '-o', 'DEFAULT_TARGET_ORG', '--no-telemetry']
+                args: [path.join(import.meta.dirname, '../../bin/run.js'), '--toolsets', 'all', '-o', 'DEFAULT_TARGET_ORG', '--no-telemetry', '--allow-non-ga-tools']
             }),
         });
 
@@ -76,6 +76,19 @@ export function TaskRunner(model: LanguageModel = defaultModel) {
             await mcpClient.close();
         }
     };
+}
+
+export function outputIncludesExpectationArray(opts: {input: string, output: string, expected: string[]}) {
+    let score: number = 0;
+    const increment: number = 1/opts.expected.length;
+    for (const expected of opts.expected) {
+        if (opts.output.toLowerCase().includes(expected.toLowerCase())) {
+            score += increment;
+        }
+    }
+    return {
+        score
+    }
 }
 
 /**
