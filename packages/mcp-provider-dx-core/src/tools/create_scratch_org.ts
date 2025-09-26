@@ -151,13 +151,11 @@ create a scratch org aliased as MyNewOrg and set as default and don't wait for i
       const result = await scratchOrgCreate(requestParams);
       if (input.async) {
         return textResponse(
-          `Successfully enqueued scratch org with job Id: ${JSON.stringify(
-            result.scratchOrgInfo?.Id,
-          )} use the #resume_tool_operation tool to resume this operation`,
+          `Successfully enqueued scratch org with job Id: ${result.scratchOrgInfo?.Id}. Use the #resume_tool_operation tool to resume this operation`,
         );
-      } else {
-        return textResponse(`Successfully created scratch org  ${JSON.stringify(result)}`);
       }
+
+      return textResponse(`Successfully created scratch org, username: ${result.username}`);
     } catch (e) {
       return textResponse(`Failed to create org: ${e instanceof Error ? e.message : 'Unknown error'}`, true);
     }
