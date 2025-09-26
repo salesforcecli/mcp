@@ -44,7 +44,7 @@ export async function promoteWorkItems(username: string, request: PromoteWorkIte
         targetStageId: targetStageId,
         allWorkItemsInStage: allWorkItemsInStage,
         isCheckDeploy: false,
-        deployOptions: { testLevel: "NoTestRun", isFullDeploy: true }
+        deployOptions: { testLevel: "NoTestRun", isFullDeploy: false }
     };
     const url = `${instanceUrl}/services/data/v65.0/connect/devops/pipelines/${pipelineId}/promote`;
     try {
