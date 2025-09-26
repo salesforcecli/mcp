@@ -351,7 +351,6 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
  - `guide_lwc_best_practices` - (GA) Offers LWC development best practices and coding standards guidance
  - `guide_lwc_development` - (GA) Comprehensive LWC development workflow and implementation guidelines
  - `guide_lwc_rtl_support` - (GA) Right-to-Left internationalization support and RTL development guidance
- - `guide_uplift_ai_metadata` - (GA) AI metadata enhancement for LWC components
  - `guide_lwc_slds2_uplift_linter_fixes` - (GA) Analyzes the given LWC code along with the slds-linter output to fix issues using the SLDS2 knowledge
  - `guide_lwc_security` - (GA) Comprehensive security analysis in accordance with Product Security Guidelines and Lightning Web Security Guidelines
 
@@ -366,6 +365,7 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
  - `guide_lds_data_consistency` - (GA) Data consistency patterns and best practices for LDS components
  - `guide_lds_development` - (GA) LDS development guidelines and component integration
  - `guide_lds_referential_integrity` - (GA) Referential integrity patterns for LDS data management
+ - `orchestrate_lds_data_requirements` - (GA) Step-by-step guidance for analyzing and clarifying LDS data requirements to produce PRD-ready specifications.
 
 ##### Migration & Integration Tools
  - `verify_aura_migration_completeness` - (GA) Aura to LWC migration completeness checklist and validation
