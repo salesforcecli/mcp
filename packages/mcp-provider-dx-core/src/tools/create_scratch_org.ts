@@ -21,6 +21,7 @@ import { Org, scratchOrgCreate, ScratchOrgCreateOptions } from '@salesforce/core
 import { Duration } from '@salesforce/kit';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { McpTool, McpToolConfig, ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
+import { ensureString } from '@salesforce/ts-types/lib/narrowing/ensure.js';
 import { textResponse } from '../shared/utils.js';
 import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
 
@@ -151,13 +152,11 @@ create a scratch org aliased as MyNewOrg and set as default and don't wait for i
       const result = await scratchOrgCreate(requestParams);
       if (input.async) {
         return textResponse(
-          `Successfully enqueued scratch org with job Id: ${JSON.stringify(
-            result.scratchOrgInfo?.Id,
-          )} use the #resume_tool_operation tool to resume this operation`,
+          `Successfully enqueued scratch org with job Id: ${ensureString(result.scratchOrgInfo?.Id)}. Use the #resume_tool_operation tool to resume this operation`,
         );
-      } else {
-        return textResponse(`Successfully created scratch org  ${JSON.stringify(result)}`);
       }
+
+      return textResponse(`Successfully created scratch org, username: ${ensureString(result.username)}`);
     } catch (e) {
       return textResponse(`Failed to create org: ${e instanceof Error ? e.message : 'Unknown error'}`, true);
     }
