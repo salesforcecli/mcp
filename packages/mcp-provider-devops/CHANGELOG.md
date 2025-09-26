@@ -1,3 +1,12 @@
+## [0.1.3](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.2...mcp-provider-devops@0.1.3) (2025-09-26)
+
+
+### Bug Fixes
+
+* update promote default params and add tests for core methods ([#253](https://github.com/salesforcecli/mcp/issues/253)) ([300369f](https://github.com/salesforcecli/mcp/commit/300369ff0bcc9fdebcd188db7731b456d75e14e8))
+
+
+
 ## [0.1.2](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.1...mcp-provider-devops@0.1.2) (2025-09-25)
 
 
