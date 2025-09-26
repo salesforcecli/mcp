@@ -80,11 +80,14 @@ export function TaskRunner(model: LanguageModel = defaultModel) {
 
 export function outputIncludesExpectationArray(opts: {input: string, output: string, expected: string[]}) {
     let score: number = 0;
+    //console.log(`output is ${opts.output}`);
     const increment: number = 1/opts.expected.length;
     for (const expected of opts.expected) {
         if (opts.output.toLowerCase().includes(expected.toLowerCase())) {
+            //console.log(`contained ${expected}, icnrementing`);
             score += increment;
         }
+        //console.log(`score is now ${score}`)
     }
     return {
         score
