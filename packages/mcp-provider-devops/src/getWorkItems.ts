@@ -170,6 +170,7 @@ export async function fetchWorkItemsByNames(username: string, workItemNames: str
             return [];
         }
 
+        
         const escapeName = (name: string) => String(name).replace(/'/g, "\\'");
         const namesList = workItemNames.map(n => `'${escapeName(n)}'`).join(", ");
 
