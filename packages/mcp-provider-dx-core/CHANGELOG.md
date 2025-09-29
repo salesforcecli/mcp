@@ -1,3 +1,12 @@
+## [0.3.5](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.3.4...mcp-provider-dx-core@0.3.5) (2025-09-29)
+
+
+### Bug Fixes
+
+* reduce `create_scratch_org` tool output W-19760114 ([#257](https://github.com/salesforcecli/mcp/issues/257)) ([06aae26](https://github.com/salesforcecli/mcp/commit/06aae26260e661f4dd55e8f01f13ed67f5238736))
+
+
+
 ## [0.3.4](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.3.3...mcp-provider-dx-core@0.3.4) (2025-09-24)
 
 
