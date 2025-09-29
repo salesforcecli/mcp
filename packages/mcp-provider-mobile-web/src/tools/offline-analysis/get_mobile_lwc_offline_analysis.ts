@@ -58,7 +58,7 @@ export class OfflineAnalysisTool extends McpTool<InputArgsShape, OutputArgsShape
   }
 
   public getReleaseState(): ReleaseState {
-    return ReleaseState.NON_GA;
+    return ReleaseState.GA;
   }
 
   public getToolsets(): Toolset[] {
