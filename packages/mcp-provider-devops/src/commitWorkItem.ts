@@ -1,10 +1,7 @@
 import axios from 'axios';
 import { getConnection, getRequiredOrgs } from './shared/auth.js';
 import { execFileSync } from 'child_process';
-import path from 'path';
-import fs from 'fs';
 import { normalizeAndValidateRepoPath } from './shared/pathUtils.js';
-import { randomUUID } from 'crypto';
 
 interface Change {
     fullName: string;
@@ -30,7 +27,7 @@ export async function commitWorkItem({
     repoPath
 }: CommitWorkItemParams): Promise<any> {
     const { doceHub, sandbox, error } = await getRequiredOrgs(doceHubUsername, sandboxUsername);
-    
+
     if (error || !doceHub || !sandbox || !doceHub.username || !sandbox.username) {
         throw new Error(`Dual org detection failed: ${error || 'DevOps Center and Sandbox orgs required'}. Please ensure you are logged into both DevOps Center org (for authentication) and Sandbox org (for changes).`);
     }
@@ -64,10 +61,9 @@ export async function commitWorkItem({
     }
 
     const result = deployJson?.result || {};
-    const files: Array<any> = Array.isArray(result?.files) ? result.files : [];
     const successes: Array<any> = Array.isArray(result?.details?.componentSuccesses) ? result.details.componentSuccesses : [];
 
-    if (files.length === 0 && successes.length === 0) {
+    if (successes.length === 0) {
         throw new Error('Deployment returned no component details. Ensure there are changes under force-app.');
     }
 
@@ -81,40 +77,39 @@ export async function commitWorkItem({
     const computedChanges: Change[] = [];
     for (const { componentType, fullName, fileName } of successes.values()) {
         let operation: 'delete' | 'add' | 'modify' | undefined;
-        
-        const isDeleted =
-                            deletedRel.some(p =>
-                                p === fileName ||
-                                p.endsWith('/' + fileName) ||
-                                p.endsWith('\\' + fileName)
-                            );
-         if (!operation && isDeleted) { operation = 'delete'; }
-       
-         let isUntracked = false;
-                                
-         if (!operation )
-             { 
-                isUntracked = untrackedRel.some(p =>
-                    p === fileName ||
-                    p.endsWith('/' + fileName) ||
-                    p.endsWith('\\' + fileName)
-                );
-                if (isUntracked)
-                    operation = 'add'; 
-            }
 
-         let isModified = false;
-         
-         if (!operation) {
-            isModified =  modifiedRel.some(p =>
+        const isDeleted =
+            deletedRel.some(p =>
+                p === fileName ||
+                p.endsWith('/' + fileName) ||
+                p.endsWith('\\' + fileName)
+            );
+        if (!operation && isDeleted) { operation = 'delete'; }
+
+        let isUntracked = false;
+
+        if (!operation) {
+            isUntracked = untrackedRel.some(p =>
+                p === fileName ||
+                p.endsWith('/' + fileName) ||
+                p.endsWith('\\' + fileName)
+            );
+            if (isUntracked)
+                operation = 'add';
+        }
+
+        let isModified = false;
+
+        if (!operation) {
+            isModified = modifiedRel.some(p =>
                 p === fileName ||
                 p.endsWith('/' + fileName) ||
                 p.endsWith('\\' + fileName)
             );
             if (isModified)
-             operation = 'modify'; 
-            }
-        
+                operation = 'modify';
+        }
+
         if (operation && componentType) { // Only add if an operation was determined
             computedChanges.push({ fullName, type: componentType, operation });
         }
@@ -139,22 +134,21 @@ export async function commitWorkItem({
         changes: computedChanges
     };
 
-
     try {
         const response = await axios.post(url, requestBody, { headers });
-        
-                        return {
-                    success: true,
-                    commitResult: response.data,
-                    message: 'Work item committed successfully',
-                    trace: {
-                        doceHubOrg: doceHub.username,
-                        workItemId: workItem.id,
-                        requestId,
-                        commitMessage,
-                        changesCount: computedChanges.length
-                    }
-                };
+
+        return {
+            success: true,
+            commitResult: response.data,
+            message: 'Work item committed successfully',
+            trace: {
+                doceHubOrg: doceHub.username,
+                workItemId: workItem.id,
+                requestId,
+                commitMessage,
+                changesCount: computedChanges.length
+            }
+        };
     } catch (error: any) {
         const errorMessage = error.response?.data?.message || error.message;
         throw new Error(`Failed to commit work item: ${errorMessage}`);
