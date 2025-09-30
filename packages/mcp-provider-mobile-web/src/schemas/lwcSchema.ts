@@ -34,7 +34,7 @@ export const LwcCodeSchema = z.object({
   namespace: z.string().describe('Namespace of the LWC component').default('c'),
   html: z.array(LwcFileSchema).min(1).describe('LWC component HTML templates.'),
   js: z.array(LwcFileSchema).min(1).describe('LWC component JavaScript files.'),
-  css: z.array(LwcFileSchema).describe('LWC component CSS files.'),
+  css: z.array(LwcFileSchema).optional().describe('LWC component CSS files.'),
   jsMetaXml: LwcFileSchema.describe('LWC component configuration .js-meta.xml file.'),
 });
 

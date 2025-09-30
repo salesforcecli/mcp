@@ -28,8 +28,8 @@ describe('Tests for NativeCapabilityTool', () => {
     tool = new NativeCapabilityTool(AppReviewConfig);
   });
 
-  it("When getReleaseState is called, then 'non-ga' is returned", () => {
-    expect(tool.getReleaseState()).toEqual(ReleaseState.NON_GA);
+  it("When getReleaseState is called, then 'ga' is returned", () => {
+    expect(tool.getReleaseState()).toEqual(ReleaseState.GA);
   });
 
   it("When getToolsets is called, then 'mobile' is returned", () => {
