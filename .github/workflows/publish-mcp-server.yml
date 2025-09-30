@@ -141,7 +141,7 @@ jobs:
           # Replace the empty APP_INSIGHTS_KEY with the actual key from secrets
           sed -i "s|const APP_INSIGHTS_KEY = '';|const APP_INSIGHTS_KEY = '$APP_INSIGHTS_KEY';|" packages/mcp/src/telemetry.ts
 
-          if grep -q "applicationinsights.azure.com" packages/mcp/src/telemetry.ts; then
+          if grep -q "const APP_INSIGHTS_KEY = '$APP_INSIGHTS_KEY';" packages/mcp/src/telemetry.ts; then
             echo "✅ AppInsights key successfully replaced"
           else
             echo "❌ AppInsights key replacement failed"
