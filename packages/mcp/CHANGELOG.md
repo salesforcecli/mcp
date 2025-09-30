@@ -1,3 +1,12 @@
+# [0.22.0](https://github.com/salesforcecli/mcp/compare/0.21.4...0.22.0) (2025-09-30)
+
+
+### Features
+
+* update tools description and add lds workflow tool ([#258](https://github.com/salesforcecli/mcp/issues/258)) ([76c53f6](https://github.com/salesforcecli/mcp/commit/76c53f68446be7431801033c8db902b8a72d1c93))
+
+
+
 ## [0.21.4](https://github.com/salesforcecli/mcp/compare/0.21.3...0.21.4) (2025-09-26)
 
 
