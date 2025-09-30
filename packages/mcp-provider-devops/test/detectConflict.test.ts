@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { detectConflict } from '../src/detectConflict.js';
 import type { WorkItem } from '../src/types/WorkItem.js';
-import * as fs from 'node:fs';
-import * as os from 'node:os';
-import * as path from 'node:path';
-import { execSync } from 'node:child_process';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import { execSync } from 'child_process';
 
 describe('detectConflict', () => {
   it('should return an error if no workItem is provided', async () => {
