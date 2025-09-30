@@ -62,6 +62,7 @@ Agent execution guide (perform these steps now):
 5) Finalize the resolution
    - Verify no conflicts remain: 'git --no-pager diff --name-only --diff-filter=U' (should be empty).
    - Commit locally: 'git commit -m "Resolve merge conflicts between ${workItemBranch} and ${targetBranch}"'. If nothing to commit, report that the index is clean.
+   - Push the changes to the remote branch: 'git push origin ${workItemBranch}'
 
 Important constraints:
 - Do NOT push changes. Keep all operations local.

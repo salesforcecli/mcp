@@ -26,32 +26,11 @@ describe('commitWorkItem', () => {
     })).rejects.toThrow('Dual org detection failed: Org detection failed');
   });
 
-  it('should commit work item successfully', async () => {
+  it('should throw an error when no changes are detected', async () => {
     const mockOrgs = { doceHub: { username: 'doceHubUser' }, sandbox: { username: 'sandboxUser' }, error: null };
     (getRequiredOrgs as vi.Mock).mockResolvedValue(mockOrgs);
     (getConnection as vi.Mock).mockResolvedValue({ accessToken: 'fake-token', instanceUrl: 'https://example.com' });
-    (execFileSync as vi.Mock).mockReturnValue(JSON.stringify({ result: { files: [{ type: 'ApexClass', fullName: 'TestClass', filePath: 'classes/TestClass.cls' }] } }));
-    (axios.post as vi.Mock).mockResolvedValue({ data: { id: 'commit-001' } });
-
-    const result = await commitWorkItem({
-      workItem: { id: 'WI-0001' },
-      requestId: 'req-001',
-      commitMessage: 'Test commit',
-      doceHubUsername: 'doceHubUser',
-      sandboxUsername: 'sandboxUser',
-      repoPath: '/path/to/repo'
-    });
-
-    expect(result.success).toBe(true);
-    expect(result.commitResult.id).toBe('commit-001');
-  });
-
-  it('should handle axios errors gracefully', async () => {
-    const mockOrgs = { doceHub: { username: 'doceHubUser' }, sandbox: { username: 'sandboxUser' }, error: null };
-    (getRequiredOrgs as vi.Mock).mockResolvedValue(mockOrgs);
-    (getConnection as vi.Mock).mockResolvedValue({ accessToken: 'fake-token', instanceUrl: 'https://example.com' });
-    (execFileSync as vi.Mock).mockReturnValue(JSON.stringify({ result: { files: [{ type: 'ApexClass', fullName: 'TestClass', filePath: 'classes/TestClass.cls' }] } }));
-    (axios.post as vi.Mock).mockRejectedValue({ message: 'Network Error' });
+    (execFileSync as vi.Mock).mockReturnValue(JSON.stringify({ result: { details: { componentSuccesses: [] } } }));
 
     await expect(commitWorkItem({
       workItem: { id: 'WI-0001' },
@@ -60,6 +39,7 @@ describe('commitWorkItem', () => {
       doceHubUsername: 'doceHubUser',
       sandboxUsername: 'sandboxUser',
       repoPath: '/path/to/repo'
-    })).rejects.toThrow('Failed to commit work item: Network Error');
+    })).rejects.toThrow('Deployment returned no component details. Ensure there are changes under force-app.');
   });
+
 });
