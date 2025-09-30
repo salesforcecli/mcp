@@ -1,3 +1,12 @@
+## [0.1.4](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.3...mcp-provider-devops@0.1.4) (2025-09-30)
+
+
+### Bug Fixes
+
+* conflict resolution checks added ([#262](https://github.com/salesforcecli/mcp/issues/262)) ([09f1b38](https://github.com/salesforcecli/mcp/commit/09f1b3873abeee4d81b78576abba29f20adc898d))
+
+
+
 ## [0.1.3](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.2...mcp-provider-devops@0.1.3) (2025-09-26)
 
 
