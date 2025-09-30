@@ -23,8 +23,9 @@ import { Config } from '@oclif/core';
 import { TelemetryService } from '@salesforce/mcp-provider-api/src/index.js';
 
 const PROJECT = 'salesforce-mcp-server';
-const APP_INSIGHTS_KEY =
-  'InstrumentationKey=2ca64abb-6123-4c7b-bd9e-4fe73e71fe9c;IngestionEndpoint=https://eastus-1.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/;ApplicationId=ecd8fa7a-0e0d-4109-94db-4d7878ada862';
+// WARN: This is intentionally empty! It's populated at the time of publish
+//       This is to prevent telemetry pollution from local clones and forks
+const APP_INSIGHTS_KEY = '';
 
 const generateRandomId = (): string => randomBytes(20).toString('hex');
 
@@ -75,9 +76,11 @@ export class Telemetry implements TelemetryService {
   private reporter?: McpTelemetryReporter;
 
   public constructor(private readonly config: Config, private attributes: Attributes = {}) {
-    warn(
-      'You acknowledge and agree that the MCP server may collect usage information, user environment, and crash reports for the purposes of providing services or functions that are relevant to use of the MCP server and product improvements.'
-    );
+    const startupMessage = APP_INSIGHTS_KEY
+      ? 'You acknowledge and agree that the MCP server may collect usage information, user environment, and crash reports for the purposes of providing services or functions that are relevant to use of the MCP server and product improvements.'
+      : 'Telemetry is automatically disabled for local development.'
+
+    warn(startupMessage);
     this.sessionId = generateRandomId();
     this.cliId = getCliId(config.cacheDir);
   }
@@ -113,6 +116,7 @@ export class Telemetry implements TelemetryService {
 
   public async start(): Promise<void> {
     if (this.started) return;
+    if (!APP_INSIGHTS_KEY) return;
     this.started = true;
 
     try {
