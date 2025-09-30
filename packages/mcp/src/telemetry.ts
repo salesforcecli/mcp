@@ -17,6 +17,7 @@
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import * as os from 'node:os';
 import { Attributes, TelemetryReporter } from '@salesforce/telemetry';
 import { warn } from '@oclif/core/ux';
 import { Config } from '@oclif/core';
@@ -25,8 +26,27 @@ import { TelemetryService } from '@salesforce/mcp-provider-api/src/index.js';
 const PROJECT = 'salesforce-mcp-server';
 const APP_INSIGHTS_KEY =
   'InstrumentationKey=2ca64abb-6123-4c7b-bd9e-4fe73e71fe9c;IngestionEndpoint=https://eastus-1.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/;ApplicationId=ecd8fa7a-0e0d-4109-94db-4d7878ada862';
+const O11Y_UPLOAD_ENDPOINT =
+  process.env.O11Y_UPLOAD_ENDPOINT || 'https://794testsite.my.site.com/byolwr/webruntime/log/metrics';
 
 const generateRandomId = (): string => randomBytes(20).toString('hex');
+
+/**
+ * Check if the current host is an internal Salesforce environment
+ */
+function isInternalHost(): boolean {
+  return os.hostname().endsWith('internal.salesforce.com');
+}
+
+/**
+ * Get internal Salesforce environment properties
+ */
+function getInternalProperties() {
+  return {
+    hostname: os.hostname(),
+    username: os.userInfo().username,
+  };
+}
 
 const getCliId = (cacheDir: string): string => {
   // We need to find sf's cache directory and read the CLIID.txt file from there.
@@ -105,6 +125,8 @@ export class Telemetry implements TelemetryService {
         date: new Date().toUTCString(),
         timestamp: String(Date.now()),
         processUptime: process.uptime() * 1000,
+        // Internal Properties (only in internal Salesforce environments)
+        ...(isInternalHost() ? getInternalProperties() : {}),
       });
     } catch {
       /* empty */
@@ -121,6 +143,8 @@ export class Telemetry implements TelemetryService {
         key: APP_INSIGHTS_KEY,
         userId: this.cliId,
         waitForConnection: true,
+        o11yUploadEndpoint: O11Y_UPLOAD_ENDPOINT,
+        enableO11y: true,
       });
 
       this.reporter.start();
