@@ -17,17 +17,27 @@
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { hostname } from 'node:os';
 import { Attributes, TelemetryReporter } from '@salesforce/telemetry';
 import { warn } from '@oclif/core/ux';
 import { Config } from '@oclif/core';
 import { TelemetryService } from '@salesforce/mcp-provider-api/src/index.js';
 
 const PROJECT = 'salesforce-mcp-server';
+
 // WARN: This is intentionally empty! It's populated at the time of publish
 //       This is to prevent telemetry pollution from local clones and forks
-const APP_INSIGHTS_KEY = 'InstrumentationKey=2ca64abb-6123-4c7b-bd9e-4fe73e71fe9c;IngestionEndpoint=https://eastus-1.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/;ApplicationId=ecd8fa7a-0e0d-4109-94db-4d7878ada862';
+const APP_INSIGHTS_KEY = '';
+const O11Y_UPLOAD_ENDPOINT = 'https://794testsite.my.site.com/byolwr/webruntime/log/metrics';
 
 const generateRandomId = (): string => randomBytes(20).toString('hex');
+
+/**
+ * Check if the current host is an internal Salesforce environment
+ */
+function isInternalHost(): boolean {
+  return hostname().endsWith('internal.salesforce.com');
+}
 
 const getCliId = (cacheDir: string): string => {
   // We need to find sf's cache directory and read the CLIID.txt file from there.
@@ -108,6 +118,8 @@ export class Telemetry implements TelemetryService {
         date: new Date().toUTCString(),
         timestamp: String(Date.now()),
         processUptime: process.uptime() * 1000,
+        // Internal Properties (only in internal Salesforce environments)
+        internalSalesforceUsage: isInternalHost(),
       });
     } catch {
       /* empty */
@@ -125,6 +137,8 @@ export class Telemetry implements TelemetryService {
         key: APP_INSIGHTS_KEY,
         userId: this.cliId,
         waitForConnection: true,
+        o11yUploadEndpoint: O11Y_UPLOAD_ENDPOINT,
+        enableO11y: true,
       });
 
       this.reporter.start();
