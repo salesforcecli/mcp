@@ -28,8 +28,7 @@ const PROJECT = 'salesforce-mcp-server';
 // WARN: This is intentionally empty! It's populated at the time of publish
 //       This is to prevent telemetry pollution from local clones and forks
 const APP_INSIGHTS_KEY = '';
-const O11Y_UPLOAD_ENDPOINT =
-  process.env.O11Y_UPLOAD_ENDPOINT || 'https://794testsite.my.site.com/byolwr/webruntime/log/metrics';
+const O11Y_UPLOAD_ENDPOINT = 'https://794testsite.my.site.com/byolwr/webruntime/log/metrics';
 
 const generateRandomId = (): string => randomBytes(20).toString('hex');
 
