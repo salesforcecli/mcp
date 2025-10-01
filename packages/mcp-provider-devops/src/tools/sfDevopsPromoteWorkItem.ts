@@ -77,7 +77,12 @@ export class SfDevopsPromoteWorkItem extends McpTool<InputArgsShape, OutputArgsS
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
-    const items = await fetchWorkItemsByNames(input.username, input.workItemNames);
+    let items: any[] | any;
+    try {
+      items = await fetchWorkItemsByNames(input.username, input.workItemNames);
+    } catch (e: any) {
+      return { content: [{ type: "text", text: `Error fetching work items: ${e?.message || e}` }], isError: true };
+    }
     if (!Array.isArray(items) || items.length === 0) {
       return { content: [{ type: "text", text: "No matching Work Items found for provided names." }] };
     }

@@ -56,7 +56,7 @@ describe('run_code_analyzer', () => {
 
         expect(result.structuredContent!.status).toEqual('success');
         expect(result.structuredContent!.summary).toHaveProperty('total', expectedCount);
-    });
+    }, 60000);
 
     it('errors when non-existent file is targeted', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -64,7 +64,7 @@ describe('run_code_analyzer', () => {
             params: {
                 target: [path.join(__dirname, '..', 'fixtures', 'sample-targets', 'NoTargetWithThisName.cls')]
             }
-        });
+        }, 60000);
 
         expect(result.structuredContent!.status).toContain('All targeted files must exist, but ');
     }, 60000)

@@ -69,10 +69,27 @@ export class SfDevopsResolveConflict extends McpTool<InputArgsShape, OutputArgsS
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
     const isMP = await isManagedPackageDevopsOrg(input.username);
-    const workItem = isMP 
-      ? await fetchWorkItemByNameMP(input.username, input.workItemName)
-      : await fetchWorkItemByName(input.username, input.workItemName);
+    let workItem: any;
+    try {
+      workItem = isMP 
+        ? await fetchWorkItemByNameMP(input.username, input.workItemName)
+        : await fetchWorkItemByName(input.username, input.workItemName);
+    } catch (e: any) {
+      return {
+        content: [{ type: "text", text: `Error fetching work item: ${e?.message || e}` }],
+        isError: true
+      };
+    }
     
+    if (!workItem) {
+      return {
+        content: [{
+          type: "text",
+          text: `Error: Work item not found. Please provide a valid work item name or valid DevOps Center org username.`
+        }]
+      };
+    }
+
     if (!input.localPath || input.localPath.trim().length === 0) {
       return {
         content: [{

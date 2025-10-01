@@ -87,7 +87,7 @@ export class CreatePullRequest extends McpTool<InputArgsShape, OutputArgsShape> 
         return {
           content: [{
             type: "text",
-            text: `Error: Work item Name is required. Please provide a valid work item Name.`
+            text: `Error: Work item Name is required. Please provide a valid work item Name. Or provide a valid DevOps Center org username.`
           }]
         };
       }

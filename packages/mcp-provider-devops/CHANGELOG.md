@@ -1,3 +1,12 @@
+## [0.1.5](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.4...mcp-provider-devops@0.1.5) (2025-10-01)
+
+
+### Bug Fixes
+
+* standardize error handling for DevOps work item flows ([#266](https://github.com/salesforcecli/mcp/issues/266)) ([08f0336](https://github.com/salesforcecli/mcp/commit/08f0336b5f931c734934f09e0983b1982a741c80))
+
+
+
 ## [0.1.4](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.3...mcp-provider-devops@0.1.4) (2025-09-30)
 
 
