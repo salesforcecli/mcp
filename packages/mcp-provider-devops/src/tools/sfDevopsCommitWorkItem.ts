@@ -110,7 +110,7 @@ When user asks to "commit work item" or "commit changes", DO NOT use this tool d
         return {
           content: [{
             type: "text",
-            text: `Error: Work item Name is required. Please provide a work item with an Name.`
+            text: `Error: Work Item Name is required. Please provide a valid Work Item Name or a valid DevOps Center org username.`
           }]
         };
       }

@@ -89,13 +89,30 @@ This tool takes the DevOps Center org username and the exact Work Item Name, loo
       };
     }
 
-    const workItem = await fetchWorkItemByName(input.username, input.workItemName);
-    
+    let workItem: any;
+    try {
+      workItem = await fetchWorkItemByName(input.username, input.workItemName);
+    } catch (e: any) {
+      return {
+        content: [{ type: "text", text: `Error fetching work item: ${e?.message || e}` }],
+        isError: true
+      };
+    }
+
+    if (!workItem) {
+      return {
+        content: [{
+          type: "text",
+          text: `Error: Work item not found. Please provide a valid work item name or valid DevOps Center org username.`
+        }]
+      };
+    }
+
     if (!workItem?.SourceCodeRepository?.repoUrl || !workItem?.WorkItemBranch) {
       return {
         content: [{
           type: "text",
-          text: "Work item is missing required repository URL or branch information"
+          text: `Work item is missing required repository URL or branch information  ${workItem}`
         }],
         isError: true
       };

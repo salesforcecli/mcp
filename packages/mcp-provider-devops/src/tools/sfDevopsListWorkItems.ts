@@ -58,12 +58,19 @@ export class SfDevopsListWorkItems extends McpTool<InputArgsShape, OutputArgsSha
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
-    const workItems = await fetchWorkItems(input.username, input.project.Id);
-    return {
-      content: [{
-        type: "text",
-        text: JSON.stringify(workItems, null, 2)
-      }]
-    };
+    try {
+      const workItems = await fetchWorkItems(input.username, input.project.Id);
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify(workItems, null, 2)
+        }]
+      };
+    } catch (e: any) {
+      return {
+        content: [{ type: "text", text: `Error listing work items: ${e?.message || e}` }],
+        isError: true
+      };
+    }
   }
 }

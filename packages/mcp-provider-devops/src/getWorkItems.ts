@@ -118,7 +118,7 @@ export async function fetchWorkItems(username: string, projectId: string): Promi
         }
         return [];
     } catch (error) {
-        return error;
+        throw error;
     }
 }
 
@@ -160,7 +160,7 @@ export async function fetchWorkItemByName(username: string, workItemName: string
         }
         return mapRawItemToWorkItem(item, ctx);
     } catch (error) {
-        return error;
+        throw error;
     }
 }
 
@@ -222,6 +222,6 @@ export async function fetchWorkItemsByNames(username: string, workItemNames: str
 
         return workItems;
     } catch (error) {
-        return error;
+        throw error;
     }
 }
