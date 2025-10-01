@@ -25,7 +25,7 @@ import { TelemetryService } from '@salesforce/mcp-provider-api/src/index.js';
 const PROJECT = 'salesforce-mcp-server';
 // WARN: This is intentionally empty! It's populated at the time of publish
 //       This is to prevent telemetry pollution from local clones and forks
-const APP_INSIGHTS_KEY = 'InstrumentationKey=2ca64abb-6123-4c7b-bd9e-4fe73e71fe9c;IngestionEndpoint=https://eastus-1.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/;ApplicationId=ecd8fa7a-0e0d-4109-94db-4d7878ada862';
+const APP_INSIGHTS_KEY = '';
 
 const generateRandomId = (): string => randomBytes(20).toString('hex');
 
