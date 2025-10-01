@@ -4,16 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       update-providers:
-        description: 'Update provider dependencies to latest versions'
+        description: "Update provider dependencies to latest versions"
         type: boolean
         default: false
       providers-to-update:
-        description: 'Comma-separated list of providers to update (leave empty to update all)'
+        description: "Comma-separated list of providers to update (leave empty to update all)"
         type: string
-        default: ''
+        default: ""
       prerelease:
         type: string
-        description: 'Name to use for the prerelease: beta, dev, etc.'
+        description: "Name to use for the prerelease: beta, dev, etc."
 
 jobs:
   update-dependencies:
@@ -34,7 +34,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          node-version: "lts/*"
           cache: yarn
 
       - name: Update provider dependencies
@@ -129,17 +129,30 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          node-version: "lts/*"
           cache: yarn
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
+        # NOTE: This step must be before the "Build package" step
+      - name: Replace AppInsights Key
+        run: |
+          # Replace the empty APP_INSIGHTS_KEY with the actual key from secrets
+          sed -i "s|const APP_INSIGHTS_KEY = '';|const APP_INSIGHTS_KEY = '$APP_INSIGHTS_KEY';|" packages/mcp/src/telemetry.ts
+
+          if grep -q "const APP_INSIGHTS_KEY = '$APP_INSIGHTS_KEY';" packages/mcp/src/telemetry.ts; then
+            echo "✅ AppInsights key successfully replaced"
+          else
+            echo "❌ AppInsights key replacement failed"
+            exit 1
+          fi
+        env:
+          APP_INSIGHTS_KEY: ${{ secrets.APP_INSIGHTS_KEY }}
       - name: Build package
         run: |
           # build the whole monorepo to get a provider-api build to for other dependant code
           yarn build
-
       - name: Conventional Changelog Action
         id: changelog
         uses: TriPSs/conventional-changelog-action@3a392e9aa44a72686b0fc13259a90d287dd0877c
@@ -197,10 +210,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         command:
-          - 'yarn test:e2e'
+          - "yarn test:e2e"
         provider:
-          - 'mcp-provider-dx-core'
-          - 'mcp-provider-code-analyzer'
+          - "mcp-provider-dx-core"
+          - "mcp-provider-code-analyzer"
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
@@ -210,4 +223,3 @@ jobs:
           command: ${{ matrix.command }}
           provider: ${{ matrix.provider }}
           dxMcpVersion: ${{ needs.publish-server.outputs.version }}
-
