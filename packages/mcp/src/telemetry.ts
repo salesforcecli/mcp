@@ -17,7 +17,7 @@
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { hostname } from 'node:os';
+import * as os from 'node:os';
 import { Attributes, TelemetryReporter } from '@salesforce/telemetry';
 import { warn } from '@oclif/core/ux';
 import { Config } from '@oclif/core';
@@ -36,7 +36,17 @@ const generateRandomId = (): string => randomBytes(20).toString('hex');
  * Check if the current host is an internal Salesforce environment
  */
 function isInternalHost(): boolean {
-  return hostname().endsWith('internal.salesforce.com');
+  return os.hostname().endsWith('internal.salesforce.com');
+}
+
+/**
+ * Get internal Salesforce environment properties
+ */
+function getInternalProperties() {
+  return {
+    'sfInternal.hostname': os.hostname(),
+    'sfInternal.username': os.userInfo().username,
+  };
 }
 
 const getCliId = (cacheDir: string): string => {
@@ -119,7 +129,7 @@ export class Telemetry implements TelemetryService {
         timestamp: String(Date.now()),
         processUptime: process.uptime() * 1000,
         // Internal Properties (only in internal Salesforce environments)
-        internalSalesforceUsage: isInternalHost(),
+        ...(isInternalHost() ? getInternalProperties() : {}),
       });
     } catch {
       /* empty */
