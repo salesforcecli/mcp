@@ -42,7 +42,7 @@ function isInternalHost(): boolean {
 /**
  * Get internal Salesforce environment properties
  */
-function getInternalProperties() {
+function getInternalProperties(): { 'sfInternal.hostname': string; 'sfInternal.username': string } {
   return {
     'sfInternal.hostname': os.hostname(),
     'sfInternal.username': os.userInfo().username,
@@ -98,7 +98,7 @@ export class Telemetry implements TelemetryService {
   public constructor(private readonly config: Config, private attributes: Attributes = {}) {
     const startupMessage = APP_INSIGHTS_KEY
       ? 'You acknowledge and agree that the MCP server may collect usage information, user environment, and crash reports for the purposes of providing services or functions that are relevant to use of the MCP server and product improvements.'
-      : 'Telemetry is automatically disabled for local development.'
+      : 'Telemetry is automatically disabled for local development.';
 
     warn(startupMessage);
     this.sessionId = generateRandomId();
