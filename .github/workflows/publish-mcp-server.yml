@@ -214,7 +214,6 @@ jobs:
 
   e2e-test:
     needs: [publish-server]
-    if: ${{ needs.publish-server.outputs.skipped == 'false' }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
@@ -226,9 +225,15 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Debug publish-server outputs
+        run: |
+          echo "publish-server outputs:"
+          echo "  skipped: ${{ needs.publish-server.outputs.skipped }}"
+          echo "  release-id: ${{ needs.publish-server.outputs.release-id }}"
+          echo "  version: ${{ needs.publish-server.outputs.version }}"
       - uses: ./.github/workflows/e2e.yml
         with:
           os: ${{ matrix.os }}
           command: ${{ matrix.command }}
           provider: ${{ matrix.provider }}
-          dxMcpVersion: ${{ needs.publish-server.outputs.version }}
+          dxMcpVersion: ${{ needs.publish-server.outputs.version || 'rc' }}
