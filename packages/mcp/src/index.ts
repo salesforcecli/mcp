@@ -154,12 +154,7 @@ You can also use special values to control access to orgs:
       await this.telemetry.start();
 
       process.stdin.on('close', (err) => {
-        this.telemetry?.sendEvent(err ? 'SERVER_STOPPED_ERROR' : 'SERVER_STOPPED', {
-          reason: err ? 'error' : 'normal',
-          error: err ? String(err) : undefined,
-          version: this.config.version,
-          transport: 'stdio',
-        });
+        this.telemetry?.sendEvent(err ? 'SERVER_STOPPED_ERROR' : 'SERVER_STOPPED_SUCCESS');
         this.telemetry?.stop();
       });
     }
@@ -202,14 +197,6 @@ You can also use special values to control access to orgs:
 
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    
-    // Send SERVER_STARTED telemetry event
-    this.telemetry?.sendEvent('SERVER_STARTED', {
-      version: this.config.version,
-      toolsets: (flags.toolsets ?? []).join(', '),
-      orgs: sanitizeOrgInput(flags.orgs),
-      transport: 'stdio',
-    });
     
     console.error(`✅ Salesforce MCP Server v${this.config.version} running on stdio`);
   }
