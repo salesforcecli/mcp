@@ -17,17 +17,37 @@
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import * as os from 'node:os';
 import { Attributes, TelemetryReporter } from '@salesforce/telemetry';
 import { warn } from '@oclif/core/ux';
 import { Config } from '@oclif/core';
 import { TelemetryService } from '@salesforce/mcp-provider-api/src/index.js';
 
 const PROJECT = 'salesforce-mcp-server';
+
 // WARN: This is intentionally empty! It's populated at the time of publish
 //       This is to prevent telemetry pollution from local clones and forks
 const APP_INSIGHTS_KEY = '';
+const O11Y_UPLOAD_ENDPOINT = 'https://794testsite.my.site.com/byolwr/webruntime/log/metrics';
 
 const generateRandomId = (): string => randomBytes(20).toString('hex');
+
+/**
+ * Check if the current host is an internal Salesforce environment
+ */
+function isInternalHost(): boolean {
+  return os.hostname().endsWith('internal.salesforce.com');
+}
+
+/**
+ * Get internal Salesforce environment properties
+ */
+function getInternalProperties(): { 'sfInternal.hostname': string; 'sfInternal.username': string } {
+  return {
+    'sfInternal.hostname': os.hostname(),
+    'sfInternal.username': os.userInfo().username,
+  };
+}
 
 const getCliId = (cacheDir: string): string => {
   // We need to find sf's cache directory and read the CLIID.txt file from there.
@@ -78,7 +98,7 @@ export class Telemetry implements TelemetryService {
   public constructor(private readonly config: Config, private attributes: Attributes = {}) {
     const startupMessage = APP_INSIGHTS_KEY
       ? 'You acknowledge and agree that the MCP server may collect usage information, user environment, and crash reports for the purposes of providing services or functions that are relevant to use of the MCP server and product improvements.'
-      : 'Telemetry is automatically disabled for local development.'
+      : 'Telemetry is automatically disabled for local development.';
 
     warn(startupMessage);
     this.sessionId = generateRandomId();
@@ -108,6 +128,8 @@ export class Telemetry implements TelemetryService {
         date: new Date().toUTCString(),
         timestamp: String(Date.now()),
         processUptime: process.uptime() * 1000,
+        // Internal Properties (only in internal Salesforce environments)
+        ...(isInternalHost() ? getInternalProperties() : {}),
       });
     } catch {
       /* empty */
@@ -125,6 +147,8 @@ export class Telemetry implements TelemetryService {
         key: APP_INSIGHTS_KEY,
         userId: this.cliId,
         waitForConnection: true,
+        o11yUploadEndpoint: O11Y_UPLOAD_ENDPOINT,
+        enableO11y: true,
       });
 
       this.reporter.start();

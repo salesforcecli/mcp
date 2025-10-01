@@ -49,7 +49,7 @@
     "@salesforce/mcp-provider-devops": "0.1.5",
     "@salesforce/source-deploy-retrieve": "^12.22.0",
     "@salesforce/source-tracking": "^7.4.8",
-    "@salesforce/telemetry": "^6.1.0",
+    "@salesforce/telemetry": "^6.2.6",
     "@salesforce/ts-types": "^2.0.11",
     "zod": "^3.25.76"
   },
