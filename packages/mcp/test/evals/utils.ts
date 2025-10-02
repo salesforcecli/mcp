@@ -28,7 +28,9 @@ You a general purpose LLM-based Agent. Your purpose is to answer the user's quer
 - You should ONLY use the tools available to answer the user's query.
 - Use as few tool calls as possible to get to the answer.
 - Using multiple tool calls to get to the answer is allowed when needed.
-The current open project dir is "${process.env.SF_EVAL_PROMPT_PROJECT_DIR}"
+
+Current open workspace: "${process.env.SF_EVAL_PROMPT_PROJECT_DIR}"
+Current open file: "${process.env.SF_EVAL_PROMPT_OPEN_FILEPATH}
 `;
 
 // Supported models: https://ai.google.dev/gemini-api/docs/models
@@ -155,4 +157,14 @@ export function Factuality(model: LanguageModel = defaultModel) {
             },
         };
     };
+}
+
+export function NoOpTaskRunner() {
+  return async function NoOpTaskRunner(input: string) {
+    // Just return the input as the result, no tool execution
+    return {
+      result: input,
+      toolCalls: [],
+    };
+  };
 }
