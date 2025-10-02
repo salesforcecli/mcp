@@ -1,44 +1,12 @@
 import type { WorkItem } from './types/WorkItem.js';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import { execSync } from 'node:child_process';
+import { isGitRepository, hasUncommittedChanges } from './shared/gitUtils.js';
 
 export interface DetectConflictParams {
   workItem?: WorkItem;
   localPath?: string;
 }
 
-function isGitRepository(candidatePath: string): boolean {
-  const gitPath = path.join(candidatePath, '.git');
-  if (!fs.existsSync(gitPath)) {
-    return false;
-  }
-  const stat = fs.statSync(gitPath);
-  if (stat.isDirectory()) {
-    return true;
-  }
-  if (stat.isFile()) {
-    try {
-      const content = fs.readFileSync(gitPath, 'utf8');
-      return content.trim().startsWith('gitdir:');
-    } catch {
-      return false;
-    }
-  }
-  return false;
-}
-
-function hasUncommittedChanges(candidatePath: string): boolean {
-  try {
-    const output = execSync('git status --porcelain', { cwd: candidatePath, stdio: ['ignore', 'pipe', 'pipe'] })
-      .toString()
-      .trim();
-    return output.length > 0;
-  } catch {
-    // If git isn't available or the command fails, do not block
-    return false;
-  }
-}
+// moved to shared/gitUtils
 
 export async function detectConflict({
   workItem,
