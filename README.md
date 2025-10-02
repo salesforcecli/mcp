@@ -41,7 +41,7 @@ Here's an example for VS Code with Copilot in which you create and update a `.vs
          "args": ["-y", "@salesforce/mcp", 
          "--orgs", "DEFAULT_TARGET_ORG", 
          "--toolsets", "orgs,metadata,data,users",
-         "--tools", "run_apex_tests",
+         "--tools", "run_apex_test",
          "--allow-non-ga-tools"]
        }
      }
