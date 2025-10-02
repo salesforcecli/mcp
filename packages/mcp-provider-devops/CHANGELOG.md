@@ -1,3 +1,7 @@
+## [0.1.6](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.5...mcp-provider-devops@0.1.6) (2025-10-02)
+
+
+
 ## [0.1.5](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.4...mcp-provider-devops@0.1.5) (2025-10-01)
 
 
