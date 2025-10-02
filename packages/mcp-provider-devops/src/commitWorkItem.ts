@@ -2,6 +2,7 @@ import axios from 'axios';
 import { getConnection, getRequiredOrgs } from './shared/auth.js';
 import { execFileSync } from 'child_process';
 import { normalizeAndValidateRepoPath } from './shared/pathUtils.js';
+import path from 'path';
 
 interface Change {
     fullName: string;
@@ -16,6 +17,45 @@ interface CommitWorkItemParams {
     doceHubUsername: string;
     sandboxUsername: string;
     repoPath?: string;
+}
+
+
+
+function normalizeGitPath(gitPath: string): string {
+    let rel = gitPath.replace(/^force-app[\\/]+main[\\/]+default[\\/]+/, '');
+    rel = rel.replace(/-meta\.xml$/, '');
+    return rel;
+}
+
+function normalizeDeployFile(fileName: string): string {
+    return fileName.trim();
+}
+
+function isMatch(deployFile: string, gitPath: string): boolean {
+    const normGit = normalizeGitPath(gitPath);      // e.g. objects/HourlyForecast__c/HourlyForecast__c.object
+    const normDeploy = normalizeDeployFile(deployFile); // e.g. objects/HourlyForecast__c.object
+
+    // direct match (Apex, layouts, etc.)
+    if (normGit === normDeploy) return true;
+
+    // fallback: compare by folder + last segment
+    // objects/HourlyForecast__c/HourlyForecast__c.object  → split parts
+    const gitParts = normGit.split('/');
+    const deployParts = normDeploy.split('/');
+
+    if (gitParts.length > 1 && deployParts.length > 1) {
+        // compare folder name and file name only
+        const gitFolder = gitParts[0];
+        const gitFile = gitParts[gitParts.length - 1];
+        const deployFolder = deployParts[0];
+        const deployFile = deployParts[deployParts.length - 1];
+
+        if (gitFolder === deployFolder && gitFile === deployFile) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 export async function commitWorkItem({
@@ -74,47 +114,33 @@ export async function commitWorkItem({
     const untrackedRel = execFileSync('git', ['ls-files', '--others', '--exclude-standard'], { cwd: workingDir, encoding: 'utf8' })
         .split('\n').map(l => l.trim()).filter(Boolean);
 
+
+    
     const computedChanges: Change[] = [];
+    
+    
     for (const { componentType, fullName, fileName } of successes.values()) {
         let operation: 'delete' | 'add' | 'modify' | undefined;
-
-        const isDeleted =
-            deletedRel.some(p =>
-                p === fileName ||
-                p.endsWith('/' + fileName) ||
-                p.endsWith('\\' + fileName)
-            );
-        if (!operation && isDeleted) { operation = 'delete'; }
-
-        let isUntracked = false;
-
+    
+        const isDeleted = deletedRel.some(p => isMatch(fileName, p));
+        if (!operation && isDeleted) operation = 'delete';
+    
         if (!operation) {
-            isUntracked = untrackedRel.some(p =>
-                p === fileName ||
-                p.endsWith('/' + fileName) ||
-                p.endsWith('\\' + fileName)
-            );
-            if (isUntracked)
-                operation = 'add';
+            const isUntracked = untrackedRel.some(p => isMatch(fileName, p));
+            if (isUntracked) operation = 'add';
         }
-
-        let isModified = false;
-
+    
         if (!operation) {
-            isModified = modifiedRel.some(p =>
-                p === fileName ||
-                p.endsWith('/' + fileName) ||
-                p.endsWith('\\' + fileName)
-            );
-            if (isModified)
-                operation = 'modify';
+            const isModified = modifiedRel.some(p => isMatch(fileName, p));
+            if (isModified) operation = 'modify';
         }
-
-        if (operation && componentType) { // Only add if an operation was determined
+    
+        if (operation && componentType) {
             computedChanges.push({ fullName, type: componentType, operation });
         }
     }
 
+        
     if (computedChanges.length === 0) {
         throw new Error('No eligible changes to commit (only Unchanged components detected).');
     }

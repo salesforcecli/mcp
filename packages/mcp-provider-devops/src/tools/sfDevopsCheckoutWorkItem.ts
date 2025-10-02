@@ -118,17 +118,18 @@ This tool takes the DevOps Center org username and the exact Work Item Name, loo
       };
     }
     
-    const result = await checkoutWorkitemBranch({
-      repoUrl: workItem.SourceCodeRepository.repoUrl,
-      branchName: workItem.WorkItemBranch,
-      localPath: safeLocalPath
-    });
-    
-    return {
-      content: [{
-        type: "text",
-        text: JSON.stringify(result, null, 2)
-      }]
-    };
+    try {
+      const result = await checkoutWorkitemBranch({
+        repoUrl: workItem.SourceCodeRepository.repoUrl,
+        branchName: workItem.WorkItemBranch,
+        localPath: safeLocalPath
+      });
+      return result;
+    } catch (e: any) {
+      return {
+        content: [{ type: "text", text: `Error during checkout: ${e?.message || e}` }],
+        isError: true
+      };
+    }
   }
 }

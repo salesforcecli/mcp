@@ -135,20 +135,6 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-        # NOTE: This step must be before the "Build package" step
-      - name: Replace AppInsights Key
-        run: |
-          # Replace the empty APP_INSIGHTS_KEY with the actual key from secrets
-          sed -i "s|const APP_INSIGHTS_KEY = '';|const APP_INSIGHTS_KEY = '$APP_INSIGHTS_KEY';|" packages/mcp/src/telemetry.ts
-
-          if grep -q "const APP_INSIGHTS_KEY = '$APP_INSIGHTS_KEY';" packages/mcp/src/telemetry.ts; then
-            echo "✅ AppInsights key successfully replaced"
-          else
-            echo "❌ AppInsights key replacement failed"
-            exit 1
-          fi
-        env:
-          APP_INSIGHTS_KEY: ${{ secrets.APP_INSIGHTS_KEY }}
       - name: Build package
         run: |
           # build the whole monorepo to get a provider-api build to for other dependant code
@@ -168,6 +154,29 @@ jobs:
           output-file: "packages/mcp/CHANGELOG.md"
           pre-release: ${{ inputs.prerelease && 'true' || 'false' }}
           pre-release-identifier: ${{ inputs.prerelease || '' }}
+
+      - name: Replace AppInsights Key
+        run: |
+          # Replace the empty APP_INSIGHTS_KEY with the actual key from secrets
+          sed -i "s|const APP_INSIGHTS_KEY = '';|const APP_INSIGHTS_KEY = '$APP_INSIGHTS_KEY';|" packages/mcp/lib/telemetry.js
+
+          # Make sure that the AppInsights key is NOT in 'src/'
+          if grep -q "const APP_INSIGHTS_KEY = '$APP_INSIGHTS_KEY';" packages/mcp/src/telemetry.ts; then
+            echo "❌ AppInsights key found in src."
+            exit 1
+          else
+            echo "✅ AppInsights key not found in src"
+          fi
+
+          # Replace the AppInsights key in the built 'lib/'
+          if grep -q "const APP_INSIGHTS_KEY = '$APP_INSIGHTS_KEY';" packages/mcp/lib/telemetry.js; then
+            echo "✅ AppInsights key successfully replaced"
+          else
+            echo "❌ AppInsights key replacement failed"
+            exit 1
+          fi
+        env:
+          APP_INSIGHTS_KEY: ${{ secrets.APP_INSIGHTS_KEY }}
 
       - name: Create Github Release
         id: release
@@ -205,7 +214,6 @@ jobs:
 
   e2e-test:
     needs: [publish-server]
-    if: ${{ needs.publish-server.outputs.skipped == 'false' }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
@@ -217,9 +225,15 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Debug publish-server outputs
+        run: |
+          echo "publish-server outputs:"
+          echo "  skipped: ${{ needs.publish-server.outputs.skipped }}"
+          echo "  release-id: ${{ needs.publish-server.outputs.release-id }}"
+          echo "  version: ${{ needs.publish-server.outputs.version }}"
       - uses: ./.github/workflows/e2e.yml
         with:
           os: ${{ matrix.os }}
           command: ${{ matrix.command }}
           provider: ${{ matrix.provider }}
-          dxMcpVersion: ${{ needs.publish-server.outputs.version }}
+          dxMcpVersion: ${{ needs.publish-server.outputs.version || 'rc' }}

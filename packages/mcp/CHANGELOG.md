@@ -1,3 +1,17 @@
+# [0.23.0](https://github.com/salesforcecli/mcp/compare/0.22.1...0.23.0) (2025-10-01)
+
+
+### Bug Fixes
+
+* remove telem from source ([#269](https://github.com/salesforcecli/mcp/issues/269)) ([c78053f](https://github.com/salesforcecli/mcp/commit/c78053f2cab4330b97c7ca78a7a3ffd1cd6c84fa))
+
+
+### Features
+
+* enable o11y telemetry ([#268](https://github.com/salesforcecli/mcp/issues/268)) ([f02156e](https://github.com/salesforcecli/mcp/commit/f02156ed0bc42a3bc79ea196bd6749cf866968ea)), closes [#264](https://github.com/salesforcecli/mcp/issues/264)
+
+
+
 ## [0.22.1](https://github.com/salesforcecli/mcp/compare/0.22.0...0.22.1) (2025-10-01)
 
 
