@@ -201,7 +201,7 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
 
 #### Component Development
 
- - `create_lwc_component` - (GA) Creates complete LWC components from PRD specifications with proper structure and best practices
+ - `create_lwc_component_from_prd` - (GA) Creates complete LWC components from PRD specifications with proper structure and best practices
  - `create_lwc_jest_tests` - (GA) Generates comprehensive Jest test suites for LWC components with coverage and mocking
  - `review_lwc_jest_tests` - (GA) Reviews and validates Jest test implementations for LWC components
 
