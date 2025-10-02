@@ -16,8 +16,9 @@
 
 import { expect } from 'chai';
 import { McpTestClient, DxMcpTransport } from '@salesforce/mcp-test-client';
-import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
+import { TestSession } from '@salesforce/cli-plugins-testkit';
 import { z } from 'zod';
+import { matchesAccessToken } from '@salesforce/core';
 import { createScratchOrgParams } from '../../src/tools/create_scratch_org.js';
 
 describe('create_scratch_org', () => {
@@ -43,18 +44,12 @@ describe('create_scratch_org', () => {
       devhubAuthStrategy: 'AUTO',
     });
 
-    // Get the hub username from the testSession and set it as the global target-dev-hub
     const hubUsername = testSession.hubOrg?.username;
     resolvedDevHubUsername = hubUsername ?? devHubUsername;
     
     if (!resolvedDevHubUsername) {
       throw new Error('No DevHub username available from TestSession or TESTKIT_HUB_USERNAME environment variable');
     }
-
-    execCmd(`config set target-dev-hub ${resolvedDevHubUsername} --global`, {
-      cli: 'sf',
-      ensureExitCode: 0,
-    });
 
     const transport = DxMcpTransport({
       args: ['--orgs', 'ALLOW_ALL_ORGS', '--no-telemetry', '--toolsets', 'all', '--allow-non-ga-tools'],
@@ -85,7 +80,8 @@ describe('create_scratch_org', () => {
     expect(result.content.length).to.equal(1);
     expect(result.content[0].type).to.equal('text');
     
-    const responseText = result.content[0].text;
+    const responseText = result.content[0].text as string;
+    expect(matchesAccessToken(responseText)).to.be.false;
     expect(responseText).to.include('Successfully created scratch org');
   });
 

@@ -73,6 +73,9 @@ describe('list_all_orgs', () => {
             expect(result.content[0].type).to.equal('text');
 
             const responseText = result.content[0].text;
+
+            expect(responseText).to.contain('"isScratchOrg": true');
+            expect(responseText).to.contain('"isDevHub": true');
             expect(responseText).to.contain('List of configured Salesforce orgs:');
         });
 
@@ -122,6 +125,9 @@ describe('list_all_orgs', () => {
             expect(result.content[0].type).to.equal('text');
 
             const responseText = result.content[0].text;
+
+            expect(responseText).to.contain('"isScratchOrg": true');
+            expect(responseText).to.contain('"isDevHub": false');
             expect(responseText).to.contain('List of configured Salesforce orgs:');
         });
     });
