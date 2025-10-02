@@ -1,6 +1,4 @@
-import path from "path";
-import { exec } from "child_process";
-import fs from 'fs';
+import { isGitRepository, hasUncommittedChanges } from './shared/gitUtils.js';
 
 export interface PushWorkitemBranchChangesParams {
   repoPath: string;
@@ -10,113 +8,83 @@ export interface PushWorkitemBranchChangesParams {
 
 export async function checkoutWorkitemBranch(
   { repoUrl, branchName, localPath }: { repoUrl: string; branchName: string; localPath?: string }
-): Promise<{ content: ({ type: "text"; text: string; [x: string]: unknown })[] }> {
-  let targetPath = localPath || process.cwd();
+): Promise<{ content: ({ type: "text"; text: string; [x: string]: unknown })[]; isError?: boolean }> {
+  // shared helpers used
 
-  if (!localPath && fs.existsSync(path.join(process.cwd(), '.git'))) {
+  if (!repoUrl || !branchName) {
     return {
       content: [{
         type: "text",
-        text: "You are currently inside a git repository. Please specify a different directory (localPath) to clone the new repository."
+        text: "Error: Missing required parameters. 'repoUrl' and 'branchName' are mandatory."
+      }],
+      isError: true
+    };
+  }
+
+  if (!localPath || localPath.trim().length === 0) {
+    return {
+      content: [{
+        type: "text",
+        text: "Error: 'localPath' is required and must point to the git repository root."
+      }],
+      isError: true
+    };
+  }
+
+  if (!isGitRepository(localPath)) {
+    return {
+      content: [{
+        type: "text",
+        text: `Error: '${localPath}' is not a Git repository. Please provide the correct project path (repo root containing a .git directory). Cloning is not performed by this tool.`
+      }],
+      isError: true
+    };
+  }
+
+  if (hasUncommittedChanges(localPath)) {
+    return {
+      content: [{
+        type: "text",
+        text: `Error: '${localPath}' has uncommitted changes. Please commit or stash your changes before checking out the work item branch.`
       }]
     };
   }
 
-  const repoName = (repoUrl.split('/').pop() || '').replace(/\.git$/, '');
-  const repoPath = targetPath;
+  return {
+    content: [{
+      type: "text",
+      text: `Checkout work item branch '${branchName}' without cloning.
 
-  function execPromise(cmd: string, cwd: string): Promise<{ stdout: string; stderr: string }> {
-    return new Promise((resolve) => {
-      exec(cmd, { cwd }, (err, stdout, stderr) => {
-        resolve({ stdout, stderr });
-      });
-    });
-  }
+      Context:
+      - Work item branch: ${branchName}
+      - Local path: '${localPath}'
 
-  async function fetchAndCheckoutBranch(): Promise<{ content: ({ type: "text"; text: string; [x: string]: unknown })[] }> {
-    const status = await execPromise('git status --porcelain', repoPath);
-    if (status.stdout.trim().length > 0) {
-      return {
-        content: [{
-          type: "text",
-          text: `You have uncommitted changes in your working directory. Please commit or clean your local changes before checking out another branch.`
-        }]
-      };
-    }
-    await execPromise('git fetch origin', repoPath);
-    const branchList = await execPromise('git branch --list', repoPath);
-    const branchExists = branchList.stdout.split('\n').some(b => b.replace('*', '').trim() === branchName);
-    if (!branchExists) {
-      const checkout = await execPromise(`git checkout -b ${branchName} origin/${branchName}`, repoPath);
-      if (checkout.stderr && !checkout.stdout) {
-        return {
-          content: [{
-            type: "text",
-            text: `Fetched remote, but failed to checkout branch '${branchName}': ${checkout.stderr}`
-          }]
-        };
-      }
-      return {
-        content: [{
-          type: "text",
-          text: `Fetched remote and checked out new branch '${branchName}' from origin/${branchName}.\n${checkout.stdout}`
-        }]
-      };
-    } else {
-      const checkout = await execPromise(`git checkout ${branchName}`, repoPath);
-      if (checkout.stderr && !checkout.stdout) {
-        return {
-          content: [{
-            type: "text",
-            text: `Fetched remote, but failed to checkout branch '${branchName}': ${checkout.stderr}`
-          }]
-        };
-      }
-      const pull = await execPromise(`git pull`, repoPath);
-      if (pull.stderr && !pull.stdout) {
-        return {
-          content: [{
-            type: "text",
-            text: `Checked out branch '${branchName}', but failed to pull latest changes: ${pull.stderr}`
-          }]
-        };
-      }
-      return {
-        content: [{
-          type: "text",
-          text: `Fetched remote, checked out existing branch '${branchName}', and pulled latest changes.\n${checkout.stdout}\n${pull.stdout}`
-        }]
-      };
-    }
-  }
+        Agent execution guide (perform these steps now):
 
-  if (!fs.existsSync(repoPath)) {
-    return {
-      content: [{
-        type: "text",
-        text: `The repository does not exist at the provided path: ${repoPath}. Please provide the correct repoPath or clone the repository first.`
-      }]
-    };
-  }
+          1) Prepare repository context
+            - Update refs (focused): git fetch origin ${branchName} --prune
 
-  if (!fs.existsSync(path.join(repoPath, '.git'))) {
-    return {
-      content: [{
-        type: "text",
-        text: `The directory at ${repoPath} is not a git repository.`
-      }]
-    };
-  }
+          2) Verify remote branch exists
+            - Run: git ls-remote --exit-code --heads origin ${branchName}
+            - If this fails, STOP and report the error. Do not create a new branch.
 
-  const remoteCheck = await execPromise('git remote get-url origin', repoPath);
-  if (!remoteCheck.stdout.trim().includes(repoUrl)) {
-    return {
-      content: [{
-        type: "text",
-        text: `The repository at ${repoPath} does not match the provided repoUrl. Found remote: ${remoteCheck.stdout.trim()}`
-      }]
-    };
-  }
+          3) Check out the work item branch
+            - Try local checkout: git checkout ${branchName}
+            - If branch is not local, track remote: git checkout -t origin/${branchName}
+            - Confirm current branch: git rev-parse --abbrev-ref HEAD  (should print '${branchName}')
 
-  return fetchAndCheckoutBranch();
+          4) Ensure latest changes are present
+            - Run: git pull --ff-only
+
+          5) Output format
+            - Provide a concise confirmation message with the final path and branch name, e.g.:
+              'Checked out ${branchName} at '${localPath}'. Ready for development.'
+
+          Important constraints:
+          - Do NOT create new branches or force-push.
+          - Do NOT modify files. Only perform the minimal git operations above.
+          - If any command fails, STOP and surface the exact stderr, then suggest the user validate the repo URL, access, and branch name or re-run with a correct path.`,
+      actionRequired: true
+    }]
+  };
 }
