@@ -46,7 +46,7 @@ const resumableIdPrefixes = new Map<string, string>([
  * Returns:
  * - textResponse: Username/alias and org configuration
  */
-const resumeParamsSchema = z.object({
+export const resumeParamsSchema = z.object({
   jobId: z.string().describe('The job id of the long running operation to resume (required)'),
   wait: z
     .number()
