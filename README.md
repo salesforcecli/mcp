@@ -201,7 +201,7 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
 
 #### Component Development
 
- - `create_lwc_component` - (GA) Creates complete LWC components from PRD specifications with proper structure and best practices
+ - `create_lwc_component_from_prd` - (GA) Creates complete LWC components from PRD specifications with proper structure and best practices
  - `create_lwc_jest_tests` - (GA) Generates comprehensive Jest test suites for LWC components with coverage and mocking
  - `review_lwc_jest_tests` - (GA) Reviews and validates Jest test implementations for LWC components
 
@@ -213,6 +213,7 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
  - `guide_lwc_rtl_support` - (GA) Right-to-Left internationalization support and RTL development guidance
  - `guide_lwc_slds2_uplift_linter_fixes` - (GA) Analyzes the given LWC code along with the slds-linter output to fix issues using the SLDS2 knowledge
  - `guide_lwc_security` - (GA) Comprehensive security analysis in accordance with Product Security Guidelines and Lightning Web Security Guidelines
+ - `guide_design_general` - (GA) Comprehensive SLDS guidelines and best practices for Lightning Web Components with accessibility, responsive design, and component usage patterns
 
 #### Workflow Tools
 
@@ -228,6 +229,9 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
  - `guide_lds_development` - (GA) LDS development guidelines and component integration
  - `guide_lds_referential_integrity` - (GA) Referential integrity patterns for LDS data management
  - `orchestrate_lds_data_requirements` - (GA) Step-by-step guidance for analyzing and clarifying LDS data requirements to produce PRD-ready specifications.
+ - `create_lds_graphql_read_query` - (GA) Create GraphQL read queries for LDS
+ - `explore_lds_graphql_schema` - (GA) Explore GraphQL schema structure for Salesforce LDS
+ - `guide_lds_graphql` - (GA) LDS GraphQL usage patterns and guidelines
 
 #### Migration & Integration Tools
 
