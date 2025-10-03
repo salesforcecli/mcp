@@ -47,7 +47,7 @@ import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
  * - textResponse:
  */
 
-const createScratchOrgParams = z.object({
+export const createScratchOrgParams = z.object({
   directory: directoryParam,
   devHub: usernameOrAliasParam.describe(
     'The default devhub username, use the #get_username tool to get the default devhub if unsure',
