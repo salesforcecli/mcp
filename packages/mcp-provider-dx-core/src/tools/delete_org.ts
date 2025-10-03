@@ -17,7 +17,7 @@
 import { z } from 'zod';
 import { AuthRemover, Org } from '@salesforce/core';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { McpTool, McpToolConfig, ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, ReleaseState, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { textResponse } from '../shared/utils.js';
 import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
 
@@ -42,6 +42,10 @@ type InputArgsShape = typeof deleteOrgParams.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class DeleteOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public constructor(private readonly services: Services) {
+    super();
+  }
+
   public getReleaseState(): ReleaseState {
     return ReleaseState.NON_GA;
   }
@@ -75,7 +79,9 @@ Can you delete test-fe2n4tc8pgku@example.com`,
   public async exec(input: InputArgs): Promise<CallToolResult> {
     try {
       process.chdir(input.directory);
-      const org = await Org.create({ aliasOrUsername: input.usernameOrAlias });
+      const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
+      const org = await Org.create({ connection });
+
       await org.delete();
       return textResponse(`Successfully deleted ${input.usernameOrAlias}`);
     } catch (e) {

@@ -20,7 +20,7 @@ import { z } from 'zod';
 import { Org, scratchOrgCreate, ScratchOrgCreateOptions } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { McpTool, McpToolConfig, ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, ReleaseState, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { ensureString } from '@salesforce/ts-types/lib/narrowing/ensure.js';
 import { textResponse } from '../shared/utils.js';
 import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
@@ -95,6 +95,10 @@ type InputArgsShape = typeof createScratchOrgParams.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class CreateScratchOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public constructor(private readonly services: Services) {
+    super();
+  }
+
   public getReleaseState(): ReleaseState {
     return ReleaseState.NON_GA;
   }
@@ -127,7 +131,8 @@ create a scratch org aliased as MyNewOrg and set as default and don't wait for i
   public async exec(input: InputArgs): Promise<CallToolResult> {
     try {
       process.chdir(input.directory);
-      const hubOrProd = await Org.create({ aliasOrUsername: input.devHub });
+      const connection = await this.services.getOrgService().getConnection(input.devHub);
+      const hubOrProd = await Org.create({ connection });
 
       const requestParams: ScratchOrgCreateOptions = {
         hubOrg: hubOrProd,
