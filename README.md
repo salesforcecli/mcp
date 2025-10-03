@@ -222,9 +222,9 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
  - `orchestrate_lwc_component_testing` - (GA) Comprehensive testing workflow and test generation guidance
  - `orchestrate_lwc_slds2_uplift` - (GA) Migration guidance for upgrading to SLDS2 design system
 
-#### LDS (Lightning Design System) Tools
+#### LDS (Lightning Data Service) Tools
 
- - `explore_lds_uiapi` - (GA) Explores and documents Lightning Design System UI API capabilities
+ - `explore_lds_uiapi` - (GA) Explores and documents Lightning Data Service UI API capabilities
  - `guide_lds_data_consistency` - (GA) Data consistency patterns and best practices for LDS components
  - `guide_lds_development` - (GA) LDS development guidelines and component integration
  - `guide_lds_referential_integrity` - (GA) Referential integrity patterns for LDS data management
