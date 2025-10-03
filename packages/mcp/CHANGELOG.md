@@ -1,3 +1,7 @@
+## [0.23.2](https://github.com/salesforcecli/mcp/compare/0.23.1...0.23.2) (2025-10-03)
+
+
+
 ## [0.23.1](https://github.com/salesforcecli/mcp/compare/0.23.0...0.23.1) (2025-10-03)
 
 
