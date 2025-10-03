@@ -1,3 +1,12 @@
+## [0.1.7](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.6...mcp-provider-devops@0.1.7) (2025-10-03)
+
+
+### Bug Fixes
+
+* **devops:** add critical instruction to avoid git commands for SFDX commit ([#276](https://github.com/salesforcecli/mcp/issues/276)) ([1fa4f79](https://github.com/salesforcecli/mcp/commit/1fa4f79c33c61d21e018c898242f90f5c7485b25))
+
+
+
 ## [0.1.6](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.5...mcp-provider-devops@0.1.6) (2025-10-02)
 
 
