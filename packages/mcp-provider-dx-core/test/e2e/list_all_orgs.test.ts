@@ -22,6 +22,7 @@ import { listAllOrgsParamsSchema } from '../../src/tools/list_all_orgs.js';
 
 describe('list_all_orgs', () => {
     let testSession: TestSession;
+    const orgAlias ='dreamhouseOrg';
 
     const listAllOrgsSchema = {
         name: z.literal('list_all_orgs'),
@@ -33,7 +34,7 @@ describe('list_all_orgs', () => {
             project: {
                 name: 'MyTestProject',
             },
-            scratchOrgs: [{ edition: 'developer', setDefault: true }],
+            scratchOrgs: [{ edition: 'developer', setDefault: true, alias: orgAlias }],
             devhubAuthStrategy: 'AUTO',
         });
     });
@@ -129,6 +130,7 @@ describe('list_all_orgs', () => {
             expect(responseText).to.contain('"isScratchOrg": true');
             expect(responseText).to.contain('"isDevHub": false');
             expect(responseText).to.contain('List of configured Salesforce orgs:');
+            expect(responseText).to.contain(`"aliases": [\n      "${orgAlias}"\n    ]`);
         });
     });
 });
