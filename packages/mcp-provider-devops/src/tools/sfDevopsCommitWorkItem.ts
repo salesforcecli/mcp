@@ -47,6 +47,8 @@ When user asks to "commit work item" or "commit changes", DO NOT use this tool d
 
 **THIS TOOL IS ONLY USED AS THE FINAL STEP AFTER COMPLETING ALL PREREQUISITES**
 
+**CRITICAL:** Never use \`git commit\` to commit SFDX project changes. Always use commit_devops_center_work_item tool to commit SFDX project changes so DevOps Center correctly tracks metadata and ties commits to Work Items.
+
 **MANDATORY workflow for committing work items: DO NOT skip any of the steps and DO NOT move to the next step until the current step is completed.**
 1. **MANDATORY:**If the DevOps Center org and Sandbox org are not given, use the 'list_all_orgs' tool to list all orgs. 
    The list will indicate which org is DevOps Center and a Sandbox. If BOTH these details are not provided in the list, then
