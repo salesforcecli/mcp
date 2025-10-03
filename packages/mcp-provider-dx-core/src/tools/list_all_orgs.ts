@@ -32,7 +32,7 @@ import { directoryParam } from '../shared/params.js';
  * - textResponse: List of configured Salesforce orgs
  */
 
-const listAllOrgsParamsSchema = z.object({
+export const listAllOrgsParamsSchema = z.object({
   directory: directoryParam,
 });
 
