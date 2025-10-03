@@ -34,3 +34,5 @@ jobs:
       os: ${{ matrix.os }}
       command: ${{ matrix.command }}
       provider: ${{ matrix.provider }}
+      dxMcpVersion: '0.23.2'
+
