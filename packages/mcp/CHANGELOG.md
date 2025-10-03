@@ -1,3 +1,12 @@
+## [0.23.3](https://github.com/salesforcecli/mcp/compare/0.23.2...0.23.3) (2025-10-03)
+
+
+### Bug Fixes
+
+* temp tool rename fix ([#278](https://github.com/salesforcecli/mcp/issues/278)) ([3bcaa5d](https://github.com/salesforcecli/mcp/commit/3bcaa5d4d9edbe5395e40f8550ea7effe098b18c))
+
+
+
 ## [0.23.2](https://github.com/salesforcecli/mcp/compare/0.23.1...0.23.2) (2025-10-03)
 
 
