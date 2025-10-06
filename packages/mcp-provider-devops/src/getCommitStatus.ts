@@ -9,32 +9,51 @@ export interface CommitStatusResult {
 }
 
 export async function fetchCommitStatus(username: string, requestId: string): Promise<CommitStatusResult> {
-  const connection = await getConnection(username);
-  const query = `SELECT Id, Status__c, RequestToken__c FROM DevopsRequestInfo WHERE RequestToken__c = '${requestId}' LIMIT 1`;
-
-  const response = await axios.get(`${connection.instanceUrl}/services/data/v65.0/query`, {
-    headers: {
-      'Authorization': `Bearer ${connection.accessToken}`,
-      'Content-Type': 'application/json'
-    },
-    params: { q: query }
-  });
-
-  if (response.data.records && response.data.records.length > 0) {
-    const record = response.data.records[0];
-    return {
-      requestId,
-      status: record.Status__c,
-      recordId: record.Id,
-      message: `Request ${requestId} has status: ${record.Status__c}`
-    };
+  if (!username || username.trim().length === 0) {
+    throw new Error('Username is required. Please provide the DevOps Center org username.');
   }
 
-  return {
-    requestId,
-    status: 'NOT_FOUND',
-    message: `No record found for request ID: ${requestId}`
+  const connection = await getConnection(username);
+  const accessToken = connection.accessToken;
+  const instanceUrl = connection.instanceUrl;
+
+  if (!accessToken || !instanceUrl) {
+    throw new Error('Missing access token or instance URL. Please check if you are authenticated to the org.');
+  }
+
+  if (!requestId || requestId.trim().length === 0) {
+    throw new Error('Request ID is required to check commit status.');
+  }
+
+  const soqlQuery = `SELECT Status FROM DevopsRequestInfo WHERE RequestToken = '${requestId}'`;
+  const encodedQuery = encodeURIComponent(soqlQuery);
+  const url = `${instanceUrl}/services/data/v65.0/query/?q=${encodedQuery}`;
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'Content-Type': 'application/json'
   };
+
+  try {
+    const response = await axios.get(url, { headers });
+    const records = response.data.records || [];
+
+    if (records.length === 0) {
+      return {
+        requestId,
+        status: 'NOT_FOUND',
+        message: `No commit status found for request ID: ${requestId}`
+      };
+    }
+
+    const status = records[0].Status;
+    return {
+      requestId,
+      status,
+      recordId: records[0].Id,
+      message: `Commit status for request ID ${requestId}: ${status}`
+    };
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.[0]?.message || error.message;
+    throw new Error(`Error checking commit status: ${errorMessage}`);
+  }
 }
-
-
