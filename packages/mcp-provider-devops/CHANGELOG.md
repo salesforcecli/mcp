@@ -1,3 +1,12 @@
+## [0.1.8](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.7...mcp-provider-devops@0.1.8) (2025-10-06)
+
+
+### Bug Fixes
+
+* **devops:** fix commit status tool issue ([#286](https://github.com/salesforcecli/mcp/issues/286)) ([f42a649](https://github.com/salesforcecli/mcp/commit/f42a6491f9ce872e1befef0f11decce7f79f8d0a))
+
+
+
 ## [0.1.7](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.6...mcp-provider-devops@0.1.7) (2025-10-03)
 
 

@@ -113,6 +113,8 @@ export async function commitWorkItem({
         .split('\n').map(l => l.trim()).filter(Boolean);
     const untrackedRel = execFileSync('git', ['ls-files', '--others', '--exclude-standard'], { cwd: workingDir, encoding: 'utf8' })
         .split('\n').map(l => l.trim()).filter(Boolean);
+    const stagedRel = execFileSync('git', ['diff', '--cached', '--name-only'], { cwd: workingDir, encoding: 'utf8' })
+        .split('\n').map(l => l.trim()).filter(Boolean);
 
 
     
@@ -133,6 +135,11 @@ export async function commitWorkItem({
         if (!operation) {
             const isModified = modifiedRel.some(p => isMatch(fileName, p));
             if (isModified) operation = 'modify';
+        }
+    
+        if (!operation) {
+            const isStaged = stagedRel.some(p => isMatch(fileName, p));
+            if (isStaged) operation = 'modify';
         }
     
         if (operation && componentType) {

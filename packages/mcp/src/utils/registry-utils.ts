@@ -91,6 +91,17 @@ export async function registerToolsets(
     const existingToolNames = new Set(toolRegistry.map(tool => tool.getName()));
     // Validate that all requested tools exist
     const invalidTools = tools.filter(toolName => !existingToolNames.has(toolName));
+
+    // This is a temporary fix to handle a tool rename. Tool alias support is coming soon.
+    // If the invalid tools list includes the *old* create_lwc_component tool name
+    if(invalidTools.includes('create_lwc_component')) {
+      ux.stderr('Tool "create_lwc_component" has been renamed to "create_lwc_component_from_prd". Update config to remove this warning.')
+      // Remove that entry from invalidTools
+      invalidTools.splice(invalidTools.indexOf('create_lwc_component'), 1);
+      // Then rename the old tool with create_lwc_component_from_prd in the tools array
+      tools[tools.indexOf('create_lwc_component')] = 'create_lwc_component_from_prd';
+    }
+
     if (invalidTools.length > 0) throw new Error(`Invalid tool names provided to --tools: "${invalidTools.join('", "')}"
 Valid tools include:
 - ${Array.from(existingToolNames).join(`${EOL}- `)}`);
