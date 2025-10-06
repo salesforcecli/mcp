@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
+import { assert, expect } from 'chai';
 import { McpTestClient, DxMcpTransport } from '@salesforce/mcp-test-client';
 import { TestSession } from '@salesforce/cli-plugins-testkit';
 import { z } from 'zod';
 import { matchesAccessToken } from '@salesforce/core';
+import { ensureString } from '@salesforce/ts-types';
 import { createScratchOrgParams } from '../../src/tools/create_scratch_org.js';
+import { resumeParamsSchema } from '../../src/tools/resume_tool_operation.js';
 
 describe('create_scratch_org', () => {
   const client = new McpTestClient({
     timeout: 120_000,
   });
   
-  const devHubUsername = process.env.TESTKIT_HUB_USERNAME as string;
+  let devHubUsername: string;
 
   let testSession: TestSession;
-  let resolvedDevHubUsername: string;
 
   const createScratchOrgSchema = {
     name: z.literal('create_scratch_org'),
@@ -44,15 +45,10 @@ describe('create_scratch_org', () => {
       devhubAuthStrategy: 'AUTO',
     });
 
-    const hubUsername = testSession.hubOrg?.username;
-    resolvedDevHubUsername = hubUsername ?? devHubUsername;
-    
-    if (!resolvedDevHubUsername) {
-      throw new Error('No DevHub username available from TestSession or TESTKIT_HUB_USERNAME environment variable');
-    }
+    devHubUsername = ensureString(testSession.hubOrg?.username);
 
     const transport = DxMcpTransport({
-      args: ['--orgs', 'ALLOW_ALL_ORGS', '--no-telemetry', '--toolsets', 'all', '--allow-non-ga-tools'],
+      args: ['--orgs', `DEFAULT_TARGET_ORG,${devHubUsername}`, '--no-telemetry', '--toolsets', 'all', '--allow-non-ga-tools'],
     });
 
     await client.connect(transport);
@@ -72,7 +68,7 @@ describe('create_scratch_org', () => {
       name: 'create_scratch_org',
       params: {
         directory: testSession.project.dir,
-        devHub: resolvedDevHubUsername,
+        devHub: devHubUsername,
       },
     });
     
@@ -81,7 +77,7 @@ describe('create_scratch_org', () => {
     expect(result.content[0].type).to.equal('text');
     
     const responseText = result.content[0].text as string;
-    expect(matchesAccessToken(responseText)).to.be.false;
+    assertNoSensitiveInfo(responseText)
     expect(responseText).to.include('Successfully created scratch org');
   });
 
@@ -90,17 +86,48 @@ describe('create_scratch_org', () => {
       name: 'create_scratch_org',
       params: {
         directory: testSession.project.dir,
-        devHub: resolvedDevHubUsername,
+        devHub: devHubUsername,
         async: true,
         alias: 'test-async-org'
       },
     });
     expect(asyncResult.isError).to.be.false;
     expect(asyncResult.content.length).to.equal(1);
-    expect(asyncResult.content[0].type).to.equal('text');
     
+    if (asyncResult.content[0].type !== 'text') assert.fail();
+
     const asyncResponseText = asyncResult.content[0].text;
     expect(asyncResponseText).to.include('Successfully enqueued scratch org with job Id:');
+
+    // now validate it was created by resuming the operation
+
+    const jobIdMatch = asyncResponseText.match(/job Id: ([A-Za-z0-9]+)/);
+    expect(jobIdMatch).to.not.be.null;
+    
+    const jobId: string =  jobIdMatch![1]
+
+    const asyncResumeResult = await client.callTool({
+      name: z.literal('resume_tool_operation'),
+      params: resumeParamsSchema
+    }, {
+      name: 'resume_tool_operation',
+      params: {
+        directory: testSession.project.dir,
+        jobId,
+        usernameOrAlias: ensureString(testSession.hubOrg.username)
+      },
+    });
+
+    expect(asyncResumeResult.isError).to.be.false;
+    expect(asyncResumeResult.content.length).to.equal(1);
+    
+    if (asyncResumeResult.content[0].type !== 'text') assert.fail();
+
+    const asyncResumeResponseText = asyncResumeResult.content[0].text;
+    
+    // tool output shouldn't access tokens/auth info other than the username
+    assertNoSensitiveInfo(asyncResumeResponseText);
+    expect(asyncResumeResponseText).to.include('Successfully created scratch org');
   });
 
   it('should create scratch org with optional parameters', async () => {
@@ -108,7 +135,7 @@ describe('create_scratch_org', () => {
       name: 'create_scratch_org',
       params: {
         directory: testSession.project.dir,
-        devHub: resolvedDevHubUsername,
+        devHub: devHubUsername,
         alias: 'test-custom-org',
         duration: 3,
         edition: 'developer',
@@ -143,3 +170,15 @@ describe('create_scratch_org', () => {
     expect(responseText).to.include('Failed to create org:');
   });
 });
+
+/**
+ * Helper function to assert that response text doesn't contain sensitive authentication information
+ */
+function assertNoSensitiveInfo(responseText: string): void {
+  expect(matchesAccessToken(responseText)).to.be.false;
+  expect(responseText).to.not.match(/authcode/i);
+  expect(responseText).to.not.match(/token/i);
+  expect(responseText).to.not.match(/privatekey/i);
+  expect(responseText).to.not.match(/clientid/i);
+  expect(responseText).to.not.match(/connectedappconsumerkey/i);
+}

@@ -88,7 +88,9 @@ create a snapshot of my MyScratch in myDevHub`,
     try {
       process.chdir(input.directory);
 
-      const sourceOrgId = (await Org.create({ aliasOrUsername: input.sourceOrg })).getOrgId();
+      const connection = await this.services.getOrgService().getConnection(input.sourceOrg);
+
+      const sourceOrgId = (await Org.create({ connection })).getOrgId();
       const devHubConnection = await this.services.getOrgService().getConnection(input.devHub);
       const createResponse = await devHubConnection.sobject('OrgSnapshot').create({
         SourceOrg: sourceOrgId,
