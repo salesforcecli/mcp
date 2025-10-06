@@ -28,10 +28,9 @@ describe('create_scratch_org', () => {
     timeout: 120_000,
   });
   
-  const devHubUsername = process.env.TESTKIT_HUB_USERNAME as string;
+  let devHubUsername: string;
 
   let testSession: TestSession;
-  let resolvedDevHubUsername: string;
 
   const createScratchOrgSchema = {
     name: z.literal('create_scratch_org'),
@@ -46,15 +45,10 @@ describe('create_scratch_org', () => {
       devhubAuthStrategy: 'AUTO',
     });
 
-    const hubUsername = testSession.hubOrg?.username;
-    resolvedDevHubUsername = hubUsername ?? devHubUsername;
-    
-    if (!resolvedDevHubUsername) {
-      throw new Error('No DevHub username available from TestSession or TESTKIT_HUB_USERNAME environment variable');
-    }
+    devHubUsername = ensureString(testSession.hubOrg?.username);
 
     const transport = DxMcpTransport({
-      args: ['--orgs', 'DEFAULT_TARGET_ORG', '--no-telemetry', '--toolsets', 'all', '--allow-non-ga-tools'],
+      args: ['--orgs', `DEFAULT_TARGET_ORG,${devHubUsername}`, '--no-telemetry', '--toolsets', 'all', '--allow-non-ga-tools'],
     });
 
     await client.connect(transport);
@@ -74,7 +68,7 @@ describe('create_scratch_org', () => {
       name: 'create_scratch_org',
       params: {
         directory: testSession.project.dir,
-        devHub: resolvedDevHubUsername,
+        devHub: devHubUsername,
       },
     });
     
@@ -92,7 +86,7 @@ describe('create_scratch_org', () => {
       name: 'create_scratch_org',
       params: {
         directory: testSession.project.dir,
-        devHub: resolvedDevHubUsername,
+        devHub: devHubUsername,
         async: true,
         alias: 'test-async-org'
       },
@@ -107,8 +101,7 @@ describe('create_scratch_org', () => {
 
     // now validate it was created by resuming the operation
 
-    const jobIdMatch = asyncResponseText.match(/job Id: ([A-Z0-9]+)/)
-    console.log(JSON.stringify(jobIdMatch))
+    const jobIdMatch = asyncResponseText.match(/job Id: ([A-Za-z0-9]+)/);
     expect(jobIdMatch).to.not.be.null;
     
     const jobId: string =  jobIdMatch![1]
@@ -142,7 +135,7 @@ describe('create_scratch_org', () => {
       name: 'create_scratch_org',
       params: {
         directory: testSession.project.dir,
-        devHub: resolvedDevHubUsername,
+        devHub: devHubUsername,
         alias: 'test-custom-org',
         duration: 3,
         edition: 'developer',

@@ -131,8 +131,28 @@ create a scratch org aliased as MyNewOrg and set as default and don't wait for i
   public async exec(input: InputArgs): Promise<CallToolResult> {
     try {
       process.chdir(input.directory);
-      const connection = await this.services.getOrgService().getConnection(input.devHub);
-      const hubOrProd = await Org.create({ connection });
+
+      // NOTE: 
+      // this should be:
+      // ```ts
+      // const connection = await this.services.getOrgService().getConnection(input.devHub);
+      // const hubOrProd = await Org.create({ connection });
+      // ```
+      //
+      // but there's a bug where if you create scratch synchronously, sfdx-core throws while polling;
+      // ```
+      // [NamedOrgNotFoundError]: No authorization information found for <devhub-username>.
+      // ```
+      //
+      // it doesn't happen when creating asynchronously.
+      // will be fixed in W-19828802
+      const allowedOrgs = await this.services.getOrgService().getAllowedOrgs()
+      if (!allowedOrgs.find(o => o.aliases?.includes(input.devHub) || o.username === input.devHub)) {
+        throw new Error(
+          'No org found with the provided devhub username/alias. Ask the user to specify one or check their MCP Server startup config.'
+        )}
+
+      const hubOrProd = await Org.create({ aliasOrUsername: input.devHub });
 
       const requestParams: ScratchOrgCreateOptions = {
         hubOrg: hubOrProd,
