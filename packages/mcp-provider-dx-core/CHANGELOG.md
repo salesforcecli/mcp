@@ -1,3 +1,12 @@
+## [0.3.6](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.3.5...mcp-provider-dx-core@0.3.6) (2025-10-06)
+
+
+### Bug Fixes
+
+* tools use org service W-19828433 ([#287](https://github.com/salesforcecli/mcp/issues/287)) ([4680070](https://github.com/salesforcecli/mcp/commit/468007011780ced31d851fcdbba4c142bf67d3fa))
+
+
+
 ## [0.3.5](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.3.4...mcp-provider-dx-core@0.3.5) (2025-09-29)
 
 

@@ -18,7 +18,7 @@ import { z } from 'zod';
 import { Org } from '@salesforce/core';
 import { MetadataResolver } from '@salesforce/source-deploy-retrieve';
 import open from 'open';
-import { McpTool, McpToolConfig, ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, ReleaseState, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { textResponse } from '../shared/utils.js';
 import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
@@ -37,6 +37,10 @@ type InputArgsShape = typeof orgOpenParamsSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class OrgOpenMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public constructor(private readonly services: Services) {
+    super();
+  }
+
   public getReleaseState(): ReleaseState {
     return ReleaseState.NON_GA;
   }
@@ -67,9 +71,11 @@ You can specify a metadata file you want to open.`,
   public async exec(input: InputArgs): Promise<CallToolResult> {
     process.chdir(input.directory);
 
+    const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
+
     const org = await Org.create({
-      aliasOrUsername: input.usernameOrAlias,
-    });
+      connection
+    })
 
     if (input.filePath) {
       const metadataResolver = new MetadataResolver();

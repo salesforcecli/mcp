@@ -20,7 +20,7 @@ import { z } from 'zod';
 import { Org, scratchOrgCreate, ScratchOrgCreateOptions } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { McpTool, McpToolConfig, ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
+import { McpTool, McpToolConfig, ReleaseState, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { ensureString } from '@salesforce/ts-types/lib/narrowing/ensure.js';
 import { textResponse } from '../shared/utils.js';
 import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
@@ -95,6 +95,10 @@ type InputArgsShape = typeof createScratchOrgParams.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class CreateScratchOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
+  public constructor(private readonly services: Services) {
+    super();
+  }
+
   public getReleaseState(): ReleaseState {
     return ReleaseState.NON_GA;
   }
@@ -127,6 +131,27 @@ create a scratch org aliased as MyNewOrg and set as default and don't wait for i
   public async exec(input: InputArgs): Promise<CallToolResult> {
     try {
       process.chdir(input.directory);
+
+      // NOTE: 
+      // this should be:
+      // ```ts
+      // const connection = await this.services.getOrgService().getConnection(input.devHub);
+      // const hubOrProd = await Org.create({ connection });
+      // ```
+      //
+      // but there's a bug where if you create scratch synchronously, sfdx-core throws while polling;
+      // ```
+      // [NamedOrgNotFoundError]: No authorization information found for <devhub-username>.
+      // ```
+      //
+      // it doesn't happen when creating asynchronously.
+      // will be fixed in W-19828802
+      const allowedOrgs = await this.services.getOrgService().getAllowedOrgs()
+      if (!allowedOrgs.find(o => o.aliases?.includes(input.devHub) || o.username === input.devHub)) {
+        throw new Error(
+          'No org found with the provided devhub username/alias. Ask the user to specify one or check their MCP Server startup config.'
+        )}
+
       const hubOrProd = await Org.create({ aliasOrUsername: input.devHub });
 
       const requestParams: ScratchOrgCreateOptions = {
