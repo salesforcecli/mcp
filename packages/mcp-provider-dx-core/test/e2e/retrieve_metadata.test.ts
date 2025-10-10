@@ -25,7 +25,7 @@ import { retrieveMetadataParams } from '../../src/tools/retrieve_metadata.js';
 
 describe('retrieve_metadata', () => {
   const client = new McpTestClient({
-    timeout: 60000,
+    timeout: 60_000,
   });
 
   let testSession: TestSession;

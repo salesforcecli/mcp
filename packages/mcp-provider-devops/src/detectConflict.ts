@@ -1,15 +1,38 @@
 import type { WorkItem } from './types/WorkItem.js';
+import { isGitRepository, hasUncommittedChanges } from './shared/gitUtils.js';
 
 export interface DetectConflictParams {
   workItem?: WorkItem;
   localPath?: string;
 }
 
+// moved to shared/gitUtils
+
 export async function detectConflict({
   workItem,
   localPath
 }: DetectConflictParams): Promise<{ content: ({ type: "text"; text: string; [x: string]: unknown })[] }> {
   
+  // Validate that repoPath points to a Git repository
+  if (localPath && !isGitRepository(localPath)) {
+    return {
+      content: [{
+        type: "text",
+        text: `Path validation failed: '${localPath}' is not a Git repository. Please provide the correct project path (the repository root containing a .git directory) via 'localPath', or use the checkout_devops_center_work_item tool to clone and check out the work item, then re-run conflict detection.`
+      }]
+    };
+  }
+
+  // Block if there are local uncommitted changes
+  if (localPath && hasUncommittedChanges(localPath)) {
+    return {
+      content: [{
+        type: "text",
+        text: `Local changes detected in '${localPath}'. Please clean your working directory before conflict detection. After cleaning, re-run conflict detection.`
+      }]
+    };
+  }
+
   // If no workItem is provided, we need to fetch work items and ask user to select one
   if (!workItem) {
     return {
@@ -33,7 +56,9 @@ export async function detectConflict({
   const repoUrl = workItem.SourceCodeRepository.repoUrl;
   const workItemBranch = workItem.WorkItemBranch;
   const targetBranch = workItem.TargetBranch;
-  const repoPath = localPath || process.cwd();
+  const repoPath = localPath || undefined;
+
+  
 
   try {
     return {

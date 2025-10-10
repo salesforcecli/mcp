@@ -218,9 +218,16 @@ describe('RunAnalyzerActionImpl', () => {
             const pathSepVar: string = path.sep.replaceAll('\\', '\\\\');
             const runDir: string = process.cwd().replaceAll('\\' , '\\\\');
 
+            const codeAnalyzerVersion: string = (JSON.parse((await fs.promises.readFile(path.join(require.resolve('@salesforce/code-analyzer-core'), '..', '..', 'package.json'), 'utf-8'))) as any).version;
+            const pmdEngineVersion: string = (JSON.parse((await fs.promises.readFile(path.join(require.resolve('@salesforce/code-analyzer-pmd-engine'), '..', '..', 'package.json'), 'utf-8'))) as any).version;
+            const regexEngineVersion: string = (JSON.parse((await fs.promises.readFile(path.join(require.resolve('@salesforce/code-analyzer-regex-engine'), '..', '..', 'package.json'), 'utf-8'))) as any).version;
+
             const expectedOutfile: string =  (await fs.promises.readFile(comparisonFile, 'utf-8'))
                 .replaceAll('{{RUNDIR}}', runDir)
                 .replaceAll(`{{SEP}}`, pathSepVar)
+                .replaceAll('{{CODE_ANALYZER_VERSION}}', codeAnalyzerVersion)
+                .replaceAll('{{PMD_ENGINE_VERSION}}', pmdEngineVersion)
+                .replaceAll('{{REGEX_ENGINE_VERSION}}', regexEngineVersion)
                 .replaceAll('{{PMD_VERSION}}', PMD_VERSION);
 
             expect(outputFileContents).toContain(expectedOutfile);

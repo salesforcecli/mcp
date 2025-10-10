@@ -1,3 +1,55 @@
+## [0.23.4](https://github.com/salesforcecli/mcp/compare/0.23.3...0.23.4) (2025-10-06)
+
+
+
+## [0.23.3](https://github.com/salesforcecli/mcp/compare/0.23.2...0.23.3) (2025-10-03)
+
+
+### Bug Fixes
+
+* temp tool rename fix ([#278](https://github.com/salesforcecli/mcp/issues/278)) ([3bcaa5d](https://github.com/salesforcecli/mcp/commit/3bcaa5d4d9edbe5395e40f8550ea7effe098b18c))
+
+
+
+## [0.23.2](https://github.com/salesforcecli/mcp/compare/0.23.1...0.23.2) (2025-10-03)
+
+
+
+## [0.23.1](https://github.com/salesforcecli/mcp/compare/0.23.0...0.23.1) (2025-10-03)
+
+
+
+# [0.23.0](https://github.com/salesforcecli/mcp/compare/0.22.1...0.23.0) (2025-10-01)
+
+
+### Bug Fixes
+
+* remove telem from source ([#269](https://github.com/salesforcecli/mcp/issues/269)) ([c78053f](https://github.com/salesforcecli/mcp/commit/c78053f2cab4330b97c7ca78a7a3ffd1cd6c84fa))
+
+
+### Features
+
+* enable o11y telemetry ([#268](https://github.com/salesforcecli/mcp/issues/268)) ([f02156e](https://github.com/salesforcecli/mcp/commit/f02156ed0bc42a3bc79ea196bd6749cf866968ea)), closes [#264](https://github.com/salesforcecli/mcp/issues/264)
+
+
+
+## [0.22.1](https://github.com/salesforcecli/mcp/compare/0.22.0...0.22.1) (2025-10-01)
+
+
+
+# [0.22.0](https://github.com/salesforcecli/mcp/compare/0.21.4...0.22.0) (2025-09-30)
+
+
+### Features
+
+* update tools description and add lds workflow tool ([#258](https://github.com/salesforcecli/mcp/issues/258)) ([76c53f6](https://github.com/salesforcecli/mcp/commit/76c53f68446be7431801033c8db902b8a72d1c93))
+
+
+
+## [0.21.4](https://github.com/salesforcecli/mcp/compare/0.21.3...0.21.4) (2025-09-26)
+
+
+
 ## [0.21.3](https://github.com/salesforcecli/mcp/compare/0.21.2...0.21.3) (2025-09-25)
 
 
