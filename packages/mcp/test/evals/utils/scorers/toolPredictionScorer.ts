@@ -49,8 +49,6 @@ export function ToolPredictionScorer(model: LanguageModel = defaultModel) {
 
     const expectedTools = opts.expectedTools;
 
-    // Get available tools from the MCP server
-    // TODO(cristian): validate that all expected tools are included here, throw if not.
     const AVAILABLE_TOOLS = await getAvailableTools();
 
     // Generate a description of the expected tools for the prompt
@@ -67,11 +65,6 @@ export function ToolPredictionScorer(model: LanguageModel = defaultModel) {
         isEnabled: false,
       },
     });
-    // console.log('*'.repeat(process.stdout.columns))
-    // console.log(AVAILABLE_TOOLS)
-    // console.log('*'.repeat(process.stdout.columns))
-    // console.log(JSON.stringify(object,null,2))
-    // console.log('*'.repeat(process.stdout.columns))
 
     return {
       score: object.score,
@@ -95,7 +88,7 @@ async function getAvailableTools(): Promise<string[]> {
       args: [
         path.join(import.meta.dirname, '../../../mcp/bin/run.js'),
         '--toolsets',
-        'orgs,metadata,testing',
+        'orgs,metadata,testing,data',
         '-o',
         'DEFAULT_TARGET_ORG',
         '--no-telemetry',
@@ -107,18 +100,15 @@ async function getAvailableTools(): Promise<string[]> {
   // Discover available tools
   const toolsMap = await client.tools();
 
-  // TODO(cristian): this should include full tool desc and params
-  // Convert tools to the format expected by the scorer
   cachedTools = Object.entries(toolsMap).map(([name, tool]) => {
     // Extract the first line of description for a concise summary
     const shortDescription = tool.description || '';
-    const params = tool.parameters
+    const params = tool.parameters;
     return `${name} - ${shortDescription}\n${JSON.stringify(params)}`;
   });
 
   // Clean up
   await client.close();
-  // console.log(JSON.stringify(cachedTools,null,2));
 
   return cachedTools;
 }

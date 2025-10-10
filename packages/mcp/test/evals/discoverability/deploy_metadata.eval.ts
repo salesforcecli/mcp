@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { describeEval } from 'vitest-evals';
-import { ToolPredictionScorer } from '../utils/toolPredictionScorer.js';
-import { NoOpTaskRunner } from './utils.js';
+import { NoOpTaskRunner } from '../utils/runners.js';
+import { ToolPredictionScorer } from '../utils/scorers/toolPredictionScorer.js';
 
 describeEval('deploy', {
   data: async () => [
@@ -26,7 +26,7 @@ describeEval('deploy', {
           name: 'get_username',
           arguments: {
             directory: process.env.SF_EVAL_PROMPT_PROJECT_DIR,
-            defaultTargetOrg: true
+            defaultTargetOrg: true,
           },
         },
         {
@@ -35,7 +35,7 @@ describeEval('deploy', {
             sourceDir: [process.env.SF_EVAL_PROMPT_OPEN_FILEPATH],
             directory: process.env.SF_EVAL_PROMPT_PROJECT_DIR,
             apexTestLevel: 'RunAllTestsInOrg',
-            usernameOrAlias: "ebikes-default-org"
+            usernameOrAlias: 'ebikes-default-org',
           },
         },
       ],
@@ -46,10 +46,8 @@ describeEval('deploy', {
         {
           name: 'deploy_metadata',
           arguments: {
-            sourceDir: [process.env.SF_EVAL_PROMPT_OPEN_FILEPATH],
+            usernameOrAlias: 'ebikes',
             directory: process.env.SF_EVAL_PROMPT_PROJECT_DIR,
-            apexTests: ['GeocodingServiceTest']
-            // apexTestLevel: 'RunAllTestsInOrg',
           },
         },
       ],
@@ -58,28 +56,28 @@ describeEval('deploy', {
       input: 'Deploy this file and run the GeocodingServiceTest tests',
       expectedTools: [
         {
+          // user doesn't specify which org to deploy to -> discover it via `get_username`
           name: 'get_username',
           arguments: {
             directory: process.env.SF_EVAL_PROMPT_PROJECT_DIR,
-            // TODO: can we do a "fuzzy" match per tool param?
-            // defaultTargetOrg: true
+            defaultTargetOrg: true,
           },
         },
         {
           name: 'deploy_metadata',
           arguments: {
+            usernameOrAlias: 'default-org',
             sourceDir: [process.env.SF_EVAL_PROMPT_OPEN_FILEPATH],
             directory: process.env.SF_EVAL_PROMPT_PROJECT_DIR,
-            apexTests: ['GeocodingServiceTest']
-            // apexTestLevel: 'RunAllTestsInOrg',
+            // IMPORTANT: there's a `run_apex_test` available but for these "run test during deployment" scenarios we want to ensure they are only run via `deploy_metadata`, it's a pretty common operation for an agentic loop (test failures rollback deployment)
+            apexTests: ['GeocodingServiceTest'],
           },
         },
       ],
-    }
+    },
   ],
   task: NoOpTaskRunner(),
   scorers: [ToolPredictionScorer()],
-  // TODO(cristian): revise this based on how flexible our params are around get_username and document default
   threshold: 1.0,
   timeout: 30_000,
 });
