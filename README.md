@@ -31,6 +31,8 @@ The Salesforce DX MCP Server is a specialized Model Context Protocol (MCP) imple
 
 Configure the Salesforce DX MCP Server for your MCP client by updating its associated MCP JSON file; each client is slightly different, so check your MCP client documentation for details. 
 
+
+### VSCode
 Here's an example for VS Code with Copilot in which you create and update a `.vscode/mcp.json` file in your project:
 
 ```
@@ -47,6 +49,30 @@ Here's an example for VS Code with Copilot in which you create and update a `.vs
      }
 }
 ```
+
+### Claude Code
+Here's an example for Claude Code in which you create and update a `.mcp.json` file in your project:
+```
+{
+  "mcpServers": {
+    "Salesforce DX": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@salesforce/mcp",
+        "--orgs",
+        "DEFAULT_TARGET_ORG",
+        "--toolsets",
+        "orgs,metadata,data,users",
+        "--tools",
+        "run_apex_test",
+        "--allow-non-ga-tools"
+      ]
+    }
+  }
+}
+```
+
 The `args` format shown in the preceding example is the same for all MCP clients; it's how you customize the DX MCP Server for your particular environment. Notes:
 
 - The `"-y", "@salesforce/mcp"` part tells `npx` to automatically install the `@salesforce/mcp` package instead of asking permission. Don't change this. 
