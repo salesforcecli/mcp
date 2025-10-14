@@ -21,6 +21,7 @@ import { Duration } from '@salesforce/kit';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { McpTool, McpToolConfig, ReleaseState, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { ensureString } from '@salesforce/ts-types';
 import { textResponse } from '../shared/utils.js';
 import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
 import { type ToolTextResponse } from '../shared/types.js';
@@ -46,7 +47,7 @@ const resumableIdPrefixes = new Map<string, string>([
  * Returns:
  * - textResponse: Username/alias and org configuration
  */
-const resumeParamsSchema = z.object({
+export const resumeParamsSchema = z.object({
   jobId: z.string().describe('The job id of the long running operation to resume (required)'),
   wait: z
     .number()
@@ -178,7 +179,7 @@ async function resumeOrgSnapshot(connection: Connection, jobId: string, wait: nu
 async function resumeScratchOrg(jobId: string, wait: number): Promise<ToolTextResponse> {
   try {
     const result = await scratchOrgResume(jobId, Duration.minutes(wait));
-    return textResponse(`Scratch org created: ${JSON.stringify(result)}`, false);
+    return textResponse(`Successfully created scratch org, username: ${ensureString(result.username)}`);
   } catch (error) {
     return textResponse(
       `Resumed scratch org creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
