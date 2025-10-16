@@ -1,7 +1,6 @@
 import { experimental_createMCPClient, generateObject, type LanguageModel } from 'ai';
 import { Experimental_StdioMCPTransport } from 'ai/mcp-stdio';
 import { google } from '@ai-sdk/google';
-import * as path from 'node:path';
 import { z } from 'zod';
 
 // Supported models: https://ai.google.dev/gemini-api/docs/models
@@ -84,9 +83,9 @@ async function getAvailableTools(): Promise<string[]> {
 
   const client = await experimental_createMCPClient({
     transport: new Experimental_StdioMCPTransport({
-      command: 'node',
+      // when executed via yarn, `sf-mcp-server` points to `packages/mcp/bin/run.js`
+      command: 'sf-mcp-server',
       args: [
-        path.join(import.meta.dirname, '../../../mcp/bin/run.js'),
         '--toolsets',
         'orgs,metadata,testing,data',
         '-o',
