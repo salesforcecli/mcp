@@ -22,6 +22,7 @@ import { Attributes, TelemetryReporter } from '@salesforce/telemetry';
 import { warn } from '@oclif/core/ux';
 import { Config } from '@oclif/core';
 import { TelemetryService } from '@salesforce/mcp-provider-api/src/index.js';
+import { guessCISystem } from './guessCI.js';
 
 const PROJECT = 'salesforce-mcp-server';
 
@@ -124,6 +125,8 @@ export class Telemetry implements TelemetryService {
         nodeVersion: process.version,
         nodeEnv: process.env.NODE_ENV,
         origin: this.config.userAgent,
+        // CI Information
+        ci: guessCISystem(),
         // Timestamps
         date: new Date().toUTCString(),
         timestamp: String(Date.now()),
