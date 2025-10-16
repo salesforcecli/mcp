@@ -20,7 +20,6 @@ import { expect, assert } from 'chai';
 import { McpTestClient, DxMcpTransport } from '@salesforce/mcp-test-client';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { z } from 'zod';
-import { ensureString } from '@salesforce/ts-types';
 import { queryOrgParamsSchema } from '../../src/tools/run_soql_query.js';
 
 describe('run_soql_query', () => {
@@ -28,6 +27,7 @@ describe('run_soql_query', () => {
 
   let testSession: TestSession;
   let orgUsername: string;
+  const orgAlias = 'dreamhouse';
 
   const queryOrgSchema = {
     name: z.literal('run_soql_query'),
@@ -38,7 +38,7 @@ describe('run_soql_query', () => {
     try {
       testSession = await TestSession.create({
         project: { gitClone: 'https://github.com/trailheadapps/dreamhouse-lwc' },
-        scratchOrgs: [{ setDefault: true, config: path.join('config', 'project-scratch-def.json') }],
+        scratchOrgs: [{ setDefault: true, config: path.join('config', 'project-scratch-def.json'), alias: orgAlias }],
         devhubAuthStrategy: 'AUTO',
       });
 
@@ -60,9 +60,7 @@ describe('run_soql_query', () => {
       testSession.orgs.get('')?.orgId;
       orgUsername = [...testSession.orgs.keys()][0];
 
-      const transport = DxMcpTransport({
-        orgUsername: ensureString(orgUsername),
-      });
+      const transport = DxMcpTransport({});
 
       await client.connect(transport);
     } catch (error) {
@@ -84,7 +82,8 @@ describe('run_soql_query', () => {
       name: 'run_soql_query',
       params: {
         query: 'SELECT Name FROM Broker__c ORDER BY Name',
-        usernameOrAlias: orgUsername,
+        // use org alias to validate it can be resolved
+        usernameOrAlias: orgAlias,
         directory: testSession.project.dir,
         useToolingApi: false,
       },
