@@ -56,7 +56,7 @@ type runnerOptions = {
   };
 };
 
-export function TaskRunner(opts: runnerOptions) {
+export function TaskRunner(opts?: runnerOptions) {
   return async function TaskRun(input: string): Promise<TaskResult> {
     const mcpClient = await experimental_createMCPClient({
       transport: new Experimental_StdioMCPTransport({
@@ -82,11 +82,11 @@ export function TaskRunner(opts: runnerOptions) {
 
     const tools = await mcpClient.tools();
 
-    const systemPrompt = generateSystemPrompt(opts.promptOptions);
+    const systemPrompt = generateSystemPrompt(opts?.promptOptions);
 
     try {
       const { text, steps } = await generateText({
-        model: opts.model ?? defaultModel,
+        model: opts?.model ?? defaultModel,
         tools,
         system: systemPrompt,
         prompt: input,

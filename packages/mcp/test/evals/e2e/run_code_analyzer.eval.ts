@@ -22,6 +22,6 @@ describeEval('run_code_analyzer', {
       return { score };
     },
   ],
-  threshold: 0.9,
+  threshold: 1.0,
   timeout: 60_000,
 });

@@ -23,6 +23,13 @@ describeEval('run_soql_query', {
       input: 'List the name of the Property__c records in my org, ordered in ascending order by their name.',
       expectedTools: [
         {
+          name: 'get_username',
+          arguments: {
+            directory: process.env.SF_EVAL_PROMPT_PROJECT_DIR,
+            defaultTargetOrg: true,
+          },
+        },
+        {
           name: 'run_soql_query',
           arguments: {
             query: 'SELECT Name FROM Property__c ORDER BY Name ASC',
