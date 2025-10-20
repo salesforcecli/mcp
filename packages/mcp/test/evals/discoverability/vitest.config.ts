@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { defineConfig } from 'vitest/config';
 
-import { describeEval } from 'vitest-evals';
-import { TaskRunner, outputIncludesExpectationArray } from './utils.js';
-
-describeEval('describe_code_analyzer_rule', {
-    data: async () => [{
-        input: 'tell me the tags that are associated with the Code Analysis Rule named VFUnescapeEl, which is a rule for the pmd engine',
-        expected: ['Recommended', 'Security', 'Visualforce']
-    }],
-    task: TaskRunner(),
-    scorers: [outputIncludesExpectationArray],
-    threshold: 0.9,
-    timeout: 60_000
+export default defineConfig({
+  test: {
+    include: ['test/evals/discoverability/*.eval.{ts,mts}'],
+    reporters: ['vitest-evals/reporter'],
+    env: {
+      SF_EVAL_PROMPT_PROJECT_DIR: '/Users/codey/projects/dreamhouse-lwc',
+      SF_EVAL_PROMPT_OPEN_FILEPATH: '/Users/codey/projects/dreamhouse-lwc/force-app/main/default/classes/GeocodingService.cls'
+    }
+  },
 });
