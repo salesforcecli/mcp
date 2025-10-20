@@ -179,7 +179,6 @@ describeEval('SOQL queries', {
 
 See [packages/mcp/test/evals/e2e/run_soql_query.eval.ts](./packages/mcp/test/evals/e2e/run_soql_query.eval.ts) for a complete example.
 
-
 #### Setting Prompt Options
 
 Configure the task runner with prompt settings:
@@ -206,3 +205,50 @@ Both eval types use scoring mechanisms:
   - `params: 'fuzzy'` - Allow parameter variations (useful for queries)
 
 Set thresholds (0.0-1.0) to define passing scores. For discoverability tests, use `threshold: 1.0` for exact matches. For E2E tests, use lower thresholds like `threshold: 0.8` to account for response variations.
+
+### What tests should I write for my tools?
+
+This will vary depending on the complexity of your tool, the recommended guidance is:
+
+1. E2E tool tests
+Use them to cover the tool logic extensively, focus on:
+* Cross OS compatibility (linux and windows)
+* Blocking invalid combination of parameters
+* [Validating the tool response properly sets `isError` on errors](https://modelcontextprotocol.io/specification/2025-06-18/schema#calltoolresult)
+
+Even if your tools is mostly "instructions-only" (returns instructions for LLM agents), it's good to have coverage since these tests do a real tool call so you ensure the tool is always callable.
+
+2. Discoverability Eval tests
+All tools should at least 1 test covering the most common utterances you expect users to type that will call your tool.
+These tests run evaluate all tools in the server so by having coverage you cover your tools from being "shadowed" if a new tool with similar description is added.
+
+3. E2E Evals
+These should only cover the most common user flows (more expensive to run), tips:
+* The user utterance should cover a user flow calling at least 2 tool calls
+* Use the `Factuality` scorer to validate the final agent response (`input: run the Geocoding apex test` -> `output: successfully ran the 3 Geocoding apex tests ...`)
+* Use the `ToolCallScorer` scorer to assert the chain of tools (and its param) were called in the correct order
+
+Unsure if your tool should have an E2E eval test?
+* If it's an "instructions-only" tool, discoverabitly eval tests may be enough since you care mostly on the tool being called (after that the agent might call built-in tools/other CLI commands)
+* Is your tool response critical when combined with other tool in a user task? if not, then discoverability + E2E tool tests might be enough.
+
+Good scenarios for E2E eval tests:
+
+* `run_soql_query` tool returns raw SOQL results and we want to evaluate agent response contains the expected records.
+* `get_username` is used to resolve org usernames, the `deploy_metadata` validates a user utterance like:
+```
+Deploy this file and run the GeocodingServiceTest tests, then summarize the apex test results.
+```
+calls `get_username` -> `deploy_metadata`
+
+Bad scenarios:
+
+* "instructions-only" tools
+* CRUD tools where their responses aren't required for an agent task (e.g. `create_scratch_org` output doesn't matter as long as its successful, that can be covered in a simple E2E tool test)
+
+### FAQ 
+
+* Which LLMs models are we testing against?
+
+Only `gemini-2.5-flash` using the Gemini API.
+We plan support more models once we switch to Salesforce's LLMG.
