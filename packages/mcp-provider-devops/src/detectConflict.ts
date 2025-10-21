@@ -17,7 +17,7 @@ function validateDetectConflictInputs({ workItem, localPath }: DetectConflictPar
       error: {
         content: [{
           type: "text",
-          text: `Path validation failed: '${localPath}' is not a Git repository. Please provide the correct project path (the repository root containing a .git directory) via 'localPath', or use the checkout_devops_center_work_item tool to clone and check out the work item, then re-run conflict detection.`
+          text: `Path validation failed: '${localPath}' is not a Git repository. Please provide the correct project path (the repository root containing a .git directory) via 'localPath', or clone the project first using git clone.`
         }]
       }
     };
