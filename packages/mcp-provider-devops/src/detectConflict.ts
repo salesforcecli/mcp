@@ -1,5 +1,5 @@
 import type { WorkItem } from './types/WorkItem.js';
-import { isGitRepository, hasUncommittedChanges } from './shared/gitUtils.js';
+import { isGitRepository, hasUncommittedChanges, isSameGitRepo } from './shared/gitUtils.js';
 
 export interface DetectConflictParams {
   workItem?: WorkItem;
@@ -8,63 +8,98 @@ export interface DetectConflictParams {
 
 // moved to shared/gitUtils
 
-export async function detectConflict({
-  workItem,
-  localPath
-}: DetectConflictParams): Promise<{ content: ({ type: "text"; text: string; [x: string]: unknown })[] }> {
-  
+function validateDetectConflictInputs({ workItem, localPath }: DetectConflictParams):
+  | { error: { content: ({ type: "text"; text: string; [x: string]: unknown })[] } }
+  | { ok: true; workItem: WorkItem; localPath?: string } {
   // Validate that repoPath points to a Git repository
   if (localPath && !isGitRepository(localPath)) {
     return {
-      content: [{
-        type: "text",
-        text: `Path validation failed: '${localPath}' is not a Git repository. Please provide the correct project path (the repository root containing a .git directory) via 'localPath', or use the checkout_devops_center_work_item tool to clone and check out the work item, then re-run conflict detection.`
-      }]
+      error: {
+        content: [{
+          type: "text",
+          text: `Path validation failed: '${localPath}' is not a Git repository. Please provide the correct project path (the repository root containing a .git directory) via 'localPath', or use the checkout_devops_center_work_item tool to clone and check out the work item, then re-run conflict detection.`
+        }]
+      }
     };
   }
 
   // Block if there are local uncommitted changes
   if (localPath && hasUncommittedChanges(localPath)) {
     return {
-      content: [{
-        type: "text",
-        text: `Local changes detected in '${localPath}'. Please clean your working directory before conflict detection. After cleaning, re-run conflict detection.`
-      }]
+      error: {
+        content: [{
+          type: "text",
+          text: `Local changes detected in '${localPath}'. Please clean your working directory before conflict detection. After cleaning, re-run conflict detection.`
+        }]
+      }
     };
   }
 
   // If no workItem is provided, we need to fetch work items and ask user to select one
   if (!workItem) {
     return {
-      content: [{
-        type: "text",
-        text: "Error: Please provide a workItem to check for conflicts. Use the list_devops_center_work_items tool to fetch work items first."
-      }]
+      error: {
+        content: [{
+          type: "text",
+          text: "Error: Please provide a workItem to check for conflicts. Use the list_devops_center_work_items tool to fetch work items first."
+        }]
+      }
     };
   }
 
   // Validate workItem has required properties
   if (!workItem.WorkItemBranch || !workItem.TargetBranch || !workItem.SourceCodeRepository?.repoUrl) {
     return {
-      content: [{
-        type: "text",
-        text: "Error: Work item is missing required properties (WorkItemBranch, TargetBranch, or SourceCodeRepository.repoUrl)."
-      }]
+      error: {
+        content: [{
+          type: "text",
+          text: "Error: Work item is missing required properties (WorkItemBranch, TargetBranch, or SourceCodeRepository.repoUrl)."
+        }]
+      }
     };
   }
 
-  const repoUrl = workItem.SourceCodeRepository.repoUrl;
-  const workItemBranch = workItem.WorkItemBranch;
-  const targetBranch = workItem.TargetBranch;
-  const repoPath = localPath || undefined;
+  // validate if project in local path is of same git repo as workitem.SourceCodeRepository!.repoUrl
+  if (localPath && workItem.SourceCodeRepository?.repoUrl) {
+    const repoUrl = workItem.SourceCodeRepository.repoUrl;
+    const repoPath = localPath;
+    const [isSameRepo, projectRepoUrl] = isSameGitRepo(repoUrl, repoPath);
+    if (!isSameRepo) {  
+      return {
+        error: {
+          content: [{
+            type: "text",
+            text: `Error: Project in local path repo ${projectRepoUrl} is not of same git repo as ${workItem.SourceCodeRepository!.repoUrl}, please checkout the correct project `
+          }]
+        }
+      };
+    }
+  }
 
-  
+  return { ok: true, workItem: workItem as WorkItem, localPath };
+}
+
+export async function detectConflict({
+  workItem,
+  localPath
+}: DetectConflictParams): Promise<{ content: ({ type: "text"; text: string; [x: string]: unknown })[] }> {
+  const validation = validateDetectConflictInputs({ workItem, localPath });
+  if ("error" in validation) {
+    return validation.error;
+  }
+  const ensuredWorkItem = validation.workItem;
+  const ensuredLocalPath = validation.localPath;
+
+  const repoUrl = ensuredWorkItem.SourceCodeRepository!.repoUrl;
+  const workItemBranch = ensuredWorkItem.WorkItemBranch!;
+  const targetBranch = ensuredWorkItem.TargetBranch!;
+  const repoPath = ensuredLocalPath;
 
   try {
     return {
       content: [{
         type: "text",
-        text: `Detect merge conflicts for work item "${workItem.name}" (branch: ${workItemBranch}) against target branch "${targetBranch}" in repo ${repoUrl} at path: ${repoPath}.
+        text: `Detect merge conflicts for work item "${ensuredWorkItem.name}" (branch: ${workItemBranch}) against target branch "${targetBranch}" in repo ${repoUrl} at path: ${repoPath}.
 
 Agent execution guide (perform these steps now):
 
