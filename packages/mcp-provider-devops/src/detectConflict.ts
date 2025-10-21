@@ -1,5 +1,6 @@
 import type { WorkItem } from './types/WorkItem.js';
-import { isGitRepository, hasUncommittedChanges, isSameGitRepo } from './shared/gitUtils.js';
+import { isGitRepository, hasUncommittedChanges } from './shared/gitUtils.js';
+import { validateLocalGitState, validateWorkItemPresence, validateWorkItemFields, validateLocalRepoMatchesWorkItemRepo } from './shared/validation.js';
 
 export interface DetectConflictParams {
   workItem?: WorkItem;
@@ -11,69 +12,24 @@ export interface DetectConflictParams {
 function validateDetectConflictInputs({ workItem, localPath }: DetectConflictParams):
   | { error: { content: ({ type: "text"; text: string; [x: string]: unknown })[] } }
   | { ok: true; workItem: WorkItem; localPath?: string } {
-  // Validate that repoPath points to a Git repository
-  if (localPath && !isGitRepository(localPath)) {
-    return {
-      error: {
-        content: [{
-          type: "text",
-          text: `Path validation failed: '${localPath}' is not a Git repository. Please provide the correct project path (the repository root containing a .git directory) via 'localPath', or clone the project first using git clone.`
-        }]
-      }
-    };
+  const localStateError = validateLocalGitState(localPath);
+  if (localStateError) {
+    return { error: localStateError };
   }
 
-  // Block if there are local uncommitted changes
-  if (localPath && hasUncommittedChanges(localPath)) {
-    return {
-      error: {
-        content: [{
-          type: "text",
-          text: `Local changes detected in '${localPath}'. Please clean your working directory before conflict detection. After cleaning, re-run conflict detection.`
-        }]
-      }
-    };
+  const wiPresenceError = validateWorkItemPresence(workItem as WorkItem);
+  if (wiPresenceError) {
+    return { error: wiPresenceError };
   }
 
-  // If no workItem is provided, we need to fetch work items and ask user to select one
-  if (!workItem) {
-    return {
-      error: {
-        content: [{
-          type: "text",
-          text: "Error: Please provide a workItem to check for conflicts. Use the list_devops_center_work_items tool to fetch work items first."
-        }]
-      }
-    };
+  const wiFieldsError = validateWorkItemFields(workItem as WorkItem);
+  if (wiFieldsError) {
+    return { error: wiFieldsError };
   }
 
-  // Validate workItem has required properties
-  if (!workItem.WorkItemBranch || !workItem.TargetBranch || !workItem.SourceCodeRepository?.repoUrl) {
-    return {
-      error: {
-        content: [{
-          type: "text",
-          text: "Error: Work item is missing required properties (WorkItemBranch, TargetBranch, or SourceCodeRepository.repoUrl)."
-        }]
-      }
-    };
-  }
-
-  // validate if project in local path is of same git repo as workitem.SourceCodeRepository!.repoUrl
-  if (localPath && workItem.SourceCodeRepository?.repoUrl) {
-    const repoUrl = workItem.SourceCodeRepository.repoUrl;
-    const repoPath = localPath;
-    const [isSameRepo, projectRepoUrl] = isSameGitRepo(repoUrl, repoPath);
-    if (!isSameRepo) {  
-      return {
-        error: {
-          content: [{
-            type: "text",
-            text: `Error: Project in local path repo ${projectRepoUrl} is not of same git repo as ${workItem.SourceCodeRepository!.repoUrl}, please checkout the correct project `
-          }]
-        }
-      };
-    }
+  const repoMatchError = validateLocalRepoMatchesWorkItemRepo(workItem as WorkItem, localPath);
+  if (repoMatchError) {
+    return { error: repoMatchError };
   }
 
   return { ok: true, workItem: workItem as WorkItem, localPath };
