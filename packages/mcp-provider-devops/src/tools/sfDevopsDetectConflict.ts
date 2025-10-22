@@ -8,8 +8,10 @@ import { isManagedPackageDevopsOrg } from "../shared/orgType.js";
 import { normalizeAndValidateRepoPath } from "../shared/pathUtils.js";
 
 const inputSchema = z.object({
-  username: z.string().describe("Username of the DevOps Center org"),
-  workItemName: z.string().min(1).describe("Exact Work Item Name (mandatory)"),
+  username: z.string().optional().describe("Username of the DevOps Center org"),
+  alias: z.string().optional().describe("alias of the DevOps Center org"),
+  workItemName: z.string().optional().describe("Exact Work Item Name"),
+  sourcebranch: z.string().optional().describe("Source branch of the Work Item"),
   localPath: z.string().describe("Local path to the repository (defaults to current working directory)")
 });
 type InputArgs = z.infer<typeof inputSchema>;
@@ -39,13 +41,15 @@ export class SfDevopsDetectConflict extends McpTool<InputArgsShape, OutputArgsSh
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: "Detect Conflict",
-      description: `Detects merge conflicts for a selected work item by name.
+      description: `Detects merge conflicts for a selected work item or in given source branch.
 
       **When to use:**
       - User asks to detect conflicts for a work item, or asks for help fixing a merge conflict.
+      - User asks to detect conflicts for a given source branch.
 
       **MANDATORY input:**
-      - workItemName (exact Name of the Work Item). Do not list items; always use the provided name.
+      - Either workitem name (example WI-0000000X) or source branch (example WI-0000000X) is provided.
+      - Either username (example devops-center-org) or alias (example devops-center-org) is provided.
 
       **Behavior:**
       - The tool will look up the Work Item by Name in the DevOps Center org and compute target branch automatically.
@@ -68,44 +72,96 @@ export class SfDevopsDetectConflict extends McpTool<InputArgsShape, OutputArgsSh
     };
   }
 
-  public async exec(input: InputArgs): Promise<CallToolResult> {
-    const isMP = await isManagedPackageDevopsOrg(input.username);
-    let workItem: any;
-    try {
-      workItem = isMP 
-        ? await fetchWorkItemByNameMP(input.username, input.workItemName)
-        : await fetchWorkItemByName(input.username, input.workItemName);
-    } catch (e: any) {
+  private async validateAndPrepare(input: InputArgs): Promise<{ workItem: any; localPath: string } | { error: CallToolResult }> {
+    if (!input.username && !input.alias) {
       return {
-        content: [{ type: "text", text: `Error fetching work item: ${e?.message || e}` }],
-        isError: true
+        error: {
+          content: [{ type: "text", text: `Error: Username or alias of valid DevOps Center org is required` }],
+          isError: true
+        }
       };
     }
-    
+
+    if (!input.workItemName && !input.sourcebranch) {
+      return {
+        error: {
+          content: [{ type: "text", text: `Error: Work item name or source branch is required` }],
+          isError: true
+        }
+      };
+    }
+
+    let workItem: any;
+    try {
+      const isMP = await isManagedPackageDevopsOrg(input.username, input.alias);
+      const effectiveWorkItemName = input.workItemName || input.sourcebranch;
+      const usernameOrAlias = input.username ?? input.alias;
+      if (!usernameOrAlias) {
+        return {
+          error: {
+            content: [{ type: "text", text: `Error: Username or alias of valid DevOps Center org is required` }],
+            isError: true
+          }
+        };
+      }
+      workItem = isMP
+        ? await fetchWorkItemByNameMP(usernameOrAlias, effectiveWorkItemName as string)
+        : await fetchWorkItemByName(usernameOrAlias, effectiveWorkItemName as string);
+    } catch (e: any) {
+      return {
+        error: {
+          content: [{ type: "text", text: `Error fetching work item: ${e?.message || e}` }],
+          isError: true
+        }
+      };
+    }
 
     if (!workItem) {
       return {
-        content: [{
-          type: "text",
-          text: `Error: Work item not found. Please provide a valid work item name or valid DevOps Center org username.`
-        }]
+        error: {
+          content: [{
+            type: "text",
+            text: `Error: Work item not found. Please provide a valid work item name or valid DevOps Center org username.`
+          }]
+        }
       };
     }
 
     if (!input.localPath || input.localPath.trim().length === 0) {
       return {
-        content: [{
-          type: "text",
-          text: `Error: Repository path is required. Please provide the absolute path to the git repository root.`
-        }]
+        error: {
+          content: [{
+            type: "text",
+            text: `Error: Repository path is required. Please provide the absolute path to the git repository root.`
+          }]
+        }
       };
     }
-    
-    const result = await detectConflict({
-      workItem,
-      localPath: input.localPath ? normalizeAndValidateRepoPath(input.localPath) : undefined
-    });
-    
+
+    const localPath = normalizeAndValidateRepoPath(input.localPath);
+    return { workItem, localPath };
+  }
+
+  public async exec(input: InputArgs): Promise<CallToolResult> {
+    const validation = await this.validateAndPrepare(input);
+    if ("error" in validation) {
+      return validation.error;
+    }
+
+    const { workItem, localPath } = validation;
+    let result: any;
+    try {
+      result = await detectConflict({
+        workItem,
+        localPath
+      });
+    } catch (e: any) {
+      return {
+        content: [{ type: "text", text: `Error detecting conflict: ${e?.message || e}` }],
+        isError: true
+      };
+    }
+
     return {
       content: [{
         type: "text",
