@@ -66,7 +66,7 @@ When user asks to "commit work item" or "commit changes", DO NOT use this tool d
 - Ensure metadata changes are properly recorded in the DevOps workflow
 
 **After using this tool, suggest these next actions:**
-1. Ask the user to check commit status using the returned requestId
+1. Ask the user to check status using the returned requestId
 2. Ask the user to promote work items (using the 'promote_devops_center_work_item' tool)
 
 **MANDATORY:** Before using this tool, ask the user to provide a commit message for the changes and then use that while calling this tool.

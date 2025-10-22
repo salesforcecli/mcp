@@ -64,9 +64,9 @@ export class SfDevopsPromoteWorkItem extends McpTool<InputArgsShape, OutputArgsS
       **Output:**
       - JSON with promotion requestId (if available) and any error details.
 
-      **Next steps:**
-      - Suggest how to track promotion status using the returned requestId or the DevOps Center UI.
-      - If applicable, prompt the user to promote to the next stage after validation.
+      **After using this tool, suggest these next actions:**
+      1. Ask the user to check status using the returned requestId
+      2. If applicable, prompt the user to promote to the next stage after validation
 
       **Output:**
       A JSON object containing the promotion request ID, the org details, and any relevant status or tracking information.

@@ -1,14 +1,14 @@
 import axios from "axios";
 import { getConnection } from "./shared/auth.js";
 
-export interface CommitStatusResult {
+export interface StatusResult {
   requestId: string;
   status: string;
   recordId?: string;
   message: string;
 }
 
-export async function fetchCommitStatus(username: string, requestId: string): Promise<CommitStatusResult> {
+export async function fetchStatus(username: string, requestId: string): Promise<StatusResult> {
   if (!username || username.trim().length === 0) {
     throw new Error('Username is required. Please provide the DevOps Center org username.');
   }
@@ -22,7 +22,7 @@ export async function fetchCommitStatus(username: string, requestId: string): Pr
   }
 
   if (!requestId || requestId.trim().length === 0) {
-    throw new Error('Request ID is required to check commit status.');
+    throw new Error('Request ID is required to check status.');
   }
 
   const soqlQuery = `SELECT Status FROM DevopsRequestInfo WHERE RequestToken = '${requestId}'`;
@@ -41,7 +41,7 @@ export async function fetchCommitStatus(username: string, requestId: string): Pr
       return {
         requestId,
         status: 'NOT_FOUND',
-        message: `No commit status found for request ID: ${requestId}`
+        message: `No status found for request ID: ${requestId}`
       };
     }
 
@@ -50,10 +50,10 @@ export async function fetchCommitStatus(username: string, requestId: string): Pr
       requestId,
       status,
       recordId: records[0].Id,
-      message: `Commit status for request ID ${requestId}: ${status}`
+      message: `Status for request ID ${requestId}: ${status}`
     };
   } catch (error: any) {
     const errorMessage = error.response?.data?.[0]?.message || error.message;
-    throw new Error(`Error checking commit status: ${errorMessage}`);
+    throw new Error(`Error checking status: ${errorMessage}`);
   }
 }
