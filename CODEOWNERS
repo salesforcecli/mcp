@@ -9,6 +9,7 @@ packages/EXAMPLE-MCP-PROVIDER/ @salesforcecli/dx-mcp-owners
 
 packages/mcp-provider-code-analyzer/ @salesforcecli/code-analyzer-mcp-provider
 packages/mcp-provider-devops/ @salesforcecli/devops-mcp-provider
+packages/mcp-provider-mobile-web/ @salesforcecli/mobile-mcp-provider
 
 
 # Comment line immediately above ownership line is reserved for related other information. Please be careful while editing.
