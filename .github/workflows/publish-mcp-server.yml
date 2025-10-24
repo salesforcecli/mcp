@@ -200,7 +200,7 @@ jobs:
           cd packages/mcp
           rm -rf node_modules
 
-          # `npm mcp-shrinkwrap` doesn't support monorepos so we
+          # `npm shrinkwrap` doesn't support monorepos so we
           # copy `packages/mcp` to a tmp dir for it to be a single npm project
           mkdir ${{ runner.temp }}/mcp-shrinkwrap
           # Use -L flag to dereference symlinks (e.g., README.md -> ../../README.md)
