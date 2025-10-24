@@ -1,3 +1,7 @@
+## [0.23.5-dev.1](https://github.com/salesforcecli/mcp/compare/0.23.5-dev.0...0.23.5-dev.1) (2025-10-24)
+
+
+
 ## [0.23.5-dev.0](https://github.com/salesforcecli/mcp/compare/0.23.4...0.23.5-dev.0) (2025-10-24)
 
 
