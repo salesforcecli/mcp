@@ -198,23 +198,18 @@ jobs:
         if: ${{ steps.changelog.outputs.skipped == 'false' && steps.release.outputs.id != '' }}
         run: |
           cd packages/mcp
-<<<<<<< HEAD
           rm -rf node_modules
+
+          # `npm mcp-shrinkwrap` doesn't support monorepos so we
+          # copy `packages/mcp` to a tmp dir for it to be a single npm project
           mkdir ${{ runner.temp }}/mcp-shrinkwrap
           cp -r . ${{ runner.temp }}/mcp-shrinkwrap
           cd ${{ runner.temp }}/mcp-shrinkwrap
           npm install
           npm shrinkwrap
 
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-          
-||||||| 541a12c
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-          
-=======
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
 
->>>>>>> origin/main
           # Determine npm dist-tag
           if [ -n "${{ inputs.prerelease }}" ]; then
             NPM_TAG="${{ inputs.prerelease }}"
