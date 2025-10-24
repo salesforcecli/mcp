@@ -50,8 +50,8 @@ export class CreatePullRequest extends McpTool<InputArgsShape, OutputArgsShape> 
       2. **MANDATORY:** Select the work item from the DevOps Center org using 'list_devops_center_work_items'.
       3. **MANDATORY:** Checkout the work item branch using 'checkout_devops_center_work_item' to get the project code locally.
       4. **MANDATORY:** Verify with the user that all changes have been manually committed and pushed to the work item branch. DO NOT use any commit tools - this should be done manually by the user.
-      5. **MANDATORY - PREREQUISITE CHECK:** Ask the user for their commit request ID and use the 'check_devops_center_commit_status' tool to verify the status of their previous commits. You MUST call 'check_devops_center_commit_status' before proceeding. Do not skip this step.
-      6. **MANDATORY:** Only after successfully verifying commit status with 'check_devops_center_commit_status', call this tool to create the pull request using the DevOps Center API.
+      5. **MANDATORY - PREREQUISITE CHECK:** Ask the user for their commit request ID and use the 'check_devops_center_status' tool to verify the status of their previous commits. You MUST call 'check_devops_center_status' before proceeding. Do not skip this step.
+      6. **MANDATORY:** Only after successfully verifying status with 'check_devops_center_status', call this tool to create the pull request using the DevOps Center API.
 
       **Use this tool to:**
       - Create a Pull Request based on a work item in DevOps Center
