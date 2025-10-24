@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { EOL } from 'node:os';
 import { ux } from '@oclif/core';
 import {
   MCP_PROVIDER_API_VERSION,
@@ -26,19 +27,33 @@ import {
 } from '@salesforce/mcp-provider-api';
 import { SfMcpServer } from '../sf-mcp-server.js';
 import { MCP_PROVIDER_REGISTRY } from '../registry.js';
-import { addTool } from '../utils/tools.js';
+import { addTool, isToolRegistered } from '../utils/tools.js';
 import { Services } from '../services.js';
 import { createDynamicServerTools } from '../main-server-provider.js';
 
 export async function registerToolsets(
   toolsets: Array<Toolset | 'all'>,
+  tools: string[],
   useDynamicTools: boolean,
   allowNonGaTools: boolean,
   server: SfMcpServer,
   services: Services
 ): Promise<void> {
+  // If no toolsets, tools, or dynamic tools flag was passed, throw an error
+  // NOTE: In the future we will also want to check for Personas here
+  if (!toolsets.length && !tools.length && !useDynamicTools) {
+    throw new Error('Tool registration error. Start server with one of the following flags: --toolsets, --tools, --dynamic-tools')
+  }
+
   if (useDynamicTools) {
+    // If --dynamic-tools flag was passed, register the tools needed to handle dynamic tool registration
     const dynamicTools = createDynamicServerTools(server);
+
+    // This should always be true because using `--dynamic-tools` and `--toolsets` is blocked.
+    // If that doesn't change after GA, this can be just `toolsets.push('all')`
+    const isAllToolsetEnabled = toolsets.includes('all')
+    if (!isAllToolsetEnabled) toolsets.push('all')
+
     ux.stderr('Registering dynamic tools.');
     // eslint-disable-next-line no-await-in-loop
     await registerTools(dynamicTools, server, useDynamicTools, allowNonGaTools);
@@ -47,37 +62,86 @@ export async function registerToolsets(
   }
 
   const toolsetsToEnable: Set<Toolset> = toolsets.includes('all')
-    ? new Set(TOOLSETS) : new Set([Toolset.CORE, ...(toolsets as Toolset[])]);
+    ? new Set(TOOLSETS)
+    // CORE toolset is always enabled
+    : new Set([Toolset.CORE, ...(toolsets as Toolset[])]);
 
-  const newToolRegistry: Record<Toolset, McpTool[]> = await createToolRegistryFromProviders(
+  const toolsetRegistry: Record<Toolset, McpTool[]> = await createToolRegistryFromProviders(
     MCP_PROVIDER_REGISTRY,
     services
   );
 
+  ux.stderr('REGISTERING TOOLSETS (--toolsets)');
   for (const toolset of TOOLSETS) {
     if (toolsetsToEnable.has(toolset)) {
-      ux.stderr(`Registering tools from the '${toolset}' toolset.`);
+      ux.stderr(`Registering toolset: '${toolset}'`);
       // eslint-disable-next-line no-await-in-loop
-      await registerTools(newToolRegistry[toolset], server, useDynamicTools, allowNonGaTools);
+      await registerTools(toolsetRegistry[toolset], server, useDynamicTools, allowNonGaTools);
     } else {
-      ux.stderr(`Skipping registration of the tools from the '${toolset}' toolset.`);
+      ux.stderr(`!! Skipping toolset: '${toolset}'`);
+    }
+  }
+
+  if (tools.length > 0) {
+    ux.stderr('REGISTERING TOOLS (--tools)');
+    // Build an array of available McpTools
+    const toolRegistry = Object.values(toolsetRegistry).flat();
+
+    // NOTE: This validation could be removed it we implemented Flags.option
+    const existingToolNames = new Set(toolRegistry.map(tool => tool.getName()));
+    // Validate that all requested tools exist
+    const invalidTools = tools.filter(toolName => !existingToolNames.has(toolName));
+
+    // This is a temporary fix to handle a tool rename. Tool alias support is coming soon.
+    // If the invalid tools list includes the *old* create_lwc_component tool name
+    if(invalidTools.includes('create_lwc_component')) {
+      ux.stderr('Tool "create_lwc_component" has been renamed to "create_lwc_component_from_prd". Update config to remove this warning.')
+      // Remove that entry from invalidTools
+      invalidTools.splice(invalidTools.indexOf('create_lwc_component'), 1);
+      // Then rename the old tool with create_lwc_component_from_prd in the tools array
+      tools[tools.indexOf('create_lwc_component')] = 'create_lwc_component_from_prd';
+    }
+
+    if (invalidTools.length > 0) throw new Error(`Invalid tool names provided to --tools: "${invalidTools.join('", "')}"
+Valid tools include:
+- ${Array.from(existingToolNames).join(`${EOL}- `)}`);
+
+    for (const tool of toolRegistry) {
+      if (tools.includes(tool.getName())) {
+        // eslint-disable-next-line no-await-in-loop
+        await registerTools([tool], server, useDynamicTools, allowNonGaTools);
+      }
     }
   }
 }
 
-async function registerTools(tools: McpTool[], server: SfMcpServer, useDynamicTools: boolean, allowNonGaTools: boolean): Promise<void> {
+async function registerTools(
+  tools: McpTool[],
+  server: SfMcpServer,
+  useDynamicTools: boolean,
+  allowNonGaTools: boolean
+): Promise<void> {
   for (const tool of tools) {
     if (!allowNonGaTools && tool.getReleaseState() === ReleaseState.NON_GA) {
-      ux.stderr(`* Skipping registration of non-ga tool '${tool.getName()}' because the '--allow-non-ga-tools' flag was not set at server startup.`);
+      ux.stderr(
+        `* Skipping registration of non-ga tool '${tool.getName()}' because the '--allow-non-ga-tools' flag was not set at server startup.`
+      );
+      continue;
+    }
+    // eslint-disable-next-line no-await-in-loop
+    if (await isToolRegistered(tool.getName())) {
+      ux.stderr(`* Skipping registration of tool '${tool.getName()}' because it is already registered.`);
       continue;
     }
     const registeredTool = server.registerTool(tool.getName(), tool.getConfig(), (...args) => tool.exec(...args));
     const toolsets = tool.getToolsets();
     if (useDynamicTools && !toolsets.includes(Toolset.CORE)) {
-      ux.stderr(`* Registering tool '${tool.getName()}' but marking it as disabled for now because the server is set for dynamic tool loading.`);
+      ux.stderr(
+        `* Registering tool '${tool.getName()}' but marking it as disabled for now because the server is set for dynamic tool loading.`
+      );
       registeredTool.disable();
     } else {
-      ux.stderr(`* Registering tool '${tool.getName()}'.`);
+      ux.stderr(`-> Registering tool: '${tool.getName()}'`);
     }
     // eslint-disable-next-line no-await-in-loop
     await addTool(registeredTool, tool.getName());
@@ -117,10 +181,8 @@ async function createToolRegistryFromProviders(
 function validateMcpProviderVersion(provider: Versioned): void {
   if (provider.getVersion().major !== MCP_PROVIDER_API_VERSION.major) {
     throw new Error(
-      `The version '${provider
-        .getVersion()
-        .toString()}' for '${provider.getName()}' is incompatible with this MCP Server.\n` +
-        `Expected the major version to be '${MCP_PROVIDER_API_VERSION.major}'.`
+      `The version '${provider.getVersion().toString()}' for '${provider.getName()}' is incompatible with this MCP Server.
+Expected the major version to be '${MCP_PROVIDER_API_VERSION.major}'.`
     );
   }
 }

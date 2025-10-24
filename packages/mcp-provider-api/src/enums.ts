@@ -17,6 +17,12 @@ export enum Toolset {
   METADATA = 'metadata',
   TESTING = 'testing',
   USERS = 'users',
+  MOBILE = 'mobile',
+  MOBILE_CORE = 'mobile-core',
+  AURA_EXPERTS = 'aura-experts',
+  LWC_EXPERTS = 'lwc-experts',
+  DEVOPS = 'devops',
+  CODE_ANALYSIS = 'code-analysis',
   OTHER = 'other'
 }
 

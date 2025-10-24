@@ -64,7 +64,14 @@ yarn workspace @salesforce/mcp-provider-api remove some-dep
 
 ## Adding a new package
 
-If you’re adding an MCP provider, follow these two rules:
+> [!NOTE]
+> If you are creating an MCP provider in a stand-alone repo:
+> - You can still use EXAMPLE-MCP-PROVIDER as a guide for building your tool
+> - Publish your package to npm (e.g. `@salesforce/mcp-provider-<your-name>`)
+> - Add your package name and version to `packages/mcp/package.json` > `dependencies`
+> - Register your tools ([docs](https://github.com/salesforcecli/mcp/blob/main/DEVELOPING.md#registering-new-tools-in-the-server))
+
+If you’re adding an MCP provider to the `salesforcecli/mcp` repository, follow these two rules:
 
 - The folder name under `packages/` must start with `mcp-provider-`.
 - The npm package name should follow the existing scope and naming (e.g., `@salesforce/mcp-provider-<your-name>`). Match the scope used by current packages unless you have a reason to use a different scope.
@@ -122,12 +129,19 @@ Once your provider is ready for release, you can publish it and optionally trigg
 - For manual-schedule providers like `mcp-provider-code-analyzer`, use: `gh workflow run publish-providers --field packages='mcp-provider-YOUR_PROVIDER'`
 
 ### Full server release (includes your provider):
+> NOTE: The mcp server publishes to the `rc` dist-tag by default. See 'Promote server to latest' below.
 1. First ensure your provider is published: `gh workflow run publish-providers --field packages='mcp-provider-YOUR_PROVIDER'`
 2. Then release the main server with updated dependencies: `gh workflow run publish-mcp-server --field update-providers=true`
 
 ### Server release with all latest providers:
+> NOTE: The mcp server publishes to the `rc` dist-tag by default. See 'Promote server to latest' below.
 - To release the server with all provider packages updated to their latest versions: `gh workflow run publish-mcp-server --field update-providers=true`
 - To update only specific providers: `gh workflow run publish-mcp-server --field update-providers=true --field providers-to-update='mcp-provider-api,mcp-provider-dx-core'`
+
+### Promote server to `latest`
+The mcp server's `publish-mcp-server` workflow publishes to the `rc` dist-tag by default. When ready, the `promote-mcp-server` workflow must be manually ran to promote `rc` to `latest`.
+
+`gh workflow run promote-mcp-server --field old-channel=rc --field new-channel=latest`
 
 ### Server prerelease (dev versions):
 - For dev releases: `gh workflow run publish-mcp-server --field prerelease='dev'`

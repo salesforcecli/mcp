@@ -1,5 +1,5 @@
 import { McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
-import { ExampleMcpTool } from "../../src/tools/sf-example-tool.js";
+import { ExampleMcpTool } from "../../src/tools/example_tool.js";
 import { SpyTelemetryService } from "../test-doubles.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 
@@ -20,8 +20,8 @@ describe("Tests for ExampleMcpTool", () => {
     expect(tool.getToolsets()).toEqual([Toolset.OTHER]);
   });
 
-  it("When getName is called, then 'sf-example' is returned", () => {
-    expect(tool.getName()).toEqual("sf-example");
+  it("When getName is called, then 'example_tool' is returned", () => {
+    expect(tool.getName()).toEqual("example_tool");
   });
 
   it("When getConfig is called, then the correct configuration is returned", () => {

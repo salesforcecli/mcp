@@ -1,21 +1,44 @@
-name: failureNotifications
+name: workflow-failure
+
 on:
   workflow_run:
     workflows:
-      - publish
       - create-github-release
+      - e2e.yml
+      - onRelease.yml
+      - promote-mcp-server.yml
+      - publish-mcp-server.yml
+      - publish-providers.yml
     types:
       - completed
+
+# There is an issue where the workflow_run is sometimes missing from the event
+# For context: "github.event.workflow_run.conclusion"
+# Using a workaround that was found here: https://github.com/community/community/discussions/21090#discussioncomment-3226271
 jobs:
+  get-workflow-conclusion:
+    name: Lookup conclusion of workflow_run event
+    runs-on: ubuntu-latest
+    outputs:
+      conclusion: ${{ fromJson(steps.get_conclusion.outputs.data).conclusion }}
+    steps:
+      - name: Get Workflow Run
+        uses: octokit/request-action@89697eb6635e52c6e1e5559f15b5c91ba5100cb0
+        id: get_conclusion
+        with:
+          route: GET /repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
   failure-notify:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    needs: [get-workflow-conclusion]
+    if: ${{ needs.get-workflow-conclusion.outputs.conclusion == 'failure' }}
     steps:
       - name: Announce Failure
         id: slack
-        uses: slackapi/slack-github-action@v1.24.0
+        uses: slackapi/slack-github-action@v1.26.0
         env:
-          # for non-CLI-team-owned plugins, you can send this anywhere you like
+          # NOTE: We could support different webhooks for provider owners
           SLACK_WEBHOOK_URL: ${{ secrets.CLI_ALERTS_SLACK_WEBHOOK }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
         with:
@@ -23,7 +46,7 @@ jobs:
           # Only copy over the "blocks" array to the Block Kit Builder
           payload: |
             {
-              "text": "Workflow \"${{ github.event.workflow_run.name }}\" failed in ${{ github.event.workflow_run.repository.name }}",
+              "text": "Workflow \"${{ github.event.workflow_run.name }}\" failed in ${{ github.event.workflow_run.repository.name }} :mcp-ai:",
               "blocks": [
                 {
                   "type": "header",

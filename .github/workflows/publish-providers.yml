@@ -7,6 +7,7 @@ on:
     paths:
       - 'packages/mcp-provider-api/**'
       - 'packages/mcp-provider-dx-core/**'  
+      - 'packages/mcp-provider-mobile-web/**'
       # - 'packages/mcp-provider-code-analyzer/**'
   workflow_dispatch:
     inputs:
@@ -34,10 +35,10 @@ jobs:
         id: detect
         run: |
           # Packages that auto-publish on push to main
-          AUTO_PUBLISHABLE_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core")
+          AUTO_PUBLISHABLE_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core" "mcp-provider-mobile-web")
           
           # All available provider packages
-          ALL_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core" "mcp-provider-code-analyzer")
+          ALL_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core" "mcp-provider-code-analyzer" "mcp-provider-mobile-web" "mcp-provider-devops")
           
           # Initialize packages array
           PACKAGES='[]'
@@ -160,7 +161,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Update main server dependency
-        if: ${{ steps.changelog.outputs.skipped == 'false' && steps.release.outputs.id != '' }}
+        if: ${{ steps.changelog.outputs.skipped == 'false' && steps.release.outputs.id != '' && matrix.package != 'mcp-provider-api' }}
         run: |
           # Get the published version
           PUBLISHED_VERSION="${{ steps.changelog.outputs.version }}"

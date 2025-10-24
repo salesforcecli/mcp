@@ -1,6 +1,6 @@
 {
   "servers": {
-    "salesforce": {
+    "Salesforce DX": {
       "command": "node",
       "args": [
         "${workspaceFolder}/packages/mcp/bin/run.js",

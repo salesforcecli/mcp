@@ -4,16 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       update-providers:
-        description: 'Update provider dependencies to latest versions'
+        description: "Update provider dependencies to latest versions"
         type: boolean
         default: false
       providers-to-update:
-        description: 'Comma-separated list of providers to update (leave empty to update all)'
+        description: "Comma-separated list of providers to update (leave empty to update all)"
         type: string
-        default: ''
+        default: ""
       prerelease:
         type: string
-        description: 'Name to use for the prerelease: beta, dev, etc.'
+        description: "Name to use for the prerelease: beta, dev, etc."
 
 jobs:
   update-dependencies:
@@ -34,17 +34,17 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          node-version: "lts/*"
           cache: yarn
 
       - name: Update provider dependencies
         id: update-deps
         run: |
           cd packages/mcp
-          
+
           # Define all provider packages
-          ALL_PROVIDERS=("@salesforce/mcp-provider-api" "@salesforce/mcp-provider-dx-core" "@salesforce/mcp-provider-code-analyzer")
-          
+          ALL_PROVIDERS=("@salesforce/mcp-provider-api" "@salesforce/mcp-provider-dx-core" "@salesforce/mcp-provider-mobile-web" "@salesforce/mcp-provider-code-analyzer")
+
           # Determine which providers to update
           if [ -n "${{ inputs.providers-to-update }}" ]; then
             IFS=',' read -ra PROVIDERS_TO_UPDATE <<< "${{ inputs.providers-to-update }}"
@@ -57,49 +57,49 @@ jobs:
           else
             PROVIDERS_TO_UPDATE=("${ALL_PROVIDERS[@]}")
           fi
-          
+
           HAS_UPDATES=false
           UPDATED_PACKAGES=()
-          
+
           # Update each specified provider
           for provider in "${PROVIDERS_TO_UPDATE[@]}"; do
             echo "Checking for updates to $provider..."
-            
+
             # Get current version
             CURRENT_VERSION=$(node -p "require('./package.json').dependencies['$provider']")
-            
+
             # Get latest version from npm
             LATEST_VERSION=$(npm show "$provider" version)
-            
+
             if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
               echo "Updating $provider from $CURRENT_VERSION to $LATEST_VERSION"
-              
+
               # Update using jq (similar to provider workflow)
               jq --arg pkg "$provider" --arg ver "$LATEST_VERSION" \
                 '.dependencies[$pkg] = $ver' package.json > package.json.tmp
               mv package.json.tmp package.json
-              
+
               UPDATED_PACKAGES+=("$provider")
               HAS_UPDATES=true
             else
               echo "$provider is already at latest version ($LATEST_VERSION)"
             fi
           done
-          
+
           echo "has-updates=$HAS_UPDATES" >> "$GITHUB_OUTPUT"
-          
+
           # Update lockfile and commit changes if any updates were made
           if [ "$HAS_UPDATES" = true ]; then
             cd ../../
             # TODO(cristian): need to nuke all `node_modules` to cleanup some dep, running `yarn install` 2 times fails at the second run.
             git clean -fdx
             yarn install
-            
+
             git config user.name "${{ steps.github-user-info.outputs.username }}"
             git config user.email "${{ steps.github-user-info.outputs.email }}"
             git add packages/mcp/package.json yarn.lock
             git commit -m "chore: update provider dependencies
-            
+
             Updated packages:
             $(printf '%s\n' "${UPDATED_PACKAGES[@]}")"
             git push
@@ -111,6 +111,10 @@ jobs:
     # Logic: Run if (manual release) OR (provider updates were requested AND updates were found)
     if: always() && (needs.update-dependencies.result == 'success' || needs.update-dependencies.result == 'skipped') && (!inputs.update-providers || needs.update-dependencies.outputs.has-updates == 'true')
     runs-on: ubuntu-latest
+    outputs:
+      skipped: ${{ steps.changelog.outputs.skipped }}
+      release-id: ${{ steps.release.outputs.id }}
+      version: ${{ steps.changelog.outputs.version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -125,7 +129,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          node-version: "lts/*"
           cache: yarn
 
       - name: Install dependencies
@@ -135,7 +139,6 @@ jobs:
         run: |
           # build the whole monorepo to get a provider-api build to for other dependant code
           yarn build
-
       - name: Conventional Changelog Action
         id: changelog
         uses: TriPSs/conventional-changelog-action@3a392e9aa44a72686b0fc13259a90d287dd0877c
@@ -152,6 +155,29 @@ jobs:
           pre-release: ${{ inputs.prerelease && 'true' || 'false' }}
           pre-release-identifier: ${{ inputs.prerelease || '' }}
 
+      - name: Replace AppInsights Key
+        run: |
+          # Replace the empty APP_INSIGHTS_KEY with the actual key from secrets
+          sed -i "s|const APP_INSIGHTS_KEY = '';|const APP_INSIGHTS_KEY = '$APP_INSIGHTS_KEY';|" packages/mcp/lib/telemetry.js
+
+          # Make sure that the AppInsights key is NOT in 'src/'
+          if grep -q "const APP_INSIGHTS_KEY = '$APP_INSIGHTS_KEY';" packages/mcp/src/telemetry.ts; then
+            echo "❌ AppInsights key found in src."
+            exit 1
+          else
+            echo "✅ AppInsights key not found in src"
+          fi
+
+          # Replace the AppInsights key in the built 'lib/'
+          if grep -q "const APP_INSIGHTS_KEY = '$APP_INSIGHTS_KEY';" packages/mcp/lib/telemetry.js; then
+            echo "✅ AppInsights key successfully replaced"
+          else
+            echo "❌ AppInsights key replacement failed"
+            exit 1
+          fi
+        env:
+          APP_INSIGHTS_KEY: ${{ secrets.APP_INSIGHTS_KEY }}
+
       - name: Create Github Release
         id: release
         uses: ncipollo/release-action@2c591bcc8ecdcd2db72b97d6147f871fcd833ba5
@@ -162,16 +188,17 @@ jobs:
           commit: ${{ github.sha }}
           body: |
             ## Changes in @salesforce/mcp
-            
+
             ${{ steps.changelog.outputs.clean_changelog }}
           token: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
           skipIfReleaseExists: true
           prerelease: ${{ inputs.prerelease && 'true' || 'false' }}
 
-      - name: Publish to npm
+      - name: Publish to npm as 'rc'
         if: ${{ steps.changelog.outputs.skipped == 'false' && steps.release.outputs.id != '' }}
         run: |
           cd packages/mcp
+<<<<<<< HEAD
           rm -rf node_modules
           mkdir ${{ runner.temp }}/mcp-shrinkwrap
           cp -r . ${{ runner.temp }}/mcp-shrinkwrap
@@ -181,14 +208,47 @@ jobs:
 
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
           
+||||||| 541a12c
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          
+=======
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+
+>>>>>>> origin/main
           # Determine npm dist-tag
           if [ -n "${{ inputs.prerelease }}" ]; then
             NPM_TAG="${{ inputs.prerelease }}"
             echo "Publishing prerelease to npm tag: $NPM_TAG"
             npm publish --access public --tag "$NPM_TAG"
           else
-            echo "Publishing to latest tag"
-            npm publish --access public
+            echo "Publishing to 'rc' tag"
+            npm publish --access public --tag rc
           fi
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  e2e-test:
+    needs: [publish-server]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        command:
+          - "yarn test:e2e"
+        provider:
+          - "mcp-provider-dx-core"
+          - "mcp-provider-code-analyzer"
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Debug publish-server outputs
+        run: |
+          echo "publish-server outputs:"
+          echo "  skipped: ${{ needs.publish-server.outputs.skipped }}"
+          echo "  release-id: ${{ needs.publish-server.outputs.release-id }}"
+          echo "  version: ${{ needs.publish-server.outputs.version }}"
+      - uses: ./.github/workflows/e2e.yml
+        with:
+          os: ${{ matrix.os }}
+          command: ${{ matrix.command }}
+          provider: ${{ matrix.provider }}
+          dxMcpVersion: ${{ needs.publish-server.outputs.version || 'rc' }}

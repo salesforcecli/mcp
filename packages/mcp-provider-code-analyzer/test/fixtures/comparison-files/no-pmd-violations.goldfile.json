@@ -9,9 +9,9 @@
     "sev5": 0
   },
   "versions": {
-    "code-analyzer": "0.31.0",
-    "pmd": "0.28.0",
-    "regex": "0.24.0"
+    "code-analyzer": "{{CODE_ANALYZER_VERSION}}",
+    "pmd": "{{PMD_ENGINE_VERSION}}",
+    "regex": "{{REGEX_ENGINE_VERSION}}"
   },
   "violations": []
 }

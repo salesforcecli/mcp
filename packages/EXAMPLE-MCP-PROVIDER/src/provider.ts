@@ -1,5 +1,5 @@
 import { McpProvider, McpTool, Services } from "@salesforce/mcp-provider-api";
-import { ExampleMcpTool } from "./tools/sf-example-tool.js";
+import { ExampleMcpTool } from "./tools/example_tool.js";
 
 /**
  * Example MCPProvider for demonstration puproses

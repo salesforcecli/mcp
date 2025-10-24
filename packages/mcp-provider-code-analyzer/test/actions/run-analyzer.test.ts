@@ -26,6 +26,9 @@ const __dirname = path.dirname(__filename);
 const PATH_TO_SAMPLE_TARGETS: string = path.resolve(__dirname, '..', 'fixtures', 'sample-targets');
 const PATH_TO_COMPARISON_FILES: string = path.resolve(__dirname, '..', 'fixtures', 'comparison-files');
 
+// TODO: FIGURE OUT A WAY TO MAKE THESE GOLD FILE TESTS MORE ROBUST AGAINST VERSION CHANGES. FOR NOW USING CONSTANT:
+const PMD_VERSION: string = '7.17.0';
+
 describe('RunAnalyzerActionImpl', () => {
     it.each([
         {
@@ -42,12 +45,12 @@ describe('RunAnalyzerActionImpl', () => {
                 'success'
             ],
             expectedSummary: {
-                totalViolations: 0,
-                sev1Violations: 0,
-                sev2Violations: 0,
-                sev3Violations: 0,
-                sev4Violations: 0,
-                sev5Violations: 0
+                total: 0,
+                sev1: 0,
+                sev2: 0,
+                sev3: 0,
+                sev4: 0,
+                sev5: 0
             }
         },
         {
@@ -64,12 +67,12 @@ describe('RunAnalyzerActionImpl', () => {
                 'success'
             ],
             expectedSummary: {
-                totalViolations: 6,
-                sev1Violations: 0,
-                sev2Violations: 0,
-                sev3Violations: 3,
-                sev4Violations: 3,
-                sev5Violations: 0
+                total: 6,
+                sev1: 0,
+                sev2: 0,
+                sev3: 3,
+                sev4: 3,
+                sev5: 0
             }
         },
         {
@@ -86,12 +89,12 @@ describe('RunAnalyzerActionImpl', () => {
                 'FakeErrorLog'
             ],
             expectedSummary: {
-                totalViolations: 0,
-                sev1Violations: 0,
-                sev2Violations: 0,
-                sev3Violations: 0,
-                sev4Violations: 0,
-                sev5Violations: 0
+                total: 0,
+                sev1: 0,
+                sev2: 0,
+                sev3: 0,
+                sev4: 0,
+                sev5: 0
             }
         },
         {
@@ -122,12 +125,12 @@ describe('RunAnalyzerActionImpl', () => {
                 `invalid key 'asdf'`
             ],
             expectedSummary: {
-                totalViolations: 1,
-                sev1Violations: 1,
-                sev2Violations: 0,
-                sev3Violations: 0,
-                sev4Violations: 0,
-                sev5Violations: 0
+                total: 1,
+                sev1: 1,
+                sev2: 0,
+                sev3: 0,
+                sev4: 0,
+                sev5: 0
             }
         },
         {
@@ -159,12 +162,12 @@ describe('RunAnalyzerActionImpl', () => {
                 "ThisEngineCannotReturnRules"
             ],
             expectedSummary: {
-                totalViolations: 1,
-                sev1Violations: 1,
-                sev2Violations: 0,
-                sev3Violations: 0,
-                sev4Violations: 0,
-                sev5Violations: 0
+                total: 1,
+                sev1: 1,
+                sev2: 0,
+                sev3: 0,
+                sev4: 0,
+                sev5: 0
             }
         },
         {
@@ -183,12 +186,12 @@ describe('RunAnalyzerActionImpl', () => {
                 'success'
             ],
             expectedSummary: {
-                totalViolations: 1,
-                sev1Violations: 1,
-                sev2Violations: 0,
-                sev3Violations: 0,
-                sev4Violations: 0,
-                sev5Violations: 0
+                total: 1,
+                sev1: 1,
+                sev2: 0,
+                sev3: 0,
+                sev4: 0,
+                sev5: 0
             }
         }
     ])('When $case, $expectation', async ({target, comparisonFile, configFactory, enginePluginsFactory, keyStatusPhrases, expectedSummary}) => {
@@ -215,9 +218,17 @@ describe('RunAnalyzerActionImpl', () => {
             const pathSepVar: string = path.sep.replaceAll('\\', '\\\\');
             const runDir: string = process.cwd().replaceAll('\\' , '\\\\');
 
+            const codeAnalyzerVersion: string = (JSON.parse((await fs.promises.readFile(path.join(require.resolve('@salesforce/code-analyzer-core'), '..', '..', 'package.json'), 'utf-8'))) as any).version;
+            const pmdEngineVersion: string = (JSON.parse((await fs.promises.readFile(path.join(require.resolve('@salesforce/code-analyzer-pmd-engine'), '..', '..', 'package.json'), 'utf-8'))) as any).version;
+            const regexEngineVersion: string = (JSON.parse((await fs.promises.readFile(path.join(require.resolve('@salesforce/code-analyzer-regex-engine'), '..', '..', 'package.json'), 'utf-8'))) as any).version;
+
             const expectedOutfile: string =  (await fs.promises.readFile(comparisonFile, 'utf-8'))
                 .replaceAll('{{RUNDIR}}', runDir)
-                .replaceAll(`{{SEP}}`, pathSepVar);
+                .replaceAll(`{{SEP}}`, pathSepVar)
+                .replaceAll('{{CODE_ANALYZER_VERSION}}', codeAnalyzerVersion)
+                .replaceAll('{{PMD_ENGINE_VERSION}}', pmdEngineVersion)
+                .replaceAll('{{REGEX_ENGINE_VERSION}}', regexEngineVersion)
+                .replaceAll('{{PMD_VERSION}}', PMD_VERSION);
 
             expect(outputFileContents).toContain(expectedOutfile);
             expect(output.summary).toEqual(expectedSummary);

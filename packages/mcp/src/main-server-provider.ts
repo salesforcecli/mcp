@@ -16,8 +16,8 @@
 
 import { McpTool } from '@salesforce/mcp-provider-api';
 import { SfMcpServer } from './sf-mcp-server.js';
-import { EnableToolsMcpTool } from './tools/sf-enable-tools.js';
-import { ListToolsMcpTool } from './tools/sf-list-tools.js';
+import { EnableToolsMcpTool } from './tools/enable_tools.js';
+import { ListToolsMcpTool } from './tools/list_tools.js';
 
 export function createDynamicServerTools(server: SfMcpServer): McpTool[] {
   return [new EnableToolsMcpTool(server), new ListToolsMcpTool()];

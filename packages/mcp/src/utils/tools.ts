@@ -22,11 +22,7 @@ import Cache from './cache.js';
  * Add a tool to the cache
  */
 export async function addTool(tool: RegisteredTool, name: string): Promise<{ success: boolean; message: string }> {
-  const existingTools = await Cache.safeGet('tools');
-
-  // Check if tool already exists
-  const existingTool = existingTools.find((t) => t.name === name);
-  if (existingTool) {
+  if (await isToolRegistered(name)) {
     return { success: false, message: `Tool ${name} already exists` };
   }
 
@@ -40,6 +36,17 @@ export async function addTool(tool: RegisteredTool, name: string): Promise<{ suc
   });
 
   return { success: true, message: `Added tool ${name}` };
+}
+
+/**
+ * Check if a tool is registered
+ *
+ * @param toolName The name of the tool to check
+ * @returns True if the tool is registered, false otherwise
+ */
+export async function isToolRegistered(toolName: string): Promise<boolean> {
+  const existingTools = await Cache.safeGet('tools');
+  return existingTools.some((t) => t.name === toolName);
 }
 
 /**

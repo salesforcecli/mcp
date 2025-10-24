@@ -34,13 +34,11 @@ function getTsConfigPaths() {
 }
 
 module.exports = {
-  extends: ['eslint-config-salesforce-typescript', 'eslint-config-salesforce-license', 'plugin:sf-plugin/library'],
+  extends: ['eslint-config-salesforce-typescript', 'eslint-config-salesforce-license'],
   parserOptions: {
     project: getTsConfigPaths(),
   },
   rules: {
-    // This rule assumes that the `messages` directory is in the CWD - we should make that configurable or smarter
-    'sf-plugin/no-missing-messages': 'off',
     camelcase: 'off',
     'class-methods-use-this': 'off',
     '@typescript-eslint/prefer-nullish-coalescing': 'warn',
