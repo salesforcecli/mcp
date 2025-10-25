@@ -50,7 +50,7 @@
     "@salesforce/mcp-test-client": "0.0.1",
     "@salesforce/dev-config": "^4.3.2",
     "@salesforce/cli-plugins-testkit": "^5.3.39",
-    "@types/node": "^22.16.5",
+    "@types/node": "^22.18.12",
     "wireit": "^0.14.12",
     "eslint": "^8.57.1",
     "mocha": "11.7.2",
