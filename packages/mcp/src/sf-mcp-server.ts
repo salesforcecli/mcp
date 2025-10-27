@@ -25,7 +25,6 @@ import {
 import { ServerOptions } from '@modelcontextprotocol/sdk/server/index.js';
 import { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js';
 import { Logger } from '@salesforce/core';
-import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import { ZodRawShape } from 'zod';
 import { Telemetry } from './telemetry.js';
 import { RateLimiter, RateLimitConfig, createRateLimiter } from './utils/rate-limiter.js';
@@ -89,22 +88,6 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
     };
   }
 
-  public connect: McpServer['connect'] = async (transport: Transport): Promise<void> => {
-    try {
-      await super.connect(transport);
-      if (!this.isConnected()) {
-        this.telemetry?.sendEvent('SERVER_START_ERROR', {
-          error: 'Server not connected',
-        });
-      }
-    } catch (error: unknown) {
-      this.telemetry?.sendEvent('SERVER_START_ERROR', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined,
-      });
-    }
-  };
-
   public registerTool<InputArgs extends ZodRawShape, OutputArgs extends ZodRawShape>(
     name: string,
     config: {
@@ -161,7 +144,13 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
       this.telemetry?.sendEvent('TOOL_CALLED', {
         name,
         runtimeMs,
-        isError: result.isError,
+        // `isError`:
+        // Whether the tool call ended in an error.
+        //
+        // If not set, this is assumed to be false (the call was successful).
+        //
+        // https://modelcontextprotocol.io/specification/2025-06-18/schema#calltoolresult
+        isError: result.isError ?? false,
       });
 
       return result;

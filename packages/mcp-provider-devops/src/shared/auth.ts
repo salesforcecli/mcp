@@ -38,7 +38,7 @@ export async function getConnection(username: string): Promise<Connection> {
     if (!foundOrg)
       return Promise.reject(
         new Error(
-          'No org found with the provided username/alias. Ask the user to specify one or check their MCP Server startup config.'
+          'No org found with the provided username/alias. Ask the user to specify valid username or alias or login with correct org first. use sf cli login command.'
         )
       );
   
