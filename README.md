@@ -70,6 +70,7 @@ These are the flags that you can pass to the `args` option.
 | `--debug` | Boolean flag that requests that the DX MCP Server print debug logs. | No | Debug mode is disabled by default. <br/> <br/>**NOTE:** Not all MCP clients expose MCP logs, so this flag might not work for all IDEs. |
 | `--allow-non-ga-tools` | Boolean flag to allow the DX MCP Server to use both the generally available (GA) and NON-GA tools that are in the toolsets or tools you specify. | No | By default, the DX MCP server uses only the tools marked GA. |
 | `--dynamic-tools` | (experimental) Boolean flag that enables dynamic tool discovery and loading. When specified, the DX MCP server starts with a minimal set of core tools and loads new tools as needed. | No| This flag is useful for reducing the initial context size and improving LLM performance. Dynamic tool discovery is disabled by default.<br/> <br/>**NOTE:** This feature works in VSCode and Cline but may not work in other environments.|
+| `--sandbox-only` | Boolean flag that requires all allowed orgs to be sandboxes (not production orgs). When enabled, the server validates on startup that all orgs are sandboxes by querying the Organization.IsSandbox field. | No | If any production orgs are detected, the server will fail to start with an error message. This is a safety feature to prevent accidental operations on production data. |
 
 </details>
 <details>
