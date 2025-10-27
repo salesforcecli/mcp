@@ -87,7 +87,7 @@ async function getAvailableTools(): Promise<string[]> {
       command: 'sf-mcp-server',
       args: [
         '--toolsets',
-        'orgs,metadata,testing,data',
+        'all',
         '-o',
         'DEFAULT_TARGET_ORG',
         '--no-telemetry',

@@ -19,10 +19,11 @@ jobs:
       - name: Eval-based discoverability tests
         run: |
           cd packages/mcp
-          test:eval:discoverability
+          yarn test:eval:discoverability
         env:
           GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}
   eval-e2e:
+    needs: [eval-discoverability]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,6 +40,6 @@ jobs:
       - name: Eval-based E2E tests
         run: |
           cd packages/mcp
-          test:eval:e2e
+          yarn test:eval:e2e
         env:
           GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}
