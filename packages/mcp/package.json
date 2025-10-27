@@ -34,6 +34,9 @@
     "LICENSE.txt",
     "package.json"
   ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.18.0",
     "@oclif/core": "^4.5.1",

@@ -62,7 +62,7 @@ jobs:
     steps:
       - name: Open CTC
         id: open-ctc
-        if: inputs.new-channel == 'latest'
+        if: inputs.new-channel == 'latest-skip'
         uses: salesforcecli/github-workflows/.github/actions/ctcOpen@main
         with:
           SF_CHANGE_CASE_SFDX_AUTH_URL: ${{ secrets.SF_CHANGE_CASE_SFDX_AUTH_URL }}
