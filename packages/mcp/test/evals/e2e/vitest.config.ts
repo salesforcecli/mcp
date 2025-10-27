@@ -17,7 +17,8 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    include: ['**/*.eval.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    include: ['test/evals/e2e/*.eval.{ts,mts}'],
     reporters: ['vitest-evals/reporter'],
+    testTimeout: 600_000
   },
 });

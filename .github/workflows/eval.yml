@@ -1,0 +1,45 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  eval-discoverability:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: yarn
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - run: yarn
+      - run: yarn build
+      - name: Eval-based discoverability tests
+        run: |
+          cd packages/mcp
+          yarn test:eval:discoverability
+        env:
+          GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}
+  eval-e2e:
+    needs: [eval-discoverability]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: yarn
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - run: yarn
+      - run: yarn build
+      - name: Eval-based E2E tests
+        run: |
+          cd packages/mcp
+          yarn test:eval:e2e
+        env:
+          GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}

@@ -37,7 +37,7 @@ export const queryOrgParamsSchema = z.object({
   query: z.string().describe('SOQL query to run'),
   usernameOrAlias: usernameOrAliasParam,
   directory: directoryParam,
-  useToolingApi: useToolingApiParam,
+  useToolingApi: useToolingApiParam.describe('Use the Tooling API. Always set to true when querying a tooling sobject.'),
 });
 
 type InputArgs = z.infer<typeof queryOrgParamsSchema>;
