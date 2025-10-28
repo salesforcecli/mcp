@@ -1,14 +1,14 @@
 import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
-import { commitWorkItem } from "../commitWorkItem.js";
+import { commitWorkItem } from "../commitLiteWorkItem.js";
 import { fetchWorkItemByName } from "../getWorkItems.js";
 import { normalizeAndValidateRepoPath } from "../shared/pathUtils.js";
 import { randomUUID } from 'crypto';
 
 const inputSchema = z.object({
-  doceHubUsername: z.string().describe("DevOps Center org username (required; list orgs and select if unknown)"),
-  sandboxUsername: z.string().describe("Sandbox org username (required; list orgs and select if unknown)"),
+  username: z.string().optional().describe("Username of the DevOps Center org"),
+  alias: z.string().optional().describe("alias of the DevOps Center org"),
   workItemName: z.string().min(1).describe("Exact Work Item Name to commit workitem."),
   commitMessage: z.string().describe("Commit message describing the changes (ask user for input)"),
   repoPath: z.string().describe("Absolute path to the git repository root. Defaults to current working directory.")
@@ -40,59 +40,110 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: "Commit Work Item",
-      description: `Commits changes to a work item in DevOps Center.
-      **IMPORTANT: THIS IS NOT A STARTING TOOL**
+      description: `Commit SFDX project changes and register the commit SHA in DevOps Center.
 
-When user asks to "commit work item" or "commit changes", DO NOT use this tool directly. Instead, start with step 1 below.
+**CRITICAL:** Do not run git commands (git add/commit/push) manually. When a user asks to commit, call this tool so DevOps Center correctly tracks metadata and links the commit to the Work Item.
 
-**THIS TOOL IS ONLY USED AS THE FINAL STEP AFTER COMPLETING ALL PREREQUISITES**
-
-**CRITICAL:** Never use \`git commit\` to commit SFDX project changes. Always use commit_devops_center_work_item tool to commit SFDX project changes so DevOps Center correctly tracks metadata and ties commits to Work Items.
-
-**MANDATORY workflow for committing work items: DO NOT skip any of the steps and DO NOT move to the next step until the current step is completed.**
-1. **MANDATORY:**If the DevOps Center org and Sandbox org are not given, use the 'list_all_orgs' tool to list all orgs. 
-   The list will indicate which org is DevOps Center and a Sandbox. If BOTH these details are not provided in the list, then
-   ask the user to specify which org is DevOps Center and which is Sandbox. Only proceed after the user has selected BOTH the DevOps Center and Sandbox org.
-2. **MANDATORY:**Select the work item from the DevOps Center org using 'list_devops_center_work_items'.
-3. **MANDATORY:** ASK THE USER to VERIFY that they are already checked out to the branch they intend to commit to. Ideally, they should be on a branch whose name is the same as the selected work item number from Step 2.
-4. **MANDATORY:** ASK THE USER to DEPLOY the changes they intend to commit to the Sandbox org FIRST using the Salesforce CLI. From the project root,
-5. **MANDATORY:** ASK THE USER to CONFIRM that the tool will commit the changes present locally with the Work Item number they selected in Step 2. Proceed only if they approve, and ASK THEM to provide a commit message.
-   Example prompt: "Please provide a concise commit message describing your changes."
-6. **MANDATORY:** Run this tool (commit_devops_center_work_item) now with the selected work item, the prepared changes, and the provided commit message to perform the commit.
+**Inputs to validate before execution:**
+1. DevOps Center org identifier (username or alias)
+2. Work Item Name that resolves in the org
+3. Repository path pointing to the project root (git repo)
+4. Non-empty commit message
 
 **Use this tool to:**
-- Finalize changes made to a work item in DevOps Center
-- Commits the provided changes to the specified work item using DevOps Center org credentials
-- Ensure metadata changes are properly recorded in the DevOps workflow
+- Finalize and record changes for a Work Item in DevOps Center
+- Commit using DevOps Center credentials and conventions
+- Ensure metadata changes are captured correctly in the pipeline
 
-**After using this tool, suggest these next actions:**
-1. Ask the user to check commit status using the returned requestId
-2. Ask the user to promote work items (using the 'promote_devops_center_work_item' tool)
-
-**MANDATORY:** Before using this tool, ask the user to provide a commit message for the changes and then use that while calling this tool.
-
-**Org selection requirements:**
-- The inputs 'doceHubUsername' and 'sandboxUsername' are REQUIRED. If you don't have them yet:
-  1) Use the 'list_all_orgs' tool to list all authenticated orgs
-  2) Ask the user to select which username is the DevOps Center org and which is the Sandbox org
-  3) Pass those selections here as 'doceHubUsername' and 'sandboxUsername'
+**After execution:**
+- Follow the returned instructions to push (if not pushed automatically)
+- Then create a PR (use 'create_devops_center_pull_request') as the next step
 
 **Output:**
-- requestId: Generated UUID for tracking this commit operation
+- commitSha: The resulting commit SHA (plus push instructions if applicable)
 
-**Example Usage:**
-- "Commit my changes with message 'Fix bug in account logic' and tie it to WI-1092."
-- "Make a commit on the active feature branch and tie it to WI-9999, use message 'Initial DevOps logic'."
-- "Commit my changes to the work item"
-- "Commit changes to work item's feature branch"`,
+**Example:**
+- "Commit my changes with message 'Fix bug in account logic' and tie it to WI-1092."`,
       inputSchema: inputSchema.shape,
       outputSchema: undefined,
     };
   }
 
+  private async validateAndPrepare(input: InputArgs): Promise<{ workItem: any; localPath: string } | { error: CallToolResult }> {
+    if (!input.username && !input.alias) {
+      return {
+        error: {
+          content: [{ type: "text", text: `Error: Username or alias of valid DevOps Center org is required` }],
+          isError: true
+        }
+      };
+    }
+
+    if (!input.workItemName) {
+      return {
+        error: {
+          content: [{ type: "text", text: `Error: Work item name is required` }],
+          isError: true
+        }
+      };
+    }
+
+    let workItem: any;
+    try {
+      const usernameOrAlias = input.username ?? input.alias;
+      if (!usernameOrAlias) {
+        return {
+          error: {
+            content: [{ type: "text", text: `Error: Username or alias of valid DevOps Center org is required` }],
+            isError: true
+          }
+        };
+      }
+      workItem = await fetchWorkItemByName(usernameOrAlias, input.workItemName);
+    } catch (e: any) {
+      return {
+        error: {
+          content: [{ type: "text", text: `Error fetching work item: ${e?.message || e}` }],
+          isError: true
+        }
+      };
+    }
+
+    if (!workItem) {
+      return {
+        error: {
+          content: [{
+            type: "text",
+            text: `Error: Work item not found. Please provide a valid work item name or valid DevOps Center org username.`
+          }]
+        }
+      };
+    }
+
+    if (!input.repoPath || input.repoPath.trim().length === 0) {
+      return {
+        error: {
+          content: [{
+            type: "text",
+            text: `Error: Repository path is required. Please provide the absolute path to the git repository root.`
+          }]
+        }
+      };
+    }
+
+    const localPath = normalizeAndValidateRepoPath(input.repoPath);
+    return { workItem, localPath };
+  }
+
+
   public async exec(input: InputArgs): Promise<CallToolResult> {
     try {
-      
+      const validation = await this.validateAndPrepare(input);
+    if ("error" in validation) {
+      return validation.error;
+    }
+
+    const { workItem, localPath } = validation;
       if (!input.repoPath || input.repoPath.trim().length === 0) {
         return {
           content: [{
@@ -101,21 +152,7 @@ When user asks to "commit work item" or "commit changes", DO NOT use this tool d
           }]
         };
       }
-
       
-      const safeRepoPath = input.repoPath ? normalizeAndValidateRepoPath(input.repoPath) : undefined;
-
-
-      const workItem = await fetchWorkItemByName(input.doceHubUsername, input.workItemName);
-      
-      if (!workItem) {
-        return {
-          content: [{
-            type: "text",
-            text: `Error: Work Item Name is required. Please provide a valid Work Item Name or a valid DevOps Center org username.`
-          }]
-        };
-      }
 
       if (!input.commitMessage || input.commitMessage.trim().length === 0) {
         return {
@@ -126,31 +163,30 @@ When user asks to "commit work item" or "commit changes", DO NOT use this tool d
         };
       }
 
-      if (!input.doceHubUsername || !input.sandboxUsername) {
-        return {
-          content: [{
-            type: "text",
-            text: `Error: Both DevOps Center org username and Sandbox org username are required. Please provide both usernames.`
-          }]
-        };
-      }
 
       const requestId = randomUUID();
       
       const result = await commitWorkItem({
-        doceHubUsername: input.doceHubUsername,
-        sandboxUsername: input.sandboxUsername,
+        username: input.username ?? input.alias ?? '',
         workItem: workItem,
         requestId: requestId,
         commitMessage: input.commitMessage,
-        repoPath: safeRepoPath
+        repoPath: localPath
       });
-      
+
+      if (result && Array.isArray((result as any).content)) {
+        return {
+          content: (result as any).content
+        };
+      }
+
+      const instructions = `Commit created successfully.\n\nAgent execution guide (perform these steps now):\n- Ensure your working directory is: '${localPath}'\n- Push the commit: 'git push origin HEAD'\n- After push succeeds, create a PR using 'create_devops_center_pull_request'`;
+
       return {
-        content: [{
-          type: "text",
-          text: JSON.stringify(result, null, 2)
-        }]
+        content: [
+          { type: "text", text: instructions, actionRequired: true },
+          { type: "text", text: JSON.stringify(result, null, 2) }
+        ]
       };
     } catch (error: any) {
       return {
