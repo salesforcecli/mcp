@@ -29,7 +29,7 @@ The Salesforce DX MCP Server is a specialized Model Context Protocol (MCP) imple
 
 ## Configure the DX MCP Server
 
-Configure the Salesforce DX MCP Server for your MCP client by updating its associated MCP JSON file; each client is slightly different, so check your MCP client documentation for details. See [MCP Client Configurations](#mcp-client-configurations) for some more examples. 
+Configure the Salesforce DX MCP Server for your MCP client by updating its associated MCP JSON file; each client is slightly different, so check your MCP client documentation for details. See [MCP Client Configurations](./README.md#mcp-client-configurations) for more examples. 
 
 Here's an example for VS Code with Copilot in which you create and update a `.vscode/mcp.json` file in your project:
 
@@ -134,8 +134,8 @@ These are the flags that you can pass to the `args` option.
 
 | Flag Name | Description | Required? |Notes |
 | -----------------| -------| ------- | ----- |
-| `--orgs` | One or more orgs that you've locally authorized. | Yes | You must specify at least one org. <br/> <br/>See [Configure Orgs](README.md#configure-orgs) for the values you can pass to this flag. |
-| `--toolsets` | Sets of tools, based on functionality, that you want to enable. | No | Set to "all" to enable every tool in every toolset. <br/> <br/>See [Configure Toolsets](README.md#configure-toolsets) for the values you can pass to this flag.|
+| `--orgs` | One or more orgs that you've locally authorized. | Yes | You must specify at least one org. <br/> <br/>See [Configure Orgs](./README.md#configure-orgs) for the values you can pass to this flag. |
+| `--toolsets` | Sets of tools, based on functionality, that you want to enable. | No | Set to "all" to enable every tool in every toolset. <br/> <br/>See [Configure Toolsets](./README.md#configure-toolsets) for the values you can pass to this flag.|
 | `--tools` | Individual tool names that you want to enable. | No | You can use this flag in combination with the `--toolsets` flag. For example, you can enable all tools in one toolset, and just one tool in a different toolset. |
 | `--no-telemetry` | Boolean flag to disable telemetry, the automatic collection of data for monitoring and analysis. | No | Telemetry is enabled by default, so specify this flag to disable it.  |
 | `--debug` | Boolean flag that requests that the DX MCP Server print debug logs. | No | Debug mode is disabled by default. <br/> <br/>**NOTE:** Not all MCP clients expose MCP logs, so this flag might not work for all IDEs. |
