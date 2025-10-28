@@ -29,10 +29,8 @@ The Salesforce DX MCP Server is a specialized Model Context Protocol (MCP) imple
 
 ## Configure the DX MCP Server
 
-Configure the Salesforce DX MCP Server for your MCP client by updating its associated MCP JSON file; each client is slightly different, so check your MCP client documentation for details. 
+Configure the Salesforce DX MCP Server for your MCP client by updating its associated MCP JSON file; each client is slightly different, so check your MCP client documentation for details. See [MCP Client Configurations](#mcp-client-configurations) for some more examples. 
 
-
-### VSCode
 Here's an example for VS Code with Copilot in which you create and update a `.vscode/mcp.json` file in your project:
 
 ```
@@ -41,35 +39,12 @@ Here's an example for VS Code with Copilot in which you create and update a `.vs
        "Salesforce DX": {
          "command": "npx",
          "args": ["-y", "@salesforce/mcp", 
-         "--orgs", "DEFAULT_TARGET_ORG", 
-         "--toolsets", "orgs,metadata,data,users",
-         "--tools", "run_apex_test",
-         "--allow-non-ga-tools"]
+                 "--orgs", "DEFAULT_TARGET_ORG", 
+                 "--toolsets", "orgs,metadata,data,users",
+                 "--tools", "run_apex_test",
+                 "--allow-non-ga-tools"]
        }
      }
-}
-```
-
-### Claude Code
-Here's an example for Claude Code in which you create and update a `.mcp.json` file in your project:
-```
-{
-  "mcpServers": {
-    "Salesforce DX": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@salesforce/mcp",
-        "--orgs",
-        "DEFAULT_TARGET_ORG",
-        "--toolsets",
-        "orgs,metadata,data,users",
-        "--tools",
-        "run_apex_test",
-        "--allow-non-ga-tools"
-      ]
-    }
-  }
 }
 ```
 
@@ -81,9 +56,79 @@ The `args` format shown in the preceding example is the same for all MCP clients
 - The preceding example shows three flags that take a string value (`--orgs`, `--toolsets`, and `--tools`) and one Boolean flag (`--allow-non-ga-tools`).  This configuration starts a DX MCP Server that enables all the MCP tools in the `orgs`, `metadata`, `data`, and `users` toolsets and a specific tool called `run_apex_tests`.  It also enables tools in these configured toolsets that aren't yet generally available. 
 
 <details>
+<summary>Reference: MCP Client Configurations</summary>
+
+## MCP Client Configurations
+
+Here are examples of configuring the Salesforce DX MCP Server in various MCP clients. 
+
+### Claude Code
+
+To configure [Claude Code](https://www.claude.com/product/claude-code) to work with Salesforce DX MCP Server, add this snippet to the `.mcp.json` file in your project:
+```
+{
+  "mcpServers": {
+    "Salesforce DX": {
+      "command": "npx",
+      "args": ["-y", "@salesforce/mcp",
+               "--orgs", "DEFAULT_TARGET_ORG",
+               "--toolsets", "orgs,metadata,data,users",
+               "--tools", "run_apex_test",
+               "--allow-non-ga-tools" ]
+    }
+  }
+}
+```
+### Cursor
+
+To configure [Cursor](https://cursor.com/docs/context/mcp) to work with Salesforce DX MCP Server, add this snippet to your Cursor `mcp.json` file:
+
+```json
+{
+  "mcpServers": {
+    "Salesforce DX": {
+      "command": "npx",
+      "args": ["-y", "@salesforce/mcp@latest", 
+               "--orgs", "DEFAULT_TARGET_ORG",
+               "--toolsets", "orgs,metadata,data,users",
+               "--tools", "run_apex_test",
+               "--allow-non-ga-tools" ]
+    }
+  }
+}
+```
+
+### Cline
+
+To configure [Cline](https://docs.cline.bot/mcp/mcp-overview) to work with Salesforce DX MCP Server, add this snippet to your Cline `cline_mcp_settings.json` file:
+```json
+{
+  "mcpServers": {
+    "Salesforce DX": {
+      "command": "npx",
+      "args": ["-y", "@salesforce/mcp@latest", 
+               "--orgs", "DEFAULT_TARGET_ORG",
+               "--toolsets", "orgs,metadata,data,users",
+               "--tools", "run_apex_test",
+               "--allow-non-ga-tools" ]
+    }
+  }
+}
+```
+
+### Other MCP Clients
+
+For these other clients, refer to their documentation for adding MCP servers and follow the same pattern as in the preceding examples to configure the Salesforce DX MCP Server:
+
+- [Windsurf](https://docs.windsurf.com/windsurf/cascade/mcp)
+- [Zed](https://github.com/zed-industries/zed)
+- [Trae](https://docs.trae.ai/ide/model-context-protocol?_lang=en)
+
+</details>
+<details>
 <summary>Reference: Available Flags for the `args` Option</summary>
 
-## Reference: Available Flags for the "args" Option
+## Available Flags for the "args" Option
 
 These are the flags that you can pass to the `args` option. 
 
