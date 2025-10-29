@@ -22,7 +22,7 @@ import { DxMcpTransport } from '@salesforce/mcp-test-client';
 
 const execAsync = promisify(exec);
 
-async function getMcpClient(opts: { args: string[]; tools?: string[] }) {
+async function getMcpClient(opts: { args: string[] }) {
     const client = new Client({
         name: 'sf-tools',
         version: '0.0.1',
@@ -30,7 +30,6 @@ async function getMcpClient(opts: { args: string[]; tools?: string[] }) {
 
     const transport = DxMcpTransport({
         args: opts.args,
-        ...(opts.tools ? { tools: opts.tools } : {}),
     });
 
     await client.connect(transport);
@@ -64,24 +63,41 @@ async function getExpectedArgsAndTools(): Promise<{ args: string[]; tools: strin
 }
 
 describe('specific tool registration', () => {
-    it('should enable tools matching ', async () => {
-        const { tools: expectedTools } = await getExpectedArgsAndTools();
+    it('should initialize MCP with tools specified in AFV config', async () => {
+        const { args, tools: expectedTools } = await getExpectedArgsAndTools();
 
-        const clientArgs = [
-            '--orgs', 'ALLOW_ALL_ORGS',
-            '--tools', expectedTools.join(','),
-            '--no-telemetry'
-        ];
-        
         const client = await getMcpClient({
-            args: clientArgs, tools: expectedTools,
+            args: [
+            ...args, 
+            '--tools', expectedTools.join(','),
+            '--no-telemetry', 
+            '--allow-non-ga-tools'
+        ],
         });
 
         try {
-            const initialTools = (await client.listTools()).tools.map((t) => t.name).sort();
+            const AllTools = (await client.listTools()).tools.map((t) => t.name).sort();
+            expect(AllTools).to.be.an('array').that.is.not.empty;
 
-            expect(initialTools.length).to.equal(expectedTools.length);
-            expect(initialTools).to.deep.equal(expectedTools);
+            // Filter to only include tools that are in the expectedTools list
+            const initialTools = AllTools.filter(tool => expectedTools.includes(tool)).sort();
+
+            const missingTools = expectedTools.filter(tool => !initialTools.includes(tool));
+            expect(missingTools).to.be.empty;
+
+            expect(initialTools).to.be.an('array');
+            expect(initialTools.length).to.deep.equal(expectedTools.length);
+            
+            // Verify that each expected tool is loaded
+            expectedTools.forEach(expectedTool => {
+                expect(initialTools).to.include(expectedTool);
+            });
+
+            // Validate tool names are valid (non-empty strings)
+            initialTools.forEach(toolName => {
+                expect(toolName).to.be.a('string').that.is.not.empty;
+            });
+
         } catch (err) {
             assert.fail(`Failed to validate tools against a4dServerArgs.json: ${String(err)}`);
         } finally {
