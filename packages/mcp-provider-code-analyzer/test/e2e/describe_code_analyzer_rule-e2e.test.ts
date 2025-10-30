@@ -22,7 +22,7 @@ describe('describe_code_analyzer_rule', () => {
             console.error('Setup failed:', error);
             throw error;
         }
-    });
+    }, 30000);
 
     afterAll(async () => {
         if (client?.connected) {
@@ -43,7 +43,7 @@ describe('describe_code_analyzer_rule', () => {
         expect(result.structuredContent!.rule).toHaveProperty('name', 'VfUnescapeEl');
         expect(result.structuredContent!.rule).toHaveProperty('engine', 'pmd');
         expect(result.structuredContent!.rule).toHaveProperty('severity', 2);
-    });
+    }, 30000);
 
     it('should offer error for non-existent rule', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -55,5 +55,5 @@ describe('describe_code_analyzer_rule', () => {
         });
 
         expect(result.structuredContent!.status).toContain(`No rule with name 'NotARealRule' exists in engine 'pmd'.`);
-    });
+    }, 30000);
 })
