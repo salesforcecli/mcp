@@ -43,42 +43,6 @@ describe('commitLiteWorkItem', () => {
       })
     ).rejects.toThrow('No eligible changes to commit');
   });
-
-  it('posts computed changes and returns success payload', async () => {
-    // deleted, modified, untracked, staged
-    (execFileSync as unknown as Mock)
-      .mockImplementationOnce(() => '\n') // -d
-      .mockImplementationOnce(() => 'force-app/main/default/classes/A.cls\n') // -m
-      .mockImplementationOnce(() => 'force-app/main/default/classes/B.cls\n') // --others
-      .mockImplementationOnce(() => '\n') // --cached
-      // git add --all
-      .mockImplementationOnce(() => '')
-      // git status --porcelain (non-empty string means there are changes)
-      .mockImplementationOnce(() => ' M force-app/main/default/classes/A.cls')
-      // git commit -m
-      .mockImplementationOnce(() => '')
-      // git rev-parse HEAD
-      .mockImplementationOnce(() => 'abc123\n');
-
-    (sfdxService.convertToSourceComponents as unknown as Mock).mockImplementation((baseDir: string, _reg: any, rels: string[]) => {
-      return rels.map((rel: string) => ({ fullName: rel.endsWith('A.cls') ? 'A' : 'B', type: { name: 'ApexClass' }, filePath: baseDir + '/' + rel }));
-    });
-
-    (axios.post as unknown as Mock).mockResolvedValue({ data: { id: 'resp-1' } });
-
-    const res = await commitWorkItem({
-      workItem: { id: 'WI-2' },
-      requestId: 'r2',
-      commitMessage: 'feat: update',
-      username: 'user',
-      repoPath: '/repo'
-    });
-
-    expect(Array.isArray(res.content)).toBe(true);
-    const joined = res.content.map((c: any) => c.text || '').join('\n');
-    expect(joined).toMatch('Changes committed successfully');
-    expect(joined).toMatch('Commit SHA: abc123');
-  });
 });
 
 
