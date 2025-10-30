@@ -10,6 +10,7 @@ import {
     RetrieveResult,
     SourceComponent
   } from '@salesforce/source-deploy-retrieve';
+import path from 'node:path';
 
 export interface ExtendedSourceComponent extends SourceComponent {
   filePath: string;
@@ -32,11 +33,12 @@ export function convertToSourceComponents(
   const results: ExtendedSourceComponent[] = [];
   paths.forEach((p) => {
     try {
-      resolver.getComponentsFromPath(baseDir + '/' + p).forEach((cs) => {
+      const absPath = path.join(baseDir, p);
+      resolver.getComponentsFromPath(absPath).forEach((cs) => {
         results.push({
           ...cs,
           fullName: cs.fullName,
-          filePath: baseDir + '/' + p
+          filePath: absPath
         } as ExtendedSourceComponent);
       });
     } catch (e: any) {

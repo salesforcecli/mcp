@@ -104,13 +104,18 @@ function buildComputedChanges(workingDir: string): Change[] {
     const registry = new RegistryAccess();
     const componentsExisting = convertToSourceComponents(workingDir, registry, allRelPaths);
 
+    const toPosix = (p: string) => p.replace(/\\/g, '/');
+    const untrackedSet = new Set(untrackedRel.map(toPosix));
+    const modifiedSet = new Set(modifiedRel.map(toPosix));
+    const stagedSet = new Set(stagedRel.map(toPosix));
+
     for (const comp of componentsExisting) {
-        const relPath = path.relative(workingDir, comp.filePath);
+        const relPath = toPosix(path.relative(workingDir, comp.filePath));
         let operation: 'delete' | 'add' | 'modify' | undefined;
 
-        if (untrackedRel.includes(relPath)) {
+        if (untrackedSet.has(relPath)) {
             operation = 'add';
-        } else if (modifiedRel.includes(relPath) || stagedRel.includes(relPath)) {
+        } else if (modifiedSet.has(relPath) || stagedSet.has(relPath)) {
             operation = 'modify';
         }
 
