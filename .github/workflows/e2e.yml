@@ -105,4 +105,5 @@ jobs:
           SF_CHANGE_CASE_CONFIGURATION_ITEM: ${{ secrets.SF_CHANGE_CASE_CONFIGURATION_ITEM}}
           TESTKIT_SETUP_RETRIES: 2
           SF_DISABLE_TELEMETRY: true
+          GH_TOKEN: ${{ secrets.GH_CLINE_FORK_READ_TOKEN }}
           DEBUG: ${{ vars.DEBUG }}
