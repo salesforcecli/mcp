@@ -138,4 +138,26 @@ public class MyClass {
 
     expect(module.getAntipatternType()).toBe(AntipatternType.GGD);
   });
+
+  it("should throw error when detector and recommender types mismatch", () => {
+    const detector = new GGDDetector();
+    
+    // Create a mock recommender with mismatched type
+    const mismatchedRecommender = {
+      getAntipatternType: () => "DIFFERENT_TYPE" as AntipatternType,
+      getFixInstruction: () => "Some fix",
+    };
+
+    expect(() => {
+      new AntipatternModule(detector, mismatchedRecommender as any);
+    }).toThrow("Detector and Recommender antipattern types must match");
+  });
+
+  it("should not throw error when recommender is not provided", () => {
+    const detector = new GGDDetector();
+    
+    expect(() => {
+      new AntipatternModule(detector); // No recommender - should not throw
+    }).not.toThrow();
+  });
 });
