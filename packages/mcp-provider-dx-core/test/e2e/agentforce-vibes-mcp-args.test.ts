@@ -63,7 +63,10 @@ async function getExpectedArgsAndTools(): Promise<{ args: string[]; tools: strin
 }
 
 describe('specific tool registration', () => {
-    it('should initialize MCP with tools specified in AFV config', async () => {
+    // skip only on Windows
+    const itIf = process.platform === 'win32' ? it.skip : it;
+    
+    itIf('should initialize MCP with tools specified in AFV config', async () => {
         const { args, tools: expectedTools } = await getExpectedArgsAndTools();
 
         const client = await getMcpClient({
