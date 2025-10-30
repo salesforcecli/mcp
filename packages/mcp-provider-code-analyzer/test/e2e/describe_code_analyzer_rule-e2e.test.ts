@@ -22,7 +22,7 @@ describe('describe_code_analyzer_rule', () => {
             console.error('Setup failed:', error);
             throw error;
         }
-    });
+    }, 30000);
 
     afterAll(async () => {
         if (client?.connected) {
