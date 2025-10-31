@@ -3,7 +3,6 @@ import { AntipatternType } from "../models/antipattern-type.js";
 
 /**
  * Base interface for all antipattern detectors
- * Follows Single Responsibility Principle - only responsible for detection
  */
 export interface BaseDetector {
   /**
