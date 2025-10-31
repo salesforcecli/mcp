@@ -20,37 +20,37 @@ describe("GGDRecommender", () => {
     expect(instruction).toContain("Schema.getGlobalDescribe()");
     expect(instruction).toContain("Type.forName");
     expect(instruction).toContain("Problem");
-    expect(instruction).toContain("Fix Strategies");
+    expect(instruction).toContain("Antipattern");
   });
 
   it("should include solution strategies in instruction", () => {
     const instruction = recommender.getFixInstruction();
 
-    // Check for all three solution strategies
-    expect(instruction).toContain("Solution 1");
-    expect(instruction).toContain("Solution 2");
-    expect(instruction).toContain("Solution 3");
+    // Check for all three antipattern types
+    expect(instruction).toContain("Antipattern 1");
+    expect(instruction).toContain("Antipattern 2");
+    expect(instruction).toContain("Antipattern 3");
     
     // Verify specific techniques mentioned
     expect(instruction).toContain("Type.forName()");
-    expect(instruction).toContain("Direct SObject References");
+    expect(instruction).toContain("sObjectType.getDescribe()");
     expect(instruction).toContain("Cache");
   });
 
   it("should include code examples in instruction", () => {
     const instruction = recommender.getFixInstruction();
 
-    // Should have before/after examples
-    expect(instruction).toContain("Before:");
-    expect(instruction).toContain("After:");
+    // Should have example and fix sections
+    expect(instruction).toContain("Example of Antipattern");
+    expect(instruction).toContain("Recommended Fix");
     expect(instruction).toContain("```apex");
   });
 
   it("should include priority guidelines", () => {
     const instruction = recommender.getFixInstruction();
 
-    expect(instruction).toContain("Priority Guidelines");
-    expect(instruction).toContain("HIGH/CRITICAL");
+    expect(instruction).toContain("Best Practices");
+    expect(instruction).toContain("HIGH");
     expect(instruction).toContain("MEDIUM");
     expect(instruction).toContain("loop");
   });
