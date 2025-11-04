@@ -53,6 +53,7 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
     const registry = new AntipatternRegistry();
 
     // Register GGD (Schema.getGlobalDescribe) antipattern module
+    // Using AST-based detector for accurate syntax tree analysis
     const ggdModule = new AntipatternModule(
       new GGDDetector(),
       new GGDRecommender()
