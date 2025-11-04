@@ -8,3 +8,17 @@ export { ScaleProductsMcpProvider } from "./provider.js";
 export { AntipatternType } from "./models/antipattern-type.js";
 export { Severity } from "./models/severity.js";
 export type { ScanResult, AntipatternResult, DetectedAntipattern } from "./models/detection-result.js";
+
+// Export detectors for external use
+export { GGDDetector } from "./detectors/ggd-detector.js";
+
+// Export AST utilities for external use
+export { ApexAstUtils } from "./utils/apex-ast-utils.js";
+export type {
+  MethodInfo,
+  LoopInfo,
+  MethodCallInfo,
+  QueryInfo,
+  DMLInfo,
+  ClassInfo,
+} from "./utils/apex-ast-utils.js";
