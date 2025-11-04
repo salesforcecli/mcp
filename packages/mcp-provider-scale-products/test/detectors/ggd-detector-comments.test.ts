@@ -132,7 +132,7 @@ public class TestClass {
     const apexCode = `
 public class TestClass {
     public void testMethod() {
-        String message = "Use Schema.getGlobalDescribe() carefully";
+        String message = 'Use Schema.getGlobalDescribe() carefully';
         Account acc = new Account();
     }
 }`;
@@ -147,6 +147,20 @@ public class TestClass {
 public class TestClass {
     public void testMethod() {
         String message = 'Don\\'t use Schema.getGlobalDescribe()';
+        Account acc = new Account();
+    }
+}`;
+
+    const detections = detector.detect("TestClass", apexCode);
+    
+    expect(detections.length).toBe(0);
+  });
+
+  it("should ignore GGD in strings with escaped double quotes", () => {
+    const apexCode = `
+public class TestClass {
+    public void testMethod() {
+        String message = 'He said, \\"Avoid Schema.getGlobalDescribe()!\\"';
         Account acc = new Account();
     }
 }`;
