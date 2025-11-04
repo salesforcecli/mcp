@@ -35,14 +35,14 @@ import { textResponse } from '../shared/utils.js';
  * - apexTests: Apex tests classes to run.
  * - usernameOrAlias: Username or alias of the Salesforce org to deploy to.
  * - directory: Directory of the local project.
- * - ignoreConflicts: Whether to ignore conflicts during deployment.
+ * - ignoreConflicts: Ignore conflicts and deploy local files, even if they overwrite changes in the org.
  *
  * Returns:
  * - textResponse: Deploy result.
  */
 
 export const deployMetadataParams = z.object({
-  ignoreConflicts: z.boolean().describe('Whether to ignore conflicts during deployment.').optional(),
+  ignoreConflicts: z.boolean().describe(' Ignore conflicts and deploy local files, even if they overwrite changes in the org.').optional(),
   sourceDir: z
     .array(z.string())
     .describe('Path to the local source files to deploy. Leave this unset if the user is vague about what to deploy.')
@@ -115,7 +115,7 @@ Deploy changes to my org
 Deploy this file to my org
 Deploy the manifest
 Deploy X metadata to my org
-Deploy X local files to my org and ignore any conflicts between the local project and the org
+Deploy X local files to my org and ignore any conflicts between the local project and org
 Deploy X to my org and run A,B and C apex tests.`,
       inputSchema: deployMetadataParams.shape,
       outputSchema: undefined,

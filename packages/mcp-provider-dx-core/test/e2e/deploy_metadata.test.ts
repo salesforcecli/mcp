@@ -227,4 +227,45 @@ describe('deploy_metadata', () => {
     expect(deployResult.numberTestsCompleted).to.equal(11);
     expect(deployResult.runTestsEnabled).to.be.true;
   });
+
+  it('should deploy a single apex class when ignoreConflicts is true', async () => {
+    const apexClassPath = path.join(
+      testSession.project.dir,
+      'force-app',
+      'main',
+      'default',
+      'classes',
+      'PropertyController.cls',
+    );
+
+    const result = await client.callTool(deployMetadataSchema, {
+      name: 'deploy_metadata',
+      params: {
+        sourceDir: [apexClassPath],
+        ignoreConflicts: true,
+        usernameOrAlias: orgUsername,
+        directory: testSession.project.dir,
+      },
+    });
+
+    expect(result.isError).to.equal(false);
+    expect(result.content.length).to.equal(1);
+    if (result.content[0].type !== 'text') assert.fail();
+
+    const responseText = result.content[0].text;
+    expect(responseText).to.contain('Deploy result:');
+
+    // Parse the deploy result JSON
+    const deployMatch = responseText.match(/Deploy result: ({.*})/);
+    expect(deployMatch).to.not.be.null;
+
+    const deployResult = JSON.parse(deployMatch![1]) as {
+      success: boolean;
+      done: boolean;
+      numberComponentsDeployed: number;
+    };
+    expect(deployResult.success).to.be.true;
+    expect(deployResult.done).to.be.true;
+    expect(deployResult.numberComponentsDeployed).to.equal(1);
+  });
 });
