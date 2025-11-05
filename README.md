@@ -282,7 +282,7 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
  - `guide_lwc_best_practices` - (GA) Offers LWC development best practices and coding standards guidance
  - `guide_lwc_development` - (GA) Comprehensive LWC development workflow and implementation guidelines
  - `guide_lwc_rtl_support` - (GA) Right-to-Left internationalization support and RTL development guidance
- - `guide_lwc_slds2_uplift_linter_fixes` - (GA) Analyzes the given LWC code along with the slds-linter output to fix issues using the SLDS2 knowledge
+ - `guide_lwc_slds2_uplift_linter_fixes` - (NON-GA) Analyzes the given LWC code along with the slds-linter output to fix issues using the SLDS2 knowledge
  - `guide_lwc_security` - (GA) Comprehensive security analysis in accordance with Product Security Guidelines and Lightning Web Security Guidelines
  - `guide_design_general` - (GA) Comprehensive SLDS guidelines and best practices for Lightning Web Components with accessibility, responsive design, and component usage patterns
 
@@ -291,7 +291,7 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
  - `orchestrate_lwc_component_creation` - (GA) Step-by-step component creation workflow guidance
  - `orchestrate_lwc_component_optimization` - (GA)  Performance optimization and best practices for LWC components
  - `orchestrate_lwc_component_testing` - (GA) Comprehensive testing workflow and test generation guidance
- - `orchestrate_lwc_slds2_uplift` - (GA) Migration guidance for upgrading to SLDS2 design system
+ - `orchestrate_lwc_slds2_uplift` - (NON-GA) Migration guidance for upgrading to SLDS2 design system
 
 #### LDS (Lightning Data Service) Tools
 
