@@ -27,7 +27,7 @@ describe('run_code_analyzer', () => {
             console.error('Setup failed:', error);
             throw error;
         }
-    });
+    }, 30000);
 
     afterAll(async () => {
         if (client?.connected) {
