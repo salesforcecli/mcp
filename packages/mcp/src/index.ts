@@ -162,8 +162,15 @@ You can also use special values to control access to orgs:
 
       await this.telemetry.start();
 
-      process.stdin.on('close', (err) => {
-        this.telemetry?.sendEvent(err ? 'SERVER_STOPPED_ERROR' : 'SERVER_STOPPED_SUCCESS');
+      process.stdin.on('close', () => {
+        this.telemetry?.sendEvent('SERVER_STOPPED_SUCCESS');
+        this.telemetry?.stop();
+      });
+      
+      // Handle SIGTERM as a fallback to ensure telemetry is sent
+      // https://modelcontextprotocol.io/specification/2025-06-18/basic/lifecycle#stdio
+      process.stdin.on('SIGTERM', () => {
+        this.telemetry?.sendEvent('SERVER_STOPPED_SUCCESS');
         this.telemetry?.stop();
       });
     }
@@ -223,6 +230,7 @@ You can also use special values to control access to orgs:
       await this.telemetry.start();
     }
 
+    // Track startup failures such as invalid flags, missing dependencies, or initialization errors
     this.telemetry?.sendEvent('START_ERROR', {
       error: error.message,
       stack: error.stack,

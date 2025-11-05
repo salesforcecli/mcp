@@ -20,7 +20,7 @@ const DESCRIPTION: string = `A tool for performing static analysis against code.
     `- When the user asks you to check code for problems, use this tool to do that.\n`;
 
 export const inputSchema = z.object({
-    target: z.array(z.string()).describe(`A JSON-formatted array of between 1 and ${MAX_ALLOWABLE_TARGET_COUNT} files on the users machine that should be scanned.`)
+    target: z.array(z.string()).describe(`A JSON-formatted array of between 1 and ${MAX_ALLOWABLE_TARGET_COUNT} files on the users machine that should be scanned. These paths MUST be ABSOLUTE paths, and not relative paths.`)
 });
 type InputArgsShape = typeof inputSchema.shape;
 
