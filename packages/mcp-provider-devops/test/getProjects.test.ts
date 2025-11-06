@@ -23,11 +23,10 @@ describe('fetchProjects', () => {
     expect(projects).toHaveLength(0);
   });
 
-  it('should handle errors gracefully', async () => {
+  it('should throw errors', async () => {
     const mockConnection = { query: vi.fn().mockRejectedValue(new Error('Network Error')) };
     (getConnection as vi.Mock).mockResolvedValue(mockConnection);
 
-    const error = await fetchProjects('test-user');
-    expect(error.message).toBe('Network Error');
+    await expect(fetchProjects('test-user')).rejects.toThrow('Network Error');
   });
 });
