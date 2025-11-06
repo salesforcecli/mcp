@@ -91,8 +91,8 @@ export async function getConnection(username: string): Promise<Connection> {
   }> {
     const allOrgs = await getAllAllowedOrgs();
 
-    const doceHub = allOrgs.find(org => org.username === devopsUsername) || null;
-    const sandbox = allOrgs.find(org => org.username === sandboxUsername) || null;
+    const doceHub = findOrgByUsernameOrAlias(allOrgs, devopsUsername) || null;
+    const sandbox = findOrgByUsernameOrAlias(allOrgs, sandboxUsername) || null;
 
     let error = '';
     if (!doceHub) {
