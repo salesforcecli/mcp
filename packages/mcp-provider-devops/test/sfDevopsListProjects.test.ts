@@ -35,14 +35,13 @@ describe('SfDevopsListProjects Telemetry', () => {
     expect(telemetryEvent.eventName).toBe(TelemetryEventNames.LIST_PROJECTS);
     expect(telemetryEvent.event.success).toBe(true);
     expect(telemetryEvent.event.projectCount).toBe(2);
-    expect(telemetryEvent.event.username).toBe('test@example.com');
     expect(telemetryEvent.event.executionTimeMs).toBeGreaterThanOrEqual(0);
   });
 
   it('should send telemetry on error', async () => {
     const mockError = new Error('Connection failed');
 
-    // Mock the fetchProjects function to throw error
+    // Mock the fetchProjects function to throw an error
     vi.spyOn(getProjectsModule, 'fetchProjects').mockRejectedValue(mockError);
 
     const result = await tool.exec({ username: 'test@example.com' });
@@ -58,29 +57,7 @@ describe('SfDevopsListProjects Telemetry', () => {
     expect(telemetryEvent.eventName).toBe(TelemetryEventNames.LIST_PROJECTS);
     expect(telemetryEvent.event.success).toBe(false);
     expect(telemetryEvent.event.error).toBe('Connection failed');
-    expect(telemetryEvent.event.username).toBe('test@example.com');
     expect(telemetryEvent.event.executionTimeMs).toBeGreaterThanOrEqual(0);
-  });
-
-  it('should send telemetry when fetchProjects returns Error instance', async () => {
-    const mockError = new Error('API Error');
-
-    // Mock the fetchProjects function to return error
-    vi.spyOn(getProjectsModule, 'fetchProjects').mockResolvedValue(mockError);
-
-    const result = await tool.exec({ username: 'test@example.com' });
-
-    // Verify the result shows error
-    expect(result.isError).toBe(true);
-    expect(result.content[0].text).toContain('API Error');
-
-    // Verify telemetry was sent with error info
-    expect(spyTelemetryService.sendEventCallHistory).toHaveLength(1);
-    
-    const telemetryEvent = spyTelemetryService.sendEventCallHistory[0];
-    expect(telemetryEvent.eventName).toBe(TelemetryEventNames.LIST_PROJECTS);
-    expect(telemetryEvent.event.success).toBe(false);
-    expect(telemetryEvent.event.error).toBe('API Error');
   });
 
   it('should send telemetry with zero count for empty project list', async () => {

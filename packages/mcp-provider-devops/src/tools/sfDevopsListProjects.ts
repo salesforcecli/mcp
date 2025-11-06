@@ -57,34 +57,13 @@ An array of project records with fields such as Id, Name, Description.`,
     try {
       const projects = await fetchProjects(input.username);
       
-      // Check if it's an error response
-      if (projects instanceof Error) {
-        const executionTime = Date.now() - startTime;
-        
-        this.telemetryService.sendEvent(TelemetryEventNames.LIST_PROJECTS, {
-          success: false,
-          error: projects.message,
-          executionTimeMs: executionTime,
-          username: input.username
-        });
-        
-        return {
-          content: [{
-            type: "text",
-            text: `Error fetching projects: ${projects.message}`
-          }],
-          isError: true
-        };
-      }
-      
       const executionTime = Date.now() - startTime;
-      const projectCount = Array.isArray(projects) ? projects.length : 0;
+      const projectCount = projects.length;
       
       this.telemetryService.sendEvent(TelemetryEventNames.LIST_PROJECTS, {
         success: true,
         projectCount,
         executionTimeMs: executionTime,
-        username: input.username
       });
       
       return {
@@ -100,7 +79,6 @@ An array of project records with fields such as Id, Name, Description.`,
         success: false,
         error: error?.message || 'Unknown error',
         executionTimeMs: executionTime,
-        username: input.username
       });
       
       return {
