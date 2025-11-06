@@ -15,10 +15,12 @@
  */
 
 import path from 'node:path';
+import { promises as fs } from 'node:fs';
 import { expect, assert } from 'chai';
 import { McpTestClient, DxMcpTransport } from '@salesforce/mcp-test-client';
 import { TestSession } from '@salesforce/cli-plugins-testkit';
 import { z } from 'zod';
+import { AuthInfo, Connection } from '@salesforce/core';
 import { ensureString } from '@salesforce/ts-types';
 import { deployMetadataParams } from '../../src/tools/deploy_metadata.js';
 
@@ -228,17 +230,39 @@ describe('deploy_metadata', () => {
     expect(deployResult.runTestsEnabled).to.be.true;
   });
 
-  it('should deploy a single apex class when ignoreConflicts is true', async () => {
+  it('should deploy local edit when ignoreConflicts is set to true', async () => {
     const apexClassPath = path.join(
       testSession.project.dir,
       'force-app',
       'main',
       'default',
       'classes',
-      'PropertyController.cls',
+      'GeocodingService.cls',
     );
 
-    const result = await client.callTool(deployMetadataSchema, {
+    // Deploy baseline
+    const baseline = await client.callTool(deployMetadataSchema, {
+      name: 'deploy_metadata',
+      params: {
+        sourceDir: [apexClassPath],
+        usernameOrAlias: orgUsername,
+        directory: testSession.project.dir,
+      },
+    });
+
+    expect(baseline.isError).to.be.false;
+    expect(baseline.content.length).to.equal(1);
+
+    // Make a local edit
+    const baselineContent = await fs.readFile(apexClassPath, 'utf8');
+    const localEdited = baselineContent.replace(
+      /(public\s+(?:with\s+sharing\s+)?class\s+GeocodingService[^{]*\{)/,
+      '$1\n    // Local edit',
+    );
+    await fs.writeFile(apexClassPath, localEdited, 'utf8');
+
+    // Deploy the local change with ignoreConflicts true
+    const deployResult = await client.callTool(deployMetadataSchema, {
       name: 'deploy_metadata',
       params: {
         sourceDir: [apexClassPath],
@@ -248,24 +272,107 @@ describe('deploy_metadata', () => {
       },
     });
 
-    expect(result.isError).to.equal(false);
-    expect(result.content.length).to.equal(1);
-    if (result.content[0].type !== 'text') assert.fail();
+    expect(deployResult.isError).to.equal(false);
+    expect(deployResult.content.length).to.equal(1);
+    if (deployResult.content[0].type !== 'text') assert.fail();
 
-    const responseText = result.content[0].text;
-    expect(responseText).to.contain('Deploy result:');
+    const deployText = deployResult.content[0].text;
+    expect(deployText).to.contain('Deploy result:');
 
-    // Parse the deploy result JSON
-    const deployMatch = responseText.match(/Deploy result: ({.*})/);
+    const deployMatch = deployText.match(/Deploy result: ({.*})/);
     expect(deployMatch).to.not.be.null;
 
-    const deployResult = JSON.parse(deployMatch![1]) as {
+    const result = JSON.parse(deployMatch![1]) as {
       success: boolean;
       done: boolean;
       numberComponentsDeployed: number;
     };
-    expect(deployResult.success).to.be.true;
-    expect(deployResult.done).to.be.true;
-    expect(deployResult.numberComponentsDeployed).to.equal(1);
+
+    expect(result.success).to.be.true;
+    expect(result.done).to.be.true;
+    expect(result.numberComponentsDeployed).to.equal(1);
+  });
+
+  it('should deploy remote edit when ignoreConflicts is set to true', async () => {
+    const customAppPath = path.join(
+      testSession.project.dir,
+      'force-app',
+      'main',
+      'default',
+      'applications',
+      'Dreamhouse.app-meta.xml',
+    );
+
+    // deploy the whole project to ensure the file exists
+    const fullProjectDeploy = await client.callTool(deployMetadataSchema, {
+      name: 'deploy_metadata',
+      params: {
+        usernameOrAlias: orgUsername,
+        directory: testSession.project.dir,
+      },
+    });
+
+    expect(fullProjectDeploy.isError).to.be.false;
+    expect(fullProjectDeploy.content.length).to.equal(1);
+
+    // Make a remote edit using Tooling API
+    const conn = await Connection.create({
+      authInfo: await AuthInfo.create({ username: orgUsername }),
+    });
+
+    const customApp = await conn.singleRecordQuery<{ 
+      Id: string; 
+      Metadata: {
+        description: string | null;
+      };
+    }>(
+      "SELECT Id, Metadata FROM CustomApplication WHERE DeveloperName = 'Dreamhouse'",
+      {
+        tooling: true,
+      }
+    );
+
+    const updatedMetadata = {
+      ...customApp.Metadata,
+      description: customApp.Metadata.description 
+        ? `${customApp.Metadata.description} - Remote edit via Tooling API`
+        : 'Remote edit via Tooling API',
+    };
+
+    await conn.tooling.sobject('CustomApplication').update({
+      Id: customApp.Id,
+      Metadata: updatedMetadata,
+    });
+
+    // Deploy with ignoreConflicts=true - should override remote edit
+    const deployResult = await client.callTool(deployMetadataSchema, {
+      name: 'deploy_metadata',
+      params: {
+        sourceDir: [customAppPath],
+        ignoreConflicts: true,
+        usernameOrAlias: orgUsername,
+        directory: testSession.project.dir,
+      },
+    });
+
+    expect(deployResult.isError).to.equal(false);
+    expect(deployResult.content.length).to.equal(1);
+    if (deployResult.content[0].type !== 'text') assert.fail();
+
+    const deployText = deployResult.content[0].text;
+    expect(deployText).to.contain('Deploy result:');
+
+    const deployMatch = deployText.match(/Deploy result: ({.*})/);
+    expect(deployMatch).to.not.be.null;
+
+    const result = JSON.parse(deployMatch![1]) as {
+      success: boolean;
+      done: boolean;
+      numberComponentsDeployed: number;
+    };
+
+    expect(result.success).to.be.true;
+    expect(result.done).to.be.true;
+    expect(result.numberComponentsDeployed).to.equal(1);
   });
 });
