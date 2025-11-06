@@ -1,3 +1,14 @@
+## [0.1.9](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.8...mcp-provider-devops@0.1.9) (2025-11-06)
+
+
+### Bug Fixes
+
+* add basic telemetry to `list_devops_projects` tool ([#320](https://github.com/salesforcecli/mcp/issues/320)) ([d09cbff](https://github.com/salesforcecli/mcp/commit/d09cbffc06f1ce85f56bc7046d53b74ba42cb8b3))
+* centralized preflight validations for conflict detection into validateAndPrepare and strengthened runtime checks in detectConflict. ([#304](https://github.com/salesforcecli/mcp/issues/304)) ([06816bd](https://github.com/salesforcecli/mcp/commit/06816bd19fa939672ecb266a71427e8315051cdb))
+* commit changes without Sandbox deployment ([#314](https://github.com/salesforcecli/mcp/issues/314)) ([4f7761b](https://github.com/salesforcecli/mcp/commit/4f7761b1536eee75944274f634f1181e269ed099))
+
+
+
 ## [0.1.8](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.7...mcp-provider-devops@0.1.8) (2025-10-06)
 
 
