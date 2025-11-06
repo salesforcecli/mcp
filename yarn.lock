@@ -3138,10 +3138,10 @@
     semver "^7.7.2"
     zod "^3.25.76"
 
-"@salesforce/mcp-provider-aura-experts@0.3.4":
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-aura-experts/-/mcp-provider-aura-experts-0.3.4.tgz#fe35ed20c00cb5f3ec8c353d8e35c2c53bc31e1a"
-  integrity sha512-fr9LBaOgl5HneIkuKCeko5fS2yOR0GyCHZXAhebvSpEvZNphAMJyc8ijxgip3Rfur9oYjYvcmaZroP2jQ86QUA==
+"@salesforce/mcp-provider-aura-experts@0.3.5":
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-aura-experts/-/mcp-provider-aura-experts-0.3.5.tgz#5079e656805137242da06619f0b325ea355ab042"
+  integrity sha512-4B3mcTnQInXvS0vCGnJ4CyRlm/Ie7zTUNXiY0nMm86er77HL8jQaEU9b93bfaH40Rsz0gZUFTc0Tb/5U15yjVQ==
   dependencies:
     "@modelcontextprotocol/sdk" "^1.9.0"
     "@salesforce/core" "^8.19.1"
@@ -3155,10 +3155,10 @@
     zod "^3.24.2"
     zod-to-json-schema "^3.24.3"
 
-"@salesforce/mcp-provider-lwc-experts@0.6.2":
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-lwc-experts/-/mcp-provider-lwc-experts-0.6.2.tgz#770b090b2a97eb9ff6876cba65b351279aa46ed4"
-  integrity sha512-mzm48aIqzd/XPD+2v1j1rDgZtYZiTUYWMWasFXWut3UOpctgeaOv9i+DRFXBcklh0xQ26VPYmrYaWf/N+jyPRQ==
+"@salesforce/mcp-provider-lwc-experts@0.6.3":
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-lwc-experts/-/mcp-provider-lwc-experts-0.6.3.tgz#176eb9b4cf7fe6c78f1c65ee90896c6d73139293"
+  integrity sha512-sPGfHOtjfMmf5jXqXHjFm9wiyVd9WCBch8i9VcR0h+rhBtX/hbDGC5Io6cn2Bynf+WPluwRM9oKEdrtL5DyUMg==
   dependencies:
     "@modelcontextprotocol/sdk" "^1.9.0"
     "@salesforce/core" "^8.19.0"
