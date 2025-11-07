@@ -2862,11 +2862,6 @@
   resolved "https://registry.yarnpkg.com/@rtsao/scc/-/scc-1.1.0.tgz#927dd2fae9bc3361403ac2c7a00c32ddce9ad7e8"
   integrity sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==
 
-"@salesforce-ux/design-system@^2.25.3":
-  version "2.28.0"
-  resolved "https://registry.yarnpkg.com/@salesforce-ux/design-system/-/design-system-2.28.0.tgz#0e23161a15a3f349aacdbabc2f04b234efc719f4"
-  integrity sha512-UN0n5pesgOh9QhhVsQHGLn2R49E5JMyAHnZYr65s5ILtxZVVsFfaLyoHl+LknltjR7RfBZ4cmIbUWexhAip9VA==
-
 "@salesforce-ux/eslint-plugin-slds@^1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@salesforce-ux/eslint-plugin-slds/-/eslint-plugin-slds-1.0.2.tgz#6afce9c6db3f524f4fd003da7099dcfeebafd28b"
@@ -3143,13 +3138,12 @@
     semver "^7.7.2"
     zod "^3.25.76"
 
-"@salesforce/mcp-provider-aura-experts@0.3.3":
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-aura-experts/-/mcp-provider-aura-experts-0.3.3.tgz#d25913d6914a5cc7ab35f4d85df08ece23c978f2"
-  integrity sha512-nXpyBcjgYajwTpBkWXNjRKWuZUjOzXMKqukcy01gxzWx3ha4sG0C08wWuDjjzUTVduAaJLRa3sDy3BlB4t9cbQ==
+"@salesforce/mcp-provider-aura-experts@0.3.5":
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-aura-experts/-/mcp-provider-aura-experts-0.3.5.tgz#5079e656805137242da06619f0b325ea355ab042"
+  integrity sha512-4B3mcTnQInXvS0vCGnJ4CyRlm/Ie7zTUNXiY0nMm86er77HL8jQaEU9b93bfaH40Rsz0gZUFTc0Tb/5U15yjVQ==
   dependencies:
     "@modelcontextprotocol/sdk" "^1.9.0"
-    "@salesforce-ux/design-system" "^2.25.3"
     "@salesforce/core" "^8.19.1"
     "@salesforce/mcp-provider-api" "0.3.0"
     "@salesforce/telemetry" "^4.0.0"
@@ -3161,22 +3155,17 @@
     zod "^3.24.2"
     zod-to-json-schema "^3.24.3"
 
-"@salesforce/mcp-provider-lwc-experts@0.6.1":
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-lwc-experts/-/mcp-provider-lwc-experts-0.6.1.tgz#6eb1e21b0fe63ae6f3bef1109882e995afd55030"
-  integrity sha512-n/z0d6U3SGn/as607qWScOUTGteqIdvKDxyPDLAPbIsZMi/CfS9tc8Sp8tGNVbE8bQzL3Aef6FCroqAk+GEE6A==
+"@salesforce/mcp-provider-lwc-experts@0.6.3":
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-lwc-experts/-/mcp-provider-lwc-experts-0.6.3.tgz#176eb9b4cf7fe6c78f1c65ee90896c6d73139293"
+  integrity sha512-sPGfHOtjfMmf5jXqXHjFm9wiyVd9WCBch8i9VcR0h+rhBtX/hbDGC5Io6cn2Bynf+WPluwRM9oKEdrtL5DyUMg==
   dependencies:
-    "@eslint/eslintrc" "^2.1.4"
     "@modelcontextprotocol/sdk" "^1.9.0"
     "@salesforce/core" "^8.19.0"
-    "@salesforce/mcp-provider-api" "0.3.0"
-    "@salesforce/telemetry" "^4.0.0"
+    "@salesforce/mcp-provider-api" "0.4.0"
     "@types/eventsource" "^1.1.15"
-    "@typescript-eslint/eslint-plugin" "^6.21.0"
-    "@typescript-eslint/parser" "^6.21.0"
     commander "^13.1.0"
     cors "^2.8.5"
-    eslint "^8.57.1"
     eventsource "^3.0.7"
     express "^5.1.0"
     stylelint "^16.19.1"
