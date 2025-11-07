@@ -2,6 +2,7 @@ import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
 import { fetchProjects } from "../getProjects.js";
+import { TelemetryEventNames } from "../constants.js";
 
 const inputSchema = z.object({
   username: z.string().describe("Username of the DevOps Center org"),
@@ -51,12 +52,42 @@ An array of project records with fields such as Id, Name, Description.`,
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
-    const projects = await fetchProjects(input.username);
-    return {
-      content: [{
-        type: "text",
-        text: JSON.stringify(projects, null, 2)
-      }]
-    };
+    const startTime = Date.now();
+    
+    try {
+      const projects = await fetchProjects(input.username);
+      
+      const executionTime = Date.now() - startTime;
+      const projectCount = projects.length;
+      
+      this.telemetryService.sendEvent(TelemetryEventNames.LIST_PROJECTS, {
+        success: true,
+        projectCount,
+        executionTimeMs: executionTime,
+      });
+      
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify(projects, null, 2)
+        }]
+      };
+    } catch (error: any) {
+      const executionTime = Date.now() - startTime;
+      
+      this.telemetryService.sendEvent(TelemetryEventNames.LIST_PROJECTS, {
+        success: false,
+        error: error?.message || 'Unknown error',
+        executionTimeMs: executionTime,
+      });
+      
+      return {
+        content: [{
+          type: "text",
+          text: `Error fetching projects: ${error?.message || error}`
+        }],
+        isError: true
+      };
+    }
   }
 }
