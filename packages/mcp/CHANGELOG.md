@@ -1,23 +1,12 @@
-## [0.23.5-dev.1](https://github.com/salesforcecli/mcp/compare/0.23.5-dev.0...0.23.5-dev.1) (2025-10-24)
-
-
-
-## [0.23.5-dev.0](https://github.com/salesforcecli/mcp/compare/0.23.4...0.23.5-dev.0) (2025-10-24)
+## [0.23.5](https://github.com/salesforcecli/mcp/compare/0.23.4...0.23.5) (2025-11-07)
 
 
 ### Bug Fixes
 
+* add shrinkwrap lockfile @W-19291869@ ([#188](https://github.com/salesforcecli/mcp/issues/188)) ([915e19d](https://github.com/salesforcecli/mcp/commit/915e19d5a25232ca6fde62cf71c698f9d19ba8a5))
 * listen on `SIGTERM` for telemetry ([#296](https://github.com/salesforcecli/mcp/issues/296)) ([2115e37](https://github.com/salesforcecli/mcp/commit/2115e3733f7bb8cbfc997635bbe7b807333d931b))
+* switch slds tools to non ga @W-20093690 ([#322](https://github.com/salesforcecli/mcp/issues/322)) ([1abc80a](https://github.com/salesforcecli/mcp/commit/1abc80aa179d12500c7cd547aa6783548bfee554))
 * **telemetry:** always set `isError` for tool events ([#308](https://github.com/salesforcecli/mcp/issues/308)) ([a7f9568](https://github.com/salesforcecli/mcp/commit/a7f95689d650d30900b920b5ee609b3af488b0e1))
-
-
-
-## [0.19.2-dev.1](https://github.com/salesforcecli/mcp/compare/0.19.1...0.19.2-dev.1) (2025-09-05)
-
-
-### Bug Fixes
-
-* add shrinkwrap lockfile ([400fe7a](https://github.com/salesforcecli/mcp/commit/400fe7a1852956aa8d25f5f299334f67acb36ea6))
 
 
 
@@ -131,16 +120,7 @@
 
 
 
-## [0.19.2](https://github.com/salesforcecli/mcp/compare/0.19.2-dev.1...0.19.2) (2025-09-16)
-
-
-
-## [0.19.2-dev.1](https://github.com/salesforcecli/mcp/compare/0.19.1...0.19.2-dev.1) (2025-09-05)
-
-
-### Bug Fixes
-
-* add shrinkwrap lockfile ([400fe7a](https://github.com/salesforcecli/mcp/commit/400fe7a1852956aa8d25f5f299334f67acb36ea6))
+## [0.19.2](https://github.com/salesforcecli/mcp/compare/0.19.1...0.19.2) (2025-09-16)
 
 
 
