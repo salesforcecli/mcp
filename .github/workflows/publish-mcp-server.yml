@@ -198,6 +198,17 @@ jobs:
         if: ${{ steps.changelog.outputs.skipped == 'false' && steps.release.outputs.id != '' }}
         run: |
           cd packages/mcp
+          rm -rf node_modules
+
+          # `npm shrinkwrap` doesn't support monorepos so we
+          # copy `packages/mcp` to a tmp dir for it to be a single npm project
+          mkdir ${{ runner.temp }}/mcp-shrinkwrap
+          # Use -L flag to dereference symlinks (e.g., README.md -> ../../README.md)
+          cp -rL . ${{ runner.temp }}/mcp-shrinkwrap
+          cd ${{ runner.temp }}/mcp-shrinkwrap
+          npm install
+          npm shrinkwrap
+
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
 
           # Determine npm dist-tag
