@@ -3,5 +3,16 @@
 # Attempting to ignore CHANGELOG markdown https://stackoverflow.com/a/74964396
 CHANGELOG.md
 
+packages/mcp/ @salesforcecli/dx-mcp-owners
+packages/mcp-provider-api/ @salesforcecli/dx-mcp-owners
+packages/mcp-provider-dx-core/ @salesforcecli/dx-mcp-owners
+packages/mcp-test-client/ @salesforcecli/dx-mcp-owners
+packages/EXAMPLE-MCP-PROVIDER/ @salesforcecli/dx-mcp-owners
+
+packages/mcp-provider-code-analyzer/ @salesforcecli/mcp-provider-code-analyzer
+packages/mcp-provider-devops/ @salesforcecli/mcp-provider-devops
+packages/mcp-provider-mobile-web/ @salesforcecli/mcp-provider-mobile
+
+
 # Comment line immediately above ownership line is reserved for related other information. Please be careful while editing.
 #ECCN:Open Source 5D002
