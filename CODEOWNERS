@@ -1,5 +1,7 @@
 # Technical writers will be added as reviewers on markdown changes.
 *.md @salesforcecli/cli-docs
+# Attempting to ignore CHANGELOG markdown https://stackoverflow.com/a/74964396
+CHANGELOG.md
 
 packages/mcp/ @salesforcecli/dx-mcp-owners
 packages/mcp-provider-api/ @salesforcecli/dx-mcp-owners
