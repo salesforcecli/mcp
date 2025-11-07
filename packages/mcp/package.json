@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/mcp",
-  "version": "0.23.4",
+  "version": "0.23.5-dev.1",
   "description": "MCP Server for interacting with Salesforce instances",
   "bin": {
     "sf-mcp-server": "bin/run.js"
@@ -31,6 +31,7 @@
     "!lib/**/*.map",
     "messages",
     "LICENSE.txt",
+    "npm-shrinkwrap.json",
     "package.json"
   ],
   "engines": {
