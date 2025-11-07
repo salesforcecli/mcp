@@ -183,9 +183,16 @@ describe('retrieve_metadata', () => {
     expect(packageXml.length).to.equal(1);
   });
 
-  it('should retrieve when ignoreConflicts is true', async () => {
+  it('should retrieve and overwrite local edits when ignoreConflicts is true', async () => {
     const apexClassPath = path.join('force-app', 'main', 'default', 'classes', 'GeocodingService.cls');
+    const localFilePath = path.join(testSession.project.dir, apexClassPath);
+    const originalContent = fs.readFileSync(localFilePath, 'utf8');
+    const localEditContent = originalContent + '\n// Local edit';
 
+    // Make a local edit to the file
+    fs.writeFileSync(localFilePath, localEditContent, 'utf8');
+
+    // Retrieve with ignoreConflicts=true - should overwrite local edit
     const result = await client.callTool(retrieveMetadataSchema, {
       name: 'retrieve_metadata',
       params: {
