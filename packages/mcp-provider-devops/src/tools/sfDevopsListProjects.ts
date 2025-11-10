@@ -5,7 +5,8 @@ import { fetchProjects } from "../getProjects.js";
 import { TelemetryEventNames } from "../constants.js";
 
 const inputSchema = z.object({
-  username: z.string().describe("Username of the DevOps Center org"),
+  username: z.string().optional().describe("Username of the DevOps Center org"),
+  alias: z.string().optional().describe("alias of the DevOps Center org"),
 });
 type InputArgs = z.infer<typeof inputSchema>;
 type InputArgsShape = typeof inputSchema.shape;
@@ -42,6 +43,9 @@ export class SfDevopsListProjects extends McpTool<InputArgsShape, OutputArgsShap
 
 **MANDATORY:** Before using this tool, always confirm the selected org is the DevOps Center org. If not, prompt the user to select a DevOps Center org. This tool must NOT be used for any non DevOps Center or Sandbox orgs.
 
+**Input:**
+- Either username (example devops-center@example.com) or alias (example myDevOpsOrg) is required.
+
 Lists DevOps Center Projects available in the specified org using SOQL on DevopsProject.
 
 **Output:**
@@ -51,11 +55,41 @@ An array of project records with fields such as Id, Name, Description.`,
     };
   }
 
+  private validateAndPrepare(input: InputArgs): { usernameOrAlias: string } | { error: CallToolResult } {
+    if (!input.username && !input.alias) {
+      return {
+        error: {
+          content: [{ type: "text", text: `Error: Username or alias of valid DevOps Center org is required` }],
+          isError: true
+        }
+      };
+    }
+
+    const usernameOrAlias = input.username ?? input.alias;
+    if (!usernameOrAlias) {
+      return {
+        error: {
+          content: [{ type: "text", text: `Error: Username or alias of valid DevOps Center org is required` }],
+          isError: true
+        }
+      };
+    }
+
+    return { usernameOrAlias };
+  }
+
   public async exec(input: InputArgs): Promise<CallToolResult> {
     const startTime = Date.now();
     
+    const validation = this.validateAndPrepare(input);
+    if ("error" in validation) {
+      return validation.error;
+    }
+
+    const { usernameOrAlias } = validation;
+    
     try {
-      const projects = await fetchProjects(input.username);
+      const projects = await fetchProjects(usernameOrAlias);
       
       const executionTime = Date.now() - startTime;
       const projectCount = projects.length;
