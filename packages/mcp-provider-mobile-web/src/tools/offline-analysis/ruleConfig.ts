@@ -21,7 +21,7 @@ export interface RuleConfig {
   id: string; //ESLint rule id
   config: CodeAnalysisBaseIssueType;
 }
-// ********** Rules: no-private-wire-config-property **********
+// ********** Rule: no-private-wire-config-property **********
 const NO_PRIVATE_WIRE_CONFIG_RULE_ID = '@salesforce/lwc-graph-analyzer/no-private-wire-config-property';
 
 const noPrivateWireRule: CodeAnalysisBaseIssueType = {
@@ -37,7 +37,7 @@ const noPrivateWireRule: CodeAnalysisBaseIssueType = {
       `,
 };
 
-// ********** Rules: no-wire-config-references-non-local-property-reactive-value **********
+// ********** Rule: no-wire-config-references-non-local-property-reactive-value **********
 const NO_WIRE_CONFIG_REFERENCES_NON_LOCAL_PROPERTY_REACTIVE_VALUE_RULE_ID =
   '@salesforce/lwc-graph-analyzer/no-wire-config-references-non-local-property-reactive-value';
 
@@ -74,4 +74,77 @@ const noWireConfigReferenceNonLocalPropertyRuleConfig: RuleConfig = {
   config: noWireConfigReferenceNonLocalPropertyRule,
 };
 
-export const ruleConfigs: RuleConfig[] = [noPrivateWireRuleConfig, noWireConfigReferenceNonLocalPropertyRuleConfig];
+// **********  getter related violations **********
+const getterViolation: CodeAnalysisBaseIssueType = {
+  type: 'Violations in Getter',
+  description: 'A getter method does more than just returning a value',
+  intentAnalysis:
+    'The developer attempted to modify component state, access a private property, or reference functions within a getter function.',
+  suggestedAction: dedent`
+        To fix this issue, follow the below instructions:
+        - Eliminate any member variables assignments within getters. Getters should not have side effects. LWC getters should only retrieve data. Never assign values to member variables within a getter. 
+        - Make the properties public by using the @api decorator. If a getter computes a value based on a member variable, make that variable public by adding @api decorator.
+        - Leverage getters for computations. In LWC, getters can return calculated or derived values, not just direct property values.
+        - Function reference is forbidden within getters. Don't invoke any function call within getters.
+        
+        
+        Example of correct usage:
+        import { LightningElement, api } from 'lwc';
+        
+        export default class Example extends LightningElement {
+            @api prop;
+
+            get calculatedProp() {
+              return this.prop * 3;
+            }
+        }
+      `,
+};
+
+// ********** Rule: no-assignment-expression-assigns-value-to-member-variable **********
+const NO_ASSIGNMENT_EXPRESSION_ASSIGNS_VALUE_TO_MEMBER_VARIABLE_RULE_ID =
+  '@salesforce/lwc-graph-analyzer/no-assignment-expression-assigns-value-to-member-variable';
+const noAssignmentExpressionAssignsValueToMemberVariableRuleConfig: RuleConfig = {
+  id: NO_ASSIGNMENT_EXPRESSION_ASSIGNS_VALUE_TO_MEMBER_VARIABLE_RULE_ID,
+  config: getterViolation,
+};
+
+// ********** Rule: no-reference-to-class-functions **********
+const NO_REFERENCE_TO_CLASS_FUNCTIONS_RULE_ID = '@salesforce/lwc-graph-analyzer/no-reference-to-class-functions';
+const noReferenceToClassFunctionsRuleConfig: RuleConfig = {
+  id: NO_REFERENCE_TO_CLASS_FUNCTIONS_RULE_ID,
+  config: getterViolation,
+};
+
+// ********** Rule: no-reference-to-module-functions **********
+const NO_REFERENCE_TO_MODULE_FUNCTIONS_RULE_ID = '@salesforce/lwc-graph-analyzer/no-reference-to-module-functions';
+const noReferenceToModuleFunctionsRuleConfig: RuleConfig = {
+  id: NO_REFERENCE_TO_MODULE_FUNCTIONS_RULE_ID,
+  config: getterViolation,
+};
+
+// ********** Rule: no-getter-contains-more-than-return-statement **********
+const NO_GETTER_CONTAINS_MORE_THAN_RETURN_STATEMENT_RULE_ID =
+  '@salesforce/lwc-graph-analyzer/no-getter-contains-more-than-return-statement';
+const noGetterContainsMoreThanReturnStatementRuleConfig: RuleConfig = {
+  id: NO_GETTER_CONTAINS_MORE_THAN_RETURN_STATEMENT_RULE_ID,
+  config: getterViolation,
+};
+
+// ********** Rule: no-unsupported-member-variable-in-member-expression **********
+const NO_UNSUPPORTED_MEMBER_VARIABLE_IN_MEMBER_EXPRESSION_RULE_ID =
+  '@salesforce/lwc-graph-analyzer/no-unsupported-member-variable-in-member-expression';
+const noUnsupportedMemberVariableInMemberExpressionRuleConfig: RuleConfig = {
+  id: NO_UNSUPPORTED_MEMBER_VARIABLE_IN_MEMBER_EXPRESSION_RULE_ID,
+  config: getterViolation,
+};
+
+export const ruleConfigs: RuleConfig[] = [
+  noPrivateWireRuleConfig,
+  noWireConfigReferenceNonLocalPropertyRuleConfig,
+  noAssignmentExpressionAssignsValueToMemberVariableRuleConfig,
+  noReferenceToClassFunctionsRuleConfig,
+  noReferenceToModuleFunctionsRuleConfig,
+  noGetterContainsMoreThanReturnStatementRuleConfig,
+  noUnsupportedMemberVariableInMemberExpressionRuleConfig,
+];
