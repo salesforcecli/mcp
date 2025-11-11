@@ -2,220 +2,285 @@ import { BaseDetector } from "./base-detector.js";
 import { DetectedAntipattern } from "../models/detection-result.js";
 import { AntipatternType } from "../models/antipattern-type.js";
 import { Severity } from "../models/severity.js";
-import { ApexParserFactory, ApexParserBaseVisitor } from "@apexdevtools/apex-parser";
-import type {
-  QueryContext,
-  ForStatementContext,
-  WhileStatementContext,
-  DoWhileStatementContext,
-  MethodDeclarationContext,
-} from "@apexdevtools/apex-parser";
 
 /**
- * AST-based detector for SOQL queries without WHERE or LIMIT clauses
- * Uses apex-parser for accurate syntax tree analysis instead of regex
+ * Detector for SOQL queries without WHERE or LIMIT clauses
+ * Uses regex-based static analysis to detect problematic SOQL queries
  */
 export class SOQLNoWhereLimitDetector implements BaseDetector {
+  // Pattern to find SELECT keyword (matches Python's r'(\W|^)select(\W|$)')
+  private static readonly SELECT_PATTERN = /(\W|^)select(\W|$)/i;
+
+  // Pattern to find [SELECT (for backward search)
+  private static readonly BRACKET_SELECT_PATTERN = /\[\s*select(\W|$)/i;
+
+  // Regex to detect method/function signatures
+  private static readonly METHOD_SIGNATURE_PATTERN = 
+    /(public|private|protected|global|static)?\s*(static)?\s+[\w<>,\s]+\s+\w+\s*\([^)]*\)\s*\{/i;
+
   public getAntipatternType(): AntipatternType {
     return AntipatternType.SOQL_NO_WHERE_LIMIT;
   }
 
   public detect(className: string, apexCode: string): DetectedAntipattern[] {
     const detections: DetectedAntipattern[] = [];
+    const lines = apexCode.split("\n");
+    const codeWithoutComments = this.removeComments(apexCode);
+    const linesWithoutComments = codeWithoutComments.split("\n");
+    
+    // Track processed query ranges to avoid duplicates
+    const processedRanges = new Set<string>();
 
-    try {
-      // Create parser using the factory
-      const parser = ApexParserFactory.createParser(apexCode);
+    // Find all SOQL queries (Python-equivalent logic)
+    for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+      const lineWithoutComments = linesWithoutComments[lineIndex];
       
-      // Parse as a compilation unit (class file)
-      const compilationUnit = parser.compilationUnit();
+      // Step 1: Find lines with SELECT keyword (like Python)
+      if (SOQLNoWhereLimitDetector.SELECT_PATTERN.test(lineWithoutComments)) {
+        
+        // Step 2: Find where the [ bracket is (look backwards up to 5 lines)
+        const bracketLineIndex = this.findBracketLine(linesWithoutComments, lineIndex);
+        
+        if (bracketLineIndex !== -1) {
+          // Check if we already processed this query
+          const queryKey = `${bracketLineIndex}`;
+          if (processedRanges.has(queryKey)) {
+            continue; // Skip duplicates (nested queries)
+          }
+          
+          // Step 3: Extract the full SOQL query starting from bracket line
+          const soqlQuery = this.extractSOQLQuery(linesWithoutComments, bracketLineIndex);
+          
+          if (soqlQuery && this.detectNoWhereLimitInSOQL(soqlQuery.query)) {
+            const methodName = this.extractMethodName(linesWithoutComments, bracketLineIndex);
+            const originalLine = lines[bracketLineIndex];
 
-      // Create visitor to traverse the AST
-      const visitor = new SOQLNoWhereLimitVisitor(className, apexCode, detections);
-      visitor.visit(compilationUnit);
-    } catch (error) {
-      console.error(`Error parsing ${className}:`, error);
-    }
-
-    return detections;
-  }
-}
-
-/**
- * Visitor class to traverse the AST and detect SOQL queries without WHERE/LIMIT
- */
-class SOQLNoWhereLimitVisitor extends ApexParserBaseVisitor<void> {
-  private loopDepth = 0;
-  private currentMethodName?: string;
-
-  constructor(
-    private className: string,
-    private apexCode: string,
-    private detections: DetectedAntipattern[]
-  ) {
-    super();
-  }
-
-  /**
-   * Visit method declarations to track context
-   */
-  visitMethodDeclaration(ctx: MethodDeclarationContext): void {
-    // Save previous method name to handle nested contexts
-    const previousMethodName = this.currentMethodName;
-    
-    // Try to get method name from id() first
-    let methodName: string | undefined;
-    if (ctx.id) {
-      const idCtx = ctx.id();
-      methodName = idCtx ? idCtx.getText() : undefined;
-    }
-    
-    // Fallback: if id() returns empty or undefined, extract from FormalParametersContext
-    // Parser behavior is inconsistent - sometimes puts name in id(), sometimes in parameters
-    if (!methodName && ctx.getChildCount() > 0) {
-      for (let i = 0; i < ctx.getChildCount(); i++) {
-        const child = ctx.getChild(i);
-        if (child && child.constructor.name === "FormalParametersContext") {
-          // Extract method name from parameters text (e.g., "testMethod()")
-          const text = child.getText();
-          const match = text.match(/^(\w+)\(/);
-          if (match) {
-            methodName = match[1];
-            break;
+            detections.push({
+              className,
+              methodName,
+              lineNumber: bracketLineIndex + 1, // Report line where [ is found
+              codeBefore: originalLine.trim(),
+              severity: Severity.HIGH,
+            });
+            
+            // Mark this query range as processed
+            processedRanges.add(queryKey);
+            
+            // Also mark the end line to avoid detecting nested queries
+            for (let i = bracketLineIndex; i <= soqlQuery.endLine; i++) {
+              processedRanges.add(`${i}`);
+            }
           }
         }
       }
     }
-    
-    this.currentMethodName = methodName;
-    
-    // Continue traversing children - this will visit method body
-    this.visitChildren(ctx);
-    
-    // Restore previous method name
-    this.currentMethodName = previousMethodName;
+
+    return detections;
   }
 
   /**
-   * Visit for statements to track loop context
+   * Finds the line index where [ bracket starts for a SOQL query
+   * Looks backwards up to 5 lines from the SELECT keyword (matches Python logic)
+   * 
+   * @param lines - Lines of code without comments
+   * @param selectLineIndex - Index of line containing SELECT keyword
+   * @returns Line index where [ is found, or -1 if not found
    */
-  visitForStatement(ctx: ForStatementContext): void {
-    this.loopDepth++;
-    this.visitChildren(ctx);
-    this.loopDepth--;
-  }
-
-  /**
-   * Visit while statements to track loop context
-   */
-  visitWhileStatement(ctx: WhileStatementContext): void {
-    this.loopDepth++;
-    this.visitChildren(ctx);
-    this.loopDepth--;
-  }
-
-  /**
-   * Visit do-while statements to track loop context
-   */
-  visitDoWhileStatement(ctx: DoWhileStatementContext): void {
-    this.loopDepth++;
-    this.visitChildren(ctx);
-    this.loopDepth--;
-  }
-
-  /**
-   * Visit SOQL queries - this is where we detect missing WHERE/LIMIT clauses
-   */
-  visitQuery(ctx: QueryContext): void {
-    const queryText = ctx.getText();
+  private findBracketLine(lines: string[], selectLineIndex: number): number {
+    const currentLine = lines[selectLineIndex];
     
-    // Check if the query lacks WHERE or LIMIT clause
-    if (this.detectNoWhereLimitInSOQL(queryText)) {
-      const lineNumber = this.getLineNumber(ctx);
-      const codeBefore = this.extractCodeSnippet(lineNumber);
-      
-      // Determine severity based on loop context
-      // HIGH if in loop (more records processed repeatedly)
-      // MEDIUM if outside loop
-      const severity = this.loopDepth > 0 ? Severity.HIGH : Severity.MEDIUM;
-
-      this.detections.push({
-        className: this.className,
-        methodName: this.currentMethodName,
-        lineNumber,
-        codeBefore,
-        severity,
-      });
+    // Check if [SELECT is on the same line
+    if (SOQLNoWhereLimitDetector.BRACKET_SELECT_PATTERN.test(currentLine)) {
+      return selectLineIndex;
     }
-
-    // Continue traversing children to find nested queries
-    this.visitChildren(ctx);
+    
+    // Look backwards up to 5 lines (Python: for i in range(idx - 1, -1, -1): if idx - i > 5: break)
+    const lookBackLimit = 5;
+    for (let i = selectLineIndex - 1; i >= 0 && selectLineIndex - i <= lookBackLimit; i--) {
+      // Join lines from i to selectLineIndex (inclusive)
+      const multiLineContext = lines.slice(i, selectLineIndex + 1).join('\n');
+      
+      // Check if this range contains [SELECT
+      if (SOQLNoWhereLimitDetector.BRACKET_SELECT_PATTERN.test(multiLineContext)) {
+        return i; // Return the line where [ was found
+      }
+    }
+    
+    return -1; // Not found within 5 lines
   }
 
   /**
    * Detects if a SOQL query lacks WHERE or LIMIT clauses
    * Handles both simple and nested SOQL queries
-   * 
-   * @param soqlQuery - The SOQL query text
-   * @returns true if antipattern is detected (no WHERE and no LIMIT)
    */
-  private detectNoWhereLimitInSOQL(soqlQuery: string): boolean {
-    // Check if either WHERE or LIMIT clause exists
-    const hasWhereOrLimit = /\b(WHERE|LIMIT)\b/i.test(soqlQuery);
+  private detectNoWhereLimitInSOQL(soqlLine: string): boolean {
+    // Search for 'where' or 'limit' in the SOQL line
+    let hasWhereLimitClause = /(\W|^)(where|limit)(\W|$)/i.test(soqlLine);
     
-    if (!hasWhereOrLimit) {
-      // If neither WHERE nor LIMIT is found, it's an antipattern
+    if (!hasWhereLimitClause) {
+      // If not even one where/limit is found, return true (antipattern detected)
       return true;
     }
     
     // Find all SELECT statements to determine if it's a nested query
-    const selectMatches = soqlQuery.match(/\bSELECT\b/gi) || [];
+    const selectMatches = soqlLine.match(/\Wselect\s/gi) || [];
     
     if (selectMatches.length === 1) {
-      // Single SOQL with WHERE or LIMIT found, no antipattern
+      // If single SOQL with where/limit found, no antipattern
       return false;
     }
     
-    // For nested SOQL, check only the outermost query
-    // Remove subqueries (content within parentheses containing SELECT)
-    const cleanedSoql = this.removeSubqueries(soqlQuery);
-    const hasWhereOrLimitInOuter = /\b(WHERE|LIMIT)\b/i.test(cleanedSoql);
+    // Here it means it's nested SOQL
+    // Remove subqueries using nested SELECT regex and find where/limit in the outermost SOQL
+    const cleanedSoql = soqlLine.replace(/\(\s*select\s+[\s\S]*?\)/gi, '');
+    hasWhereLimitClause = /(\W|^)(where|limit)(\W|$)/i.test(cleanedSoql);
     
-    // Return true if WHERE/LIMIT not found in outermost query
-    return !hasWhereOrLimitInOuter;
+    // Return true if where/limit not found in outermost query
+    return !hasWhereLimitClause;
   }
 
   /**
-   * Remove nested subqueries to analyze only the outer query
-   * 
-   * @param soqlQuery - The SOQL query text
-   * @returns Query with subqueries removed
+   * Extracts the full SOQL query from the code, handling multi-line queries
    */
-  private removeSubqueries(soqlQuery: string): string {
-    // Remove content within parentheses that contains SELECT
-    // This handles nested subqueries like: SELECT Id, (SELECT Name FROM Contacts) FROM Account
-    return soqlQuery.replace(/\(\s*SELECT\s+[\s\S]*?\)/gi, '()');
-  }
+  private extractSOQLQuery(lines: string[], startLineIndex: number): { query: string; endLine: number } | null {
+    let soqlQuery = "";
+    let openBrackets = 0;
+    let foundStart = false;
 
-  /**
-   * Extract line number from context
-   */
-  private getLineNumber(ctx: any): number {
-    const token = ctx.start;
-    return token ? token.line : 1;
-  }
-
-  /**
-   * Extract a code snippet for the given line number
-   */
-  private extractCodeSnippet(lineNumber: number): string {
-    const lines = this.apexCode.split('\n');
-    const lineIndex = lineNumber - 1;
-    
-    if (lineIndex >= 0 && lineIndex < lines.length) {
-      return lines[lineIndex].trim();
+    for (let i = startLineIndex; i < lines.length; i++) {
+      const line = lines[i];
+      
+      for (const char of line) {
+        if (char === '[') {
+          if (!foundStart) foundStart = true;
+          openBrackets++;
+        } else if (char === ']') {
+          openBrackets--;
+        }
+        
+        if (foundStart) {
+          soqlQuery += char;
+        }
+        
+        // Complete SOQL query found
+        if (foundStart && openBrackets === 0) {
+          return { query: soqlQuery, endLine: i };
+        }
+      }
+      
+      if (foundStart) {
+        soqlQuery += "\n";
+      }
     }
     
-    return '';
+    // If we reach here, SOQL query might be incomplete or malformed
+    return soqlQuery ? { query: soqlQuery, endLine: lines.length - 1 } : null;
+  }
+
+  /**
+   * Removes comments and string literals from Apex code
+   * while preserving line numbers for accurate detection.
+   * Handles single-line comments, block comments, and string literals.
+   */
+  private removeComments(code: string): string {
+    let result = '';
+    let inBlockComment = false;
+    let inSingleQuoteString = false;
+    let inDoubleQuoteString = false;
+    let i = 0;
+
+    while (i < code.length) {
+      const currentChar = code[i];
+      const nextChar = i < code.length - 1 ? code[i + 1] : '';
+      
+      // Handle string literals (not in comments)
+      if (!inBlockComment) {
+        // Check for single quote string start/end
+        if (currentChar === "'" && !inDoubleQuoteString) {
+          // Check if escaped
+          const isEscaped = i > 0 && code[i - 1] === '\\';
+          if (!isEscaped) {
+            inSingleQuoteString = !inSingleQuoteString;
+            result += ' '; // Replace string delimiter with space
+            i++;
+            continue;
+          }
+        }
+        
+        // Check for double quote string start/end
+        if (currentChar === '"' && !inSingleQuoteString) {
+          // Check if escaped
+          const isEscaped = i > 0 && code[i - 1] === '\\';
+          if (!isEscaped) {
+            inDoubleQuoteString = !inDoubleQuoteString;
+            result += ' '; // Replace string delimiter with space
+            i++;
+            continue;
+          }
+        }
+        
+        // If inside string, replace with space (preserve newlines)
+        if (inSingleQuoteString || inDoubleQuoteString) {
+          result += currentChar === '\n' ? '\n' : ' ';
+          i++;
+          continue;
+        }
+      }
+
+      // Check for block comment start (not in strings)
+      if (!inBlockComment && !inSingleQuoteString && !inDoubleQuoteString && 
+          currentChar === '/' && nextChar === '*') {
+        inBlockComment = true;
+        result += '  '; // Preserve spacing
+        i += 2;
+        continue;
+      }
+
+      // Check for block comment end
+      if (inBlockComment && currentChar === '*' && nextChar === '/') {
+        inBlockComment = false;
+        result += '  '; // Preserve spacing
+        i += 2;
+        continue;
+      }
+
+      // Check for single-line comment start (not in strings)
+      if (!inBlockComment && !inSingleQuoteString && !inDoubleQuoteString && 
+          currentChar === '/' && nextChar === '/') {
+        // Skip until end of line
+        while (i < code.length && code[i] !== '\n') {
+          result += code[i] === '\n' ? '\n' : ' '; // Preserve newlines
+          i++;
+        }
+        continue;
+      }
+
+      // If in block comment, replace with space
+      if (inBlockComment) {
+        result += currentChar === '\n' ? '\n' : ' ';
+      } else {
+        result += currentChar;
+      }
+      i++;
+    }
+
+    return result;
+  }
+
+  /**
+   * Extracts the method name from context by scanning backwards
+   */
+  private extractMethodName(lines: string[], lineIndex: number): string | undefined {
+    for (let i = lineIndex; i >= 0 && i > lineIndex - 50; i--) {
+      const line = lines[i];
+      const match = line.match(SOQLNoWhereLimitDetector.METHOD_SIGNATURE_PATTERN);
+      
+      if (match) {
+        // Extract method name from the signature
+        const methodMatch = line.match(/\s(\w+)\s*\(/);
+        return methodMatch ? methodMatch[1] : undefined;
+      }
+    }
+    return undefined;
   }
 }
