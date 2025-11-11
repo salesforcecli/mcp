@@ -60,6 +60,43 @@ public class ObjectMetadataHandler {
 }
 \`\`\`
 
+
+### Example of Antipattern
+\`\`\`apex
+/**
+     * ANTI-PATTERN : Schema.getGlobalDescribe() inside a loop
+     * This is extremely inefficient as it calls getGlobalDescribe() multiple times
+     */
+    public void schemaGetGlobalDescribeInLoop() {
+        List<String> objectNames = new List<String>{'Account', 'Contact', 'Opportunity', 'Lead', 'Case'};
+        
+        // ANTI-PATTERN: Calling Schema.getGlobalDescribe() inside a loop
+        // This causes the expensive getGlobalDescribe() operation to be called multiple times
+        for (String objectName : objectNames) {
+            // ANTI-PATTERN: This is called 5 times in this loop!
+            Schema.DescribeSObjectResult dsr = Schema.getGlobalDescribe().get(objectName).getDescribe();
+            System.debug('Object ' + objectName + ' label: ' + dsr.getLabel());
+        }
+    }
+\`\`\`
+
+
+
+### Recommended Fix
+Cache the result of \`Schema.getGlobalDescribe()\` outside the loop and reuse it:
+
+\`\`\`apex
+// FIX: Use Type.forName() for dynamic object names
+        for (String objectName : objectNames) {
+            Type objType = Type.forName(objectName);
+            if (objType != null) {
+                SObject instance = (SObject)objType.newInstance();
+                Schema.DescribeSObjectResult dsr = instance.getSObjectType().getDescribe();
+                System.debug('Object ' + objectName + ' label: ' + dsr.getLabel());
+            }
+        }
+\`\`\`
+
 ---
 
 ## Antipattern 2: Multiple Schema.getGlobalDescribe() Calls Within a Class/Method
