@@ -12,8 +12,6 @@ import { AntipatternRegistry } from "../antipatterns/antipattern-registry.js";
 import { AntipatternModule } from "../antipatterns/antipattern-module.js";
 import { GGDDetector } from "../detectors/ggd-detector.js";
 import { GGDRecommender } from "../recommenders/ggd-recommender.js";
-import { SOQLNoWhereLimitDetector } from "../detectors/soql-no-where-limit-detector.js";
-import { SOQLNoWhereLimitRecommender } from "../recommenders/soql-no-where-limit-recommender.js";
 import { ScanResult, AntipatternResult } from "../models/detection-result.js";
 
 // Define input schema
@@ -62,12 +60,13 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
     );
     registry.register(ggdModule);
 
-    // Register SOQL No WHERE/LIMIT antipattern module
-    const soqlModule = new AntipatternModule(
-      new SOQLNoWhereLimitDetector(),
-      new SOQLNoWhereLimitRecommender()
-    );
-    registry.register(soqlModule);
+    // Future antipatterns can be registered here
+    // Example:
+    // const soqlModule = new AntipatternModule(
+    //   new SOQLInLoopDetector(),
+    //   new SOQLInLoopRecommender()
+    // );
+    // registry.register(soqlModule);
 
     return registry;
   }
@@ -89,10 +88,9 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
       title: "Scan Apex Class for Antipatterns",
       description: 
         "Analyzes an Apex class file for performance antipatterns and provides " +
-        "recommendations for fixing them. Currently detects: " +
-        "1) Schema.getGlobalDescribe() usage with optimized alternatives " +
-        "2) SOQL queries without WHERE or LIMIT clauses. " +
-        "Distinguishes between different severity levels (e.g., usage in loops vs. ordinary usage). " +
+        "recommendations for fixing them. Currently detects Schema.getGlobalDescribe() " +
+        "usage and provides optimized alternatives. Distinguishes between different " +
+        "severity levels (e.g., usage in loops vs. ordinary usage). " +
         "Requires an absolute path to the Apex class file.",
       inputSchema: scanApexInputSchema.shape,
       outputSchema: undefined,
