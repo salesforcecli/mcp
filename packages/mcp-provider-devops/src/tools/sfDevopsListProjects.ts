@@ -1,23 +1,22 @@
 import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
-import { fetchProjects } from "../getProjects.js";
+import { McpTool, McpToolConfig, ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
 import { TelemetryEventNames } from "../constants.js";
+import { usernameOrAliasParam } from "../shared/params.js";
 
 const inputSchema = z.object({
-  username: z.string().optional().describe("Username of the DevOps Center org"),
-  alias: z.string().optional().describe("alias of the DevOps Center org"),
+  usernameOrAlias: usernameOrAliasParam,
 });
 type InputArgs = z.infer<typeof inputSchema>;
 type InputArgsShape = typeof inputSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class SfDevopsListProjects extends McpTool<InputArgsShape, OutputArgsShape> {
-  private readonly telemetryService: TelemetryService;
+  private readonly services: Services;
 
-  constructor(telemetryService: TelemetryService) {
+  constructor(services: Services) {
     super();
-    this.telemetryService = telemetryService;
+    this.services = services;
   }
 
   public getReleaseState(): ReleaseState {
@@ -55,46 +54,20 @@ An array of project records with fields such as Id, Name, Description.`,
     };
   }
 
-  private validateAndPrepare(input: InputArgs): { usernameOrAlias: string } | { error: CallToolResult } {
-    if (!input.username && !input.alias) {
-      return {
-        error: {
-          content: [{ type: "text", text: `Error: Username or alias of valid DevOps Center org is required` }],
-          isError: true
-        }
-      };
-    }
-
-    const usernameOrAlias = input.username ?? input.alias;
-    if (!usernameOrAlias) {
-      return {
-        error: {
-          content: [{ type: "text", text: `Error: Username or alias of valid DevOps Center org is required` }],
-          isError: true
-        }
-      };
-    }
-
-    return { usernameOrAlias };
-  }
-
   public async exec(input: InputArgs): Promise<CallToolResult> {
     const startTime = Date.now();
     
-    const validation = this.validateAndPrepare(input);
-    if ("error" in validation) {
-      return validation.error;
-    }
-
-    const { usernameOrAlias } = validation;
-    
     try {
-      const projects = await fetchProjects(usernameOrAlias);
+      const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
+      
+      const query = "SELECT Id, Name, Description FROM DevopsProject";
+      const result = await connection.query(query);
+      const projects = result.records ?? [];
       
       const executionTime = Date.now() - startTime;
       const projectCount = projects.length;
       
-      this.telemetryService.sendEvent(TelemetryEventNames.LIST_PROJECTS, {
+      this.services.getTelemetryService().sendEvent(TelemetryEventNames.LIST_PROJECTS, {
         success: true,
         projectCount,
         executionTimeMs: executionTime,
@@ -109,7 +82,7 @@ An array of project records with fields such as Id, Name, Description.`,
     } catch (error: any) {
       const executionTime = Date.now() - startTime;
       
-      this.telemetryService.sendEvent(TelemetryEventNames.LIST_PROJECTS, {
+      this.services.getTelemetryService().sendEvent(TelemetryEventNames.LIST_PROJECTS, {
         success: false,
         error: error?.message || 'Unknown error',
         executionTimeMs: executionTime,

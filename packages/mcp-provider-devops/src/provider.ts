@@ -20,7 +20,7 @@ export class DevOpsMcpProvider extends McpProvider {
   public provideTools(services: Services): Promise<McpTool[]> {
     const telemetryService = services.getTelemetryService();
     return Promise.resolve([
-      new SfDevopsListProjects(telemetryService),
+      new SfDevopsListProjects(services),
       new SfDevopsListWorkItems(telemetryService),
       new SfDevopsPromoteWorkItem(telemetryService),
       new SfDevopsDetectConflict(telemetryService),
