@@ -46,7 +46,6 @@ const LINTER_CONFIG: Linter.Config = {
 type InputArgsShape = typeof LwcCodeSchema.shape;
 type OutputArgsShape = typeof ExpertsCodeAnalysisIssuesSchema.shape;
 
-
 export class OfflineAnalysisTool extends McpTool<InputArgsShape, OutputArgsShape> {
   private readonly linter: Linter;
   private readonly ruleReviewers: Record<string, CodeAnalysisBaseIssueType>;
@@ -130,12 +129,11 @@ export class OfflineAnalysisTool extends McpTool<InputArgsShape, OutputArgsShape
       const jsCode = code.js.content;
       const jsPath = code.js.path;
 
-      // Komaci supports only single HTML file for now.
-      const htmlCode = code.html.length > 0 ? code.html[0].content : '';
+      const htmlCodes = code.html.length > 0 ? code.html.map((html) => html.content) : ([''] as string[]);
 
       const baseName = code.name;
 
-      bundleAnalyzer.setLwcBundleFromContent(baseName, jsCode, htmlCode);
+      bundleAnalyzer.setLwcBundleFromContent(baseName, jsCode, ...htmlCodes);
 
       const { messages } = this.linter.verifyAndFix(jsCode, LINTER_CONFIG, {
         fix: true,

@@ -79,11 +79,10 @@ const getterViolation: CodeAnalysisBaseIssueType = {
   type: 'Violations in Getter',
   description: 'A getter method does more than just returning a value',
   intentAnalysis:
-    'The developer attempted to modify component state, access a private property, or reference functions within a getter function.',
+    'The developer attempted to modify component state, prepare data for consumption, or reference functions within a getter function.',
   suggestedAction: dedent`
         To fix this issue, follow the below instructions:
-        - Eliminate any member variables assignments within getters. Getters should not have side effects. LWC getters should only retrieve data. Never assign values to member variables within a getter. 
-        - Make the properties public by using the @api decorator. If a getter computes a value based on a member variable, make that variable public by adding @api decorator.
+        - Getters should not have side effects. LWC getters should only retrieve data. Never assign values to member variables within a getter. 
         - Leverage getters for computations. In LWC, getters can return calculated or derived values, not just direct property values.
         - Function reference is forbidden within getters. Don't invoke any function call within getters.
         

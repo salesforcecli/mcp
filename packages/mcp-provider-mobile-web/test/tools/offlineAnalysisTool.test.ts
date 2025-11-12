@@ -261,7 +261,7 @@ describe('Tests for OfflineAnalysisTool', () => {
         expect(issue).toHaveProperty('filePath', 'testComponent.js');
         expect(issue).toHaveProperty('type', 'Violations in Getter');
         expect(issue.description).toContain('does more than just returning a value');
-        expect(issue.suggestedAction).toContain('Eliminate any member variables assignments within getters');
+        expect(issue.suggestedAction).toContain('Getters should not have side effects');
       });
     });
 
