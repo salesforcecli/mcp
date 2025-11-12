@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "prepack": "echo 'no prepack script'"
+  },
   "devDepOverrides": [
     "eslint-config-salesforce-license",
     "@types/node"
