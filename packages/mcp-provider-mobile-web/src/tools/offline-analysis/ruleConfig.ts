@@ -81,22 +81,38 @@ const getterViolation: CodeAnalysisBaseIssueType = {
   intentAnalysis:
     'The developer attempted to modify component state, prepare data for consumption, or reference functions within a getter function.',
   suggestedAction: dedent`
-        To fix this issue, follow the below instructions:
-        - Getters should not have side effects. LWC getters should only retrieve data. Never assign values to member variables within a getter. 
-        - Leverage getters for computations. In LWC, getters can return calculated or derived values, not just direct property values.
-        - Function reference is forbidden within getters. Don't invoke any function call within getters.
-        
-        
-        Example of correct usage:
-        import { LightningElement, api } from 'lwc';
-        
-        export default class Example extends LightningElement {
-            @api prop;
+        # Compliant getter implementations
 
-            get calculatedProp() {
-              return this.prop * 3;
-            }
-        }
+        Getters that:
+        - Directly access and return property values
+        - Return a literal value
+        - Compute and return values derived from existing properties
+
+        # Non-compliant getter implementations
+
+        ## Violation: getters that call functions
+
+        Getters that call functions cannot be primed for offline use cases.
+
+        ###Remediation
+
+        Reorganize any getter implementation code that calls a function, to move such calls out of the getter. Avoid invoking any function calls within getters.
+
+        ## Violation: getters with side effects
+
+        Getters that assign values to member variables or modify state create unpredictable side effects and are not suitable for offline scenarios.
+
+        ### Remediation
+
+        Never assign values to member variables within a getter. LWC getters should only retrieve data without modifying any state. If you need to compute and cache a value, perform the computation and assignment in a lifecycle hook or method, then have the getter simply return the cached value.
+
+        ## Violation: getters that do more than just return a value
+
+        Getters that perform complex operations beyond returning a value cannot be primed for offline use cases.
+
+        ### Remediation
+
+        Review the getters and make sure that they're composed to only return a value. Move any complex logic, data processing, or multiple operations into separate methods or lifecycle hooks, and have the getter simply return the result.
       `,
 };
 

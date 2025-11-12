@@ -261,7 +261,7 @@ describe('Tests for OfflineAnalysisTool', () => {
         expect(issue).toHaveProperty('filePath', 'testComponent.js');
         expect(issue).toHaveProperty('type', 'Violations in Getter');
         expect(issue.description).toContain('does more than just returning a value');
-        expect(issue.suggestedAction).toContain('Getters should not have side effects');
+        expect(issue.suggestedAction).toContain('getters with side effects');
       });
     });
 
@@ -435,7 +435,7 @@ export default class TestComponent extends LightningElement {
 
     it('... then issues include the correct filePath and location', async () => {
       const result = await tool.analyzeCode(codeWithViolation);
-      
+
       // If issues are detected, verify they have the correct structure
       if (result.analysisResults[0].issues.length > 0) {
         const issue = result.analysisResults[0].issues[0];
@@ -444,7 +444,7 @@ export default class TestComponent extends LightningElement {
         expect(issue.location).toHaveProperty('startLine');
         expect(issue.location).toHaveProperty('startColumn');
       }
-      
+
       // At minimum, verify analysis completes
       expect(result).toHaveProperty('analysisResults');
       expect(Array.isArray(result.analysisResults)).toBe(true);
