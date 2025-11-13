@@ -48,6 +48,12 @@ export class SOQLFieldTracker {
       ''
     );
 
+    // Check for INSERT DML - this means ALL fields are being used (complete usage)
+    const insertPattern = new RegExp(`insert\\s+${this.escapeRegex(varName)}\\s*;`, 'gi');
+    if (insertPattern.test(codeNoComment)) {
+      return true; // INSERT uses all fields
+    }
+
     // Remove special method calls that don't indicate complete usage
     let cleanedCode = codeNoComment
       .replace(new RegExp(`${this.escapeRegex(varName)}\\.isEmpty\\(\\)`, 'g'), '')
@@ -55,8 +61,8 @@ export class SOQLFieldTracker {
       .replace(new RegExp(`${this.escapeRegex(varName)}\\.size\\(\\)`, 'g'), '')
       // CRITICAL: Remove for-each loops - iterating over collection is NOT complete usage
       .replace(new RegExp(`for\\s*\\([^:]*:\\s*${this.escapeRegex(varName)}\\s*\\)`, 'gi'), '')
-      // EDGE CASE FIX: Remove DML statements - they only need Id field, not complete usage
-      .replace(new RegExp(`(delete|update|insert|upsert)\\s+${this.escapeRegex(varName)}\\s*;`, 'gi'), '');
+      // EDGE CASE FIX: Remove UPDATE/DELETE/UPSERT - they only need Id field, not complete usage
+      .replace(new RegExp(`(delete|update|upsert)\\s+${this.escapeRegex(varName)}\\s*;`, 'gi'), '');
 
     // Check for complete usage patterns
     const completeUsagePatterns = [
@@ -133,13 +139,16 @@ export class SOQLFieldTracker {
 
     for (const column of columns) {
       for (const laterSOQL of laterSOQLs) {
-        const soqlQuery = laterSOQL.query.toLowerCase();
-        const varLower = assignedVariable.toLowerCase();
-        const colLower = column.toLowerCase();
+        const soqlQuery = laterSOQL.query;
+        
+        // Pattern to match: :varName.fieldName
+        // This ensures we're finding actual bind variable usage, not just substring matches
+        const bindVarPattern = new RegExp(
+          `:${this.escapeRegex(assignedVariable)}\\.${this.escapeRegex(column)}\\b`,
+          'i'
+        );
 
-        // Check if both variable and column appear in later SOQL
-        // Example: WHERE AccountId = :acc.Id
-        if (soqlQuery.includes(varLower) && soqlQuery.includes(colLower)) {
+        if (bindVarPattern.test(soqlQuery)) {
           usedColumns.push(column);
           break; // Found usage, no need to check other SOQLs for this field
         }
@@ -237,8 +246,9 @@ export class SOQLFieldTracker {
    * @returns true if variable is returned
    */
   public static isReturnedInCode(varName: string, methodCode: string): boolean {
+    // Match: return var; or return var) or return var, but NOT return var.Field
     const returnPattern = new RegExp(
-      `return\\s+${this.escapeRegex(varName)}\\b`,
+      `return\\s+${this.escapeRegex(varName)}\\s*[;,)]`,
       'i'
     );
     return returnPattern.test(methodCode);

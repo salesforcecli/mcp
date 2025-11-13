@@ -86,6 +86,7 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
     //   new SOQLInLoopRecommender()
     // );
     // registry.register(soqlModule);
+    
     return registry;
   }
 

@@ -335,32 +335,57 @@ class SOQLUnusedFieldsVisitor extends ApexParserBaseVisitor<void> {
 
   /**
    * Visit all nodes to track variable declarations
-   * Simplified approach that works with any declaration context
+   * Generic approach to catch all variable declarations
    */
   visitChildren(node: any): void {
-    // Track variable declarations by looking for assignment patterns
-    if (node && node.getText) {
-      const text = node.getText();
+    // Try to extract variable declarations from any node
+    if (node && node.start) {
       const nodeName = node.constructor?.name || '';
       
-      // Match variable declaration patterns: Type varName = ...
-      // This covers: List<Type> var = ..., Type var = ..., etc.
-      if (nodeName.includes('VariableDeclaration') || nodeName.includes('LocalVariable')) {
-        // FIXED: Improved regex to capture variable name more accurately
-        // Pattern handles: Type varName = ... or List<Type> varName = ...
-        // Match word before = sign, excluding type names in angle brackets
-        const varMatch = text.match(/>\s*(\w+)\s*=/) || // List<Type> varName =
-                         text.match(/\s(\w+)\s*=/) ||    // Type varName =
-                         text.match(/^(\w+)\s*=/);       // varName = (simple case)
-        
-        if (varMatch) {
-          const varName = varMatch[1];
-          const lineNumber = node.start ? node.start.line : 0;
-          // FIXED: Allow SOQL assignments - we WANT to track these!
-          // The original check !text.includes('[SELECT') was too restrictive
-          if (lineNumber > 0 && varName && varName.length > 0) {
-            this.lastVariableDeclaration = { name: varName, lineNumber };
+      // Check if this is a variable declaration node
+      if (nodeName.includes('LocalVariable') || nodeName.includes('VariableDeclaration')) {
+        // Try to access the structure properly
+        try {
+          // Method 1: Try localVariableDeclaration structure
+          if (typeof node.localVariableDeclaration === 'function') {
+            const localVarDecl = node.localVariableDeclaration();
+            if (localVarDecl && typeof localVarDecl.variableDeclarators === 'function') {
+              const varDeclarators = localVarDecl.variableDeclarators();
+              // ANTLR returns lists with _list suffix
+              if (varDeclarators && typeof varDeclarators.variableDeclarator_list === 'function') {
+                const declaratorList = varDeclarators.variableDeclarator_list();
+                if (declaratorList && declaratorList.length > 0) {
+                  const firstDeclarator = declaratorList[0];
+                  if (firstDeclarator && typeof firstDeclarator.id === 'function') {
+                    const idNode = firstDeclarator.id();
+                    if (idNode) {
+                      const varName = idNode.getText();
+                      const lineNumber = node.start.line;
+                      if (lineNumber > 0 && varName && varName.length > 0) {
+                        this.lastVariableDeclaration = { name: varName, lineNumber };
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
+          
+          // Method 2: Try to get id() directly (for VariableDeclarator nodes)
+          if (!this.lastVariableDeclaration || this.lastVariableDeclaration.lineNumber !== node.start.line) {
+            if (typeof node.id === 'function') {
+              const idNode = node.id();
+              if (idNode) {
+                const varName = idNode.getText();
+                const lineNumber = node.start.line;
+                if (lineNumber > 0 && varName && varName.length > 0) {
+                  this.lastVariableDeclaration = { name: varName, lineNumber };
+                }
+              }
+            }
+          }
+        } catch (error) {
+          // Silently ignore errors in variable extraction
         }
       }
     }
@@ -376,15 +401,27 @@ class SOQLUnusedFieldsVisitor extends ApexParserBaseVisitor<void> {
     
     // Check if this is a for-each loop with SOQL
     // Pattern: for (Type var : [SELECT ...])
-    const forText = ctx.getText();
-    if (forText.includes('[') && forText.includes('SELECT')) {
-      // Extract loop variable from for statement
-      const forVarMatch = forText.match(/for\s*\(\s*\w+\s+(\w+)\s*:/i);
-      if (forVarMatch) {
-        const loopVar = forVarMatch[1];
-        const lineNumber = this.getLineNumber(ctx);
-        this.lastVariableDeclaration = { name: loopVar, lineNumber };
+    try {
+      // Try to access the for control structure
+      const ctxAny = ctx as any;
+      if (typeof ctxAny.forControl === 'function') {
+        const forControl = ctxAny.forControl();
+        
+        // Check if it's an enhanced for loop (for-each)
+        if (forControl && typeof forControl.enhancedForControl === 'function') {
+          const enhancedFor = forControl.enhancedForControl();
+          if (enhancedFor && typeof enhancedFor.id === 'function') {
+            const idNode = enhancedFor.id();
+            if (idNode) {
+              const loopVar = idNode.getText();
+              const lineNumber = this.getLineNumber(ctx);
+              this.lastVariableDeclaration = { name: loopVar, lineNumber };
+            }
+          }
+        }
       }
+    } catch (error) {
+      // Silently ignore errors in for control extraction
     }
     
     this.visitChildren(ctx);

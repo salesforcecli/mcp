@@ -22,7 +22,7 @@ When SOQL queries select fields that are never used in subsequent code, it cause
 
 The fix is straightforward: **remove fields from the SELECT clause that are never accessed in your code**.
 
-### Example 1: Basic Unused Fields
+### Example 1: Basic Unused Fields (MEDIUM Severity)
 
 **❌ BEFORE (Antipattern):**
 \`\`\`apex
@@ -74,7 +74,7 @@ List<Account> children = [SELECT Id FROM Account WHERE ParentId = :acc.Id];
 
 ---
 
-### Example 3: Loop Context
+### Example 3: Loop Context (HIGH Severity)
 
 **❌ BEFORE (Antipattern):**
 \`\`\`apex
