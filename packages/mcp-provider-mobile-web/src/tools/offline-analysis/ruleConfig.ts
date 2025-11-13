@@ -94,7 +94,7 @@ const getterViolation: CodeAnalysisBaseIssueType = {
 
         Getters that call functions cannot be primed for offline use cases.
 
-        ###Remediation
+        ### Remediation
 
         Reorganize any getter implementation code that calls a function, to move such calls out of the getter. Avoid invoking any function calls within getters.
 
