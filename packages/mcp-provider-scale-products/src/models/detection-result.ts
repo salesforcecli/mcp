@@ -26,6 +26,12 @@ export interface DetectedAntipattern {
   codeBefore: string;
 
   /**
+   * The code after fix - contains the optimized/corrected code (optional)
+   * Used for antipatterns that provide actual fix generation (e.g., SOQL unused fields)
+   */
+  codeAfter?: string;
+
+  /**
    * Severity/priority of this detection
    */
   severity: Severity;
@@ -34,7 +40,68 @@ export interface DetectedAntipattern {
    * Entrypoints affected by this issue (optional)
    */
   entrypoints?: string;
+
+  /**
+   * Additional metadata specific to the antipattern type (optional)
+   * Used to provide context-specific information for fix generation
+   */
+  metadata?: AntipatternMetadata;
 }
+
+/**
+ * Metadata for SOQL unused fields antipattern
+ */
+export interface SOQLUnusedFieldsMetadata {
+  /**
+   * List of fields that are selected but never used
+   */
+  unusedFields: string[];
+
+  /**
+   * List of all fields in the original SOQL query
+   */
+  originalFields: string[];
+
+  /**
+   * Variable name that the SOQL result is assigned to (if any)
+   */
+  assignedVariable: string | null;
+
+  /**
+   * Whether the SOQL is inside a loop
+   */
+  isInLoop: boolean;
+
+  /**
+   * Whether the SOQL result variable is returned from the method
+   */
+  isReturned: boolean;
+
+  /**
+   * Whether the SOQL result is assigned to a class member field
+   */
+  isClassMember: boolean;
+
+  /**
+   * Whether the SOQL query contains nested subqueries
+   */
+  hasNestedQueries: boolean;
+
+  /**
+   * Fields that are used in subsequent SOQL queries
+   */
+  usedInLaterSOQLs: string[];
+
+  /**
+   * Whether the complete SOQL result object is used (not individual fields)
+   */
+  completeUsageDetected: boolean;
+}
+
+/**
+ * Union type for all antipattern-specific metadata
+ */
+export type AntipatternMetadata = SOQLUnusedFieldsMetadata | Record<string, any>;
 
 /**
  * All detections for a specific antipattern type
