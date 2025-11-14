@@ -14,8 +14,7 @@ import { BaseDetector } from "./base-detector.js";
 import { DetectedAntipattern, SOQLUnusedFieldsMetadata } from "../models/detection-result.js";
 import { AntipatternType } from "../models/antipattern-type.js";
 import { Severity } from "../models/severity.js";
-import { SOQLParser } from "../utils/soql-parser.js";
-import { SOQLFieldTracker } from "../utils/soql-field-tracker.js";
+import { SOQLParser, SOQLFieldTracker } from "../utils/soql-ast-utils.js";
 import { ApexParserFactory, ApexParserBaseVisitor } from "@apexdevtools/apex-parser";
 import type {
   QueryContext,

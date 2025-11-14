@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { SOQLParser } from '../../src/utils/soql-parser.js';
+import { SOQLParser } from '../../src/utils/soql-ast-utils.js';
 
 describe('SOQLParser', () => {
   describe('extractFields', () => {

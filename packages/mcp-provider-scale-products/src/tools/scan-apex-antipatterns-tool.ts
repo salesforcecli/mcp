@@ -72,7 +72,7 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
     registry.register(soqlModule);
 
     // Register SOQL Unused Fields antipattern module
-    // Uses ApexGuru patterns for field usage analysis and fix generation
+    // Performs field usage analysis and generates optimized queries
     const soqlUnusedFieldsModule = new AntipatternModule(
       new SOQLUnusedFieldsDetector(),
       new SOQLUnusedFieldsRecommender()

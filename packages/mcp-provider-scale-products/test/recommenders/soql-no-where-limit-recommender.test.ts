@@ -160,5 +160,3 @@ describe("SOQLNoWhereLimitRecommender", () => {
     expect(instruction).toContain("LIMIT 1");
   });
 });
-
-
