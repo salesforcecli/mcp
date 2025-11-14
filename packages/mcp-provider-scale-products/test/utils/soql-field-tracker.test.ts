@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { SOQLFieldTracker } from '../../src/utils/soql-field-tracker.js';
+import { SOQLFieldTracker } from '../../src/utils/soql-ast-utils.js';
 
 describe('SOQLFieldTracker', () => {
   describe('findDirectFieldAccess', () => {
