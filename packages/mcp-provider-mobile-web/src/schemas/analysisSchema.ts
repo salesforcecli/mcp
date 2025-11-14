@@ -32,6 +32,7 @@ export const CodeAnalysisBaseIssueSchema = z.object({
 });
 
 export const CodeAnalysisIssueSchema = CodeAnalysisBaseIssueSchema.extend({
+  filePath: z.string().describe('The relative path to the file where the issue occurs'),
   code: z.string().optional().describe('What is the code snippet with the issue?'),
   location: z
     .object({
