@@ -19,7 +19,6 @@ import { McpTool, type McpToolConfig } from '@salesforce/mcp-provider-api';
 import { ReleaseState, Toolset } from '@salesforce/mcp-provider-api';
 import { LwcCodeSchema, type LwcCodeType } from '../../schemas/lwcSchema.js';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { z } from 'zod';
 import lwcGraphAnalyzerPlugin from '@salesforce/eslint-plugin-lwc-graph-analyzer';
 import { ruleConfigs } from './ruleConfig.js';
 
@@ -34,6 +33,7 @@ import {
 const ANALYSIS_EXPERT_NAME = 'Mobile Web Offline Analysis';
 const PLUGIN_NAME = '@salesforce/lwc-graph-analyzer';
 const RECOMMENDED_CONFIG = lwcGraphAnalyzerPlugin.configs.recommended;
+const { bundleAnalyzer } = lwcGraphAnalyzerPlugin.processors;
 
 const LINTER_CONFIG: Linter.Config = {
   name: `config: ${PLUGIN_NAME}`,
@@ -45,7 +45,6 @@ const LINTER_CONFIG: Linter.Config = {
 
 type InputArgsShape = typeof LwcCodeSchema.shape;
 type OutputArgsShape = typeof ExpertsCodeAnalysisIssuesSchema.shape;
-type InputArgs = z.infer<typeof LwcCodeSchema>;
 
 export class OfflineAnalysisTool extends McpTool<InputArgsShape, OutputArgsShape> {
   private readonly linter: Linter;
@@ -82,7 +81,7 @@ export class OfflineAnalysisTool extends McpTool<InputArgsShape, OutputArgsShape
     };
   }
 
-  public async exec(args: InputArgs): Promise<CallToolResult> {
+  public async exec(args: LwcCodeType): Promise<CallToolResult> {
     try {
       const analysisResults = await this.analyzeCode(args);
 
@@ -119,22 +118,42 @@ export class OfflineAnalysisTool extends McpTool<InputArgsShape, OutputArgsShape
   }
 
   public async analyzeCode(code: LwcCodeType): Promise<ExpertsCodeAnalysisIssuesType> {
-    const jsCode = code.js.map((js: { content: string }) => js.content).join('\n');
-    const { messages } = this.linter.verifyAndFix(jsCode, LINTER_CONFIG, {
-      fix: true,
-    });
+    let offlineAnalysisIssues: ExpertCodeAnalysisIssuesType;
 
-    const offlineAnalysisIssues = this.analyzeIssues(jsCode, messages);
+    if (!code.js) {
+      offlineAnalysisIssues = {
+        expertReviewerName: ANALYSIS_EXPERT_NAME,
+        issues: [],
+      };
+    } else {
+      const jsCode = code.js.content;
+      const jsPath = code.js.path;
+
+      const htmlCodes = code.html.length > 0 ? code.html.map((html) => html.content) : ([''] as string[]);
+
+      const baseName = code.name;
+
+      bundleAnalyzer.setLwcBundleFromContent(baseName, jsCode, ...htmlCodes);
+
+      const { messages } = this.linter.verifyAndFix(jsCode, LINTER_CONFIG, {
+        fix: true,
+        filename: `${baseName}.js`,
+      });
+
+      offlineAnalysisIssues = this.analyzeIssues(jsCode, messages, jsPath);
+    }
+
     return {
       analysisResults: [offlineAnalysisIssues],
       orchestrationInstructions: this.getOrchestrationInstructions(),
     };
   }
+
   private getOrchestrationInstructions(): string {
     return ExpertsCodeAnalysisIssuesSchema.shape.orchestrationInstructions.parse(undefined);
   }
 
-  private analyzeIssues(code: string, messages: Linter.LintMessage[]): ExpertCodeAnalysisIssuesType {
+  private analyzeIssues(code: string, messages: Linter.LintMessage[], jsPath: string): ExpertCodeAnalysisIssuesType {
     const issues: CodeAnalysisIssueType[] = [];
 
     for (const violation of messages) {
@@ -144,6 +163,7 @@ export class OfflineAnalysisTool extends McpTool<InputArgsShape, OutputArgsShape
 
       if (ruleReviewer) {
         const issue: CodeAnalysisIssueType = {
+          filePath: jsPath,
           type: ruleReviewer.type,
           description: ruleReviewer.description,
           intentAnalysis: ruleReviewer.intentAnalysis,
