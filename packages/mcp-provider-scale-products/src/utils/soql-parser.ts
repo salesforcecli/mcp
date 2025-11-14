@@ -19,8 +19,8 @@ export class SOQLParser {
    * // Returns: ["Id", "Name", "Phone"]
    */
   public static extractFields(soqlQuery: string): string[] {
-    // Pattern: SELECT\s+(.*?)\s+FROM\s+
-    // FIXED: Use \s* instead of \s+ for SELECT and FROM to handle AST getText() which removes ALL whitespace
+    // Pattern: SELECT\s*(.*?)\s*FROM\s*
+    // Use \s* (zero or more spaces) to handle various whitespace patterns
     const pattern = /SELECT\s*(.*?)\s*FROM\s*/gi;
     const matches = [...soqlQuery.matchAll(pattern)];
 
@@ -77,7 +77,7 @@ export class SOQLParser {
   /**
    * Remove unused fields from SOQL query and reconstruct
    * 
-   * CRITICAL: This follows safety patterns:
+   * Safety patterns:
    * - Returns empty string for nested queries (too complex to optimize)
    * - Ensures at least one field remains after removal
    * - Preserves the entire FROM clause including WHERE, LIMIT, etc.

@@ -40,7 +40,7 @@ interface SOQLQueryInfo {
 
 /**
  * SOQL Unused Fields Detector
- * Implements ApexGuru's unused fields detection with all exclusion patterns
+ * Detects SOQL queries with unused fields using sophisticated analysis patterns
  */
 export class SOQLUnusedFieldsDetector implements BaseDetector {
   public getAntipatternType(): AntipatternType {
@@ -76,7 +76,7 @@ export class SOQLUnusedFieldsDetector implements BaseDetector {
       for (const soql of visitor.soqlQueries) {
         const assignedVar = soql.assignedVariable;
 
-        // CRITICAL: Apply exclusion logic
+        // Apply exclusion logic
         if (this.shouldSkipAnalysis(assignedVar, soql, apexCode, visitor.classFields)) {
           continue;
         }
@@ -118,7 +118,7 @@ export class SOQLUnusedFieldsDetector implements BaseDetector {
   }
 
   /**
-   * CRITICAL: Determines if SOQL analysis should be skipped
+   * Determines if SOQL analysis should be skipped
    * Implements all exclusion patterns to avoid false positives
    * 
    * Skip conditions:

@@ -11,10 +11,10 @@ export class SOQLFieldTracker {
   /**
    * Check if complete SOQL results are used (not individual fields)
    * 
-   * This is CRITICAL for avoiding false positives. When the complete SOQL result
+   * Avoids false positives. When the complete SOQL result
    * is passed around or returned, we cannot safely optimize it.
    * 
-   * CRITICAL patterns:
+   * Key patterns:
    * 1. Detects patterns like: variable; variable) variable[0]; variable,
    * 2. Excludes special methods: .isEmpty(), .size(), != null
    * 3. Checks for member access vs complete usage
@@ -59,9 +59,9 @@ export class SOQLFieldTracker {
       .replace(new RegExp(`${this.escapeRegex(varName)}\\.isEmpty\\(\\)`, 'g'), '')
       .replace(new RegExp(`${this.escapeRegex(varName)}\\s*!=\\s*null`, 'g'), '')
       .replace(new RegExp(`${this.escapeRegex(varName)}\\.size\\(\\)`, 'g'), '')
-      // CRITICAL: Remove for-each loops - iterating over collection is NOT complete usage
+      // Remove for-each loops - iterating over collection is NOT complete usage
       .replace(new RegExp(`for\\s*\\([^:]*:\\s*${this.escapeRegex(varName)}\\s*\\)`, 'gi'), '')
-      // EDGE CASE FIX: Remove UPDATE/DELETE/UPSERT - they only need Id field, not complete usage
+      // Exclude UPDATE/DELETE/UPSERT - they only need Id field, not complete usage
       .replace(new RegExp(`(delete|update|upsert)\\s+${this.escapeRegex(varName)}\\s*;`, 'gi'), '');
 
     // Check for complete usage patterns
@@ -162,7 +162,7 @@ export class SOQLFieldTracker {
    * Analyze field usage patterns in code after SOQL
    * Identifies which specific fields are accessed via member notation
    * 
-   * CRITICAL FIX: Also tracks loop variables that iterate over the assigned variable
+   * Tracks loop variables that iterate over the assigned variable
    * Example: List<Account> accounts = [...]; for (Account acc : accounts) { acc.Name }
    * We need to find fields accessed via both 'accounts' AND 'acc'
    * 
@@ -182,7 +182,7 @@ export class SOQLFieldTracker {
   ): string[] {
     const usedFields: string[] = [];
 
-    // CRITICAL: Find loop variables that iterate over this variable
+    // Find loop variables that iterate over this variable
     // Pattern: for (Type loopVar : varName)
     const loopVarPattern = new RegExp(
       `for\\s*\\(\\s*\\w+\\s+(\\w+)\\s*:\\s*${this.escapeRegex(varName)}\\s*\\)`,
@@ -199,8 +199,8 @@ export class SOQLFieldTracker {
     
     for (const varToCheck of varsToCheck) {
       // Pattern to match variable.Field or variable[0].Field or variable.Relationship.Field
-      // CRITICAL FIX: Handle relationship field access (e.g., con.Account.Name)
-      // EDGE CASE FIX: Exclude field assignments (var.Field = value) but ALLOW comparisons (var.Field == value)
+      // Handle relationship field access (e.g., con.Account.Name)
+      // Exclude field assignments (var.Field = value) but ALLOW comparisons (var.Field == value)
       // (?!\\s*=[^=]) means: NOT followed by "=" unless it's "==" or "==="
       const memberAccessPattern = new RegExp(
         `\\b${this.escapeRegex(varToCheck)}(\\[\\d+\\])?\\.([a-zA-Z_][\\w.]*)(?!\\s*=[^=])`,
