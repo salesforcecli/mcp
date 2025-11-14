@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/mcp-provider-mobile-web",
   "description": "MCP Provider for Mobile Web development tools and utilities",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "Salesforce",
   "license": "Apache-2.0",
   "type": "module",
