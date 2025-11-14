@@ -42,7 +42,7 @@ export class SOQLUnusedFieldsRecommender implements BaseRecommender {
         methodName: detection.methodName,
         lineNumber: detection.lineNumber,
         codeBefore: detection.codeBefore,
-        codeAfter, // ← THE FIX! This is what makes it different
+        codeAfter, 
         severity: detection.severity,
         unusedFields: metadata.unusedFields,
         originalFields: metadata.originalFields,
