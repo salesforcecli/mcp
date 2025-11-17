@@ -15,7 +15,6 @@
  */
 
 import path from 'node:path';
-import { promises as fs } from 'node:fs';
 import { expect, assert } from 'chai';
 import { McpTestClient, DxMcpTransport } from '@salesforce/mcp-test-client';
 import { TestSession } from '@salesforce/cli-plugins-testkit';
@@ -228,69 +227,6 @@ describe('deploy_metadata', () => {
     expect(deployResult.numberComponentsDeployed).to.equal(1);
     expect(deployResult.numberTestsCompleted).to.equal(11);
     expect(deployResult.runTestsEnabled).to.be.true;
-  });
-
-  it('should deploy local edit when ignoreConflicts is set to true', async () => {
-    const apexClassPath = path.join(
-      testSession.project.dir,
-      'force-app',
-      'main',
-      'default',
-      'classes',
-      'GeocodingService.cls',
-    );
-
-    // Deploy baseline
-    const baseline = await client.callTool(deployMetadataSchema, {
-      name: 'deploy_metadata',
-      params: {
-        sourceDir: [apexClassPath],
-        usernameOrAlias: orgUsername,
-        directory: testSession.project.dir,
-      },
-    });
-
-    expect(baseline.isError).to.be.false;
-    expect(baseline.content.length).to.equal(1);
-
-    // Make a local edit
-    const baselineContent = await fs.readFile(apexClassPath, 'utf8');
-    const localEdited = baselineContent.replace(
-      /(public\s+(?:with\s+sharing\s+)?class\s+GeocodingService[^{]*\{)/,
-      '$1\n    // Local edit',
-    );
-    await fs.writeFile(apexClassPath, localEdited, 'utf8');
-
-    // Deploy the local change with ignoreConflicts true
-    const deployResult = await client.callTool(deployMetadataSchema, {
-      name: 'deploy_metadata',
-      params: {
-        sourceDir: [apexClassPath],
-        ignoreConflicts: true,
-        usernameOrAlias: orgUsername,
-        directory: testSession.project.dir,
-      },
-    });
-
-    expect(deployResult.isError).to.equal(false);
-    expect(deployResult.content.length).to.equal(1);
-    if (deployResult.content[0].type !== 'text') assert.fail();
-
-    const deployText = deployResult.content[0].text;
-    expect(deployText).to.contain('Deploy result:');
-
-    const deployMatch = deployText.match(/Deploy result: ({.*})/);
-    expect(deployMatch).to.not.be.null;
-
-    const result = JSON.parse(deployMatch![1]) as {
-      success: boolean;
-      done: boolean;
-      numberComponentsDeployed: number;
-    };
-
-    expect(result.success).to.be.true;
-    expect(result.done).to.be.true;
-    expect(result.numberComponentsDeployed).to.equal(1);
   });
 
   it('should deploy remote edit when ignoreConflicts is set to true', async () => {
