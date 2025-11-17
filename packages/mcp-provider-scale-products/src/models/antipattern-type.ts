@@ -13,4 +13,10 @@ export enum AntipatternType {
    * Detects SOQL queries that lack WHERE or LIMIT clauses
    */
   SOQL_NO_WHERE_LIMIT = "SOQL_NO_WHERE_LIMIT",
+  
+  /**
+   * SOQL with unused fields antipattern
+   * Detects SOQL queries that select fields which are never used in subsequent code
+   */
+  SOQL_UNUSED_FIELDS = "SOQL_UNUSED_FIELDS",
 }
