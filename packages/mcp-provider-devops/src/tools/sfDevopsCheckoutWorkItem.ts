@@ -1,12 +1,14 @@
 import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
+import { McpTool, McpToolConfig, ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
 import { checkoutWorkitemBranch } from "../checkoutWorkitemBranch.js";
 import { fetchWorkItemByName } from "../getWorkItems.js";
 import { normalizeAndValidateRepoPath } from "../shared/pathUtils.js";
+import { TelemetryEventNames } from "../constants.js";
+import { usernameOrAliasParam } from "../shared/params.js";
 
 const inputSchema = z.object({
-  username: z.string().describe("The username of the DevOps Center org."),
+  usernameOrAlias: usernameOrAliasParam,
   workItemName: z.string().min(1).describe("Exact Work Item Name to check out."),
   localPath: z.string().describe("The directory path where the repository should be cloned/checked out. If not provided, ask user to provide the path where project is cloned.")
 });
@@ -15,11 +17,11 @@ type InputArgsShape = typeof inputSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class SfDevopsCheckoutWorkItem extends McpTool<InputArgsShape, OutputArgsShape> {
-  private readonly telemetryService: TelemetryService;
+  private readonly services: Services;
 
-  constructor(telemetryService: TelemetryService) {
+  constructor(services: Services) {
     super();
-    this.telemetryService = telemetryService;
+    this.services = services;
   }
 
   public getReleaseState(): ReleaseState {
@@ -71,7 +73,9 @@ This tool takes the DevOps Center org username and the exact Work Item Name, loo
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
+    const startTime = Date.now();
     let safeLocalPath: string | undefined = undefined;
+    
     try {
       if (!input.localPath || input.localPath.trim().length === 0) {
         return {
@@ -91,8 +95,16 @@ This tool takes the DevOps Center org username and the exact Work Item Name, loo
 
     let workItem: any;
     try {
-      workItem = await fetchWorkItemByName(input.username, input.workItemName);
+      workItem = await fetchWorkItemByName(input.usernameOrAlias, input.workItemName);
     } catch (e: any) {
+      const executionTime = Date.now() - startTime;
+      
+      this.services.getTelemetryService().sendEvent(TelemetryEventNames.CHECKOUT_WORK_ITEM, {
+        success: false,
+        error: `Error fetching work item: ${e?.message || e}`,
+        executionTimeMs: executionTime,
+      });
+      
       return {
         content: [{ type: "text", text: `Error fetching work item: ${e?.message || e}` }],
         isError: true
@@ -124,8 +136,28 @@ This tool takes the DevOps Center org username and the exact Work Item Name, loo
         branchName: workItem.WorkItemBranch,
         localPath: safeLocalPath
       });
+      
+      const executionTime = Date.now() - startTime;
+      
+      this.services.getTelemetryService().sendEvent(TelemetryEventNames.CHECKOUT_WORK_ITEM, {
+        success: true,
+        workItemName: input.workItemName,
+        branchName: workItem.WorkItemBranch,
+        repoUrl: workItem.SourceCodeRepository.repoUrl,
+        executionTimeMs: executionTime,
+      });
+      
       return result;
     } catch (e: any) {
+      const executionTime = Date.now() - startTime;
+      
+      this.services.getTelemetryService().sendEvent(TelemetryEventNames.CHECKOUT_WORK_ITEM, {
+        success: false,
+        error: `Error during checkout: ${e?.message || e}`,
+        workItemName: input.workItemName,
+        executionTimeMs: executionTime,
+      });
+      
       return {
         content: [{ type: "text", text: `Error during checkout: ${e?.message || e}` }],
         isError: true

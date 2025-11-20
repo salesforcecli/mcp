@@ -1,14 +1,15 @@
 import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
+import { McpTool, McpToolConfig, ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
 import { commitWorkItem } from "../commitLiteWorkItem.js";
 import { fetchWorkItemByName } from "../getWorkItems.js";
 import { normalizeAndValidateRepoPath } from "../shared/pathUtils.js";
 import { randomUUID } from 'crypto';
+import { TelemetryEventNames } from "../constants.js";
+import { usernameOrAliasParam } from "../shared/params.js";
 
 const inputSchema = z.object({
-  username: z.string().optional().describe("Username of the DevOps Center org"),
-  alias: z.string().optional().describe("alias of the DevOps Center org"),
+  usernameOrAlias: usernameOrAliasParam,
   workItemName: z.string().min(1).describe("Exact Work Item Name to commit workitem."),
   commitMessage: z.string().describe("Commit message describing the changes (ask user for input)"),
   repoPath: z.string().describe("Absolute path to the git repository root. Defaults to current working directory.")
@@ -18,11 +19,11 @@ type InputArgsShape = typeof inputSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsShape> {
-  private readonly telemetryService: TelemetryService;
+  private readonly services: Services;
 
-  constructor(telemetryService: TelemetryService) {
+  constructor(services: Services) {
     super();
-    this.telemetryService = telemetryService;
+    this.services = services;
   }
 
   public getReleaseState(): ReleaseState {
@@ -70,15 +71,6 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
   }
 
   private async validateAndPrepare(input: InputArgs): Promise<{ workItem: any; localPath: string } | { error: CallToolResult }> {
-    if (!input.username && !input.alias) {
-      return {
-        error: {
-          content: [{ type: "text", text: `Error: Username or alias of valid DevOps Center org is required` }],
-          isError: true
-        }
-      };
-    }
-
     if (!input.workItemName) {
       return {
         error: {
@@ -90,16 +82,7 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
 
     let workItem: any;
     try {
-      const usernameOrAlias = input.username ?? input.alias;
-      if (!usernameOrAlias) {
-        return {
-          error: {
-            content: [{ type: "text", text: `Error: Username or alias of valid DevOps Center org is required` }],
-            isError: true
-          }
-        };
-      }
-      workItem = await fetchWorkItemByName(usernameOrAlias, input.workItemName);
+      workItem = await fetchWorkItemByName(input.usernameOrAlias, input.workItemName);
     } catch (e: any) {
       return {
         error: {
@@ -137,6 +120,8 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
 
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
+    const startTime = Date.now();
+    
     try {
       const validation = await this.validateAndPrepare(input);
     if ("error" in validation) {
@@ -167,7 +152,7 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
       const requestId = randomUUID();
       
       const result = await commitWorkItem({
-        username: input.username ?? input.alias ?? '',
+        username: input.usernameOrAlias,
         workItem: workItem,
         requestId: requestId,
         commitMessage: input.commitMessage,
@@ -175,10 +160,28 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
       });
 
       if (result && Array.isArray((result as any).content)) {
+        const executionTime = Date.now() - startTime;
+        
+        this.services.getTelemetryService().sendEvent(TelemetryEventNames.COMMIT_WORK_ITEM, {
+          success: false,
+          workItemName: input.workItemName,
+          error: 'Commit failed',
+          executionTimeMs: executionTime,
+        });
+        
         return {
           content: (result as any).content
         };
       }
+
+      const executionTime = Date.now() - startTime;
+      
+      this.services.getTelemetryService().sendEvent(TelemetryEventNames.COMMIT_WORK_ITEM, {
+        success: true,
+        workItemName: input.workItemName,
+        requestId: requestId,
+        executionTimeMs: executionTime,
+      });
 
       const instructions = `Commit created successfully.\n\nAgent execution guide (perform these steps now):\n- Ensure your working directory is: '${localPath}'\n- Push the commit: 'git push origin HEAD'\n- After push succeeds, create a PR using 'create_devops_center_pull_request'`;
 
@@ -189,6 +192,15 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
         ]
       };
     } catch (error: any) {
+      const executionTime = Date.now() - startTime;
+      
+      this.services.getTelemetryService().sendEvent(TelemetryEventNames.COMMIT_WORK_ITEM, {
+        success: false,
+        error: error?.message || 'Unknown error',
+        workItemName: input.workItemName,
+        executionTimeMs: executionTime,
+      });
+      
       return {
         content: [{
           type: "text",
