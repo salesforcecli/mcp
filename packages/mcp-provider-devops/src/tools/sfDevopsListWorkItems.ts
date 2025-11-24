@@ -1,10 +1,12 @@
 import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
+import { McpTool, McpToolConfig, ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
 import { fetchWorkItems } from "../getWorkItems.js";
+import { TelemetryEventNames } from "../constants.js";
+import { usernameOrAliasParam } from "../shared/params.js";
 
 const inputSchema = z.object({
-  username: z.string().describe("Username of the DevOps Center org"),
+  usernameOrAlias: usernameOrAliasParam,
   project: z.object({
     Id: z.string().describe("Selected project's Id"),
     Name: z.string().optional()
@@ -15,11 +17,11 @@ type InputArgsShape = typeof inputSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class SfDevopsListWorkItems extends McpTool<InputArgsShape, OutputArgsShape> {
-  private readonly telemetryService: TelemetryService;
+  private readonly services: Services;
 
-  constructor(telemetryService: TelemetryService) {
+  constructor(services: Services) {
     super();
-    this.telemetryService = telemetryService;
+    this.services = services;
   }
 
   public getReleaseState(): ReleaseState {
@@ -38,6 +40,10 @@ export class SfDevopsListWorkItems extends McpTool<InputArgsShape, OutputArgsSha
     return {
       title: "List DevOps Work Items",
       description: `List all the work items for a specific  DevOps Center project.
+      
+**Input:**
+- Either username (example devops-center@example.com) or alias (example myDevOpsOrg) is required.
+      
       **MANDATORY:** If the DevOps Center org is not given, use the 'sf-list-all-orgs' tool to list all orgs. 
       The list will indicate which org is DevOps Center, or Sandbox if possible. If these details are not provided in the list, 
       ask the user to specify which org is DevOps Center org. Only proceed after the user has selected the DevOps Center org.
@@ -58,8 +64,21 @@ export class SfDevopsListWorkItems extends McpTool<InputArgsShape, OutputArgsSha
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
+    const startTime = Date.now();
+    
     try {
-      const workItems = await fetchWorkItems(input.username, input.project.Id);
+      const workItems = await fetchWorkItems(input.usernameOrAlias, input.project.Id);
+      
+      const executionTime = Date.now() - startTime;
+      const workItemCount = workItems.length;
+      
+      this.services.getTelemetryService().sendEvent(TelemetryEventNames.LIST_WORK_ITEMS, {
+        success: true,
+        workItemCount,
+        projectId: input.project.Id,
+        executionTimeMs: executionTime,
+      });
+      
       return {
         content: [{
           type: "text",
@@ -67,6 +86,14 @@ export class SfDevopsListWorkItems extends McpTool<InputArgsShape, OutputArgsSha
         }]
       };
     } catch (e: any) {
+      const executionTime = Date.now() - startTime;
+      
+      this.services.getTelemetryService().sendEvent(TelemetryEventNames.LIST_WORK_ITEMS, {
+        success: false,
+        error: e?.message || 'Unknown error',
+        executionTimeMs: executionTime,
+      });
+      
       return {
         content: [{ type: "text", text: `Error listing work items: ${e?.message || e}` }],
         isError: true
