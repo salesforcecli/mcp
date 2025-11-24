@@ -16,7 +16,7 @@
 
 import { z } from 'zod';
 import { Connection, Org, SfError, SfProject } from '@salesforce/core';
-import { SourceTracking } from '@salesforce/source-tracking';
+import { SourceTracking, SourceConflictError } from '@salesforce/source-tracking';
 import { ComponentSet, ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
 import { ensureString } from '@salesforce/ts-types';
 import { Duration } from '@salesforce/kit';
@@ -166,7 +166,7 @@ Deploy X to my org and run A,B and C apex tests.`,
         ignoreConflicts: input.ignoreConflicts ?? false,
       });
 
-      const componentSet = await buildDeployComponentSet(connection, project, stl, input.sourceDir, input.manifest);
+      const componentSet = await buildDeployComponentSet(connection, project, stl, input.sourceDir, input.manifest, input.ignoreConflicts);
 
       if (componentSet.size === 0) {
         // STL found no changes
@@ -209,6 +209,7 @@ async function buildDeployComponentSet(
   stl: SourceTracking,
   sourceDir?: string[],
   manifestPath?: string,
+  ignoreConflicts?: boolean,
 ): Promise<ComponentSet> {
   if (sourceDir || manifestPath) {
     return ComponentSetBuilder.build({
@@ -226,8 +227,16 @@ async function buildDeployComponentSet(
       projectDir: stl?.projectPath,
     });
   }
-
-  // No specific metadata requested to deploy, build component set from STL.
-  const cs = (await stl.localChangesAsComponentSet(false))[0] ?? new ComponentSet(undefined, stl.registry);
-  return cs;
+  try {
+    // No specific metadata requested to deploy, build component set from STL.
+    const cs = (await stl.localChangesAsComponentSet(false))[0] ?? new ComponentSet(undefined, stl.registry);
+    return cs;
+  }
+  catch (error) {
+    if (ignoreConflicts && error instanceof SourceConflictError) {
+      // Ignore conflicts as requested, proceed with deployment
+      return new ComponentSet(undefined, stl.registry);
+    }
+    throw new SfError('Failed to build component set for deployment due to conflicts. Set ignoreConflicts=true to override.');
+  }
 }
