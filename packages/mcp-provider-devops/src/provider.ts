@@ -21,13 +21,13 @@ export class DevOpsMcpProvider extends McpProvider {
     const telemetryService = services.getTelemetryService();
     return Promise.resolve([
       new SfDevopsListProjects(services),
-      new SfDevopsListWorkItems(telemetryService),
-      new SfDevopsPromoteWorkItem(telemetryService),
+      new SfDevopsListWorkItems(services),
+      new SfDevopsPromoteWorkItem(services),
       new SfDevopsDetectConflict(telemetryService),
       new SfDevopsResolveConflict(telemetryService),
 
-      new SfDevopsCheckoutWorkItem(telemetryService),
-      new SfDevopsCommitWorkItem(telemetryService),
+      new SfDevopsCheckoutWorkItem(services),
+      new SfDevopsCommitWorkItem(services),
 
       new CheckCommitStatus(telemetryService),
       new CreatePullRequest(telemetryService),

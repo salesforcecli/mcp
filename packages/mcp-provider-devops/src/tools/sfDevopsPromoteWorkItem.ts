@@ -1,11 +1,13 @@
 import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
+import { McpTool, McpToolConfig, ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
 import { promoteWorkItems } from "../promoteWorkItems.js";
 import { fetchWorkItemsByNames } from "../getWorkItems.js";
+import { TelemetryEventNames } from "../constants.js";
+import { usernameOrAliasParam } from "../shared/params.js";
 
 const inputSchema = z.object({
-  username: z.string().describe("Username of the DevOps Center org"),
+  usernameOrAlias: usernameOrAliasParam,
   workItemNames: z.array(z.string().min(1)).nonempty().describe("Exact Work Item Names to promote")
 });
 type InputArgs = z.infer<typeof inputSchema>;
@@ -13,11 +15,11 @@ type InputArgsShape = typeof inputSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class SfDevopsPromoteWorkItem extends McpTool<InputArgsShape, OutputArgsShape> {
-  private readonly telemetryService: TelemetryService;
+  private readonly services: Services;
 
-  constructor(telemetryService: TelemetryService) {
+  constructor(services: Services) {
     super();
-    this.telemetryService = telemetryService;
+    this.services = services;
   }
 
   public getReleaseState(): ReleaseState {
@@ -77,10 +79,20 @@ export class SfDevopsPromoteWorkItem extends McpTool<InputArgsShape, OutputArgsS
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
+    const startTime = Date.now();
     let items: any[] | any;
+    
     try {
-      items = await fetchWorkItemsByNames(input.username, input.workItemNames);
+      items = await fetchWorkItemsByNames(input.usernameOrAlias, input.workItemNames);
     } catch (e: any) {
+      const executionTime = Date.now() - startTime;
+      
+      this.services.getTelemetryService().sendEvent(TelemetryEventNames.PROMOTE_WORK_ITEM, {
+        success: false,
+        error: `Error fetching work items: ${e?.message || e}`,
+        executionTimeMs: executionTime,
+      });
+      
       return { content: [{ type: "text", text: `Error fetching work items: ${e?.message || e}` }], isError: true };
     }
     if (!Array.isArray(items) || items.length === 0) {
@@ -104,12 +116,38 @@ export class SfDevopsPromoteWorkItem extends McpTool<InputArgsShape, OutputArgsS
       return { content: [{ type: "text", text: `Cannot promote due to missing pipeline data for: ${missing.join(", ")}. Ensure each item has a pipeline stage and target stage.` }] };
     }
 
-    const result = await promoteWorkItems(input.username, { workitems: prepared });
-    return {
-      content: [{
-        type: "text",
-        text: JSON.stringify(result, null, 2)
-      }]
-    };
+    try {
+      const result = await promoteWorkItems(input.usernameOrAlias, { workitems: prepared });
+      
+      const executionTime = Date.now() - startTime;
+      
+      this.services.getTelemetryService().sendEvent(TelemetryEventNames.PROMOTE_WORK_ITEM, {
+        success: true,
+        workItemCount: items.length,
+        workItemNames: input.workItemNames.join(', '),
+        executionTimeMs: executionTime,
+      });
+      
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify(result, null, 2)
+        }]
+      };
+    } catch (e: any) {
+      const executionTime = Date.now() - startTime;
+      
+      this.services.getTelemetryService().sendEvent(TelemetryEventNames.PROMOTE_WORK_ITEM, {
+        success: false,
+        error: e?.message || 'Unknown error',
+        workItemCount: items.length,
+        executionTimeMs: executionTime,
+      });
+      
+      return {
+        content: [{ type: "text", text: `Error promoting work items: ${e?.message || e}` }],
+        isError: true
+      };
+    }
   }
 }
