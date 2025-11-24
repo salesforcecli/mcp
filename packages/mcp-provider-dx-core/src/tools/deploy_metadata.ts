@@ -16,7 +16,7 @@
 
 import { z } from 'zod';
 import { Connection, Org, SfError, SfProject } from '@salesforce/core';
-import { SourceTracking } from '@salesforce/source-tracking';
+import { SourceTracking, SourceConflictError } from '@salesforce/source-tracking';
 import { ComponentSet, ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
 import { ensureString } from '@salesforce/ts-types';
 import { Duration } from '@salesforce/kit';
@@ -35,12 +35,14 @@ import { textResponse } from '../shared/utils.js';
  * - apexTests: Apex tests classes to run.
  * - usernameOrAlias: Username or alias of the Salesforce org to deploy to.
  * - directory: Directory of the local project.
+ * - ignoreConflicts: Ignore conflicts and deploy local files, even if they overwrite changes in the org.
  *
  * Returns:
  * - textResponse: Deploy result.
  */
 
 export const deployMetadataParams = z.object({
+  ignoreConflicts: z.boolean().describe(' Ignore conflicts and deploy local files, even if they overwrite changes in the org.').optional(),
   sourceDir: z
     .array(z.string())
     .describe('Path to the local source files to deploy. Leave this unset if the user is vague about what to deploy.')
@@ -106,13 +108,14 @@ export class DeployMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       description: `Deploy metadata to an org from your local project.
 
 AGENT INSTRUCTIONS:
-If the user doesn't specify what to deploy exactly ("deploy my changes"), leave the "sourceDir" and "manifest" params empty so the tool calculates which files to deploy.
+If the user doesn't specify what to deploy exactly ("deploy my changes"), leave the "sourceDir", "ignoreConflicts" and "manifest" params empty so the tool calculates which files to deploy.
 
 EXAMPLE USAGE:
 Deploy changes to my org
 Deploy this file to my org
 Deploy the manifest
 Deploy X metadata to my org
+Deploy X local files to my org and ignore any conflicts between the local project and org
 Deploy X to my org and run A,B and C apex tests.`,
       inputSchema: deployMetadataParams.shape,
       outputSchema: undefined,
@@ -120,6 +123,7 @@ Deploy X to my org and run A,B and C apex tests.`,
         destructiveHint: true,
         openWorldHint: false,
       },
+      
     };
   }
 
@@ -159,9 +163,10 @@ Deploy X to my org and run A,B and C apex tests.`,
         org,
         project,
         subscribeSDREvents: true,
+        ignoreConflicts: input.ignoreConflicts ?? false,
       });
 
-      const componentSet = await buildDeployComponentSet(connection, project, stl, input.sourceDir, input.manifest);
+      const componentSet = await buildDeployComponentSet(connection, project, stl, input.sourceDir, input.manifest, input.ignoreConflicts);
 
       if (componentSet.size === 0) {
         // STL found no changes
@@ -204,6 +209,7 @@ async function buildDeployComponentSet(
   stl: SourceTracking,
   sourceDir?: string[],
   manifestPath?: string,
+  ignoreConflicts?: boolean,
 ): Promise<ComponentSet> {
   if (sourceDir || manifestPath) {
     return ComponentSetBuilder.build({
@@ -221,8 +227,16 @@ async function buildDeployComponentSet(
       projectDir: stl?.projectPath,
     });
   }
-
-  // No specific metadata requested to deploy, build component set from STL.
-  const cs = (await stl.localChangesAsComponentSet(false))[0] ?? new ComponentSet(undefined, stl.registry);
-  return cs;
+  try {
+    // No specific metadata requested to deploy, build component set from STL.
+    const cs = (await stl.localChangesAsComponentSet(false))[0] ?? new ComponentSet(undefined, stl.registry);
+    return cs;
+  }
+  catch (error) {
+    if (ignoreConflicts && error instanceof SourceConflictError) {
+      // Ignore conflicts as requested, proceed with deployment
+      return new ComponentSet(undefined, stl.registry);
+    }
+    throw new SfError('Failed to build component set for deployment due to conflicts. Set ignoreConflicts=true to override.');
+  }
 }
