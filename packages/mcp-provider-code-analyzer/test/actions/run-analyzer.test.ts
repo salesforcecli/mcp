@@ -235,7 +235,7 @@ describe('RunAnalyzerActionImpl', () => {
         } else {
             expect(output.resultsFile).toBeUndefined();
         }
-    }, 60_000); // Increased timeout for PMD 7.18.0 
+    }, 60_000); 
 
     describe('Telemetry Emission', () => {
         it('When a telemetry service is provided, it is used', async () => {
