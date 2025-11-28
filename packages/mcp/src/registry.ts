@@ -21,6 +21,7 @@ import { LwcExpertsMcpProvider } from '@salesforce/mcp-provider-lwc-experts';
 import { AuraExpertsMcpProvider } from '@salesforce/mcp-provider-aura-experts';
 import { MobileWebMcpProvider } from '@salesforce/mcp-provider-mobile-web';
 import { DevOpsMcpProvider } from '@salesforce/mcp-provider-devops';
+import { ScaleProductsMcpProvider } from '@salesforce/mcp-provider-scale-products';
 
 /** -------- ADD McpProvider INSTANCES HERE ------------------------------------------------------------------------- */
 
@@ -31,5 +32,6 @@ export const MCP_PROVIDER_REGISTRY: McpProvider[] = [
   new AuraExpertsMcpProvider(),
   new MobileWebMcpProvider(),
   new DevOpsMcpProvider(),
+  new ScaleProductsMcpProvider(),
   // Add new instances here
 ];

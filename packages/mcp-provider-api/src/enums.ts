@@ -23,6 +23,7 @@ export enum Toolset {
   LWC_EXPERTS = 'lwc-experts',
   DEVOPS = 'devops',
   CODE_ANALYSIS = 'code-analysis',
+  SCALE_PRODUCTS = 'scale-products',
   OTHER = 'other'
 }
 
