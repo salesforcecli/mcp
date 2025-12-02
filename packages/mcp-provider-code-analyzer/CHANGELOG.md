@@ -1,3 +1,12 @@
+## [0.2.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-code-analyzer@0.2.0...mcp-provider-code-analyzer@0.2.1) (2025-12-02)
+
+
+### Bug Fixes
+
+* @W-19772910@ Fixed issue with relative paths ([#291](https://github.com/salesforcecli/mcp/issues/291)) ([3d91202](https://github.com/salesforcecli/mcp/commit/3d91202c61c7c113c0cb0c57230758b5f701d9e4))
+
+
+
 # [0.2.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-code-analyzer@0.1.0...mcp-provider-code-analyzer@0.2.0) (2025-09-23)
 
 
