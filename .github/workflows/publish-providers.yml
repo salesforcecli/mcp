@@ -8,7 +8,7 @@ on:
       - 'packages/mcp-provider-api/**'
       - 'packages/mcp-provider-dx-core/**'  
       - 'packages/mcp-provider-mobile-web/**'
-      # - 'packages/mcp-provider-code-analyzer/**'
+      - 'packages/mcp-provider-code-analyzer/**'
   workflow_dispatch:
     inputs:
       packages:
