@@ -22,10 +22,12 @@
     "@salesforce/code-analyzer-retirejs-engine": "^0.28.0",
     "@salesforce/mcp-test-client": "0.0.1",
     "@salesforce/mcp-provider-api": "^0.4.0",
+    "js-yaml": "^4.1.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.16.5",
     "@vitest/coverage-istanbul": "^3.2.4",
     "eslint": "^9.35.0",
@@ -37,6 +39,7 @@
   },
   "files": [
     "dist",
+    "knowledge-base",
     "LICENSE.txt",
     "package.json"
   ],

@@ -1,0 +1,577 @@
+{
+  "description": "PMD HTML AST Nodes - Complete Reference",
+  "source": "Extracted from PMD 7.x pmd-html source code",
+  "extraction_date": "2025-12-02",
+  "total_nodes": 7,
+  "version": "7.x",
+  "language": "html",
+  "use_cases": [
+    "HTML page analysis",
+    "Aura component validation",
+    "Lightning Web Component HTML templates",
+    "Security checks (XSS, hardcoded credentials)",
+    "Accessibility validation",
+    "SEO best practices"
+  ],
+  "nodes": [
+    {
+      "name": "HtmlDocument",
+      "description": "Root node representing the entire HTML document. This is the top-level node for all HTML files.",
+      "category": "Document",
+      "extends": "ASTHtmlElement",
+      "implements": ["RootNode"],
+      "xpath_name": "HtmlDocument",
+      "common_use_cases": [
+        "Checking document-level structure",
+        "Validating root element",
+        "Document-wide rules"
+      ],
+      "attributes": [
+        {
+          "name": "@NodeName",
+          "type": "string",
+          "description": "Returns the node name (typically '#root' or the document element name)",
+          "example": "'#root'"
+        },
+        {
+          "name": "count(descendant::*)",
+          "type": "number",
+          "description": "Count total number of elements in the document",
+          "example": "//HtmlDocument[count(descendant::*) > 100]"
+        }
+      ],
+      "example_xpath": [
+        "//HtmlDocument",
+        "//HtmlDocument[count(.//HtmlElement[@NodeName='script']) > 5]"
+      ]
+    },
+    {
+      "name": "HtmlElement",
+      "description": "Represents an HTML element (tag) with attributes. This is the most common node type in HTML ASTs.",
+      "category": "Elements",
+      "extends": "AbstractHtmlNode",
+      "implements": [],
+      "xpath_name": "HtmlElement",
+      "common_use_cases": [
+        "Finding specific HTML tags (div, span, script, etc.)",
+        "Validating element attributes",
+        "Checking element structure and nesting",
+        "Security analysis (detecting inline scripts, event handlers)",
+        "Accessibility checks (alt text, aria labels)"
+      ],
+      "attributes": [
+        {
+          "name": "@NodeName",
+          "type": "string",
+          "description": "Returns the HTML tag name (e.g., 'div', 'script', 'a', 'img')",
+          "example": "'script', 'div', 'a', 'img', 'input'"
+        },
+        {
+          "name": "@*",
+          "type": "string",
+          "description": "Access any HTML attribute by name. Attributes are exposed as XPath attributes.",
+          "example": "@class, @id, @src, @href, @onclick, @style, @data-*"
+        },
+        {
+          "name": "@class",
+          "type": "string",
+          "description": "The class attribute of the element",
+          "example": "'btn btn-primary'"
+        },
+        {
+          "name": "@id",
+          "type": "string",
+          "description": "The id attribute of the element",
+          "example": "'myButton'"
+        },
+        {
+          "name": "@src",
+          "type": "string",
+          "description": "The src attribute (for script, img, iframe, etc.)",
+          "example": "'https://example.com/script.js'"
+        },
+        {
+          "name": "@href",
+          "type": "string",
+          "description": "The href attribute (for a, link tags)",
+          "example": "'https://example.com'"
+        },
+        {
+          "name": "@style",
+          "type": "string",
+          "description": "The inline style attribute",
+          "example": "'color: red; font-size: 14px;'"
+        },
+        {
+          "name": "@onclick",
+          "type": "string",
+          "description": "The onclick event handler attribute",
+          "example": "'alert(\"clicked\")'"
+        },
+        {
+          "name": "@onload",
+          "type": "string",
+          "description": "The onload event handler attribute",
+          "example": "'doSomething()'"
+        },
+        {
+          "name": "@type",
+          "type": "string",
+          "description": "The type attribute (for script, input, button, etc.)",
+          "example": "'text/javascript', 'submit', 'text'"
+        },
+        {
+          "name": "@alt",
+          "type": "string",
+          "description": "The alt attribute (for img tags)",
+          "example": "'Product image'"
+        },
+        {
+          "name": "@role",
+          "type": "string",
+          "description": "The ARIA role attribute",
+          "example": "'button', 'navigation'"
+        },
+        {
+          "name": "@aria-label",
+          "type": "string",
+          "description": "The ARIA label for accessibility",
+          "example": "'Close dialog'"
+        },
+        {
+          "name": "@data-*",
+          "type": "string",
+          "description": "Any custom data attribute",
+          "example": "@data-id, @data-action"
+        }
+      ],
+      "methods": [
+        {
+          "name": "hasAttribute(String name)",
+          "description": "Check if the element has a specific attribute",
+          "note": "Use XPath [@attributeName] syntax instead"
+        },
+        {
+          "name": "getAttribute(String name)",
+          "description": "Get the value of a specific attribute",
+          "note": "Use XPath @attributeName syntax instead"
+        }
+      ],
+      "example_xpath": [
+        "//HtmlElement[@NodeName='script']",
+        "//HtmlElement[@NodeName='script' and @src]",
+        "//HtmlElement[@NodeName='script' and not(@src)]",
+        "//HtmlElement[@NodeName='a' and starts-with(@href, 'javascript:')]",
+        "//HtmlElement[@NodeName='img' and not(@alt)]",
+        "//HtmlElement[@NodeName='div' and @onclick]",
+        "//HtmlElement[@NodeName='input' and @type='password']",
+        "//HtmlElement[@NodeName='iframe' and @src]",
+        "//HtmlElement[@NodeName='form' and @action]",
+        "//HtmlElement[starts-with(@NodeName, 'lightning-')]",
+        "//HtmlElement[starts-with(@NodeName, 'c-')]",
+        "//HtmlElement[@NodeName='aura:component']",
+        "//HtmlElement[@style and contains(@style, 'display:none')]"
+      ],
+      "security_patterns": [
+        {
+          "pattern": "//HtmlElement[@onclick or @onload or @onerror]",
+          "description": "Detect inline event handlers (potential XSS vectors)"
+        },
+        {
+          "pattern": "//HtmlElement[@NodeName='script' and not(@src)]",
+          "description": "Detect inline scripts"
+        },
+        {
+          "pattern": "//HtmlElement[@NodeName='a' and starts-with(@href, 'javascript:')]",
+          "description": "Detect javascript: protocol in links (XSS risk)"
+        },
+        {
+          "pattern": "//HtmlElement[@NodeName='iframe']",
+          "description": "Detect iframe usage (potential security risk)"
+        }
+      ]
+    },
+    {
+      "name": "HtmlTextNode",
+      "description": "Represents text content within HTML elements. This node contains the actual text between HTML tags.",
+      "category": "Content",
+      "extends": "AbstractHtmlNode",
+      "implements": ["TextNode"],
+      "xpath_name": "text()",
+      "common_use_cases": [
+        "Searching for specific text content",
+        "Detecting hardcoded strings",
+        "Finding credentials or secrets in text",
+        "Validating text content"
+      ],
+      "attributes": [
+        {
+          "name": "text()",
+          "type": "string",
+          "description": "Returns the trimmed text content",
+          "example": "'Hello World'"
+        },
+        {
+          "name": "string-length(text())",
+          "type": "number",
+          "description": "Returns the length of the text",
+          "example": "11"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getText()",
+          "description": "Returns the trimmed text content"
+        },
+        {
+          "name": "getWholeText()",
+          "description": "Returns the complete text including whitespace"
+        }
+      ],
+      "example_xpath": [
+        "//HtmlElement/text()",
+        "//HtmlElement[@NodeName='script']/text()",
+        "//text()[contains(., 'password')]",
+        "//text()[contains(., 'api_key')]",
+        "//text()[string-length(.) > 1000]",
+        "//HtmlElement[@NodeName='p']/text()"
+      ],
+      "security_patterns": [
+        {
+          "pattern": "//text()[contains(., 'password') or contains(., 'api_key') or contains(., 'secret')]",
+          "description": "Detect potential hardcoded credentials in text"
+        }
+      ]
+    },
+    {
+      "name": "HtmlComment",
+      "description": "Represents HTML comments (<!-- comment -->). Comments can contain developer notes, TODOs, or accidentally exposed sensitive information.",
+      "category": "Content",
+      "extends": "AbstractHtmlNode",
+      "implements": ["CommentNode"],
+      "xpath_name": "comment()",
+      "common_use_cases": [
+        "Finding TODO/FIXME comments",
+        "Detecting commented-out code",
+        "Finding sensitive information in comments",
+        "Enforcing comment standards"
+      ],
+      "attributes": [
+        {
+          "name": "comment()",
+          "type": "string",
+          "description": "Returns the comment text",
+          "example": "'TODO: Fix this bug'"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getData()",
+          "description": "Returns the comment data (text inside the comment)"
+        }
+      ],
+      "example_xpath": [
+        "//comment()",
+        "//comment()[contains(., 'TODO')]",
+        "//comment()[contains(., 'FIXME')]",
+        "//comment()[contains(., 'password')]",
+        "//comment()[contains(., 'api_key')]",
+        "//HtmlElement[@NodeName='head']/comment()"
+      ],
+      "security_patterns": [
+        {
+          "pattern": "//comment()[contains(., 'password') or contains(., 'api_key') or contains(., 'token')]",
+          "description": "Detect potential credentials in comments"
+        },
+        {
+          "pattern": "//comment()[contains(., '<!--') and contains(., '-->')]",
+          "description": "Detect nested or malformed comments"
+        }
+      ]
+    },
+    {
+      "name": "HtmlCDataNode",
+      "description": "Represents CDATA sections (<![CDATA[...]]>). CDATA sections are used to include blocks of text that should not be parsed as markup.",
+      "category": "Content",
+      "extends": "AbstractHtmlNode",
+      "implements": [],
+      "xpath_name": "HtmlCDataNode",
+      "common_use_cases": [
+        "Detecting CDATA usage in HTML",
+        "Validating CDATA content",
+        "Security checks on CDATA content"
+      ],
+      "attributes": [
+        {
+          "name": "@NodeName",
+          "type": "string",
+          "description": "Returns '#cdata-section'",
+          "example": "'#cdata-section'"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getText()",
+          "description": "Returns the CDATA text content"
+        }
+      ],
+      "example_xpath": [
+        "//HtmlCDataNode",
+        "//HtmlElement[@NodeName='script']/HtmlCDataNode",
+        "//HtmlCDataNode[contains(text(), 'function')]"
+      ]
+    },
+    {
+      "name": "HtmlDocumentType",
+      "description": "Represents the DOCTYPE declaration (<!DOCTYPE html>). This specifies the document type and HTML version.",
+      "category": "Document",
+      "extends": "AbstractHtmlNode",
+      "implements": [],
+      "xpath_name": "HtmlDocumentType",
+      "common_use_cases": [
+        "Validating DOCTYPE presence",
+        "Checking HTML version",
+        "Enforcing HTML5 standard"
+      ],
+      "attributes": [
+        {
+          "name": "@NodeName",
+          "type": "string",
+          "description": "Returns '#doctype'",
+          "example": "'#doctype'"
+        },
+        {
+          "name": "@Name",
+          "type": "string",
+          "description": "Returns the DOCTYPE name (usually 'html')",
+          "example": "'html'"
+        },
+        {
+          "name": "@PublicId",
+          "type": "string",
+          "description": "Returns the public identifier (for older DOCTYPEs)",
+          "example": "'-//W3C//DTD HTML 4.01//EN'"
+        },
+        {
+          "name": "@SystemId",
+          "type": "string",
+          "description": "Returns the system identifier (URL to DTD)",
+          "example": "'http://www.w3.org/TR/html4/strict.dtd'"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getName()",
+          "description": "Returns the DOCTYPE name"
+        },
+        {
+          "name": "getPublicId()",
+          "description": "Returns the public identifier"
+        },
+        {
+          "name": "getSystemId()",
+          "description": "Returns the system identifier"
+        }
+      ],
+      "example_xpath": [
+        "//HtmlDocumentType",
+        "//HtmlDocumentType[@Name='html']",
+        "//HtmlDocument[not(HtmlDocumentType)]"
+      ],
+      "validation_patterns": [
+        {
+          "pattern": "//HtmlDocument[not(HtmlDocumentType)]",
+          "description": "Detect missing DOCTYPE declaration"
+        }
+      ]
+    },
+    {
+      "name": "HtmlXmlDeclaration",
+      "description": "Represents XML declarations (<?xml version='1.0'?>). Rare in HTML but can appear in XHTML documents.",
+      "category": "Document",
+      "extends": "AbstractHtmlNode",
+      "implements": [],
+      "xpath_name": "HtmlXmlDeclaration",
+      "common_use_cases": [
+        "Detecting XML declarations in HTML",
+        "XHTML validation"
+      ],
+      "attributes": [
+        {
+          "name": "@NodeName",
+          "type": "string",
+          "description": "Returns '#declaration'",
+          "example": "'#declaration'"
+        },
+        {
+          "name": "@Name",
+          "type": "string",
+          "description": "Returns the declaration name (usually 'xml')",
+          "example": "'xml'"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getName()",
+          "description": "Returns the declaration name"
+        }
+      ],
+      "example_xpath": [
+        "//HtmlXmlDeclaration",
+        "//HtmlXmlDeclaration[@Name='xml']"
+      ]
+    }
+  ],
+  "common_patterns": {
+    "security": {
+      "title": "Security Checks",
+      "patterns": [
+        {
+          "name": "Detect Inline Event Handlers",
+          "xpath": "//HtmlElement[@onclick or @onload or @onerror or @onmouseover]",
+          "description": "Finds elements with inline JavaScript event handlers (potential XSS vectors)",
+          "severity": "High"
+        },
+        {
+          "name": "Detect Inline Scripts",
+          "xpath": "//HtmlElement[@NodeName='script' and not(@src)]",
+          "description": "Finds inline script tags (should use external files)",
+          "severity": "Medium"
+        },
+        {
+          "name": "Detect JavaScript Protocol in Links",
+          "xpath": "//HtmlElement[@NodeName='a' and starts-with(@href, 'javascript:')]",
+          "description": "Finds links using javascript: protocol (XSS risk)",
+          "severity": "High"
+        },
+        {
+          "name": "Detect Hardcoded Credentials",
+          "xpath": "//text()[contains(., 'password') or contains(., 'api_key') or contains(., 'secret')] | //comment()[contains(., 'password') or contains(., 'api_key')]",
+          "description": "Finds potential hardcoded credentials in text or comments",
+          "severity": "Critical"
+        },
+        {
+          "name": "Detect Iframe Usage",
+          "xpath": "//HtmlElement[@NodeName='iframe']",
+          "description": "Finds iframe elements (potential security risk)",
+          "severity": "Medium"
+        },
+        {
+          "name": "Detect Unsafe Inline Styles",
+          "xpath": "//HtmlElement[@style]",
+          "description": "Finds elements with inline styles (violates CSP)",
+          "severity": "Low"
+        }
+      ]
+    },
+    "accessibility": {
+      "title": "Accessibility Checks",
+      "patterns": [
+        {
+          "name": "Images Without Alt Text",
+          "xpath": "//HtmlElement[@NodeName='img' and not(@alt)]",
+          "description": "Finds img tags missing alt attributes",
+          "severity": "Medium"
+        },
+        {
+          "name": "Forms Without Labels",
+          "xpath": "//HtmlElement[@NodeName='input' and not(@aria-label) and not(preceding-sibling::HtmlElement[@NodeName='label'])]",
+          "description": "Finds input fields without labels or aria-label",
+          "severity": "Medium"
+        },
+        {
+          "name": "Missing ARIA Roles",
+          "xpath": "//HtmlElement[@NodeName='button' and not(@role)]",
+          "description": "Finds buttons without ARIA roles",
+          "severity": "Low"
+        }
+      ]
+    },
+    "best_practices": {
+      "title": "Best Practices",
+      "patterns": [
+        {
+          "name": "External Scripts Without Integrity",
+          "xpath": "//HtmlElement[@NodeName='script' and @src and not(@integrity)]",
+          "description": "Finds external scripts without SRI (Subresource Integrity)",
+          "severity": "Medium"
+        },
+        {
+          "name": "Deprecated HTML Tags",
+          "xpath": "//HtmlElement[@NodeName='center' or @NodeName='font' or @NodeName='marquee']",
+          "description": "Finds deprecated HTML tags",
+          "severity": "Low"
+        },
+        {
+          "name": "Missing Charset Meta Tag",
+          "xpath": "//HtmlDocument[not(.//HtmlElement[@NodeName='meta' and @charset])]",
+          "description": "Finds documents without charset declaration",
+          "severity": "Low"
+        }
+      ]
+    },
+    "aura_lightning": {
+      "title": "Aura/Lightning Component Patterns",
+      "patterns": [
+        {
+          "name": "Aura Component Detection",
+          "xpath": "//HtmlElement[starts-with(@NodeName, 'aura:')]",
+          "description": "Finds Aura framework components",
+          "severity": "Info"
+        },
+        {
+          "name": "Lightning Web Component Detection",
+          "xpath": "//HtmlElement[starts-with(@NodeName, 'lightning-')]",
+          "description": "Finds Lightning base components",
+          "severity": "Info"
+        },
+        {
+          "name": "Custom Component Detection",
+          "xpath": "//HtmlElement[starts-with(@NodeName, 'c-')]",
+          "description": "Finds custom Lightning Web Components",
+          "severity": "Info"
+        },
+        {
+          "name": "Aura Attribute Usage",
+          "xpath": "//HtmlElement[@NodeName='aura:attribute']",
+          "description": "Finds Aura component attributes",
+          "severity": "Info"
+        }
+      ]
+    }
+  },
+  "xpath_tips": {
+    "element_selection": [
+      "Use @NodeName to match element tags: //HtmlElement[@NodeName='div']",
+      "Access HTML attributes directly: //HtmlElement[@class='myClass']",
+      "Use starts-with() for prefix matching: //HtmlElement[starts-with(@NodeName, 'lightning-')]",
+      "Use contains() for substring matching: //HtmlElement[contains(@class, 'btn')]"
+    ],
+    "text_content": [
+      "Use text() to access text nodes: //HtmlElement[@NodeName='p']/text()",
+      "Check text length: //text()[string-length(.) > 100]",
+      "Search in text: //text()[contains(., 'keyword')]"
+    ],
+    "structure": [
+      "Count children: //HtmlElement[count(*) > 5]",
+      "Check for missing children: //HtmlElement[@NodeName='ul' and not(HtmlElement[@NodeName='li'])]",
+      "Parent-child relationships: //HtmlElement[@NodeName='form']//HtmlElement[@NodeName='input']"
+    ],
+    "boolean_logic": [
+      "AND: //HtmlElement[@NodeName='a' and @href]",
+      "OR: //HtmlElement[@onclick or @onload]",
+      "NOT: //HtmlElement[@NodeName='img' and not(@alt)]"
+    ]
+  },
+  "notes": [
+    "HTML AST is built using JSoup parser library",
+    "All HTML attributes are exposed as XPath attributes on HtmlElement nodes",
+    "Custom attributes (data-*, aria-*, etc.) are accessible via @attribute-name",
+    "Text content is available via text() XPath function",
+    "Comments are accessible via comment() XPath function",
+    "HTML tag names are case-insensitive in the parser but typically lowercase in AST",
+    "For Aura components: tags like <aura:component> are treated as HtmlElement with @NodeName='aura:component'",
+    "For Lightning Web Components: custom elements like <c-my-component> are HtmlElement with @NodeName='c-my-component'"
+  ]
+}
+

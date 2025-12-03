@@ -1,0 +1,71 @@
+{
+  "description": "XPath functions available in PMD rules (OPTIMIZED: examples removed for token efficiency)",
+  "source": "XPath 1.0 specification + PMD extensions",
+  "lastUpdated": "2025-11-28",
+  "functions": [
+    {
+      "name": "ends-with",
+      "syntax": "ends-with(string, suffix)",
+      "description": "Returns true if string ends with suffix (case-sensitive)"
+    },
+    {
+      "name": "starts-with",
+      "syntax": "starts-with(string, prefix)",
+      "description": "Returns true if string starts with prefix (case-sensitive)"
+    },
+    {
+      "name": "contains",
+      "syntax": "contains(string, substring)",
+      "description": "Returns true if string contains substring (case-sensitive)"
+    },
+    {
+      "name": "matches",
+      "syntax": "matches(string, pattern)",
+      "description": "Returns true if string matches regex pattern (XPath 2.0+)"
+    },
+    {
+      "name": "string-length",
+      "syntax": "string-length(string)",
+      "description": "Returns the length of the string"
+    },
+    {
+      "name": "not",
+      "syntax": "not(expression)",
+      "description": "Logical NOT operator - inverts boolean result"
+    },
+    {
+      "name": "and",
+      "syntax": "expression1 and expression2",
+      "description": "Logical AND operator - both conditions must be true"
+    },
+    {
+      "name": "or",
+      "syntax": "expression1 or expression2",
+      "description": "Logical OR operator - at least one condition must be true"
+    },
+    {
+      "name": "pmd-apex:typeIs",
+      "syntax": "pmd-apex:typeIs('fully.qualified.Type')",
+      "description": "PMD-specific function to check type (requires xmlns:pmd-apex)"
+    }
+  ],
+  "common_patterns": [
+    {
+      "name": "Multiple OR conditions",
+      "pattern": "not(condition1) and not(condition2) and not(condition3)",
+      "description": "For naming violations: flag items that don't match ANY of the allowed patterns",
+      "example": "not(ends-with(@Image, 'Service')) and not(ends-with(@Image, 'Controller'))"
+    },
+    {
+      "name": "Exclude test classes",
+      "pattern": "not(contains(@Image, 'Test')) and not(ends-with(@Image, 'Test'))",
+      "description": "Common filter to exclude test classes from rules"
+    },
+    {
+      "name": "Case-insensitive matching",
+      "pattern": "matches(@Image, 'pattern', 'i')",
+      "description": "Use 'i' flag for case-insensitive regex (XPath 2.0+)",
+      "note": "PMD may not support all XPath 2.0 features - test thoroughly"
+    }
+  ]
+}
