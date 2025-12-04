@@ -5,6 +5,15 @@ import {ListRulesAction, ListRulesInput, ListRulesOutput, ListRulesActionImpl} f
 import {CodeAnalyzerConfigFactoryImpl} from "../factories/CodeAnalyzerConfigFactory.js";
 import {EnginePluginsFactoryImpl} from "../factories/EnginePluginsFactory.js";
 import {getErrorMessage} from "../utils.js";
+import {
+    ENGINE_NAMES,
+    SEVERITY_NUMBERS,
+    SEVERITY_NAMES,
+    GENERAL_TAGS,
+    CATEGORIES,
+    LANGUAGES,
+    ENGINE_SPECIFIC_TAGS
+} from "../constants.js";
 
 
 const DESCRIPTION: string = `A tool for selecting Code Analyzer rules based on a number of criteria.\n` +
@@ -51,6 +60,40 @@ export class CodeAnalyzerListRulesMcpTool extends McpTool<InputArgsShape, Output
     public static readonly NAME: string = 'list_code_analyzer_rules';
     private readonly action: ListRulesAction;
 
+    /**
+     * Validates a selector string ensuring that each token (split on ',' and ':')
+     * matches one of the supported engines, severities (name or number), or tags.
+     * Case-insensitive for tags and severity names; engine names compared case-insensitively as well.
+     */
+    public static validateSelector(selector: string): { valid: true } | { valid: false, invalidTokens: string[] } {
+        const allowedLowerTokens: Set<string> = new Set<string>([
+            // engines
+            ...ENGINE_NAMES.map(s => s.toLowerCase()),
+            // severity names (names accepted case-insensitively)
+            ...SEVERITY_NAMES.map(s => s.toLowerCase()),
+            // severity numbers (as strings)
+            ...SEVERITY_NUMBERS.map(n => String(n)),
+            // tags (case-insensitive)
+            ...GENERAL_TAGS.map(s => s.toLowerCase()),
+            ...CATEGORIES.map(s => s.toLowerCase()),
+            ...LANGUAGES.map(s => s.toLowerCase()),
+            ...ENGINE_SPECIFIC_TAGS.map(s => s.toLowerCase())
+        ]);
+
+        const rawTokens: string[] = selector
+            .split(':')
+            .map(t => t.trim())
+            .filter(t => t.length > 0);
+
+        const invalid: string[] = [];
+        for (const token of rawTokens) {
+            const normalized = token.toLowerCase();
+            if (!allowedLowerTokens.has(normalized)) {
+                invalid.push(token);
+            }
+        }
+        return invalid.length === 0 ? { valid: true } : { valid: false, invalidTokens: Array.from(new Set(invalid)) };
+    }
 
     public constructor(
         action: ListRulesAction = new ListRulesActionImpl({
@@ -100,6 +143,14 @@ export class CodeAnalyzerListRulesMcpTool extends McpTool<InputArgsShape, Output
      */
     public async exec(input: ListRulesInput): Promise<CallToolResult> {
         let output: ListRulesOutput;
+        const validation = CodeAnalyzerListRulesMcpTool.validateSelector(input.selector);
+        if (validation.valid === false) {
+            const msg = `Invalid selector token(s): ${validation.invalidTokens.join(', ')}`;
+            return {
+                content: [{ type: "text", text: JSON.stringify({ status: msg }) }],
+                structuredContent: { status: msg }
+            };
+        }
         try {
             output = await this.action.exec(input);
         } catch (e) {
