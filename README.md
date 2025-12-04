@@ -178,16 +178,16 @@ These are the available toolsets.
 | Toolset| Description|
 | ----- | ----- |
 | `all` | Enables all available tools from all toolsets. Use caution, this will load over 60 tools. |
-| `orgs` | [Tools to manage your authorized orgs.](README.md#orgs-toolset)|
+| `aura-experts` | [Tools which provides Aura component analysis, blueprinting, and migration expertise.](README.md#aura-experts-toolset)|
+| `code-analysis` | [Tools for static analysis of your code using Salesforce Code Analyzer](README.md#code-analysis-toolset)|
 | `data` | [Tools to manage the data in your org, such as listing all accounts.](README.md#data-toolset)|
-| `users` | [Tools to manage org users, such as assigning a permission set.](README.md#users-toolset)|
+| `lwc-experts`  | [Tools to assist with LWC development, testing, optimization, and best practices.](README.md#lwc-experts-toolset)|
 | `metadata` | [Tools to deploy and retrieve metadata to and from your org and your DX project.](README.md#metadata-toolset)|
-| `testing` | [Tools to test your code and features](README.md#testing-toolset)|
-| `other` | [Other useful tools, such as tools for static analysis of your code using Salesforce Code Analyzer.](README.md#other-toolset)|
 | `mobile` | [Tools for mobile development and capabilities.](README.md#mobile-toolset)|
 | `mobile-core` | [A subset of mobile tools focused on essential mobile capabilities.](README.md#mobile-core-toolset)|
-| `aura-experts` | [Tools which provides Aura component analysis, blueprinting, and migration expertise.](README.md#aura-experts-toolset)|
-| `lwc-experts`  | [Tools to assist with LWC development, testing, optimization, and best practices.](README.md#lwc-experts-toolset)|
+| `orgs` | [Tools to manage your authorized orgs.](README.md#orgs-toolset)|
+| `testing` | [Tools to test your code and features](README.md#testing-toolset)|
+| `users` | [Tools to manage org users, such as assigning a permission set.](README.md#users-toolset)|
 
 ## Configure Tools
 
