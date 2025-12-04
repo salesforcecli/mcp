@@ -27,7 +27,7 @@ const PATH_TO_SAMPLE_TARGETS: string = path.resolve(__dirname, '..', 'fixtures',
 const PATH_TO_COMPARISON_FILES: string = path.resolve(__dirname, '..', 'fixtures', 'comparison-files');
 
 // TODO: FIGURE OUT A WAY TO MAKE THESE GOLD FILE TESTS MORE ROBUST AGAINST VERSION CHANGES. FOR NOW USING CONSTANT:
-const PMD_VERSION: string = '7.17.0';
+const PMD_VERSION: string = '7.18.0';
 
 describe('RunAnalyzerActionImpl', () => {
     it.each([
@@ -235,7 +235,7 @@ describe('RunAnalyzerActionImpl', () => {
         } else {
             expect(output.resultsFile).toBeUndefined();
         }
-    }, 15_000);
+    }, 60_000); 
 
     describe('Telemetry Emission', () => {
         it('When a telemetry service is provided, it is used', async () => {

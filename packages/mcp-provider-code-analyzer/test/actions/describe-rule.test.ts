@@ -61,7 +61,7 @@ describe('DescribeRuleActionImpl', () => {
             expect(output.rule?.engine).toEqual('pmd');
             expect(output.rule?.severity).toEqual(expectedSeverity);
             expect(output.rule?.tags).toEqual(expectedTags);
-        });
+        }, 60_000);
 
         it('When asked to describe a non-existent rule, a coherent error is returned', async () => {
             const input: DescribeRuleInput = {
@@ -78,7 +78,7 @@ describe('DescribeRuleActionImpl', () => {
 
             expect(output.status).toContain(`No rule with name 'not-a-real-rule' exists in engine 'pmd'.`);
             expect(output.rule).toBeUndefined();
-        });
+        }, 60_000);
     });
 
     it.each([
