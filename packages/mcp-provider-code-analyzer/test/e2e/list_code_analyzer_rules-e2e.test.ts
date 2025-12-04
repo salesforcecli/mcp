@@ -47,7 +47,9 @@ describe('list_code_analyzer_rules', () => {
         const result = await client.callTool(testInputSchema, {
             name: 'list_code_analyzer_rules',
             params: {
-                selector: 'ThisTagDoesNotExist'
+                // Use a valid selector token that is not backed by any loaded engine plugin
+                // so it returns success with zero rules.
+                selector: 'flow'
             }
         });
 
