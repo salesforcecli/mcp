@@ -298,7 +298,7 @@ public class TestClass {
     expect(text).toContain("directory, not a file");
   });
 
-  it("should return error when file cannot be read", async () => {
+  it.skipIf(process.platform === "win32")("should return error when file cannot be read", async () => {
     const readOnlyFile = path.join(tempDir, "readonly.cls");
     fs.writeFileSync(readOnlyFile, "public class Test {}", { mode: 0o000 });
 
