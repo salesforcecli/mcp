@@ -152,3 +152,60 @@ export async function getDefaultTargetOrg(): Promise<OrgConfigInfo | undefined> 
 export async function getDefaultTargetDevHub(): Promise<OrgConfigInfo | undefined> {
   return getDefaultConfig(OrgConfigProperties.TARGET_DEV_HUB);
 }
+
+/**
+ * Validates that all allowed orgs are sandboxes (not production orgs)
+ * by querying the Organization.IsSandbox field via SOQL.
+ *
+ * @param allowedOrgs - Array of allowed org authorizations to validate
+ * @throws {Error} If any org is found to be a production org (IsSandbox = false)
+ */
+export async function validateSandboxOrgs(allowedOrgs: SanitizedOrgAuthorization[]): Promise<void> {
+  const productionOrgs: string[] = [];
+
+  // eslint-disable-next-line no-await-in-loop
+  for (const org of allowedOrgs) {
+    if (!org.username) {
+      continue;
+    }
+
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      const authInfo = await AuthInfo.create({ username: org.username });
+      // eslint-disable-next-line no-await-in-loop
+      const connection = await Connection.create({ authInfo });
+
+      // Query the Organization object to check IsSandbox field
+      // eslint-disable-next-line no-await-in-loop
+      const result = await connection.query<{ IsSandbox: boolean }>('SELECT IsSandbox FROM Organization');
+
+      if (result.records && result.records.length > 0) {
+        const isSandbox = result.records[0].IsSandbox;
+
+        if (!isSandbox) {
+          // This is a production org
+          const orgIdentifier = org.aliases?.[0] ?? org.username;
+          productionOrgs.push(orgIdentifier);
+        }
+      }
+    } catch (error) {
+      // If we can't validate an org, we should warn but not fail
+      // This allows the server to start even if some orgs are temporarily unavailable
+      // eslint-disable-next-line no-console
+      console.error(
+        `Warning: Unable to validate sandbox status for org ${org.username}: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`
+      );
+    }
+  }
+
+  if (productionOrgs.length > 0) {
+    const orgList = productionOrgs.map((org) => `  - ${org}`).join('\n');
+    throw new Error(
+      'Production org(s) detected. The --sandbox-only flag requires all orgs to be sandboxes.\n\n' +
+        `Production orgs found:\n${orgList}\n\n` +
+        'To proceed with production orgs, run the MCP server without the --sandbox-only flag.'
+    );
+  }
+}
