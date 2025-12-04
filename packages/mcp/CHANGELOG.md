@@ -1,3 +1,12 @@
+## [0.24.2](https://github.com/salesforcecli/mcp/compare/0.24.1...0.24.2) (2025-12-04)
+
+
+### Bug Fixes
+
+* bump api ([#346](https://github.com/salesforcecli/mcp/issues/346)) ([acf9e9d](https://github.com/salesforcecli/mcp/commit/acf9e9d0d578f9acfd074ad804a44f096d13e30f))
+
+
+
 ## [0.24.1](https://github.com/salesforcecli/mcp/compare/0.24.0...0.24.1) (2025-12-04)
 
 
