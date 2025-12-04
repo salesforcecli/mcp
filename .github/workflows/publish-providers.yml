@@ -5,18 +5,19 @@ on:
     branches:
       - main
     paths:
-      - 'packages/mcp-provider-api/**'
-      - 'packages/mcp-provider-dx-core/**'  
-      - 'packages/mcp-provider-mobile-web/**'
-      - 'packages/mcp-provider-code-analyzer/**'
+      - "packages/mcp-provider-api/**"
+      - "packages/mcp-provider-dx-core/**"
+      - "packages/mcp-provider-mobile-web/**"
+      - "packages/mcp-provider-code-analyzer/**"
+      - "packages/mcp-provider-scale-products/**"
   workflow_dispatch:
     inputs:
       packages:
-        description: 'Comma-separated list of packages to publish (e.g., mcp-provider-api,mcp-provider-dx-core). Leave empty to publish all available packages.'
+        description: "Comma-separated list of packages to publish (e.g., mcp-provider-api,mcp-provider-dx-core). Leave empty to publish all available packages."
         type: string
-        default: ''
+        default: ""
       skip-on-empty:
-        description: 'Skip publishing if no semantic commits found'
+        description: "Skip publishing if no semantic commits found"
         type: boolean
         default: true
 
@@ -30,23 +31,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
+
       - name: Detect changed packages
         id: detect
         run: |
           # Packages that auto-publish on push to main
-          AUTO_PUBLISHABLE_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core" "mcp-provider-mobile-web")
-          
+          AUTO_PUBLISHABLE_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core" "mcp-provider-code-analyzer" "mcp-provider-mobile-web" "mcp-provider-scale-products")
+
           # All available provider packages
-          ALL_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core" "mcp-provider-code-analyzer" "mcp-provider-mobile-web" "mcp-provider-devops")
-          
+          ALL_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core" "mcp-provider-code-analyzer" "mcp-provider-mobile-web" "mcp-provider-scale-products" "mcp-provider-devops" )
+
           # Initialize packages array
           PACKAGES='[]'
           HAS_CHANGES=false
-          
+
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "Manual workflow dispatch detected"
-            
+
             if [ -n "${{ inputs.packages }}" ]; then
               # Parse comma-separated input
               IFS=',' read -ra SPECIFIED_PACKAGES <<< "${{ inputs.packages }}"
@@ -75,7 +76,7 @@ jobs:
             echo "Push event detected, checking for changed files"
             # Get changed files in the last commit
             CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
-            
+
             # Check each provider package for changes (only auto-publish enabled packages)
             for pkg in "${AUTO_PUBLISHABLE_PACKAGES[@]}"; do
               if echo "$CHANGED_FILES" | grep -q "^packages/$pkg/"; then
@@ -85,7 +86,7 @@ jobs:
               fi
             done
           fi
-          
+
           echo "packages=$PACKAGES" >> "$GITHUB_OUTPUT"
           echo "has-changes=$HAS_CHANGES" >> "$GITHUB_OUTPUT"
           echo "Final packages to process: $PACKAGES"
@@ -111,7 +112,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          node-version: "lts/*"
           cache: yarn
 
       - name: Install dependencies
@@ -146,7 +147,7 @@ jobs:
           commit: ${{ github.sha }}
           body: |
             ## Changes in ${{ matrix.package }}
-            
+
             ${{ steps.changelog.outputs.clean_changelog }}
           token: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
           skipIfReleaseExists: true
@@ -166,21 +167,21 @@ jobs:
           # Get the published version
           PUBLISHED_VERSION="${{ steps.changelog.outputs.version }}"
           PACKAGE_NAME="@salesforce/${{ matrix.package }}"
-          
+
           echo "Updating $PACKAGE_NAME to version $PUBLISHED_VERSION in main MCP server"
-          
+
           # Update the dependency in main server's package.json using jq
           cd packages/mcp
           jq --arg pkg "$PACKAGE_NAME" --arg ver "$PUBLISHED_VERSION" \
             '.dependencies[$pkg] = $ver' package.json > package.json.tmp
           mv package.json.tmp package.json
-          
+
           # Go back to root and update yarn.lock
           cd ../../
           # TODO(cristian): need to nuke all `node_modules` to cleanup some dep, running `yarn install` 2 times fails at the second run.
           git clean -fdx
           yarn install
-          
+
           # Commit the changes
           git add packages/mcp/package.json yarn.lock
           git config user.name "${{ steps.github-user-info.outputs.username }}"
@@ -189,6 +190,6 @@ jobs:
           git commit -m "chore: bump $PACKAGE_NAME to $PUBLISHED_VERSION --no-verify
 
           Auto-update dependency after provider package publish.
-          
+
           Related release: ${{ matrix.package }}@${{ steps.changelog.outputs.version }}"
           git push
