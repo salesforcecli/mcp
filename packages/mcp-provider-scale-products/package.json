@@ -15,7 +15,7 @@
   "dependencies": {
     "@apexdevtools/apex-parser": "^5.0.0-beta.5",
     "@modelcontextprotocol/sdk": "^1.18.0",
-    "@salesforce/mcp-provider-api": "^0.4.0",
+    "@salesforce/mcp-provider-api": "^0.4.1",
     "zod": "^3.25.76"
   },
   "devDependencies": {
