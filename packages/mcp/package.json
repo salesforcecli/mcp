@@ -51,7 +51,7 @@
     "@salesforce/mcp-provider-aura-experts": "0.3.5",
     "@salesforce/mcp-provider-mobile-web": "0.2.1",
     "@salesforce/mcp-provider-devops": "0.1.9",
-    "@salesforce/mcp-provider-scale-products": "0.0.1",
+    "@salesforce/mcp-provider-scale-products": "0.0.2",
     "@salesforce/source-deploy-retrieve": "^12.22.0",
     "@salesforce/source-tracking": "^7.4.8",
     "@salesforce/telemetry": "6.4.1",
