@@ -87,4 +87,21 @@ describe('CodeAnalyzerListRulesMcpTool', () => {
         // Ensure action was not invoked by verifying structured content shape only has status
         expect((result.structuredContent as any).rules).toBeUndefined();
     });
+
+    it('validateSelector rejects empty selector', () => {
+        const res = CodeAnalyzerListRulesMcpTool.validateSelector('');
+        expect(res.valid).toBe(false);
+        if (res.valid === false) {
+          expect(res.invalidTokens).toContain('<empty>');
+        }
+      });
+      
+      it('returns isError for empty selector', async () => {
+        const tool = new CodeAnalyzerListRulesMcpTool(
+          new StubListRulesAction({ status: 'success', rules: [] })
+        );
+        const result = await tool.exec({ selector: '' });
+        expect(result.isError).toBe(true);
+        expect(result.structuredContent?.status).toContain('Invalid selector token(s): <empty>');
+      });
 });

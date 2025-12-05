@@ -15,6 +15,17 @@ import {
     ENGINE_SPECIFIC_TAGS
 } from "../constants.js";
 
+// Precompute allowed selector tokens (lowercased) once at module scope
+const ALLOWED_SELECTOR_TOKENS_LOWER: ReadonlySet<string> = new Set<string>([
+    ...ENGINE_NAMES.map(s => s.toLowerCase()),
+    ...SEVERITY_NAMES.map(s => s.toLowerCase()),
+    ...SEVERITY_NUMBERS.map(n => String(n)),
+    ...GENERAL_TAGS.map(s => s.toLowerCase()),
+    ...CATEGORIES.map(s => s.toLowerCase()),
+    ...LANGUAGES.map(s => s.toLowerCase()),
+    ...ENGINE_SPECIFIC_TAGS.map(s => s.toLowerCase())
+]);
+
 
 const DESCRIPTION: string = `A tool for selecting Code Analyzer rules based on a number of criteria.\n` +
     `This tool returns a JSON array describing Code Analyzer rules that match a "selector".\n` +
@@ -66,19 +77,10 @@ export class CodeAnalyzerListRulesMcpTool extends McpTool<InputArgsShape, Output
      * Case-insensitive for tags and severity names; engine names compared case-insensitively as well.
      */
     public static validateSelector(selector: string): { valid: true } | { valid: false, invalidTokens: string[] } {
-        const allowedLowerTokens: Set<string> = new Set<string>([
-            // engines
-            ...ENGINE_NAMES.map(s => s.toLowerCase()),
-            // severity names (names accepted case-insensitively)
-            ...SEVERITY_NAMES.map(s => s.toLowerCase()),
-            // severity numbers (as strings)
-            ...SEVERITY_NUMBERS.map(n => String(n)),
-            // tags (case-insensitive)
-            ...GENERAL_TAGS.map(s => s.toLowerCase()),
-            ...CATEGORIES.map(s => s.toLowerCase()),
-            ...LANGUAGES.map(s => s.toLowerCase()),
-            ...ENGINE_SPECIFIC_TAGS.map(s => s.toLowerCase())
-        ]);
+        // Explicitly reject empty selectors
+        if (!selector || selector.trim().length === 0) {
+            return { valid: false, invalidTokens: ['<empty>'] };
+        }
 
         const rawTokens: string[] = selector
             .split(':')
@@ -88,7 +90,7 @@ export class CodeAnalyzerListRulesMcpTool extends McpTool<InputArgsShape, Output
         const invalid: string[] = [];
         for (const token of rawTokens) {
             const normalized = token.toLowerCase();
-            if (!allowedLowerTokens.has(normalized)) {
+            if (!ALLOWED_SELECTOR_TOKENS_LOWER.has(normalized)) {
                 invalid.push(token);
             }
         }
