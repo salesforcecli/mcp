@@ -182,4 +182,56 @@ describe('retrieve_metadata', () => {
     expect(apexClasses.length).to.equal(9);
     expect(packageXml.length).to.equal(1);
   });
+
+  it('should retrieve and overwrite local edits when ignoreConflicts is true', async () => {
+    const apexClassPath = path.join('force-app', 'main', 'default', 'classes', 'GeocodingService.cls');
+    const localFilePath = path.join(testSession.project.dir, apexClassPath);
+    const originalContent = fs.readFileSync(localFilePath, 'utf8');
+    const localEditContent = originalContent + '\n// Local edit';
+
+    // Make a local edit to the file
+    fs.writeFileSync(localFilePath, localEditContent, 'utf8');
+
+    // Retrieve with ignoreConflicts=true - should overwrite local edit
+    const result = await client.callTool(retrieveMetadataSchema, {
+      name: 'retrieve_metadata',
+      params: {
+        sourceDir: [apexClassPath],
+        ignoreConflicts: true,
+        usernameOrAlias: orgUsername,
+        directory: testSession.project.dir,
+      },
+    });
+
+    expect(result.isError).to.equal(false);
+    expect(result.content.length).to.equal(1);
+    if (result.content[0].type !== 'text') assert.fail();
+
+    const responseText = result.content[0].text;
+    expect(responseText).to.contain('Retrieve result:');
+
+    // Parse the retrieve result JSON
+    const retrieveMatch = responseText.match(/Retrieve result: ({.*})/);
+    expect(retrieveMatch).to.not.be.null;
+
+    const retrieveResult = JSON.parse(retrieveMatch![1]) as {
+      success: boolean;
+      done: boolean;
+      fileProperties: Array<{
+        type: string;
+        fullName: string;
+        fileName: string;
+      }>;
+    };
+    expect(retrieveResult.success).to.be.true;
+    expect(retrieveResult.done).to.be.true;
+    expect(retrieveResult.fileProperties.length).to.equal(2);
+
+    const apexClass = retrieveResult.fileProperties.find(
+      (fp: { type: string; fullName: string }) => fp.type === 'ApexClass',
+    );
+    if (!apexClass) assert.fail();
+    expect(apexClass.fullName).to.equal('GeocodingService');
+    expect(apexClass.fileName).to.equal('unpackaged/classes/GeocodingService.cls');
+  });
 });
