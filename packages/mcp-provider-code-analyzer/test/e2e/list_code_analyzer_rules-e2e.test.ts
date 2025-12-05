@@ -57,4 +57,3 @@ describe('list_code_analyzer_rules', () => {
         expect((result.structuredContent!.rules as { length: number }[])?.length).toEqual(0);
     }, 30000);
 });
-
