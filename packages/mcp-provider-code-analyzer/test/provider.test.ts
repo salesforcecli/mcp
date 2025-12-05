@@ -19,7 +19,7 @@ describe("Tests for CodeAnalyzerMcpProvider", () => {
 
     it("When provideTools is called, then the returned array contains an CodeAnalyzerRunMcpTool instance", async () => {
         const tools: McpTool[] = await provider.provideTools(services);
-        expect(tools).toHaveLength(2);
+        expect(tools).toHaveLength(3);
         expect(tools[0]).toBeInstanceOf(CodeAnalyzerRunMcpTool);
         expect(tools[1]).toBeInstanceOf(CodeAnalyzerDescribeRuleMcpTool);
     });
