@@ -234,7 +234,8 @@ async function buildDeployComponentSet(
       projectDir: stl?.projectPath,
     });
   }
-  
+
+  // No specific metadata requested to deploy, build component set from STL.
   const cs = (await stl.localChangesAsComponentSet(false))[0] ?? new ComponentSet(undefined, stl.registry);
   return cs;
 }

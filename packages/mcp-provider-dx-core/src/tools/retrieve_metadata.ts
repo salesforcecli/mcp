@@ -15,8 +15,8 @@
  */
 
 import { z } from 'zod';
-import { Connection, Org, SfError, SfProject } from '@salesforce/core';
-import { SourceConflictError, SourceTracking } from '@salesforce/source-tracking';
+import { Connection, Lifecycle, Org, SfProject } from '@salesforce/core';
+import { SourceTracking } from '@salesforce/source-tracking';
 import { ComponentSet, ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
 import { ensureString } from '@salesforce/ts-types';
 import { Duration } from '@salesforce/kit';
@@ -121,7 +121,7 @@ Retrieve X metadata from my org and ignore any conflicts between the local proje
 
     const org = await Org.create({ connection });
 
-    if (!input.sourceDir && !input.manifest && !(await org.tracksSource())) {
+    if (!input.sourceDir && !input.manifest && !input.ignoreConflicts &&!(await org.tracksSource())) {
       return textResponse(
         'This org does not have source-tracking enabled or does not support source-tracking. You should specify the files or a manifest to retrieve.',
         true,
@@ -129,15 +129,20 @@ Retrieve X metadata from my org and ignore any conflicts between the local proje
     }
 
     try {
+      // Clear old conflict listeners for force retrieve
+      if (input.ignoreConflicts) {
+        const lifecycle = Lifecycle.getInstance();
+        lifecycle.removeAllListeners('scopedPreRetrieve');
+      }
+
       const stl = await SourceTracking.create({
         org,
         project,
-        subscribeSDREvents: true,
+        subscribeSDREvents: !input.ignoreConflicts,
         ignoreConflicts: input.ignoreConflicts ?? false,
       });
 
-      const componentSet = await buildRetrieveComponentSet(connection, project, stl, input.sourceDir, input.manifest, input.ignoreConflicts);
-
+      const componentSet = await buildRetrieveComponentSet(connection, project, stl, input.sourceDir, input.manifest);
       if (componentSet.size === 0) {
         // STL found no changes
         return textResponse('No remote changes to retrieve were found.');
@@ -175,7 +180,6 @@ async function buildRetrieveComponentSet(
   stl: SourceTracking,
   sourceDir?: string[],
   manifestPath?: string,
-  ignoreConflicts?: boolean,
 ): Promise<ComponentSet> {
   if (sourceDir || manifestPath) {
     return ComponentSetBuilder.build({
@@ -194,14 +198,7 @@ async function buildRetrieveComponentSet(
     });
   }
 
-  try {
-    // No specific metadata requested to retrieve, build component set from STL.
-    const cs = await stl.maybeApplyRemoteDeletesToLocal(true);
-    return cs.componentSetFromNonDeletes;
-  } catch (error) {
-    if (ignoreConflicts && error instanceof SourceConflictError) {
-      return await stl.maybeApplyRemoteDeletesToLocal(false);
-    }
-    throw new SfError('Failed to build component set for retrieval due to conflicts. Set ignoreConflicts=true to override.');
-  }
+  // No specific metadata requested to retrieve, build component set from STL.
+  const cs = await stl.maybeApplyRemoteDeletesToLocal(true);
+  return cs.componentSetFromNonDeletes;
 }
