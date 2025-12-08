@@ -15,8 +15,8 @@
  */
 
 import { z } from 'zod';
-import { Connection, Org, SfError, SfProject } from '@salesforce/core';
-import { SourceTracking, SourceConflictError } from '@salesforce/source-tracking';
+import { Connection, Lifecycle, Org, SfError, SfProject } from '@salesforce/core';
+import { SourceTracking } from '@salesforce/source-tracking';
 import { ComponentSet, ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
 import { ensureString } from '@salesforce/ts-types';
 import { Duration } from '@salesforce/kit';
@@ -150,7 +150,7 @@ Deploy X to my org and run A,B and C apex tests.`,
 
     const org = await Org.create({ connection });
 
-    if (!input.sourceDir && !input.manifest && !(await org.tracksSource())) {
+    if (!input.sourceDir && !input.manifest && !input.ignoreConflicts && !(await org.tracksSource())) {
       return textResponse(
         'This org does not have source-tracking enabled or does not support source-tracking. You should specify the files or a manifest to deploy.',
         true,
@@ -159,14 +159,20 @@ Deploy X to my org and run A,B and C apex tests.`,
 
     let jobId: string = '';
     try {
+      // Clear old conflict listeners for force deploy
+      if (input.ignoreConflicts) {
+        const lifecycle = Lifecycle.getInstance();
+        lifecycle.removeAllListeners('scopedPreDeploy');
+      }
+
       const stl = await SourceTracking.create({
         org,
         project,
-        subscribeSDREvents: true,
+        subscribeSDREvents: !input.ignoreConflicts,
         ignoreConflicts: input.ignoreConflicts ?? false,
       });
 
-      const componentSet = await buildDeployComponentSet(connection, project, stl, input.sourceDir, input.manifest, input.ignoreConflicts);
+      const componentSet = await buildDeployComponentSet(connection, project, stl, input.sourceDir, input.manifest);
 
       if (componentSet.size === 0) {
         // STL found no changes
@@ -179,6 +185,8 @@ Deploy X to my org and run A,B and C apex tests.`,
           ...(input.apexTests ? { runTests: input.apexTests, testLevel: 'RunSpecifiedTests' } : {}),
           ...(input.apexTestLevel ? { testLevel: input.apexTestLevel } : {}),
         },
+        // Only pass tracker for normal deploys; force deploys bypass tracking
+        ...(!input.ignoreConflicts ? { tracker: stl } : {}),
       });
       jobId = deploy.id ?? '';
 
@@ -209,7 +217,6 @@ async function buildDeployComponentSet(
   stl: SourceTracking,
   sourceDir?: string[],
   manifestPath?: string,
-  ignoreConflicts?: boolean,
 ): Promise<ComponentSet> {
   if (sourceDir || manifestPath) {
     return ComponentSetBuilder.build({
@@ -227,16 +234,8 @@ async function buildDeployComponentSet(
       projectDir: stl?.projectPath,
     });
   }
-  try {
-    // No specific metadata requested to deploy, build component set from STL.
-    const cs = (await stl.localChangesAsComponentSet(false))[0] ?? new ComponentSet(undefined, stl.registry);
-    return cs;
-  }
-  catch (error) {
-    if (ignoreConflicts && error instanceof SourceConflictError) {
-      // Ignore conflicts as requested, proceed with deployment
-      return new ComponentSet(undefined, stl.registry);
-    }
-    throw new SfError('Failed to build component set for deployment due to conflicts. Set ignoreConflicts=true to override.');
-  }
+  
+  const cs = (await stl.localChangesAsComponentSet(false))[0] ?? new ComponentSet(undefined, stl.registry);
+  return cs;
 }
+
