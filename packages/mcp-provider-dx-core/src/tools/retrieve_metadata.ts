@@ -121,7 +121,7 @@ Retrieve X metadata from my org and ignore any conflicts between the local proje
 
     const org = await Org.create({ connection });
 
-    if (!input.sourceDir && !input.manifest && !input.ignoreConflicts &&!(await org.tracksSource())) {
+    if (!input.sourceDir && !input.manifest && !input.ignoreConflicts && !(await org.tracksSource())) {
       return textResponse(
         'This org does not have source-tracking enabled or does not support source-tracking. You should specify the files or a manifest to retrieve.',
         true,
@@ -132,7 +132,6 @@ Retrieve X metadata from my org and ignore any conflicts between the local proje
       // Clear old conflict listeners for force retrieve
       if (input.ignoreConflicts) {
         const lifecycle = Lifecycle.getInstance();
-        lifecycle.removeAllListeners('scopedPreDeploy');
         lifecycle.removeAllListeners('scopedPreRetrieve');
       }
 
