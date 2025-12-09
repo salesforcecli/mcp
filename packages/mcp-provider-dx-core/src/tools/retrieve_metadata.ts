@@ -132,13 +132,14 @@ Retrieve X metadata from my org and ignore any conflicts between the local proje
       // Clear old conflict listeners for force retrieve
       if (input.ignoreConflicts) {
         const lifecycle = Lifecycle.getInstance();
+        lifecycle.removeAllListeners('scopedPreDeploy');
         lifecycle.removeAllListeners('scopedPreRetrieve');
       }
 
       const stl = await SourceTracking.create({
         org,
         project,
-        subscribeSDREvents: !input.ignoreConflicts,
+        subscribeSDREvents: true,
         ignoreConflicts: input.ignoreConflicts ?? false,
       });
 

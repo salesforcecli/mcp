@@ -168,7 +168,7 @@ Deploy X to my org and run A,B and C apex tests.`,
       const stl = await SourceTracking.create({
         org,
         project,
-        subscribeSDREvents: !input.ignoreConflicts,
+        subscribeSDREvents: true,
         ignoreConflicts: input.ignoreConflicts ?? false,
       });
 
@@ -185,8 +185,6 @@ Deploy X to my org and run A,B and C apex tests.`,
           ...(input.apexTests ? { runTests: input.apexTests, testLevel: 'RunSpecifiedTests' } : {}),
           ...(input.apexTestLevel ? { testLevel: input.apexTestLevel } : {}),
         },
-        // Only pass tracker for normal deploys; force deploys bypass tracking
-        ...(!input.ignoreConflicts ? { tracker: stl } : {}),
       });
       jobId = deploy.id ?? '';
 
