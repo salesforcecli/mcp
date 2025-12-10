@@ -225,6 +225,8 @@ jobs:
 
   e2e-test:
     needs: [publish-server]
+    # Known GHA quirk: If a single job is skipped, all subsequent jobs require an explicit `if` clause
+    if: always() && needs.publish-server.result == 'success'
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
