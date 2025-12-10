@@ -1,0 +1,2746 @@
+{
+    "description": "PMD Apex AST Nodes - Complete Reference",
+    "source": "Extracted from PMD 7.x source code",
+    "extraction_date": "2025-12-03",
+    "total_nodes": 97,
+    "version": "7.x",
+    "note": "Includes inherited attributes from parent classes (marked with inherited_from field)",
+    "important_notes": [
+        {
+            "title": "Method Node Name",
+            "content": "Use @Image for Method node names, NOT @Name. @Name attribute does not exist for Method nodes."
+        },
+        {
+            "title": "Interface vs Inheritance",
+            "content": "Use @InterfaceNames (array) for interfaces, @SuperClassName for inheritance. @SuperClassName is empty string when no superclass exists. For array attributes like @InterfaceNames, use = operator to check membership: @InterfaceNames = 'Database.Batchable'."
+        },
+        {
+            "title": "MethodCallExpression",
+            "content": "Use @FullMethodName (NOT @MethodName) for MethodCallExpression. @FullMethodName excludes parentheses (e.g., 'Test.isRunningTest' not 'Test.isRunningTest()'). Use ancestor::Method//MethodCallExpression to search within same method context."
+        },
+        {
+            "title": "Test Detection",
+            "content": "Use ModifierNode/@isTest for test classes/methods, NOT contains(@Image, 'Test'). String matching causes false positives. Check both class and method: not(ancestor::UserClass[ModifierNode/@isTest]) and not(ancestor::Method[ModifierNode/@isTest])."
+        },
+        {
+            "title": "XPath Node Selection",
+            "content": "XPath must return nodes, not booleans. Place predicates inside node selectors: //Node[@attr = 'value' and condition], NOT //Node[@attr = 'value'] and condition."
+        },
+        {
+            "title": "String Matching Functions",
+            "content": "Use XPath string functions for pattern matching: ends-with(@Image, 'Exception'), starts-with(@Image, 'Test'), contains(@Image, 'Value'). These work on @Image attribute which preserves source code casing."
+        },
+        {
+            "title": "Ancestor and Descendant Navigation",
+            "content": "Use ancestor::Node to find containing context (e.g., ancestor::Method, ancestor::UserClass). Use descendant::Node to find contained elements (e.g., descendant::TryCatchFinallyBlockStatement). descendant:: searches all descendants at any level within the node."
+        },
+        {
+            "title": "Context-Aware Method Searching",
+            "content": "To check if a method call exists within the same method that contains another call, use ancestor::Method//MethodCallExpression. Example: //MethodCallExpression[@FullMethodName = 'Database.query' and not(ancestor::Method//MethodCallExpression[@FullMethodName = 'String.escapeSingleQuotes'])]."
+        },
+        {
+            "title": "Try-Catch Block Detection",
+            "content": "Use descendant::TryCatchFinallyBlockStatement to check if a method contains try-catch. Example: //Method[@Image = 'execute' and not(descendant::TryCatchFinallyBlockStatement)]. Check within method scope, not class scope."
+        },
+        {
+            "title": "Annotation Detection",
+            "content": "Use @Image for annotation names (preserves casing). Example: //Annotation[@Image = 'TestVisible']. @Image matches the annotation name as written in source code."
+        },
+        {
+            "title": "Empty String Behavior",
+            "content": "When checking for absence, use not(@attr = 'value') for string attributes. For @SuperClassName, empty string means no superclass, so not(@SuperClassName = 'Exception') correctly identifies classes that don't extend Exception."
+        },
+        {
+            "title": "Node Type Names",
+            "content": "Use UserClass (not ClassNode) for Apex classes, UserTrigger (not TriggerNode) for triggers. These are the correct node type names in PMD Apex AST."
+        },
+        {
+            "title": "Negation Patterns",
+            "content": "Use not(descendant::Node) to check if a node has no descendant of that type. Use not(ancestor::Node[@attr = 'value']) to exclude nodes based on ancestor context. Combine multiple conditions with 'and' operator."
+        },
+        {
+            "title": "Node Attribute Availability",
+            "content": "Only use attributes that exist for the specific node type. Each node type has a defined set of attributes - check the AST reference before using @attr. For example, TriggerVariableExpression does NOT have @Image attribute, only @RealLoc and @DefiningType. Using non-existent attributes causes XPath to fail silently or return no matches."
+        },
+        {
+            "title": "Node Relationships and Structure",
+            "content": "Understand parent-child relationships in AST. Annotations are descendants of methods, not parents. Use descendant::Annotation to find annotations within methods: //Method[descendant::Annotation[@Image = 'AuraEnabled']]. Avoid incorrect structures like //Method[...]//Annotation[...]//Method[...] which implies annotations contain methods."
+        },
+        {
+            "title": "XPath Logic Direction",
+            "content": "Ensure XPath logic matches rule intent. To find violations, use positive conditions (e.g., @ReturnType = 'void' to find void methods). To find correct code, use negative conditions (e.g., not(@ReturnType = 'void')). Double-check that the XPath finds what you want to flag, not what you want to allow."
+        }
+    ],
+    "nodes": [
+      {
+        "name": "Annotation",
+        "description": "Represents an annotation like @AuraEnabled, @TestVisible, @InvocableMethod",
+        "category": "Modifiers",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Name",
+            "type": "string",
+            "description": "Returns the normalized annotation name for known, valid annotations. The normalized name is in PascalCase. If an unknown annotation is used, the raw name (as in the source code) is returned."
+          },
+          {
+            "name": "@RawName",
+            "type": "string",
+            "description": "Returns the annotation name as it appears in the source code. This allows to verify the casing."
+          },
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "Returns the annotation name as it appears in the source code. This allows to verify the casing."
+          },
+          {
+            "name": "@isResolved",
+            "type": "boolean",
+            "description": "Returns the annotation name as it appears in the source code. This allows to verify the casing."
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "AnnotationParameter",
+        "description": "Represents a parameter of an annotation",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Name",
+            "type": "string",
+            "description": "The name of this node"
+          },
+          {
+            "name": "@Value",
+            "type": "string",
+            "description": "The value of this node"
+          },
+          {
+            "name": "@BooleanValue",
+            "type": "boolean",
+            "description": "The booleanvalue of this node"
+          },
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "The image of this node"
+          },
+          {
+            "name": "@Name",
+            "type": "boolean",
+            "description": "Checks whether this annotation parameter has the given name. The check is done case-insensitive.",
+            "parameters": [
+              "@NonNull String name"
+            ]
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "AnonymousClass",
+        "description": "Represents anonymous class",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "The image of this node"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "ApexFile",
+        "description": "Represents apex file",
+        "category": "Other",
+        "extends": "AbstractApexNode.Single",
+        "implements": [
+          "RootNode"
+        ],
+        "attributes": [
+          {
+            "name": "@AstInfo",
+            "type": "string",
+            "description": "The astinfo of this node"
+          },
+          {
+            "name": "@MainNode",
+            "type": "string",
+            "description": "The mainnode of this node"
+          },
+          {
+            "name": "@GlobalIssues",
+            "type": "array",
+            "description": "The globalissues of this node"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "The definingtype of this node"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "ArrayLoadExpression",
+        "description": "Represents array load expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "ArrayStoreExpression",
+        "description": "Represents array store expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "AssignmentExpression",
+        "description": "Represents assignment expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Op",
+            "type": "string",
+            "description": "The op of this node"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "BinaryExpression",
+        "description": "Represents a binary expression (operations with two operands like ==, !=, +, -, &&, ||)",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Op",
+            "type": "string",
+            "description": "The op of this node"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "BindExpressions",
+        "description": "Represents bind expressions",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "BlockStatement",
+        "description": "Represents block statement",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@CurlyBrace",
+            "type": "boolean",
+            "description": "Whether this node hasCurlyBrace"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "BooleanExpression",
+        "description": "Represents boolean expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Op",
+            "type": "string",
+            "description": "The op of this node"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "BreakStatement",
+        "description": "Represents break statement",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "CastExpression",
+        "description": "Represents cast expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Type",
+            "type": "string",
+            "description": "Returns the target type name of the cast expression."
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "CatchBlockStatement",
+        "description": "Represents catch block statement",
+        "category": "Statements",
+        "extends": "AbstractApexCommentContainerNode",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@ExceptionType",
+            "type": "string",
+            "description": "The exceptiontype of this node"
+          },
+          {
+            "name": "@VariableName",
+            "type": "string",
+            "description": "The variablename of this node"
+          },
+          {
+            "name": "@Body",
+            "type": "string",
+            "description": "The body of this node"
+          },
+          {
+            "name": "@ContainsComment",
+            "type": "boolean",
+            "description": "Returns true if this node contains a comment",
+            "inherited_from": "AbstractApexCommentContainerNode"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "ClassRefExpression",
+        "description": "Represents class ref expression",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "ConstructorPreamble",
+        "description": "Represents constructor preamble",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "ConstructorPreambleStatement",
+        "description": "Represents constructor preamble statement",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "ContinueStatement",
+        "description": "Represents continue statement",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "DmlDeleteStatement",
+        "description": "Represents a DML delete operation",
+        "category": "Statements",
+        "extends": "AbstractDmlStatement",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "DmlInsertStatement",
+        "description": "Represents a DML insert operation",
+        "category": "Statements",
+        "extends": "AbstractDmlStatement",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "DmlMergeStatement",
+        "description": "Represents dml merge statement",
+        "category": "Statements",
+        "extends": "AbstractDmlStatement",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "DmlUndeleteStatement",
+        "description": "Represents dml undelete statement",
+        "category": "Statements",
+        "extends": "AbstractDmlStatement",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "DmlUpdateStatement",
+        "description": "Represents a DML update operation",
+        "category": "Statements",
+        "extends": "AbstractDmlStatement",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "DmlUpsertStatement",
+        "description": "Represents dml upsert statement",
+        "category": "Statements",
+        "extends": "AbstractDmlStatement",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "DoLoopStatement",
+        "description": "Represents do loop statement",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "ElseWhenBlock",
+        "description": "Represents else when block",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "EmptyReferenceExpression",
+        "description": "Represents empty reference expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Empty",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "The definingtype of this node"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Empty"
+          }
+        ]
+      },
+      {
+        "name": "Expression",
+        "description": "Represents expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "ExpressionStatement",
+        "description": "Represents expression statement",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "Field",
+        "description": "Represents field",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Many",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "The image of this node"
+          },
+          {
+            "name": "@Type",
+            "type": "string",
+            "description": "Returns the type name. <p>This includes any type arguments. (This is tested.) If the type is a primitive, its case will be normalized."
+          },
+          {
+            "name": "@Modifiers",
+            "type": "node",
+            "description": "Returns the type name. <p>This includes any type arguments. (This is tested.) If the type is a primitive, its case will be normalized."
+          },
+          {
+            "name": "@Name",
+            "type": "string",
+            "description": "Returns the type name. <p>This includes any type arguments. (This is tested.) If the type is a primitive, its case will be normalized."
+          },
+          {
+            "name": "@Value",
+            "type": "string",
+            "description": "Returns the type name. <p>This includes any type arguments. (This is tested.) If the type is a primitive, its case will be normalized."
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns the type name. <p>This includes any type arguments. (This is tested.) If the type is a primitive, its case will be normalized."
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Many"
+          }
+        ]
+      },
+      {
+        "name": "FieldDeclaration",
+        "description": "Represents field declaration",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "The image of this node"
+          },
+          {
+            "name": "@Name",
+            "type": "string",
+            "description": "The name of this node"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "FieldDeclarationStatements",
+        "description": "Represents field declaration statements",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Modifiers",
+            "type": "node",
+            "description": "The modifiers of this node"
+          },
+          {
+            "name": "@TypeName",
+            "type": "string",
+            "description": "Returns the type name. <p>This includes any type arguments. If the type is a primitive, its case will be normalized."
+          },
+          {
+            "name": "@TypeArguments",
+            "type": "array",
+            "description": "This returns the first level of the type arguments. If there are nested types (e.g. {@code List<List<String>>}), then these returned types contain themselves type arguments. <p>Note: This method only exists for this AST type and in no other type, even though type arguments are possible e.g. for {@link ASTVariableDeclaration#getType()}."
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "ForEachStatement",
+        "description": "Represents for each statement",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "ForLoopStatement",
+        "description": "Represents a for loop statement",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "FormalComment",
+        "description": "Represents formal comment",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Empty",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "The image of this node"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Empty"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Empty"
+          }
+        ]
+      },
+      {
+        "name": "IdentifierCase",
+        "description": "Represents identifier case",
+        "category": "Other",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "IfBlockStatement",
+        "description": "Represents an if statement block",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "IfElseBlockStatement",
+        "description": "Represents if else block statement",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@ElseStatement",
+            "type": "boolean",
+            "description": "Whether this node hasElseStatement"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "IllegalStoreExpression",
+        "description": "Represents illegal store expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "InstanceOfExpression",
+        "description": "Represents instance of expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "InvalidDependentCompilation",
+        "description": "Represents invalid dependent compilation",
+        "category": "Other",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "The image of this node"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "JavaMethodCallExpression",
+        "description": "Represents java method call expression",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "JavaVariableExpression",
+        "description": "Represents java variable expression",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "LiteralCase",
+        "description": "Represents literal case",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "LiteralExpression",
+        "description": "Represents a literal value (string, number, boolean, null)",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@LiteralType",
+            "type": "string",
+            "description": "The literaltype of this node"
+          },
+          {
+            "name": "@isString",
+            "type": "boolean",
+            "description": "Whether this node isString"
+          },
+          {
+            "name": "@isBoolean",
+            "type": "boolean",
+            "description": "Whether this node isBoolean"
+          },
+          {
+            "name": "@isInteger",
+            "type": "boolean",
+            "description": "Whether this node isInteger"
+          },
+          {
+            "name": "@isDouble",
+            "type": "boolean",
+            "description": "Whether this node isDouble"
+          },
+          {
+            "name": "@isLong",
+            "type": "boolean",
+            "description": "Whether this node isLong"
+          },
+          {
+            "name": "@isDecimal",
+            "type": "boolean",
+            "description": "Whether this node isDecimal"
+          },
+          {
+            "name": "@isNull",
+            "type": "boolean",
+            "description": "Whether this node isNull"
+          },
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "The image of this node"
+          },
+          {
+            "name": "@Name",
+            "type": "string",
+            "description": "Returns the name of this literal when it is labeled in an object initializer with named arguments ({@link ASTNewKeyValueObjectExpression}). <p>For example, in the Apex code <pre>{@code new X(a = 1, b = 2) }</pre> , the {@link ASTLiteralExpression} corresponding to {@code 2} will have the {@code name} \"{@code b}\"."
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "MapEntryNode",
+        "description": "Represents map entry node",
+        "category": "Other",
+        "extends": "AbstractApexNode.Many",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "The image of this node"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Many"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Many"
+          }
+        ]
+      },
+      {
+        "name": "Method",
+        "description": "Represents a method declaration",
+        "category": "Declarations",
+        "extends": "AbstractApexNode",
+        "implements": [
+          "ApexQualifiableNode"
+        ],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Internal name used by the synthetic trigger method."
+          },
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "Internal name used by the synthetic trigger method."
+          },
+          {
+            "name": "@CanonicalName",
+            "type": "string",
+            "description": "Internal name used by the synthetic trigger method."
+          },
+          {
+            "name": "@QualifiedName",
+            "type": "string",
+            "description": "Internal name used by the synthetic trigger method."
+          },
+          {
+            "name": "@isConstructor",
+            "type": "boolean",
+            "description": "Internal name used by the synthetic trigger method."
+          },
+          {
+            "name": "@isStaticInitializer",
+            "type": "boolean",
+            "description": "Internal name used by the synthetic trigger method."
+          },
+          {
+            "name": "@Modifiers",
+            "type": "node",
+            "description": "Internal name used by the synthetic trigger method."
+          },
+          {
+            "name": "@ReturnType",
+            "type": "string",
+            "description": "Returns the method return type name. This includes any type arguments. If the type is a primitive, its case will be normalized."
+          },
+          {
+            "name": "@Arity",
+            "type": "integer",
+            "description": "Returns the method return type name. This includes any type arguments. If the type is a primitive, its case will be normalized."
+          },
+          {
+            "name": "@isTriggerBlock",
+            "type": "boolean",
+            "description": "Checks whether this method is the synthetic trigger method."
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode"
+          }
+        ]
+      },
+      {
+        "name": "MethodBlockStatement",
+        "description": "Represents method block statement",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "MethodCallExpression",
+        "description": "Represents a method call expression",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@MethodName",
+            "type": "string",
+            "description": "The {@link Identifier}s that constitute the {@link CallExpression#getReceiver() receiver} of this method call."
+          },
+          {
+            "name": "@FullMethodName",
+            "type": "string",
+            "description": "The {@link Identifier}s that constitute the {@link CallExpression#getReceiver() receiver} of this method call."
+          },
+          {
+            "name": "@InputParametersSize",
+            "type": "integer",
+            "description": "The {@link Identifier}s that constitute the {@link CallExpression#getReceiver() receiver} of this method call."
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "Modifier",
+        "description": "Represents modifier",
+        "category": "Modifiers",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "ModifierNode",
+        "description": "Represents modifier node",
+        "category": "Modifiers",
+        "extends": "AbstractApexNode.Many",
+        "implements": [
+          "AccessNode"
+        ],
+        "attributes": [
+          {
+            "name": "@Modifiers",
+            "type": "integer",
+            "description": "The modifiers of this node"
+          },
+          {
+            "name": "@isPublic",
+            "type": "boolean",
+            "description": "Whether this node isPublic"
+          },
+          {
+            "name": "@isProtected",
+            "type": "boolean",
+            "description": "Whether this node isProtected"
+          },
+          {
+            "name": "@isPrivate",
+            "type": "boolean",
+            "description": "Whether this node isPrivate"
+          },
+          {
+            "name": "@isAbstract",
+            "type": "boolean",
+            "description": "Whether this node isAbstract"
+          },
+          {
+            "name": "@isStatic",
+            "type": "boolean",
+            "description": "Whether this node isStatic"
+          },
+          {
+            "name": "@isFinal",
+            "type": "boolean",
+            "description": "Whether this node isFinal"
+          },
+          {
+            "name": "@isTransient",
+            "type": "boolean",
+            "description": "Whether this node isTransient"
+          },
+          {
+            "name": "@isTest",
+            "type": "boolean",
+            "description": "Returns true if function has `@isTest` annotation or `testmethod` modifier"
+          },
+          {
+            "name": "@DeprecatedTestMethod",
+            "type": "boolean",
+            "description": "Returns true if function has `testmethod` modifier"
+          },
+          {
+            "name": "@isTestOrTestSetup",
+            "type": "boolean",
+            "description": "Returns true if function has `testmethod` modifier"
+          },
+          {
+            "name": "@isWithSharing",
+            "type": "boolean",
+            "description": "Returns true if function has `testmethod` modifier"
+          },
+          {
+            "name": "@isWithoutSharing",
+            "type": "boolean",
+            "description": "Returns true if function has `testmethod` modifier"
+          },
+          {
+            "name": "@isInheritedSharing",
+            "type": "boolean",
+            "description": "Returns true if function has `testmethod` modifier"
+          },
+          {
+            "name": "@isWebService",
+            "type": "boolean",
+            "description": "Returns true if function has `testmethod` modifier"
+          },
+          {
+            "name": "@isGlobal",
+            "type": "boolean",
+            "description": "Returns true if function has `testmethod` modifier"
+          },
+          {
+            "name": "@isOverride",
+            "type": "boolean",
+            "description": "Returns true if function has `testmethod` modifier"
+          },
+          {
+            "name": "@isVirtual",
+            "type": "boolean",
+            "description": "Returns true if function has `testmethod` modifier"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Many"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Many"
+          }
+        ]
+      },
+      {
+        "name": "ModifierOrAnnotation",
+        "description": "Represents modifier or annotation",
+        "category": "Modifiers",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "MultiStatement",
+        "description": "Represents multi statement",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "NestedExpression",
+        "description": "Represents nested expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "NestedStoreExpression",
+        "description": "Represents nested store expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "NewKeyValueObjectExpression",
+        "description": "Represents new key value object expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Type",
+            "type": "string",
+            "description": "Returns the type name. This includes any type arguments. If the type is a primitive, its case will be normalized."
+          },
+          {
+            "name": "@ParameterCount",
+            "type": "integer",
+            "description": "Returns the type name. This includes any type arguments. If the type is a primitive, its case will be normalized."
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "NewListInitExpression",
+        "description": "Represents new list init expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "NewListLiteralExpression",
+        "description": "Represents new list literal expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "NewMapInitExpression",
+        "description": "Represents new map init expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "NewMapLiteralExpression",
+        "description": "Represents new map literal expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "NewObjectExpression",
+        "description": "Represents new object expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Type",
+            "type": "string",
+            "description": "Returns the type name. This includes any type arguments. If the type is a primitive, its case will be normalized."
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "NewSetInitExpression",
+        "description": "Represents new set init expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "NewSetLiteralExpression",
+        "description": "Represents new set literal expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "PackageVersionExpression",
+        "description": "Represents package version expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "Parameter",
+        "description": "Represents parameter",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "The image of this node"
+          },
+          {
+            "name": "@Modifiers",
+            "type": "node",
+            "description": "The modifiers of this node"
+          },
+          {
+            "name": "@Type",
+            "type": "string",
+            "description": "Returns the parameter's type name. <p>This includes any type arguments. If the type is a primitive, its case will be normalized."
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "PostfixExpression",
+        "description": "Represents postfix expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Op",
+            "type": "string",
+            "description": "The op of this node"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "PrefixExpression",
+        "description": "Represents prefix expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Op",
+            "type": "string",
+            "description": "The op of this node"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "Property",
+        "description": "Represents property",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Type",
+            "type": "string",
+            "description": "Returns the property value's type name. This includes any type arguments. If the type is a primitive, its case will be normalized."
+          },
+          {
+            "name": "@Modifiers",
+            "type": "node",
+            "description": "Returns the property value's type name. This includes any type arguments. If the type is a primitive, its case will be normalized."
+          },
+          {
+            "name": "@FormatAccessorName",
+            "type": "string",
+            "description": "Returns the internal accessor (getter/setter) name of an {@link ASTProperty}. The accessor name is the constant {@link #ACCESSOR_PREFIX} prepended to the name of the property.",
+            "parameters": [
+              "ASTProperty property"
+            ]
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "ReferenceExpression",
+        "description": "Represents reference expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Many",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@ReferenceType",
+            "type": "string",
+            "description": "The referencetype of this node"
+          },
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "The image of this node"
+          },
+          {
+            "name": "@Names",
+            "type": "array",
+            "description": "The names of this node"
+          },
+          {
+            "name": "@isSafeNav",
+            "type": "boolean",
+            "description": "Whether this node isSafeNav"
+          },
+          {
+            "name": "@isSObjectType",
+            "type": "boolean",
+            "description": "Whether this node isSObjectType"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Whether this node hasRealLoc"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Many"
+          }
+        ]
+      },
+      {
+        "name": "ReturnStatement",
+        "description": "Represents a return statement",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "RunAsBlockStatement",
+        "description": "Represents run as block statement",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "SoqlExpression",
+        "description": "Represents a SOQL query expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Query",
+            "type": "string",
+            "description": "Returns the raw query as it appears in the source code."
+          },
+          {
+            "name": "@CanonicalQuery",
+            "type": "string",
+            "description": "Returns the query with the SOQL keywords normalized as uppercase."
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "SoslExpression",
+        "description": "Represents a SOSL search expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Query",
+            "type": "string",
+            "description": "Returns the raw query as it appears in the source code."
+          },
+          {
+            "name": "@CanonicalQuery",
+            "type": "string",
+            "description": "Returns the query with the SOSL keywords normalized as uppercase."
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "StandardCondition",
+        "description": "Represents standard condition",
+        "category": "Other",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "Statement",
+        "description": "Represents statement",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "StatementExecuted",
+        "description": "Represents statement executed",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "SuperMethodCallExpression",
+        "description": "Represents super method call expression",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "SuperVariableExpression",
+        "description": "Represents super variable expression",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "SwitchStatement",
+        "description": "Represents switch statement",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "TernaryExpression",
+        "description": "Represents ternary expression",
+        "category": "Expressions",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "ThisMethodCallExpression",
+        "description": "Represents this method call expression",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "ThisVariableExpression",
+        "description": "Represents this variable expression",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "ThrowStatement",
+        "description": "Represents throw statement",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "TriggerVariableExpression",
+        "description": "Represents trigger variable expression",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "TryCatchFinallyBlockStatement",
+        "description": "Represents try catch finally block statement",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@TryBlock",
+            "type": "string",
+            "description": "The tryblock of this node"
+          },
+          {
+            "name": "@CatchClauses",
+            "type": "array",
+            "description": "The catchclauses of this node"
+          },
+          {
+            "name": "@FinallyBlock",
+            "type": "string",
+            "description": "The finallyblock of this node"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "TypeWhenBlock",
+        "description": "Represents type when block",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Type",
+            "type": "string",
+            "description": "Returns the when block's matching type name. This includes any type arguments. If the type is a primitive, its case will be normalized."
+          },
+          {
+            "name": "@Name",
+            "type": "string",
+            "description": "Returns the when block's matching type name. This includes any type arguments. If the type is a primitive, its case will be normalized."
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "UserClass",
+        "description": "Represents an Apex class declaration (Note: Use UserClass, not ClassNode)",
+        "category": "Declarations",
+        "extends": "BaseApexClass",
+        "implements": [
+          "ASTUserClassOrInterface<ClassDeclaration>"
+        ],
+        "attributes": [
+          {
+            "name": "@SuperClassName",
+            "type": "string",
+            "description": "Returns the name of the superclass of this class, or an empty string if there is none. The type name does NOT include type arguments."
+          },
+          {
+            "name": "@InterfaceNames",
+            "type": "array",
+            "description": "Returns a list of the names of the interfaces implemented by this class. The type names do NOT include type arguments. (This is tested.)"
+          },
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "Returns the name of this class/interface/enum/trigger",
+            "inherited_from": "BaseApexClass"
+          },
+          {
+            "name": "@SimpleName",
+            "type": "string",
+            "description": "Returns the simple name of this type declaration",
+            "inherited_from": "BaseApexClass"
+          },
+          {
+            "name": "@QualifiedName",
+            "type": "string",
+            "description": "Returns the fully qualified name of this type",
+            "inherited_from": "BaseApexClass"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "UserClassMethods",
+        "description": "Represents user class methods",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "UserEnum",
+        "description": "Represents an Apex enum declaration",
+        "category": "Declarations",
+        "extends": "BaseApexClass",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@QualifiedName",
+            "type": "string",
+            "description": "The qualifiedname of this node"
+          },
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "Returns the name of this class/interface/enum/trigger",
+            "inherited_from": "BaseApexClass"
+          },
+          {
+            "name": "@SimpleName",
+            "type": "string",
+            "description": "Returns the simple name of this type declaration",
+            "inherited_from": "BaseApexClass"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "UserExceptionMethods",
+        "description": "Represents user exception methods",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "UserInterface",
+        "description": "Represents an Apex interface declaration",
+        "category": "Declarations",
+        "extends": "BaseApexClass",
+        "implements": [
+          "ASTUserClassOrInterface<InterfaceDeclaration>"
+        ],
+        "attributes": [
+          {
+            "name": "@SuperInterfaceName",
+            "type": "string",
+            "description": "Returns the name of the superclass of this class, or an empty string if there is none. The type name does NOT include type arguments."
+          },
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "Returns the name of this class/interface/enum/trigger",
+            "inherited_from": "BaseApexClass"
+          },
+          {
+            "name": "@SimpleName",
+            "type": "string",
+            "description": "Returns the simple name of this type declaration",
+            "inherited_from": "BaseApexClass"
+          },
+          {
+            "name": "@QualifiedName",
+            "type": "string",
+            "description": "Returns the fully qualified name of this type",
+            "inherited_from": "BaseApexClass"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "UserTrigger",
+        "description": "Represents an Apex trigger declaration (Note: Use UserTrigger, not TriggerNode)",
+        "category": "Declarations",
+        "extends": "BaseApexClass",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@TargetName",
+            "type": "string",
+            "description": "The targetname of this node"
+          },
+          {
+            "name": "@Usages",
+            "type": "array",
+            "description": "The usages of this node"
+          },
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "Returns the name of this class/interface/enum/trigger",
+            "inherited_from": "BaseApexClass"
+          },
+          {
+            "name": "@SimpleName",
+            "type": "string",
+            "description": "Returns the simple name of this type declaration",
+            "inherited_from": "BaseApexClass"
+          },
+          {
+            "name": "@QualifiedName",
+            "type": "string",
+            "description": "Returns the fully qualified name of this type",
+            "inherited_from": "BaseApexClass"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "ValueWhenBlock",
+        "description": "Represents value when block",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "VariableDeclaration",
+        "description": "Represents a variable declaration statement",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "The image of this node"
+          },
+          {
+            "name": "@Type",
+            "type": "string",
+            "description": "Returns the variable's type name. <p>This includes any type arguments. If the type is a primitive, its case will be normalized."
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "VariableDeclarationStatements",
+        "description": "Represents variable declaration statements",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Modifiers",
+            "type": "node",
+            "description": "The modifiers of this node"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "VariableExpression",
+        "description": "Represents a reference to a variable",
+        "category": "Declarations",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@Image",
+            "type": "string",
+            "description": "The image of this node"
+          },
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      },
+      {
+        "name": "WhileLoopStatement",
+        "description": "Represents a while loop statement",
+        "category": "Statements",
+        "extends": "AbstractApexNode.Single",
+        "implements": [],
+        "attributes": [
+          {
+            "name": "@RealLoc",
+            "type": "boolean",
+            "description": "Returns true if this node has a real source location",
+            "inherited_from": "AbstractApexNode.Single"
+          },
+          {
+            "name": "@DefiningType",
+            "type": "string",
+            "description": "Returns the fully qualified name of the enclosing type",
+            "inherited_from": "AbstractApexNode.Single"
+          }
+        ]
+      }
+    ]
+  }

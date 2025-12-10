@@ -2,6 +2,7 @@ import { McpProvider,  McpTool, Services } from "@salesforce/mcp-provider-api";
 import { CodeAnalyzerRunMcpTool } from "./tools/run_code_analyzer.js";
 import { CodeAnalyzerDescribeRuleMcpTool } from "./tools/describe_code_analyzer_rule.js";
 import { CodeAnalyzerListRulesMcpTool } from "./tools/list_code_analyzer_rules.js";
+import { CreateCodeAnalyzerCustomRuleMcpTool } from "./tools/create_code_analyzer_custom_rule.js";
 import {CodeAnalyzerConfigFactory, CodeAnalyzerConfigFactoryImpl} from "./factories/CodeAnalyzerConfigFactory.js";
 import {EnginePluginsFactory, EnginePluginsFactoryImpl} from "./factories/EnginePluginsFactory.js";
 import {RunAnalyzerActionImpl} from "./actions/run-analyzer.js";
@@ -31,7 +32,8 @@ export class CodeAnalyzerMcpProvider extends McpProvider {
                 configFactory,
                 enginePluginsFactory,
                 telemetryService: services.getTelemetryService()
-            }))
+            })),
+            new CreateCodeAnalyzerCustomRuleMcpTool()
         ]);
     }
 }
