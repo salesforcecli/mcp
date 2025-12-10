@@ -44,7 +44,7 @@ jobs:
         provider:
           - "p1"
           - "p2"
-        fail-fast: false
+      fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
       - name: Main
