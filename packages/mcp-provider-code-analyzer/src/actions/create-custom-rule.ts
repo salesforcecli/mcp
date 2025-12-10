@@ -42,10 +42,15 @@ export class CreateCustomRuleActionImpl implements CreateCustomRuleAction {
     private readonly knowledgeBasePath: string;
 
     constructor(knowledgeBasePath?: string) {
-        // Default to package's resources/custom-rules directory
-        // In ES modules, __dirname is not available, so we use import.meta.url
-        const currentDir = path.dirname(fileURLToPath(import.meta.url));
-        this.knowledgeBasePath = knowledgeBasePath || path.join(currentDir, '../resources/custom-rules');
+        // Resources are copied to dist/resources during build, maintaining the same structure as src
+        // Since dist mirrors src structure, we can use a simple relative path
+        if (knowledgeBasePath) {
+            this.knowledgeBasePath = knowledgeBasePath;
+        } else {
+            // From dist/actions/ -> ../resources/custom-rules = dist/resources/custom-rules
+            const currentDir = path.dirname(fileURLToPath(import.meta.url));
+            this.knowledgeBasePath = path.resolve(currentDir, '..', 'resources', 'custom-rules');
+        }
     }
 
     async exec(input: CreateCustomRuleInput): Promise<CreateCustomRuleOutput> {
