@@ -1,7 +1,7 @@
-name: jf-test-flowg
+name: jf-test-flow
 on:
-  pull_request:
-    types: [opened, reopened, edited, synchronize]
+  push:
+    branches-ignore: [main]
 
 
 jobs:
