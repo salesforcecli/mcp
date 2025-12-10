@@ -6,6 +6,7 @@ on:
 
 jobs:
   job-a:
+    if: false
     runs-on: ubuntu-latest
     outputs:
       job-a-res: ${{ steps.main.outputs.job_a_res }}
