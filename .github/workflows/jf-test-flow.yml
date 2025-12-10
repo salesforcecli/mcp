@@ -1,4 +1,4 @@
-name: jf-test-flow.yml
+name: jf-test-flowg
 on:
   pull_request:
     types: [opened, reopened, edited]
