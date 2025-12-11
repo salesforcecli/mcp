@@ -1,0 +1,54 @@
+name: jf-test-flow
+on:
+  push:
+    branches-ignore: [main]
+
+
+jobs:
+  job-a:
+    if: false
+    runs-on: ubuntu-latest
+    outputs:
+      job-a-res: ${{ steps.main.outputs.job_a_res }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
+      - name: Main
+        id: main
+        run: |
+          echo "job_a_res=beeeeeeeep" >> "$GITHUB_OUTPUT"
+
+  job-b:
+    needs: [job-a]
+    if: always() && (needs.job-a.result == 'success' || needs.job-a.result == 'skipped')
+    runs-on: ubuntu-latest
+    outputs:
+      job-b-res: ${{ steps.main.outputs.job_b_res }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.SVC_CLI_BOT_GITHUB_TOKEN }}
+          fetch-depth: 0
+      - name: Main
+        id: main
+        run: |
+          echo "job_b_res=asdfasdfasdf" >> "$GITHUB_OUTPUT"
+
+  job-c:
+    needs: [job-b]
+    if: always() && needs.job-b.result == 'success'
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        command:
+          - "beep"
+        provider:
+          - "p1"
+          - "p2"
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Main
+        run: |
+          echo "${{ matrix.command }}, ${{ matrix.provider }}"
