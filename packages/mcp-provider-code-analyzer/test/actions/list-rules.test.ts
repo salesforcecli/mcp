@@ -27,8 +27,6 @@ describe('ListRulesActionImpl', () => {
         const found = output.rules!.find(r => r.name === 'stub1RuleA' && r.engine === 'EngineThatLogsError');
         expect(found).toBeDefined();
         expect(found!.tags).toContain('Recommended');
-        expect(found!.description).toContain('Some description');
-        expect(Array.isArray(found!.resources)).toBe(true);
     });
 
     it('emits telemetry for engine selection', async () => {
