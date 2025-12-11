@@ -1,0 +1,120 @@
+{
+  "description": "PMD-specific XPath extension functions",
+  "source": "PMD docs/_data/xpath_funs.yml",
+  "lastUpdated": "2025-12-08",
+  "pmd_extensions": {
+    "universal": {
+      "namespace": "pmd",
+      "description": "Functions available to ALL languages",
+      "functions": [
+        {
+          "name": "fileName",
+          "syntax": "pmd:fileName()",
+          "returnType": "xs:string",
+          "description": "Returns the current simple file name, without path but including extension",
+          "since": "6.38.0",
+          "example": "//UserClass[pmd:fileName() = 'MyService.cls']"
+        },
+        {
+          "name": "startLine",
+          "syntax": "pmd:startLine(element)",
+          "returnType": "xs:int",
+          "description": "Returns the line where the node starts (1-based)",
+          "since": "6.44.0",
+          "example": "//Method[pmd:startLine(.) > 100]"
+        },
+        {
+          "name": "endLine",
+          "syntax": "pmd:endLine(element)",
+          "returnType": "xs:int",
+          "description": "Returns the line where the node ends (1-based)",
+          "since": "6.44.0",
+          "example": "//Method[pmd:endLine(.) - pmd:startLine(.) > 50]"
+        },
+        {
+          "name": "startColumn",
+          "syntax": "pmd:startColumn(element)",
+          "returnType": "xs:int",
+          "description": "Returns the column where the node starts (1-based, inclusive)",
+          "since": "6.44.0",
+          "example": "//Statement[pmd:startColumn(.) = 1]"
+        },
+        {
+          "name": "endColumn",
+          "syntax": "pmd:endColumn(element)",
+          "returnType": "xs:int",
+          "description": "Returns the column where the node ends (1-based, exclusive)",
+          "since": "6.44.0",
+          "example": "//Expression[pmd:endColumn(.) - pmd:startColumn(.) > 80]"
+        }
+      ]
+    },
+    "java": {
+      "namespace": "pmd-java",
+      "description": "Functions available ONLY for Java language",
+      "functions": [
+        {
+          "name": "nodeIs",
+          "syntax": "pmd-java:nodeIs(nodeClassName)",
+          "returnType": "xs:boolean",
+          "description": "Tests if AST node is a subtype of the given class (without 'AST' prefix)",
+          "example": "//*[pmd-java:nodeIs('Expression')]"
+        },
+        {
+          "name": "typeIs",
+          "syntax": "pmd-java:typeIs(javaQualifiedName)",
+          "returnType": "xs:boolean",
+          "description": "Tests if node's static Java type is a subtype of the given type",
+          "example": "//VariableId[pmd-java:typeIs('java.lang.List')]"
+        },
+        {
+          "name": "typeIsExactly",
+          "syntax": "pmd-java:typeIsExactly(javaQualifiedName)",
+          "returnType": "xs:boolean",
+          "description": "Tests if node's static type is exactly the given type (not subtypes)",
+          "example": "//VariableId[pmd-java:typeIsExactly('java.util.ArrayList')]"
+        },
+        {
+          "name": "hasAnnotation",
+          "syntax": "pmd-java:hasAnnotation(annotationClassName)",
+          "returnType": "xs:boolean",
+          "description": "Tests if node has an annotation with the given qualified name",
+          "example": "//MethodDeclaration[pmd-java:hasAnnotation('java.lang.Override')]"
+        },
+        {
+          "name": "modifiers",
+          "syntax": "pmd-java:modifiers()",
+          "returnType": "xs:string*",
+          "description": "Returns sequence of effective modifiers (including implicit ones)",
+          "example": "//MethodDeclaration[pmd-java:modifiers() = 'public']"
+        },
+        {
+          "name": "explicitModifiers",
+          "syntax": "pmd-java:explicitModifiers()",
+          "returnType": "xs:string*",
+          "description": "Returns sequence of explicitly declared modifiers only",
+          "example": "//MethodDeclaration[pmd-java:explicitModifiers() = 'public']"
+        },
+        {
+          "name": "metric",
+          "syntax": "pmd-java:metric(metricKey)",
+          "returnType": "xs:decimal?",
+          "description": "Computes and returns the value of a code metric (CYCLO, NCSS, etc.)",
+          "example": "//MethodDeclaration[pmd-java:metric('CYCLO') > 10]"
+        },
+        {
+          "name": "matchesSig",
+          "syntax": "pmd-java:matchesSig(signature)",
+          "returnType": "xs:boolean",
+          "description": "Matches method/constructor call signature. Use _ as wildcard for receiver/method name",
+          "example": "//MethodCall[pmd-java:matchesSig('_#equals(java.lang.Object)')]"
+        }
+      ]
+    }
+  },
+  "notes": {
+    "apex": "Apex does NOT have custom XPath functions - only the universal pmd:* functions are available",
+    "namespace_declaration": "Custom functions require namespace declaration in XPath, e.g., xmlns:pmd='http://pmd.sourceforge.net/pmd-core'",
+    "xpath_version": "PMD 7 uses XPath 3.1 via Saxon - all standard XPath 3.1 functions are available"
+  }
+}

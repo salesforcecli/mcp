@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<ruleset name="{{rulesetName}}"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 
+                        https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>{{rulesetDescription}}</description>
+
+    <rule name="{{ruleName}}"
+        language="apex"
+        message="{{ruleMessage}}"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule"
+        externalInfoUrl="{{documentationUrl}}">
+
+        <description>
+            {{ruleDescription}}
+        </description>
+
+        <priority>{{priority}}</priority>
+
+        <properties>
+            <property name="xpath">
+                <value><![CDATA[{{xpathExpression}}]]></value>
+            </property>
+        </properties>
+
+        <example>
+<![CDATA[
+{{exampleCode}}
+]]>
+        </example>
+    </rule>
+
+</ruleset>
+
+
