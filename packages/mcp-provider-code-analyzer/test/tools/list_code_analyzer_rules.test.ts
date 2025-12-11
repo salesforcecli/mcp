@@ -34,9 +34,7 @@ describe('CodeAnalyzerListRulesMcpTool', () => {
                 name: 'stub1RuleA',
                 engine: 'EngineThatLogsError',
                 severity: 5,
-                tags: ['Recommended'],
-                description: 'Some description',
-                resources: ['https://example.com/stub1RuleA']
+                tags: ['Recommended']
             }]
         };
         const tool = new CodeAnalyzerListRulesMcpTool(new StubListRulesAction(expected));
@@ -44,8 +42,9 @@ describe('CodeAnalyzerListRulesMcpTool', () => {
         const result = await tool.exec({ selector: 'Recommended' });
 
         expect(result.structuredContent).toEqual(expected);
-        const text = result.content[0]?.type === 'text' ? result.content[0].text : '';
-        expect(JSON.parse(text)).toEqual(expected);
+        const jsonItem: any = result.content.find((c: any) => c.type === 'text' && typeof c.text === 'string' && c.text.trim().startsWith('{'));
+        const jsonText: string = typeof jsonItem?.text === 'string' ? jsonItem.text : '';
+        expect(JSON.parse(jsonText)).toEqual(expected);
     });
 
     it('catches errors and returns error status', async () => {
@@ -104,4 +103,25 @@ describe('CodeAnalyzerListRulesMcpTool', () => {
         expect(result.isError).toBe(true);
         expect(result.structuredContent?.status).toContain('Invalid selector token(s): <empty>');
       });
+
+    it('validateSelector accepts OR groups in parentheses', () => {
+        const res = CodeAnalyzerListRulesMcpTool.validateSelector('pmd:(Performance,Security):2');
+        expect(res.valid).toBe(true);
+    });
+
+    it('validateSelector rejects empty OR group', () => {
+        const res = CodeAnalyzerListRulesMcpTool.validateSelector('pmd:()');
+        expect(res.valid).toBe(false);
+        if (res.valid === false) {
+            expect(res.invalidTokens).toContain('()');
+        }
+    });
+
+    it('validateSelector rejects group with unknown token', () => {
+        const res = CodeAnalyzerListRulesMcpTool.validateSelector('pmd:(Performance,NotATag):2');
+        expect(res.valid).toBe(false);
+        if (res.valid === false) {
+            expect(res.invalidTokens).toContain('NotATag');
+        }
+    });
 });
