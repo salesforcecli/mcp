@@ -223,6 +223,19 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+
+  debug-publish-server-output:
+    needs: [publish-server]
+    if: always() && needs.publish-server.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "publish-server outputs:"
+          echo "  skipped: ${{ needs.publish-server.outputs.skipped }}"
+          echo "  release-id: ${{ needs.publish-server.outputs.release-id }}"
+          echo "  version: ${{ needs.publish-server.outputs.version }}"
+          
+
   e2e-test:
     needs: [publish-server]
     # Known GHA quirk: If a single job is skipped, all subsequent jobs require an explicit `if` clause
@@ -236,17 +249,9 @@ jobs:
           - "mcp-provider-dx-core"
           - "mcp-provider-code-analyzer"
       fail-fast: false
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Debug publish-server outputs
-        run: |
-          echo "publish-server outputs:"
-          echo "  skipped: ${{ needs.publish-server.outputs.skipped }}"
-          echo "  release-id: ${{ needs.publish-server.outputs.release-id }}"
-          echo "  version: ${{ needs.publish-server.outputs.version }}"
-      - uses: ./.github/workflows/e2e.yml
-        with:
-          os: ${{ matrix.os }}
-          command: ${{ matrix.command }}
-          provider: ${{ matrix.provider }}
-          dxMcpVersion: ${{ needs.publish-server.outputs.version || 'rc' }}
+    uses: ./.github/workflows/e2e.yml
+    with:
+      os: ${{ matrix.os }}
+      command: ${{matrix.command }}
+      provider: ${{ matrix.provider }}
+      dxMcpVersion: ${{ needs.publish-server.outputs.version || 'rc' }}
