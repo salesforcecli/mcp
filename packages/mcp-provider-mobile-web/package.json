@@ -13,7 +13,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.17.3",
+    "@modelcontextprotocol/sdk": "^1.24.0",
     "eslint": "^9.35.0",
     "dedent": "^1.5.3",
     "@salesforce/mcp-provider-api": "^0.4.0",
