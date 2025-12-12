@@ -27,7 +27,7 @@
     "@vitest/coverage-istanbul": "^3.2.4",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
-    "tar": "^7.4.3",
+    "tar": "^7.5.2",
     "tsx": "^4.19.2",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.44.0",
