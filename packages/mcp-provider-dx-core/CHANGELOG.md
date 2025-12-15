@@ -1,3 +1,12 @@
+# [0.5.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.4.0...mcp-provider-dx-core@0.5.0) (2025-12-09)
+
+
+### Features
+
+* Add “List Code Analyzer Rules” tool with selector validation and provider wiring ([#347](https://github.com/salesforcecli/mcp/issues/347)) ([eee78a8](https://github.com/salesforcecli/mcp/commit/eee78a80c0306547aeb5797af97ede67317b9d0e))
+
+
+
 # [0.4.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.3.6...mcp-provider-dx-core@0.4.0) (2025-11-06)
 
 
