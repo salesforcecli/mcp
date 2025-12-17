@@ -43,6 +43,19 @@ export class CreateCustomRuleActionImpl implements CreateCustomRuleAction {
         }
     }
 
+    /**
+     * Executes the custom rule creation action by validating engine/language support and building the knowledge base.
+     * 
+     * This is the main entry point that:
+     * 1. Validates that the engine supports custom rules
+     * 2. Validates that the language is supported
+     * 3. Loads and builds the knowledge base for the specified language
+     * 4. Generates instructions for the LLM to create XPath rules
+     * 
+     * @param input - The input containing engine and language for rule creation
+     * @returns A CreateCustomRuleOutput with knowledge base and instructions, or an error status
+     *          Status will be "ready_for_xpath_generation" on success, "error" on failure
+     */
     async exec(input: CreateCustomRuleInput): Promise<CreateCustomRuleOutput> {
         try {
             if (!this.engineSupportsCustomRules(input.engine)) {
@@ -80,11 +93,31 @@ export class CreateCustomRuleActionImpl implements CreateCustomRuleAction {
         }
     }
 
+    /**
+     * Checks whether the specified engine supports custom rule creation.
+     * 
+     * Currently only PMD engine is supported. ESLint and regex engines are not yet implemented.
+     * 
+     * @param engine - The engine name to check (e.g., 'pmd', 'eslint', 'regex')
+     * @returns true if the engine supports custom rules, false otherwise
+     */
     private engineSupportsCustomRules(engine: string): boolean {
         const supportedEngines: SupportedEngine[] = ['pmd'];
         return supportedEngines.includes(engine as SupportedEngine);
     }
 
+    /**
+     * Builds a knowledge base containing available AST nodes for the given language.
+     * 
+     * Loads the AST reference JSON file for the specified language and extracts only
+     * node names (not full descriptions) for token efficiency. Full node details
+     * including attributes, categories, and important notes are available via the
+     * get_node_details tool.
+     * 
+     * @param language - The target language (e.g., 'apex', 'javascript'). Should be normalized to lowercase.
+     * @returns A KnowledgeBase object containing an array of available node names and the total count
+     * @throws Error if the knowledge base file is missing, invalid JSON, or has an unexpected structure
+     */
     private async buildPMDKnowledgeBase(language: string): Promise<KnowledgeBase> {
         const astReferenceFile = `${language}-ast-reference.json`;
 
@@ -101,6 +134,17 @@ export class CreateCustomRuleActionImpl implements CreateCustomRuleAction {
         };
     }
 
+    /**
+     * Loads and parses a knowledge base JSON file for the specified engine and file name.
+     * 
+     * Constructs the file path by joining the knowledge base directory, engine subdirectory,
+     * and file name. Reads the file synchronously and parses it as JSON.
+     * 
+     * @param engine - The engine name (e.g., 'pmd', 'eslint', 'regex')
+     * @param fileName - The name of the knowledge base file to load (e.g., 'apex-ast-reference.json')
+     * @returns The parsed JSON content as an object
+     * @throws Error if the file doesn't exist, cannot be read, or contains invalid JSON
+     */
     private loadKnowledgeBase(engine: SupportedEngine, fileName: string): any {
         const filePath = path.join(this.knowledgeBasePath, engine, fileName);
 
@@ -112,6 +156,20 @@ export class CreateCustomRuleActionImpl implements CreateCustomRuleAction {
         return JSON.parse(content);
     }
 
+    /**
+     * Generates instructions for the LLM on how to create PMD XPath rule configurations.
+     * 
+     * Creates a formatted instruction string that guides the LLM through the workflow
+     * of generating custom rules. The instructions include:
+     * - Workflow steps (review nodes, get details, build XPath)
+     * - Requirements and constraints
+     * - Severity level mapping
+     * - Example output format
+     * - Next steps in the orchestration pattern
+     * 
+     * @param knowledgeBase - The knowledge base containing available nodes and count
+     * @returns A formatted string with instructions for the LLM to generate XPath rules
+     */
     private getInstructionsForLlm(knowledgeBase: KnowledgeBase): string {
         return `Generate PMD XPath rule configuration(s) based on the user prompt.
 

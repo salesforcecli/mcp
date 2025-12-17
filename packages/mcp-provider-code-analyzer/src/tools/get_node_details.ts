@@ -86,6 +86,19 @@ export class GetNodeDetailsMcpTool extends McpTool<InputArgsShape, OutputArgsSha
         };
     }
 
+    /**
+     * Executes the get node details tool by validating input and delegating to the action.
+     * 
+     * This method validates the input parameters, calls the action to retrieve detailed
+     * information about AST nodes including their attributes and inheritance relationships,
+     * and returns the result in both text and structured formats. Errors are caught and
+     * returned as error status in the output.
+     * 
+     * @param input - The input parameters containing engine, language, and array of node names
+     * @returns A CallToolResult containing node details with attributes (direct and inherited)
+     *          and important notes, or an error status
+     * @throws Never throws - all errors are caught and returned in the output structure
+     */
     public async exec(input: GetNodeDetailsInput): Promise<CallToolResult> {
         let output: GetNodeDetailsOutput;
         try {
@@ -104,6 +117,15 @@ export class GetNodeDetailsMcpTool extends McpTool<InputArgsShape, OutputArgsSha
     }
 }
 
+/**
+ * Validates the input parameters for the get node details tool.
+ * 
+ * Ensures that engine, language, and nodeNames are provided and that language is not empty.
+ * Note: Engine and nodeNames are also validated by Zod schema, but this provides an additional check.
+ * 
+ * @param input - The input parameters to validate
+ * @throws Error if engine is missing, language is missing/empty, or nodeNames array is empty
+ */
 function validateInput(input: GetNodeDetailsInput): void {
     if (!input.engine) {
         throw new Error("Valid engine is required.");

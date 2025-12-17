@@ -90,7 +90,7 @@ describe('specific tool registration', () => {
     try {
       const initialTools = (await client.listTools()).tools.map((t) => t.name).sort();
 
-      expect(initialTools.length).to.equal(7);
+      expect(initialTools.length).to.equal(8);
       expect(initialTools).to.deep.equal(
         [
           'run_soql_query',
@@ -99,7 +99,8 @@ describe('specific tool registration', () => {
           'describe_code_analyzer_rule',
           'run_code_analyzer',
           'list_code_analyzer_rules',
-          'create_code_analyzer_custom_rule'
+          'create_code_analyzer_custom_rule',
+          'get_node_details'
         ].sort(),
       );
     } catch (err) {

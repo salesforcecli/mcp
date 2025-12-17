@@ -83,6 +83,17 @@ export class CreateCodeAnalyzerCustomRuleMcpTool extends McpTool<InputArgsShape,
         };
     }
 
+    /**
+     * Executes the custom rule creation tool by validating input and delegating to the action.
+     * 
+     * This method validates the input parameters, calls the action to load the knowledge base,
+     * and returns the result in both text and structured formats. Errors are caught and
+     * returned as error status in the output.
+     * 
+     * @param input - The input parameters containing engine and language for rule creation
+     * @returns A CallToolResult containing the knowledge base and instructions, or an error status
+     * @throws Never throws - all errors are caught and returned in the output structure
+     */
     public async exec(input: CreateCustomRuleInput): Promise<CallToolResult> {
         let output: CreateCustomRuleOutput;
         try {
@@ -101,6 +112,15 @@ export class CreateCodeAnalyzerCustomRuleMcpTool extends McpTool<InputArgsShape,
     }
 }
 
+/**
+ * Validates the input parameters for the custom rule creation tool.
+ * 
+ * Ensures that both engine and language are provided and that language is not empty.
+ * Note: Engine is also validated by Zod schema, but this provides an additional check.
+ * 
+ * @param input - The input parameters to validate
+ * @throws Error if engine is missing or language is missing/empty
+ */
 function validateInput(input: CreateCustomRuleInput): void {
     if (!input.engine) {
         throw new Error("Valid engine is required.");

@@ -11,6 +11,33 @@ export type GetNodeDetailsInput = {
     nodeNames: string[];
 };
 
+type AstNodeAttribute = {
+    name: string;
+    type: string;
+    description: string;
+};
+
+type AstNode = {
+    name: string;
+    description?: string;
+    category?: string;
+    extends?: string;
+    implements?: string[];
+    inherits?: string[];
+    attributes?: AstNodeAttribute[];
+};
+
+type InheritSchemaAttribute = {
+    name: string;
+    type: string;
+};
+
+type AstReference = {
+    nodes: Record<string, AstNode>;
+    inheritSchema?: Record<string, InheritSchemaAttribute[]>;
+    important_notes?: Array<{ title: string; content: string }>;
+};
+
 type NodeDetail = {
     name: string;
     description: string;
@@ -49,6 +76,22 @@ export class GetNodeDetailsActionImpl implements GetNodeDetailsAction {
         }
     }
 
+    /**
+     * Executes the get node details action by validating engine/language support and retrieving node information.
+     * 
+     * This is the main entry point that:
+     * 1. Validates that the engine supports node details
+     * 2. Validates that the language is supported
+     * 3. Validates that at least one node name is provided
+     * 4. Loads the knowledge base for the specified language
+     * 5. Retrieves detailed information for requested nodes including direct and inherited attributes
+     * 6. Retrieves important notes for the language
+     * 
+     * @param input - The input containing engine, language, and array of node names to get details for
+     * @returns A GetNodeDetailsOutput with node details (including parent classes as separate entries)
+     *          and important notes, or an error status
+     *          Status will be "success" on success, "error" on failure
+     */
     async exec(input: GetNodeDetailsInput): Promise<GetNodeDetailsOutput> {
         try {
             if (!this.engineSupportsNodeDetails(input.engine)) {
@@ -78,7 +121,7 @@ export class GetNodeDetailsActionImpl implements GetNodeDetailsAction {
             const astReferenceFile = `${normalizedLanguage}-ast-reference.json`;
             const astReference = this.loadKnowledgeBase('pmd', astReferenceFile);
 
-            const nodeDetails = await this.getNodeDetails(astReference, input.nodeNames);
+            const nodeDetails = this.getNodeDetails(astReference, input.nodeNames);
             const importantNotes = this.getImportantNotes(astReference, normalizedLanguage);
 
             return {
@@ -95,12 +138,40 @@ export class GetNodeDetailsActionImpl implements GetNodeDetailsAction {
         }
     }
 
+    /**
+     * Checks whether the specified engine supports retrieving node details.
+     * 
+     * Currently only PMD engine is supported. ESLint and regex engines are not yet implemented.
+     * 
+     * @param engine - The engine name to check (e.g., 'pmd', 'eslint', 'regex')
+     * @returns true if the engine supports node details, false otherwise
+     */
     private engineSupportsNodeDetails(engine: string): boolean {
         const supportedEngines: SupportedEngine[] = ['pmd'];
         return supportedEngines.includes(engine as SupportedEngine);
     }
 
-    private async getNodeDetails(astReference: any, nodeNames: string[]): Promise<NodeDetail[]> {
+    /**
+     * Retrieves detailed information for the requested AST nodes, including direct attributes
+     * and inherited attributes from parent classes.
+     * 
+     * For each requested node:
+     * 1. Returns the node with its direct attributes only
+     * 2. If the node has parent classes (via `inherits`), adds each parent class as a separate
+     *    entry with all its attributes from the inheritSchema
+     * 3. Uses a Set to track processed parent classes to avoid duplicates when multiple
+     *    requested nodes share the same parent
+     * 4. If a requested node is not found, includes it in the result with an error description
+     * 
+     * This approach allows XPath rule builders to see both direct attributes and all available
+     * inherited attributes, which is essential for building correct XPath expressions.
+     * 
+     * @param astReference - The loaded AST reference containing nodes and inheritance schema
+     * @param nodeNames - Array of node names to get details for
+     * @returns Array of NodeDetail objects including requested nodes and their parent classes
+     *          as separate entries. Missing nodes are included with error descriptions.
+     */
+    private getNodeDetails(astReference: AstReference, nodeNames: string[]): NodeDetail[] {
         const nodeDetails: NodeDetail[] = [];
         const inheritSchema = astReference.inheritSchema || {};
         const processedParentClasses = new Set<string>();
@@ -110,7 +181,7 @@ export class GetNodeDetailsActionImpl implements GetNodeDetailsAction {
             const node = astReference.nodes[nodeName];
             if (node) {
                 // Get only direct attributes for the requested node
-                const directAttributes = (node.attributes || []).map((attr: { name: string; type: string; description: string }) => ({
+                const directAttributes = (node.attributes || []).map((attr: AstNodeAttribute) => ({
                     name: attr.name,
                     type: attr.type,
                     description: attr.description
@@ -137,7 +208,7 @@ export class GetNodeDetailsActionImpl implements GetNodeDetailsAction {
                             name: parentClass,
                             description: `Parent class that provides inherited attributes to child nodes`,
                             category: "Inheritance",
-                            attributes: parentAttributes.map((attr: { name: string; type: string }) => ({
+                            attributes: parentAttributes.map((attr: InheritSchemaAttribute) => ({
                                 name: attr.name,
                                 type: attr.type,
                                 description: `Attribute from ${parentClass}`
@@ -159,13 +230,36 @@ export class GetNodeDetailsActionImpl implements GetNodeDetailsAction {
     }
 
 
-    private getImportantNotes(astReference: any, language: string): Array<{ title: string; content: string }> {
+    /**
+     * Retrieves important notes for the specified language from the AST reference.
+     * 
+     * Important notes contain critical information about common pitfalls and correct
+     * attribute usage for XPath generation. Currently only available for Apex language.
+     * 
+     * @param astReference - The loaded AST reference that may contain important_notes
+     * @param language - The target language (should be normalized to lowercase)
+     * @returns Array of important notes with title and content, or empty array if not available
+     *          for the specified language
+     */
+    private getImportantNotes(astReference: AstReference, language: string): Array<{ title: string; content: string }> {
         return (language === 'apex' && astReference.important_notes) 
             ? astReference.important_notes 
             : [];
     }
 
-    private loadKnowledgeBase(engine: SupportedEngine, fileName: string): any {
+    /**
+     * Loads and parses a knowledge base JSON file for the specified engine and file name.
+     * 
+     * Constructs the file path by joining the knowledge base directory, engine subdirectory,
+     * and file name. Reads the file synchronously and parses it as JSON, casting it to
+     * AstReference type.
+     * 
+     * @param engine - The engine name (e.g., 'pmd', 'eslint', 'regex')
+     * @param fileName - The name of the knowledge base file to load (e.g., 'apex-ast-reference.json')
+     * @returns The parsed JSON content as an AstReference object
+     * @throws Error if the file doesn't exist, cannot be read, or contains invalid JSON
+     */
+    private loadKnowledgeBase(engine: SupportedEngine, fileName: string): AstReference {
         const filePath = path.join(this.knowledgeBasePath, engine, fileName);
 
         if (!fs.existsSync(filePath)) {
@@ -173,7 +267,7 @@ export class GetNodeDetailsActionImpl implements GetNodeDetailsAction {
         }
 
         const content = fs.readFileSync(filePath, 'utf-8');
-        return JSON.parse(content);
+        return JSON.parse(content) as AstReference;
     }
 }
 
