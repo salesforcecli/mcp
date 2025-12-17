@@ -17,9 +17,12 @@ This tool is engine and language specific. If the user requests multiple rules:
 - Call this tool ONCE per unique engine+language combination
 
 💡 TOKEN OPTIMIZATION:
-- If you've already called this tool for the same engine+language combination in this conversation, 
-  the tool will return a minimal response indicating the knowledge base is already available.
-- Reuse the knowledge base from your previous context instead of requesting it again.
+- If you've already called this tool for the same engine+language combination in this conversation,
+  AND you already have the availableNodes list from the previous response in your context,
+  then SKIP calling this tool again.
+- Instead, extract the node names you need from the previous response's availableNodes array,
+  and call get_node_details([node_names]) directly with those node names.
+- This will give you the attributes, category, and important notes without re-fetching the full node list.
 - This significantly reduces token usage for subsequent rule generation requests.
 
 Example: User wants 5 rules - 3 for PMD+Apex, 2 for PMD+JavaScript
@@ -32,11 +35,13 @@ type InputArgsShape = typeof inputSchema.shape;
 
 const outputSchema = z.object({
     status: z.string().describe("'ready_for_xpath_generation' if successful, 'error' otherwise"),
-    knowledgeBase: z.any().optional().describe("Knowledge base for generating XPath rules."),
-    instructionsForLlm: z.string().optional().describe("Detailed guidelines for generating XPath"),
+    knowledgeBase: z.object({
+        availableNodes: z.array(z.string()).describe("Array of available node names (use get_node_details for full info)"),
+        nodeCount: z.number().describe("Total number of available nodes")
+    }).optional().describe("Minimal knowledge base - node names only for token efficiency"),
+    instructionsForLlm: z.string().optional().describe("Concise guidelines for generating XPath"),
     nextStep: z.object({
         action: z.string(),
-        optional: z.string().optional(),
         then: z.string()
     }).optional().describe("Next steps in the orchestration pattern"),
     error: z.string().optional().describe("Error message if something went wrong")

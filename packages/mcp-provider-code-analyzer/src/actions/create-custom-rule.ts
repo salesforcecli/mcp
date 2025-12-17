@@ -22,15 +22,8 @@ export type CreateCustomRuleOutput = {
 };
 
 export type KnowledgeBase = {
-    nodeIndex: string[];
-    nodeInfo: Record<string, {
-        description: string;
-        category?: string;
-        attributes: Array<{ name: string; type: string; description: string }>;
-        note?: string;
-    }>;
-    xpathFunctions: Array<{ name: string; syntax: string; desc: string; returnType?: string; example?: string }>;
-    importantNotes?: Array<{ title: string; content: string }>;
+    availableNodes: string[]; // Just node names for token efficiency - use get_node_details for full info
+    nodeCount: number; // Total number of available nodes
 };
 
 export interface CreateCustomRuleAction {
@@ -74,8 +67,8 @@ export class CreateCustomRuleActionImpl implements CreateCustomRuleAction {
                 knowledgeBase,
                 instructionsForLlm: this.getInstructionsForLlm(knowledgeBase),
                 nextStep: {
-                    action: "Generate XPath rule configuration using the knowledge base",
-                    then: "Call apply_code_analyzer_custom_rule(rule_config_json, project_root)"
+                    action: "Call get_node_details(array of node_name) with the list of selected node names you need to build the XPath",
+                    then: "Generate XPath rule configuration using the node details and knowledge base, then call apply_code_analyzer_custom_rule(rule_config_json, project_root)"
                 }
             };
 
@@ -96,42 +89,15 @@ export class CreateCustomRuleActionImpl implements CreateCustomRuleAction {
         const astReferenceFile = `${language}-ast-reference.json`;
 
         const astReference = this.loadKnowledgeBase('pmd', astReferenceFile);
-        const xpathFunctionsData = this.loadKnowledgeBase('pmd', 'xpath-functions.json');
 
-        const nodeIndex = astReference.nodes.map((n: any) => n.name);
-        const nodeInfo: Record<string, any> = {};
-
-        for (const node of astReference.nodes) {
-            nodeInfo[node.name] = {
-                name: node.name,
-                description: node.description || "",
-                category: node.category,
-                attributes: node.attributes || []
-            };
-        }
-
-        // For Apex, only universal PMD functions are available (not Java-specific ones)
-        const xpathFunctions = [];
-        const universalFunctions = xpathFunctionsData.pmd_extensions?.universal?.functions || [];
-        for (const func of universalFunctions) {
-            xpathFunctions.push({
-                name: func.name,
-                syntax: func.syntax,
-                desc: func.description,
-                returnType: func.returnType,
-                example: func.example
-            });
-        }
-
-        const importantNotes = (language === 'apex' && astReference.important_notes) 
-            ? astReference.important_notes 
-            : [];
+        // Return only node names (not descriptions) for token efficiency
+        // Descriptions and full details available via get_node_details tool
+        const availableNodes = Object.values(astReference.nodes).map((n: any) => n.name);
+        const nodeCount = availableNodes.length;
 
         return {
-            nodeIndex,
-            nodeInfo,
-            xpathFunctions,
-            importantNotes
+            availableNodes,
+            nodeCount
         };
     }
 
@@ -147,42 +113,21 @@ export class CreateCustomRuleActionImpl implements CreateCustomRuleAction {
     }
 
     private getInstructionsForLlm(knowledgeBase: KnowledgeBase): string {
-        return `
+        return `Generate PMD XPath rule configuration(s) based on the user prompt.
 
-YOUR TASK:
-Generate PMD XPath rule configuration(s) based on the user prompt and knowledge base.
+WORKFLOW:
+1. Review availableNodes (${knowledgeBase.nodeCount} nodes) to identify needed nodes
+2. Call get_node_details([node_names]) to get attributes, category, and important notes
+3. Build XPath using node details and standard XPath 3.1 functions (ends-with, starts-with, contains, matches, not, and, or, etc.)
 
-OPTIMIZED KNOWLEDGE BASE STRUCTURE:
-- nodeIndex: ALL available nodes (use these names)
-- nodeInfo: Detailed info for frequently used nodes
-- xpathFunctions: PMD-specific XPath extension functions (pmd:* namespace)
-- importantNotes: Refer to knowledgeBase.importantNotes for critical notes about common pitfalls and correct attribute usage
+REQUIREMENTS:
+- Use ONLY node names from availableNodes 
+- ALWAYS call get_node_details first - it provides attributes and critical notes
+- Severity: 1=Critical, 2=High, 3=Moderate, 4=Low, 5=Info
 
-XPATH FUNCTIONS:
-- PMD uses standard W3C XPath 3.1 functions (you already know these: ends-with, starts-with, contains, matches, not, and, or, string-length, etc.)
-- PMD-specific extension functions are provided in xpathFunctions (pmd:fileName, pmd:startLine, pmd:endLine, etc.)
-- Use standard XPath 3.1 functions for common operations
-- Use PMD extension functions (pmd:*) when you need PMD-specific capabilities
+OUTPUT (JSON only):
+{"xpath": "//UserClass[not(ends-with(@Image, 'Service'))]", "rule_name": "EnforceClassNamingSuffix", "message": "Class name must end with 'Service'", "severity": 2, "description": "Enforces Service suffix"}
 
-CRITICAL REQUIREMENTS:
-1. Use ONLY node names from nodeIndex (e.g., UserClass, NOT ClassNode)
-2. For nodeInfo: use provided attributes
-3. READ AND FOLLOW knowledgeBase.importantNotes - they contain critical information about common mistakes
-
-SEVERITY LEVELS:
-1 = Critical, 2 = High, 3 = Moderate, 4 = Low, 5 = Info
-
-OUTPUT FORMAT (valid JSON only, no markdown):
-{
-  "xpath": "//UserClass[not(ends-with(@Image, 'Service'))]",
-  "rule_name": "EnforceClassNamingSuffix",
-  "message": "Class name must end with 'Service'",
-  "severity": 2,
-  "description": "Enforces Service suffix for all Apex class names",
-}
-
-AFTER GENERATING THE CONFIG:
-Call: apply_code_analyzer_custom_rule(rule_config_json, project_root)
-`;
+Then call: apply_code_analyzer_custom_rule(rule_config_json, project_root)`;
     }
 }

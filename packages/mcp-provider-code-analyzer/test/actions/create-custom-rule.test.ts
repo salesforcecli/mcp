@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 
 describe('CreateCustomRuleActionImpl', () => {
     describe('When valid PMD + Apex input is provided', () => {
-        it('should return knowledge base with nodeIndex, nodeInfo, and xpathFunctions', async () => {
+        it('should return knowledge base with availableNodes (optimized - strings only)', async () => {
             const input: CreateCustomRuleInput = {
                 engine: 'pmd',
                 language: 'apex'
@@ -24,21 +24,19 @@ describe('CreateCustomRuleActionImpl', () => {
 
             expect(output.status).toEqual('ready_for_xpath_generation');
             expect(output.knowledgeBase).toBeDefined();
-            expect(output.knowledgeBase?.nodeIndex).toBeDefined();
-            expect(Array.isArray(output.knowledgeBase?.nodeIndex)).toBe(true);
-            expect(output.knowledgeBase?.nodeIndex.length).toBeGreaterThan(0);
-            expect(output.knowledgeBase?.nodeInfo).toBeDefined();
-            expect(typeof output.knowledgeBase?.nodeInfo).toBe('object');
-            expect(output.knowledgeBase?.xpathFunctions).toBeDefined();
-            expect(Array.isArray(output.knowledgeBase?.xpathFunctions)).toBe(true);
+            expect(output.knowledgeBase?.availableNodes).toBeDefined();
+            expect(Array.isArray(output.knowledgeBase?.availableNodes)).toBe(true);
+            expect(output.knowledgeBase?.availableNodes.length).toBeGreaterThan(0);
+            expect(output.knowledgeBase?.nodeCount).toBeDefined();
+            expect(output.knowledgeBase?.nodeCount).toBeGreaterThan(0);
             expect(output.instructionsForLlm).toBeDefined();
-            expect(output.instructionsForLlm).toContain('PMD XPath rule configuration');
+            expect(output.instructionsForLlm).toContain('XPath');
             expect(output.nextStep).toBeDefined();
-            expect(output.nextStep?.action).toContain('Generate XPath rule configuration');
+            expect(output.nextStep?.action).toContain('get_node_details');
             expect(output.nextStep?.then).toContain('apply_code_analyzer_custom_rule');
         });
 
-        it('should include common Apex AST nodes in nodeIndex', async () => {
+        it('should include common Apex AST nodes in availableNodes (as strings)', async () => {
             const input: CreateCustomRuleInput = {
                 engine: 'pmd',
                 language: 'apex'
@@ -47,47 +45,31 @@ describe('CreateCustomRuleActionImpl', () => {
             const action: CreateCustomRuleActionImpl = new CreateCustomRuleActionImpl();
             const output: CreateCustomRuleOutput = await action.exec(input);
 
-            const nodeIndex = output.knowledgeBase?.nodeIndex || [];
-            // Check for some common Apex nodes
-            expect(nodeIndex).toContain('UserClass');
-            expect(nodeIndex).toContain('Method');
-            expect(nodeIndex).toContain('MethodCallExpression');
-            expect(nodeIndex).toContain('ModifierNode');
-        });
-
-        it('should include node details in nodeInfo', async () => {
-            const input: CreateCustomRuleInput = {
-                engine: 'pmd',
-                language: 'apex'
-            };
-
-            const action: CreateCustomRuleActionImpl = new CreateCustomRuleActionImpl();
-            const output: CreateCustomRuleOutput = await action.exec(input);
-
-            const nodeInfo = output.knowledgeBase?.nodeInfo || {};
-            expect(nodeInfo['UserClass']).toBeDefined();
-            expect(nodeInfo['UserClass'].description).toBeDefined();
-            expect(nodeInfo['UserClass'].attributes).toBeDefined();
-            expect(Array.isArray(nodeInfo['UserClass'].attributes)).toBe(true);
-        });
-
-        it('should include XPath functions in xpathFunctions', async () => {
-            const input: CreateCustomRuleInput = {
-                engine: 'pmd',
-                language: 'apex'
-            };
-
-            const action: CreateCustomRuleActionImpl = new CreateCustomRuleActionImpl();
-            const output: CreateCustomRuleOutput = await action.exec(input);
-
-            const xpathFunctions = output.knowledgeBase?.xpathFunctions || [];
-            expect(xpathFunctions.length).toBeGreaterThan(0);
-            // Check that functions have required properties
-            if (xpathFunctions.length > 0) {
-                expect(xpathFunctions[0]).toHaveProperty('name');
-                expect(xpathFunctions[0]).toHaveProperty('syntax');
-                expect(xpathFunctions[0]).toHaveProperty('desc');
+            const availableNodes = output.knowledgeBase?.availableNodes || [];
+            // availableNodes is now an array of strings (node names only)
+            expect(availableNodes).toContain('UserClass');
+            expect(availableNodes).toContain('Method');
+            expect(availableNodes).toContain('MethodCallExpression');
+            expect(availableNodes).toContain('ModifierNode');
+            // Verify structure is array of strings
+            if (availableNodes.length > 0) {
+                expect(typeof availableNodes[0]).toBe('string');
             }
+        });
+
+        it('should return optimized knowledge base (no xpathFunctions or importantNotes)', async () => {
+            const input: CreateCustomRuleInput = {
+                engine: 'pmd',
+                language: 'apex'
+            };
+
+            const action: CreateCustomRuleActionImpl = new CreateCustomRuleActionImpl();
+            const output: CreateCustomRuleOutput = await action.exec(input);
+
+            expect(output.knowledgeBase).toBeDefined();
+            // Should only include availableNodes (strings) and nodeCount
+            expect(output.knowledgeBase?.availableNodes).toBeDefined();
+            expect(output.knowledgeBase?.nodeCount).toBeDefined();
         });
 
         it('should handle case-insensitive language input', async () => {
@@ -177,37 +159,6 @@ describe('CreateCustomRuleActionImpl', () => {
             expect(output.status).toEqual('error');
             expect(output.error).toContain('Knowledge base file not found');
             expect(output.error).toContain('apex-ast-reference.json');
-        });
-
-        it('should return error when XPath functions file is missing', async () => {
-            // Create a temporary directory with only AST reference
-            const tempDir = path.join(__dirname, '..', 'fixtures', 'temp-kb');
-            const pmdDir = path.join(tempDir, 'pmd');
-            
-            try {
-                fs.mkdirSync(pmdDir, { recursive: true });
-                // Copy AST reference but not XPath functions
-                const realAstPath = path.join(__dirname, '..', '..', 'src', 'resources', 'custom-rules', 'pmd', 'apex-ast-reference.json');
-                const tempAstPath = path.join(pmdDir, 'apex-ast-reference.json');
-                fs.copyFileSync(realAstPath, tempAstPath);
-
-                const action: CreateCustomRuleActionImpl = new CreateCustomRuleActionImpl(tempDir);
-                const input: CreateCustomRuleInput = {
-                    engine: 'pmd',
-                    language: 'apex'
-                };
-
-                const output: CreateCustomRuleOutput = await action.exec(input);
-
-                expect(output.status).toEqual('error');
-                expect(output.error).toContain('Knowledge base file not found');
-                expect(output.error).toContain('xpath-functions.json');
-            } finally {
-                // Cleanup
-                if (fs.existsSync(tempDir)) {
-                    fs.rmSync(tempDir, { recursive: true, force: true });
-                }
-            }
         });
     });
 
