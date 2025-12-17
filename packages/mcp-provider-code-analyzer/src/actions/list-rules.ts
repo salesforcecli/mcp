@@ -27,8 +27,6 @@ export type ListRulesOutput = {
         engine: string
         severity: number
         tags: string[]
-        description: string
-        resources: string[]
     }[]
 };
 
@@ -82,8 +80,6 @@ export class ListRulesActionImpl implements ListRulesAction {
                 name: r.getName(),
                 engine: r.getEngineName(),
                 severity: r.getSeverityLevel(),
-                description: r.getDescription(),
-                resources: r.getResourceUrls(),
                 tags: r.getTags()
             }
         });

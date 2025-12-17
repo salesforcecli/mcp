@@ -1,3 +1,12 @@
+## [0.3.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-code-analyzer@0.3.0...mcp-provider-code-analyzer@0.3.1) (2025-12-11)
+
+
+### Bug Fixes
+
+* **ca:** optimize list rule tool for output token ([#351](https://github.com/salesforcecli/mcp/issues/351)) ([b3b9adc](https://github.com/salesforcecli/mcp/commit/b3b9adcf32d1162a62e4e3df338b10b421ddccb0))
+
+
+
 # [0.3.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-code-analyzer@0.2.2...mcp-provider-code-analyzer@0.3.0) (2025-12-09)
 
 
