@@ -179,15 +179,8 @@ class SpyCreateCustomRuleAction implements CreateCustomRuleAction {
         return Promise.resolve({
             status: 'ready_for_xpath_generation',
             knowledgeBase: {
-                nodeIndex: ['UserClass', 'Method', 'MethodCallExpression'],
-                nodeInfo: {
-                    'UserClass': {
-                        description: 'Represents an Apex class',
-                        category: 'Class',
-                        attributes: []
-                    }
-                },
-                xpathFunctions: []
+                availableNodes: ['UserClass', 'Method', 'MethodCallExpression'],
+                nodeCount: 3
             },
             instructionsForLlm: 'Generate XPath rules',
             nextStep: {

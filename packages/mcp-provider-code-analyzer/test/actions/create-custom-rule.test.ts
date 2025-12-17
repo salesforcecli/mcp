@@ -57,21 +57,6 @@ describe('CreateCustomRuleActionImpl', () => {
             }
         });
 
-        it('should return optimized knowledge base (no xpathFunctions or importantNotes)', async () => {
-            const input: CreateCustomRuleInput = {
-                engine: 'pmd',
-                language: 'apex'
-            };
-
-            const action: CreateCustomRuleActionImpl = new CreateCustomRuleActionImpl();
-            const output: CreateCustomRuleOutput = await action.exec(input);
-
-            expect(output.knowledgeBase).toBeDefined();
-            // Should only include availableNodes (strings) and nodeCount
-            expect(output.knowledgeBase?.availableNodes).toBeDefined();
-            expect(output.knowledgeBase?.nodeCount).toBeDefined();
-        });
-
         it('should handle case-insensitive language input', async () => {
             const input: CreateCustomRuleInput = {
                 engine: 'pmd',

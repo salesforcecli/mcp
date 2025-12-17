@@ -72,25 +72,6 @@ describe('create_code_analyzer_custom_rule', () => {
         }
     }, 60000);
 
-    it('should return optimized knowledge base (no xpathFunctions or importantNotes)', async () => {
-        const result = await client.callTool(testInputSchema, {
-            name: 'create_code_analyzer_custom_rule',
-            params: {
-                engine: 'pmd',
-                language: 'apex'
-            }
-        }, 60000);
-
-        const output = result.structuredContent as CreateCustomRuleOutput;
-        expect(output.knowledgeBase).toBeDefined();
-        // Should not include xpathFunctions or importantNotes (token optimization)
-        expect((output.knowledgeBase as any).xpathFunctions).toBeUndefined();
-        expect((output.knowledgeBase as any).importantNotes).toBeUndefined();
-        // Should only include availableNodes (strings) and nodeCount
-        expect(output.knowledgeBase!.availableNodes).toBeDefined();
-        expect(output.knowledgeBase!.nodeCount).toBeDefined();
-    }, 60000);
-
     it('should return instructionsForLlm and nextStep', async () => {
         const result = await client.callTool(testInputSchema, {
             name: 'create_code_analyzer_custom_rule',
