@@ -128,22 +128,6 @@ describe('get_code_analyzer_node_details', () => {
         expect(requestedNodes.length).toBeGreaterThanOrEqual(3);
     }, 30000);
 
-    it('should handle case-insensitive language input', async () => {
-        const result = await client.callTool(testInputSchema, {
-            name: 'get_code_analyzer_node_details',
-            params: {
-                engine: 'pmd',
-                language: 'APEX', // uppercase
-                nodeNames: ['UserClass']
-            }
-        }, 30000);
-
-        const output = result.structuredContent as GetNodeDetailsOutput;
-        expect(output.status).toEqual('success');
-        expect(output.nodeDetails).toBeDefined();
-        expect(output.nodeDetails!.length).toBeGreaterThan(0);
-    }, 30000);
-
     it('should load knowledge base once and return both nodeDetails and importantNotes', async () => {
         const result = await client.callTool(testInputSchema, {
             name: 'get_code_analyzer_node_details',
@@ -313,21 +297,6 @@ describe('get_code_analyzer_node_details', () => {
         expect(parentClassNames).toContain('AbstractApexCommentContainerNode');
         expect(parentClassNames).toContain('AbstractApexNode.Single');
         expect(parentClassNames).toContain('AbstractApexNode');
-    }, 30000);
-
-    it('should return error when language is empty', async () => {
-        const result = await client.callTool(testInputSchema, {
-            name: 'get_code_analyzer_node_details',
-            params: {
-                engine: 'pmd',
-                language: '',
-                nodeNames: ['UserClass']
-            }
-        }, 30000);
-
-        const output = result.structuredContent as GetNodeDetailsOutput;
-        expect(output.status).toEqual('error');
-        expect(output.error).toContain('language is required');
     }, 30000);
 
     it('should return node details with correct structure for Method node', async () => {

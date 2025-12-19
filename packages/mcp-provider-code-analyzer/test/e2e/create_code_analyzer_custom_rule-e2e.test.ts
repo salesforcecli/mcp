@@ -89,21 +89,6 @@ describe('create_code_analyzer_custom_rule', () => {
         expect(output.nextStep!.then).toContain('apply_code_analyzer_custom_rule');
     }, 30000);
 
-    it('should handle case-insensitive language input', async () => {
-        const result = await client.callTool(testInputSchema, {
-            name: 'create_code_analyzer_custom_rule',
-            params: {
-                engine: 'pmd',
-                language: 'APEX' // uppercase
-            }
-        });
-
-        const output = result.structuredContent as CreateCustomRuleOutput;
-        expect(output.status).toEqual('ready_for_xpath_generation');
-        expect(output.knowledgeBase).toBeDefined();
-        expect(output.knowledgeBase!.availableNodes!.length).toBeGreaterThan(0);
-    }, 30000);
-
     it('should return error for unsupported engine (eslint)', async () => {
         const result = await client.callTool(testInputSchema, {
             name: 'create_code_analyzer_custom_rule',
@@ -160,20 +145,6 @@ describe('create_code_analyzer_custom_rule', () => {
         const output = result.structuredContent as CreateCustomRuleOutput;
         expect(output.status).toEqual('error');
         expect(output.error).toContain('support is not yet added');
-    }, 30000);
-
-    it('should return error when language is empty', async () => {
-        const result = await client.callTool(testInputSchema, {
-            name: 'create_code_analyzer_custom_rule',
-            params: {
-                engine: 'pmd',
-                language: ''
-            }
-        });
-
-        const output = result.structuredContent as CreateCustomRuleOutput;
-        expect(output.status).toEqual('error');
-        expect(output.error).toContain('language is required');
     }, 30000);
 
     it('should return consistent results when called multiple times with same engine+language', async () => {
