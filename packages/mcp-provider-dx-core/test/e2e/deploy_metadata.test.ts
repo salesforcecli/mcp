@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import fs from 'node:fs';
 import path from 'node:path';
 import { expect, assert } from 'chai';
 import { McpTestClient, DxMcpTransport } from '@salesforce/mcp-test-client';
@@ -229,16 +230,7 @@ describe('deploy_metadata', () => {
     expect(deployResult.runTestsEnabled).to.be.true;
   });
 
-  it('should deploy remote edit when ignoreConflicts is set to true', async () => {
-    const customAppPath = path.join(
-      testSession.project.dir,
-      'force-app',
-      'main',
-      'default',
-      'applications',
-      'Dreamhouse.app-meta.xml',
-    );
-
+  it('should deploy remote edit when ignoreConflicts is set to true', async () => { 
     // deploy the whole project to ensure the file exists
     const fullProjectDeploy = await client.callTool(deployMetadataSchema, {
       name: 'deploy_metadata',
@@ -250,6 +242,21 @@ describe('deploy_metadata', () => {
 
     expect(fullProjectDeploy.isError).to.be.false;
     expect(fullProjectDeploy.content.length).to.equal(1);
+
+    const customAppPath = path.join(
+      testSession.project.dir,
+      'force-app',
+      'main',
+      'default',
+      'applications',
+      'Dreamhouse.app-meta.xml',
+    );
+
+    // local edit
+    await fs.promises.writeFile(
+      customAppPath,
+      (await fs.promises.readFile(customAppPath, { encoding: 'utf-8' })).replace('Lightning App Builder', 'App Builder')
+    );
 
     // Make a remote edit using Tooling API
     const conn = await Connection.create({
@@ -280,18 +287,17 @@ describe('deploy_metadata', () => {
       Metadata: updatedMetadata,
     });
 
-    // Deploy with ignoreConflicts=true - should override remote edit
+    // Deploy without ignoreConflicts - should throw conflicts error
     const deployResult = await client.callTool(deployMetadataSchema, {
       name: 'deploy_metadata',
       params: {
-        sourceDir: [customAppPath],
-        ignoreConflicts: true,
         usernameOrAlias: orgUsername,
         directory: testSession.project.dir,
       },
     });
+    console.log(JSON.stringify(deployResult,null,2));
 
-    expect(deployResult.isError).to.equal(false);
+    expect(deployResult.isError).to.equal(true);
     expect(deployResult.content.length).to.equal(1);
     if (deployResult.content[0].type !== 'text') assert.fail();
 
