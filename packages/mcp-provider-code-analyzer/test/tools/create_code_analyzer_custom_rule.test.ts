@@ -120,7 +120,7 @@ describe("Tests for CreateCodeAnalyzerCustomRuleMcpTool", () => {
             };
             expect(result.content).toHaveLength(1);
             expect(result.content[0].type).toEqual("text");
-            expect(result.content[0].text).toEqual(JSON.stringify(expectedOutput, null, 2));
+            expect(result.content[0].text).toEqual(JSON.stringify(expectedOutput));
             expect(result.structuredContent).toEqual(expectedOutput);
         });
 
