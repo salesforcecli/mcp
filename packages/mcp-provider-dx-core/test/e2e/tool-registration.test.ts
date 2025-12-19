@@ -100,7 +100,7 @@ describe('specific tool registration', () => {
           'run_code_analyzer',
           'list_code_analyzer_rules',
           'create_code_analyzer_custom_rule',
-          'get_node_details'
+          'get_code_analyzer_node_details'
         ].sort(),
       );
     } catch (err) {
