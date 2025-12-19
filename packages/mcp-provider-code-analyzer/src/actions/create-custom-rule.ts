@@ -22,7 +22,7 @@ export type CreateCustomRuleOutput = {
 };
 
 export type KnowledgeBase = {
-    availableNodes: string[]; // Just node names for token efficiency - use get_node_details for full info
+    availableNodes: string[]; // Just node names for token efficiency - use get_code_analyzer_node_details for full info
     nodeCount: number; // Total number of available nodes
 };
 
@@ -80,7 +80,7 @@ export class CreateCustomRuleActionImpl implements CreateCustomRuleAction {
                 knowledgeBase,
                 instructionsForLlm: this.getInstructionsForLlm(knowledgeBase),
                 nextStep: {
-                    action: "Call get_node_details(array of node_name) with the list of selected node names you need to build the XPath",
+                    action: "Call get_code_analyzer_node_details(array of node_name) with the list of selected node names you need to build the XPath",
                     then: "Generate XPath rule configuration using the node details and knowledge base, then call apply_code_analyzer_custom_rule(rule_config_json, project_root)"
                 }
             };
@@ -112,7 +112,7 @@ export class CreateCustomRuleActionImpl implements CreateCustomRuleAction {
      * Loads the AST reference JSON file for the specified language and extracts only
      * node names (not full descriptions) for token efficiency. Full node details
      * including attributes, categories, and important notes are available via the
-     * get_node_details tool.
+     * get_code_analyzer_node_details tool.
      * 
      * @param language - The target language (e.g., 'apex', 'javascript'). Should be normalized to lowercase.
      * @returns A KnowledgeBase object containing an array of available node names and the total count
@@ -124,7 +124,7 @@ export class CreateCustomRuleActionImpl implements CreateCustomRuleAction {
         const astReference = this.loadKnowledgeBase('pmd', astReferenceFile);
 
         // Return only node names (not descriptions) for token efficiency
-        // Descriptions and full details available via get_node_details tool
+        // Descriptions and full details available via get_code_analyzer_node_details tool
         const availableNodes = Object.values(astReference.nodes).map((n: any) => n.name);
         const nodeCount = availableNodes.length;
 
@@ -175,12 +175,12 @@ export class CreateCustomRuleActionImpl implements CreateCustomRuleAction {
 
 WORKFLOW:
 1. Review availableNodes (${knowledgeBase.nodeCount} nodes) to identify needed nodes
-2. Call get_node_details([node_names]) to get attributes, category, and important notes
+2. Call get_code_analyzer_node_details([node_names]) to get attributes, category, and important notes
 3. Build XPath using node details and standard XPath 3.1 functions (ends-with, starts-with, contains, matches, not, and, or, etc.)
 
 REQUIREMENTS:
 - Use ONLY node names from availableNodes 
-- ALWAYS call get_node_details first - it provides attributes and critical notes
+- ALWAYS call get_code_analyzer_node_details first - it provides attributes and critical notes
 - Severity: 1=Critical, 2=High, 3=Moderate, 4=Low, 5=Info
 
 OUTPUT (JSON only):

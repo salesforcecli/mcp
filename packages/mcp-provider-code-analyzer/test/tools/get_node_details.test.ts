@@ -1,6 +1,6 @@
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
-import { GetNodeDetailsMcpTool } from "../../src/tools/get_node_details.js";
+import { GetNodeDetailsMcpTool } from "../../src/tools/get_code_analyzer_node_details.js";
 import { GetNodeDetailsAction, GetNodeDetailsInput, GetNodeDetailsOutput } from "../../src/actions/get-node-details.js";
 
 describe("Tests for GetNodeDetailsMcpTool", () => {
@@ -19,7 +19,7 @@ describe("Tests for GetNodeDetailsMcpTool", () => {
     });
 
     it("When getName is called, then tool name is returned", () => {
-        expect(tool.getName()).toEqual('get_node_details');
+        expect(tool.getName()).toEqual('get_code_analyzer_node_details');
     });
 
     it("When getConfig is called, then the correct configuration is returned", () => {
@@ -88,7 +88,7 @@ describe("Tests for GetNodeDetailsMcpTool", () => {
             expect(result.content[0].type).toEqual("text");
             expect(result.structuredContent).toBeDefined();
             expect((result.structuredContent as GetNodeDetailsOutput).status).toEqual('error');
-            expect((result.structuredContent as GetNodeDetailsOutput).error).toContain('language is required');
+            expect((result.structuredContent as GetNodeDetailsOutput).error).toContain("Language '' support is not yet added for getting node details. Currently supported languages: apex.");
         });
 
         it("When exec is called with missing engine, then validation error is returned", async () => {
@@ -104,7 +104,7 @@ describe("Tests for GetNodeDetailsMcpTool", () => {
             expect(result.content[0].type).toEqual("text");
             expect(result.structuredContent).toBeDefined();
             expect((result.structuredContent as GetNodeDetailsOutput).status).toEqual('error');
-            expect((result.structuredContent as GetNodeDetailsOutput).error).toContain('Valid engine is required');
+            expect((result.structuredContent as GetNodeDetailsOutput).error).toContain("Engine 'undefined' does not support node details or is not yet implemented.");
         });
 
         it("When exec is called with empty nodeNames array, then validation error is returned", async () => {

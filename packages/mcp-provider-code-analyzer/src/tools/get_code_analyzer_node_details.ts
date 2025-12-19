@@ -19,13 +19,13 @@ WHEN TO USE THIS TOOL:
 Example workflow:
 1. Call create_code_analyzer_custom_rule(engine, language) → get availableNodes
 2. Identify needed nodes (e.g., UserClass, Method)
-3. Call get_node_details(engine, language, ["UserClass", "Method"]) → get all attributes (direct + parent class) and important notes
+3. Call get_code_analyzer_node_details(engine, language, ["UserClass", "Method"]) → get all attributes (direct + parent class) and important notes
 4. Use the complete attribute list to build XPath expression`;
 
 export const inputSchema = z.object({
-    engine: z.enum(['pmd', 'eslint', 'regex']).describe("Required: Which engine to get node details for."),
-    language: z.string().describe("Required: The target language. Examples: 'apex', 'javascript', 'typescript', 'html', 'xml', 'visualforce'"),
-    nodeNames: z.array(z.string()).min(1).describe("Required: Array of node names to get details for. Example: ['UserClass', 'Method', 'MethodCallExpression']")
+    engine: z.enum(['pmd', 'eslint', 'regex']).describe("Which engine to get node details for."),
+    language: z.enum(['apex', 'javascript', 'typescript', 'html', 'xml', 'visualforce']).describe("The target language."),
+    nodeNames: z.array(z.string()).min(1).describe("Array of node names to get details for. Example: ['UserClass', 'Method', 'MethodCallExpression']")
 });
 type InputArgsShape = typeof inputSchema.shape;
 
@@ -52,7 +52,7 @@ const outputSchema = z.object({
 type OutputArgsShape = typeof outputSchema.shape;
 
 export class GetNodeDetailsMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
-    public static readonly NAME: string = 'get_node_details';
+    public static readonly NAME: string = 'get_code_analyzer_node_details';
     private readonly action: GetNodeDetailsAction;
 
     public constructor(
@@ -102,7 +102,6 @@ export class GetNodeDetailsMcpTool extends McpTool<InputArgsShape, OutputArgsSha
     public async exec(input: GetNodeDetailsInput): Promise<CallToolResult> {
         let output: GetNodeDetailsOutput;
         try {
-            validateInput(input);
             output = await this.action.exec(input);
         } catch (e) {
             output = { 
@@ -114,29 +113,6 @@ export class GetNodeDetailsMcpTool extends McpTool<InputArgsShape, OutputArgsSha
             content: [{ type: "text", text: JSON.stringify(output, null, 2) }],
             structuredContent: output
         };
-    }
-}
-
-/**
- * Validates the input parameters for the get node details tool.
- * 
- * Ensures that engine, language, and nodeNames are provided and that language is not empty.
- * Note: Engine and nodeNames are also validated by Zod schema, but this provides an additional check.
- * 
- * @param input - The input parameters to validate
- * @throws Error if engine is missing, language is missing/empty, or nodeNames array is empty
- */
-function validateInput(input: GetNodeDetailsInput): void {
-    if (!input.engine) {
-        throw new Error("Valid engine is required.");
-    }
-
-    if (!input.language || input.language.trim().length === 0) {
-        throw new Error("language is required and cannot be empty");
-    }
-
-    if (!input.nodeNames || input.nodeNames.length === 0) {
-        throw new Error("At least one node name is required in nodeNames array");
     }
 }
 

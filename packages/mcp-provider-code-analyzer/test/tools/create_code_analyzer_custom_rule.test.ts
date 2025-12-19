@@ -85,7 +85,7 @@ describe("Tests for CreateCodeAnalyzerCustomRuleMcpTool", () => {
             expect(result.content[0].type).toEqual("text");
             expect(result.structuredContent).toBeDefined();
             expect((result.structuredContent as CreateCustomRuleOutput).status).toEqual('error');
-            expect((result.structuredContent as CreateCustomRuleOutput).error).toContain('language is required');
+            expect((result.structuredContent as CreateCustomRuleOutput).error).toContain( "Language '' support is not yet added for the Create Custom Rule MCP tool. Currently supported languages: apex.");
         });
 
         it("When exec is called with missing engine, then validation error is returned", async () => {
@@ -100,7 +100,7 @@ describe("Tests for CreateCodeAnalyzerCustomRuleMcpTool", () => {
             expect(result.content[0].type).toEqual("text");
             expect(result.structuredContent).toBeDefined();
             expect((result.structuredContent as CreateCustomRuleOutput).status).toEqual('error');
-            expect((result.structuredContent as CreateCustomRuleOutput).error).toContain('Valid engine is required');
+            expect((result.structuredContent as CreateCustomRuleOutput).error).toContain("Engine 'undefined' does not support custom rules or is not yet implemented.");
         });
 
         it('When action throws error, then return error result', async () => {
