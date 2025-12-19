@@ -116,7 +116,7 @@ export class GetNodeDetailsMcpTool extends McpTool<InputArgsShape, OutputArgsSha
             };
         }
         return {
-            content: [{ type: "text", text: JSON.stringify(output, null, 2) }],
+            content: [{ type: "text", text: JSON.stringify(output) }],
             structuredContent: output
         };
     }
