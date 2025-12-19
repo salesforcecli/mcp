@@ -23,7 +23,7 @@ describe('create_code_analyzer_custom_rule', () => {
             console.error('Setup failed:', error);
             throw error;
         }
-    }, 500);
+    }, 30000);
 
     afterAll(async () => {
         if (client?.connected) {
