@@ -32,23 +32,19 @@ type InheritSchemaAttribute = {
     type: string;
 };
 
-type XPathPattern = {
+type XPathExample = {
     rule_name: string;
-    description: string;
     message: string;
+    description: string;
     xpath: string;
-};
-
-type XPathPatternCatalog = {
-    description?: string;
-    patterns?: XPathPattern[];
+    example_code?: string;
 };
 
 type AstReference = {
     nodes: Record<string, AstNode>;
     inheritSchema?: Record<string, InheritSchemaAttribute[]>;
     important_notes?: Array<{ title: string; content: string }>;
-    xpath_pattern_catalog?: XPathPatternCatalog;
+    xpath_examples?: XPathExample[];
 };
 
 type NodeDetail = {
@@ -67,6 +63,7 @@ type NodeDetail = {
         rule_name: string;
         xpath: string;
         description: string;
+        example_code?: string;
     }>;
 };
 
@@ -142,7 +139,7 @@ export class GetNodeDetailsActionImpl implements GetNodeDetailsAction {
             const nodeDetails = this.getNodeDetails(astReference, input.nodeNames);
             const importantNotes = this.getImportantNotes(astReference, normalizedLanguage);
 
-            // Add XPath examples from pattern catalog
+            // Add XPath examples that use the requested nodes
             const nodeDetailsWithExamples = this.addXPathExamples(nodeDetails, astReference);
 
             return {
@@ -252,20 +249,19 @@ export class GetNodeDetailsActionImpl implements GetNodeDetailsAction {
 
 
     /**
-     * Adds XPath pattern examples to node details by finding patterns that use the requested nodes.
+     * Adds XPath examples to node details by finding examples that use the requested nodes.
      * 
-     * For each node in nodeDetails, searches the xpath_pattern_catalog for patterns that
+     * For each node in nodeDetails, searches the xpath_examples array for examples that
      * reference that node in their XPath expression. This helps LLMs see real-world examples
      * of how nodes are used in XPath rules.
      * 
      * @param nodeDetails - Array of node details to enhance with examples
-     * @param astReference - The AST reference containing xpath_pattern_catalog
+     * @param astReference - The AST reference containing xpath_examples
      * @returns Array of node details with xpathExamples added
      */
     private addXPathExamples(nodeDetails: NodeDetail[], astReference: AstReference): NodeDetail[] {
-        const catalog = astReference.xpath_pattern_catalog;
-        const patterns = catalog?.patterns;
-        if (!patterns || patterns.length === 0) {
+        const xpathExamples = astReference.xpath_examples;
+        if (!xpathExamples || xpathExamples.length === 0) {
             return nodeDetails;
         }
 
@@ -276,20 +272,21 @@ export class GetNodeDetailsActionImpl implements GetNodeDetailsAction {
             }
 
             const nodeName = nodeDetail.name;
-            const examples: Array<{ rule_name: string; xpath: string; description: string }> = [];
+            const examples: Array<{ rule_name: string; xpath: string; description: string; example_code?: string }> = [];
 
-            // Find patterns that use this node
-            for (const pattern of patterns) {
-                if (!pattern.xpath) continue;
+            // Find examples that use this node
+            for (const example of xpathExamples) {
+                if (!example.xpath) continue;
 
                 // Check if XPath contains this node (e.g., //MethodCallExpression, //Method, etc.)
                 // Match patterns like //NodeName or //NodeName[ or //NodeName/ or //NodeName]
                 const nodePattern = new RegExp(`//${nodeName}(?:\\[|/|\\s|$|\\|)`, 'i');
-                if (nodePattern.test(pattern.xpath)) {
+                if (nodePattern.test(example.xpath)) {
                     examples.push({
-                        rule_name: pattern.rule_name,
-                        xpath: pattern.xpath,
-                        description: pattern.description || pattern.message
+                        rule_name: example.rule_name,
+                        xpath: example.xpath,
+                        description: example.description || example.message,
+                        example_code: example.example_code
                     });
                 }
             }
