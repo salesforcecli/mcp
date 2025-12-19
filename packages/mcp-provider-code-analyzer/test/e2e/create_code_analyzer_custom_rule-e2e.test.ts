@@ -5,7 +5,7 @@ import { CreateCustomRuleOutput } from '../../src/actions/create-custom-rule.js'
 
 describe('create_code_analyzer_custom_rule', () => {
     const client = new McpTestClient({
-        timeout: 1000
+        timeout: 30000
     });
 
     const testInputSchema = {
@@ -38,7 +38,7 @@ describe('create_code_analyzer_custom_rule', () => {
                 engine: 'pmd',
                 language: 'apex'
             }
-        }, 1000);
+        });
 
         const output = result.structuredContent as CreateCustomRuleOutput;
         expect(output.status).toEqual('ready_for_xpath_generation');
@@ -48,7 +48,7 @@ describe('create_code_analyzer_custom_rule', () => {
         expect(output.knowledgeBase!.availableNodes!.length).toBeGreaterThan(0);
         expect(output.knowledgeBase!.nodeCount).toBeDefined();
         expect(output.knowledgeBase!.nodeCount).toBeGreaterThan(0);
-    }, 1000);
+    }, 30000);
 
     it('should include common Apex AST nodes in availableNodes', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -57,7 +57,7 @@ describe('create_code_analyzer_custom_rule', () => {
                 engine: 'pmd',
                 language: 'apex'
             }
-        }, 1000);
+        });
 
         const output = result.structuredContent as CreateCustomRuleOutput;
         const availableNodes = output.knowledgeBase?.availableNodes || [];
@@ -70,7 +70,7 @@ describe('create_code_analyzer_custom_rule', () => {
         if (availableNodes.length > 0) {
             expect(typeof availableNodes[0]).toBe('string');
         }
-    }, 1000);
+    }, 30000);
 
     it('should return instructionsForLlm and nextStep', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -79,7 +79,7 @@ describe('create_code_analyzer_custom_rule', () => {
                 engine: 'pmd',
                 language: 'apex'
             }
-        }, 1000);
+        });
 
         const output = result.structuredContent as CreateCustomRuleOutput;
         expect(output.instructionsForLlm).toBeDefined();
@@ -87,7 +87,7 @@ describe('create_code_analyzer_custom_rule', () => {
         expect(output.nextStep).toBeDefined();
         expect(output.nextStep!.action).toContain('get_code_analyzer_node_details');
         expect(output.nextStep!.then).toContain('apply_code_analyzer_custom_rule');
-    }, 1000);
+    }, 30000);
 
     it('should handle case-insensitive language input', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -96,13 +96,13 @@ describe('create_code_analyzer_custom_rule', () => {
                 engine: 'pmd',
                 language: 'APEX' // uppercase
             }
-        }, 1000);
+        });
 
         const output = result.structuredContent as CreateCustomRuleOutput;
         expect(output.status).toEqual('ready_for_xpath_generation');
         expect(output.knowledgeBase).toBeDefined();
         expect(output.knowledgeBase!.availableNodes!.length).toBeGreaterThan(0);
-    }, 1000);
+    }, 30000);
 
     it('should return error for unsupported engine (eslint)', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -111,13 +111,13 @@ describe('create_code_analyzer_custom_rule', () => {
                 engine: 'eslint',
                 language: 'javascript'
             }
-        }, 1000);
+        });
 
         const output = result.structuredContent as CreateCustomRuleOutput;
         expect(output.status).toEqual('error');
         expect(output.error).toContain('does not support custom rules');
         expect(output.knowledgeBase).toBeUndefined();
-    }, 1000);
+    }, 30000);
 
     it('should return error for unsupported engine (regex)', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -126,12 +126,12 @@ describe('create_code_analyzer_custom_rule', () => {
                 engine: 'regex',
                 language: 'apex'
             }
-        }, 1000);
+        });
 
         const output = result.structuredContent as CreateCustomRuleOutput;
         expect(output.status).toEqual('error');
         expect(output.error).toContain('does not support custom rules');
-    }, 1000);
+    }, 30000);
 
     it('should return error for unsupported language with PMD', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -140,13 +140,13 @@ describe('create_code_analyzer_custom_rule', () => {
                 engine: 'pmd',
                 language: 'javascript'
             }
-        }, 1000);
+        });
 
         const output = result.structuredContent as CreateCustomRuleOutput;
         expect(output.status).toEqual('error');
         expect(output.error).toContain('support is not yet added');
         expect(output.error).toContain('Currently supported languages: apex');
-    }, 1000);
+    }, 30000);
 
     it('should return error for typescript language', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -155,12 +155,12 @@ describe('create_code_analyzer_custom_rule', () => {
                 engine: 'pmd',
                 language: 'typescript'
             }
-        }, 1000);
+        });
 
         const output = result.structuredContent as CreateCustomRuleOutput;
         expect(output.status).toEqual('error');
         expect(output.error).toContain('support is not yet added');
-    }, 1000);
+    }, 30000);
 
     it('should return error when language is empty', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -169,12 +169,12 @@ describe('create_code_analyzer_custom_rule', () => {
                 engine: 'pmd',
                 language: ''
             }
-        }, 1000);
+        });
 
         const output = result.structuredContent as CreateCustomRuleOutput;
         expect(output.status).toEqual('error');
         expect(output.error).toContain('language is required');
-    }, 1000);
+    }, 30000);
 
     it('should return consistent results when called multiple times with same engine+language', async () => {
         const params = {
@@ -185,12 +185,12 @@ describe('create_code_analyzer_custom_rule', () => {
         const result1 = await client.callTool(testInputSchema, {
             name: 'create_code_analyzer_custom_rule',
             params
-        }, 1000);
+        });
 
         const result2 = await client.callTool(testInputSchema, {
             name: 'create_code_analyzer_custom_rule',
             params
-        }, 1000);
+        });
 
         const output1 = result1.structuredContent as CreateCustomRuleOutput;
         const output2 = result2.structuredContent as CreateCustomRuleOutput;

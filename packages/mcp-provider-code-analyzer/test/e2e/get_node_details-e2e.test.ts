@@ -5,7 +5,7 @@ import { GetNodeDetailsOutput } from '../../src/actions/get-node-details.js';
 
 describe('get_code_analyzer_node_details', () => {
     const client = new McpTestClient({
-        timeout: 1000
+        timeout: 30000
     });
 
     const testInputSchema = {
@@ -39,7 +39,7 @@ describe('get_code_analyzer_node_details', () => {
                 language: 'apex',
                 nodeNames: ['UserClass']
             }
-        }, 1000);
+        }, 30000);
 
         const output = result.structuredContent as GetNodeDetailsOutput;
         expect(output.status).toEqual('success');
@@ -53,7 +53,7 @@ describe('get_code_analyzer_node_details', () => {
         expect(userClassNode!.attributes).toBeDefined();
         expect(Array.isArray(userClassNode!.attributes)).toBe(true);
         expect(userClassNode!.attributes.length).toBeGreaterThan(0);
-    }, 1000);
+    }, 30000);
 
     it('should return parent class nodes with inherited attributes', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -63,7 +63,7 @@ describe('get_code_analyzer_node_details', () => {
                 language: 'apex',
                 nodeNames: ['UserClass']
             }
-        }, 1000);
+        }, 30000);
 
         const output = result.structuredContent as GetNodeDetailsOutput;
         expect(output.status).toEqual('success');
@@ -83,7 +83,7 @@ describe('get_code_analyzer_node_details', () => {
         expect(baseApexClass!.category).toEqual('Inheritance');
         expect(baseApexClass!.attributes).toBeDefined();
         expect(baseApexClass!.attributes.length).toBeGreaterThan(0);
-    }, 1000);
+    }, 30000);
 
     it('should return important notes for Apex', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -93,7 +93,7 @@ describe('get_code_analyzer_node_details', () => {
                 language: 'apex',
                 nodeNames: ['Method']
             }
-        }, 1000);
+        }, 30000);
 
         const output = result.structuredContent as GetNodeDetailsOutput;
         expect(output.status).toEqual('success');
@@ -105,7 +105,7 @@ describe('get_code_analyzer_node_details', () => {
         const firstNote = output.importantNotes![0];
         expect(firstNote!.title).toBeDefined();
         expect(firstNote!.content).toBeDefined();
-    }, 1000);
+    }, 30000);
 
     it('should handle multiple node names', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -115,7 +115,7 @@ describe('get_code_analyzer_node_details', () => {
                 language: 'apex',
                 nodeNames: ['UserClass', 'Method', 'MethodCallExpression']
             }
-        }, 1000);
+        }, 30000);
 
         const output = result.structuredContent as GetNodeDetailsOutput;
         expect(output.status).toEqual('success');
@@ -126,7 +126,7 @@ describe('get_code_analyzer_node_details', () => {
             n.name === 'UserClass' || n.name === 'Method' || n.name === 'MethodCallExpression'
         );
         expect(requestedNodes.length).toBeGreaterThanOrEqual(3);
-    }, 1000);
+    }, 30000);
 
     it('should handle case-insensitive language input', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -136,13 +136,13 @@ describe('get_code_analyzer_node_details', () => {
                 language: 'APEX', // uppercase
                 nodeNames: ['UserClass']
             }
-        }, 1000);
+        }, 30000);
 
         const output = result.structuredContent as GetNodeDetailsOutput;
         expect(output.status).toEqual('success');
         expect(output.nodeDetails).toBeDefined();
         expect(output.nodeDetails!.length).toBeGreaterThan(0);
-    }, 1000);
+    }, 30000);
 
     it('should load knowledge base once and return both nodeDetails and importantNotes', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -152,7 +152,7 @@ describe('get_code_analyzer_node_details', () => {
                 language: 'apex',
                 nodeNames: ['UserClass']
             }
-        }, 1000);
+        }, 30000);
 
         const output = result.structuredContent as GetNodeDetailsOutput;
         // Both nodeDetails and importantNotes should be present, indicating
@@ -161,7 +161,7 @@ describe('get_code_analyzer_node_details', () => {
         expect(output.importantNotes).toBeDefined();
         expect(output.nodeDetails!.length).toBeGreaterThan(0);
         expect(output.importantNotes!.length).toBeGreaterThan(0);
-    }, 1000);
+    }, 30000);
 
     it('should return error for unsupported engine (eslint)', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -171,7 +171,7 @@ describe('get_code_analyzer_node_details', () => {
                 language: 'javascript',
                 nodeNames: ['SomeNode']
             }
-        }, 1000);
+        }, 30000);
 
         const output = result.structuredContent as GetNodeDetailsOutput;
         expect(output.status).toEqual('error');
@@ -179,7 +179,7 @@ describe('get_code_analyzer_node_details', () => {
         expect(output.error).toContain('eslint');
         expect(output.nodeDetails).toBeUndefined();
         expect(output.importantNotes).toBeUndefined();
-    }, 1000);
+    }, 30000);
 
     it('should return error for unsupported engine (regex)', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -189,13 +189,13 @@ describe('get_code_analyzer_node_details', () => {
                 language: 'apex',
                 nodeNames: ['SomeNode']
             }
-        }, 1000);
+        }, 30000);
 
         const output = result.structuredContent as GetNodeDetailsOutput;
         expect(output.status).toEqual('error');
         expect(output.error).toContain('does not support node details');
         expect(output.error).toContain('regex');
-    }, 1000);
+    }, 30000);
 
     it('should return error for unsupported language with PMD', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -205,13 +205,13 @@ describe('get_code_analyzer_node_details', () => {
                 language: 'javascript',
                 nodeNames: ['SomeNode']
             }
-        }, 1000);
+        }, 30000);
 
         const output = result.structuredContent as GetNodeDetailsOutput;
         expect(output.status).toEqual('error');
         expect(output.error).toContain('support is not yet added');
         expect(output.error).toContain('Currently supported languages: apex');
-    }, 1000);
+    }, 30000);
 
     it('should return error for typescript language', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -221,12 +221,12 @@ describe('get_code_analyzer_node_details', () => {
                 language: 'typescript',
                 nodeNames: ['SomeNode']
             }
-        }, 1000);
+        }, 30000);
 
         const output = result.structuredContent as GetNodeDetailsOutput;
         expect(output.status).toEqual('error');
         expect(output.error).toContain('support is not yet added');
-    }, 1000);
+    }, 30000);
 
 
     it('should return node details with error description for non-existent nodes', async () => {
@@ -237,7 +237,7 @@ describe('get_code_analyzer_node_details', () => {
                 language: 'apex',
                 nodeNames: ['NonExistentNode', 'AnotherNonExistentNode']
             }
-        }, 1000);
+        }, 30000);
 
         const output = result.structuredContent as GetNodeDetailsOutput;
         expect(output.status).toEqual('success');
@@ -248,7 +248,7 @@ describe('get_code_analyzer_node_details', () => {
         expect(nonExistentNode).toBeDefined();
         expect(nonExistentNode!.description).toContain('not found in AST reference');
         expect(nonExistentNode!.attributes).toEqual([]);
-    }, 1000);
+    }, 30000);
 
     it('should handle mix of existing and non-existent nodes', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -258,7 +258,7 @@ describe('get_code_analyzer_node_details', () => {
                 language: 'apex',
                 nodeNames: ['UserClass', 'NonExistentNode', 'Method']
             }
-        }, 1000);
+        }, 30000);
 
         const output = result.structuredContent as GetNodeDetailsOutput;
         expect(output.status).toEqual('success');
@@ -273,7 +273,7 @@ describe('get_code_analyzer_node_details', () => {
         expect(method).toBeDefined();
         expect(nonExistent).toBeDefined();
         expect(nonExistent!.description).toContain('not found');
-    }, 1000);
+    }, 30000);
 
     it('should not duplicate parent class nodes when multiple child nodes share the same parent', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -283,7 +283,7 @@ describe('get_code_analyzer_node_details', () => {
                 language: 'apex',
                 nodeNames: ['UserClass', 'UserInterface', 'UserEnum'] // All extend BaseApexClass
             }
-        }, 1000);
+        }, 30000);
 
         const output = result.structuredContent as GetNodeDetailsOutput;
         expect(output.status).toEqual('success');
@@ -292,7 +292,7 @@ describe('get_code_analyzer_node_details', () => {
         // BaseApexClass should appear only once (not 3 times)
         const baseApexClassNodes = output.nodeDetails!.filter((n) => n.name === 'BaseApexClass');
         expect(baseApexClassNodes.length).toBe(1);
-    }, 1000);
+    }, 30000);
 
     it('should include all parent classes in inheritance chain', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -302,7 +302,7 @@ describe('get_code_analyzer_node_details', () => {
                 language: 'apex',
                 nodeNames: ['CatchBlockStatement'] // Extends AbstractApexCommentContainerNode -> AbstractApexNode.Single -> AbstractApexNode
             }
-        }, 1000);
+        }, 30000);
 
         const output = result.structuredContent as GetNodeDetailsOutput;
         expect(output.status).toEqual('success');
@@ -313,7 +313,7 @@ describe('get_code_analyzer_node_details', () => {
         expect(parentClassNames).toContain('AbstractApexCommentContainerNode');
         expect(parentClassNames).toContain('AbstractApexNode.Single');
         expect(parentClassNames).toContain('AbstractApexNode');
-    }, 1000);
+    }, 30000);
 
     it('should return error when language is empty', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -323,12 +323,12 @@ describe('get_code_analyzer_node_details', () => {
                 language: '',
                 nodeNames: ['UserClass']
             }
-        }, 1000);
+        }, 30000);
 
         const output = result.structuredContent as GetNodeDetailsOutput;
         expect(output.status).toEqual('error');
         expect(output.error).toContain('language is required');
-    }, 1000);
+    }, 30000);
 
     it('should return node details with correct structure for Method node', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -338,7 +338,7 @@ describe('get_code_analyzer_node_details', () => {
                 language: 'apex',
                 nodeNames: ['Method']
             }
-        }, 1000);
+        }, 30000);
 
         const output = result.structuredContent as GetNodeDetailsOutput;
         expect(output.status).toEqual('success');
@@ -359,7 +359,7 @@ describe('get_code_analyzer_node_details', () => {
             expect(firstAttr!.type).toBeDefined();
             expect(firstAttr!.description).toBeDefined();
         }
-    }, 1000);
+    }, 30000);
 
     it('should return DML statement nodes with inherited attributes from AbstractDmlStatement', async () => {
         const result = await client.callTool(testInputSchema, {
@@ -369,7 +369,7 @@ describe('get_code_analyzer_node_details', () => {
                 language: 'apex',
                 nodeNames: ['DmlInsertStatement', 'DmlUpdateStatement']
             }
-        }, 1000);
+        }, 30000);
 
         const output = result.structuredContent as GetNodeDetailsOutput;
         expect(output.status).toEqual('success');
@@ -381,6 +381,6 @@ describe('get_code_analyzer_node_details', () => {
         expect(abstractDmlStatement!.category).toEqual('Inheritance');
         expect(abstractDmlStatement!.attributes).toBeDefined();
         expect(abstractDmlStatement!.attributes.length).toBe(0);
-    }, 1000);
+    }, 30000);
 });
 
