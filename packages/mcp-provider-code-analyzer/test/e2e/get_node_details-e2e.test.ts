@@ -1,15 +1,15 @@
 import { z } from 'zod';
 import { McpTestClient, DxMcpTransport } from '@salesforce/mcp-test-client';
-import { inputSchema } from '../../src/tools/get_node_details.js';
+import { inputSchema } from '../../src/tools/get_code_analyzer_node_details.js';
 import { GetNodeDetailsOutput } from '../../src/actions/get-node-details.js';
 
-describe('get_node_details', () => {
+describe('get_code_analyzer_node_details', () => {
     const client = new McpTestClient({
-        timeout: 60000
+        timeout: 1000
     });
 
     const testInputSchema = {
-        name: z.literal('get_node_details'),
+        name: z.literal('get_code_analyzer_node_details'),
         params: inputSchema
     };
 
@@ -33,7 +33,7 @@ describe('get_node_details', () => {
 
     it('should return node details with direct attributes for UserClass', async () => {
         const result = await client.callTool(testInputSchema, {
-            name: 'get_node_details',
+            name: 'get_code_analyzer_node_details',
             params: {
                 engine: 'pmd',
                 language: 'apex',
@@ -57,7 +57,7 @@ describe('get_node_details', () => {
 
     it('should return parent class nodes with inherited attributes', async () => {
         const result = await client.callTool(testInputSchema, {
-            name: 'get_node_details',
+            name: 'get_code_analyzer_node_details',
             params: {
                 engine: 'pmd',
                 language: 'apex',
@@ -87,7 +87,7 @@ describe('get_node_details', () => {
 
     it('should return important notes for Apex', async () => {
         const result = await client.callTool(testInputSchema, {
-            name: 'get_node_details',
+            name: 'get_code_analyzer_node_details',
             params: {
                 engine: 'pmd',
                 language: 'apex',
@@ -109,7 +109,7 @@ describe('get_node_details', () => {
 
     it('should handle multiple node names', async () => {
         const result = await client.callTool(testInputSchema, {
-            name: 'get_node_details',
+            name: 'get_code_analyzer_node_details',
             params: {
                 engine: 'pmd',
                 language: 'apex',
@@ -130,7 +130,7 @@ describe('get_node_details', () => {
 
     it('should handle case-insensitive language input', async () => {
         const result = await client.callTool(testInputSchema, {
-            name: 'get_node_details',
+            name: 'get_code_analyzer_node_details',
             params: {
                 engine: 'pmd',
                 language: 'APEX', // uppercase
@@ -146,7 +146,7 @@ describe('get_node_details', () => {
 
     it('should load knowledge base once and return both nodeDetails and importantNotes', async () => {
         const result = await client.callTool(testInputSchema, {
-            name: 'get_node_details',
+            name: 'get_code_analyzer_node_details',
             params: {
                 engine: 'pmd',
                 language: 'apex',
@@ -165,7 +165,7 @@ describe('get_node_details', () => {
 
     it('should return error for unsupported engine (eslint)', async () => {
         const result = await client.callTool(testInputSchema, {
-            name: 'get_node_details',
+            name: 'get_code_analyzer_node_details',
             params: {
                 engine: 'eslint',
                 language: 'javascript',
@@ -183,7 +183,7 @@ describe('get_node_details', () => {
 
     it('should return error for unsupported engine (regex)', async () => {
         const result = await client.callTool(testInputSchema, {
-            name: 'get_node_details',
+            name: 'get_code_analyzer_node_details',
             params: {
                 engine: 'regex',
                 language: 'apex',
@@ -199,7 +199,7 @@ describe('get_node_details', () => {
 
     it('should return error for unsupported language with PMD', async () => {
         const result = await client.callTool(testInputSchema, {
-            name: 'get_node_details',
+            name: 'get_code_analyzer_node_details',
             params: {
                 engine: 'pmd',
                 language: 'javascript',
@@ -215,7 +215,7 @@ describe('get_node_details', () => {
 
     it('should return error for typescript language', async () => {
         const result = await client.callTool(testInputSchema, {
-            name: 'get_node_details',
+            name: 'get_code_analyzer_node_details',
             params: {
                 engine: 'pmd',
                 language: 'typescript',
@@ -231,7 +231,7 @@ describe('get_node_details', () => {
 
     it('should return node details with error description for non-existent nodes', async () => {
         const result = await client.callTool(testInputSchema, {
-            name: 'get_node_details',
+            name: 'get_code_analyzer_node_details',
             params: {
                 engine: 'pmd',
                 language: 'apex',
@@ -252,7 +252,7 @@ describe('get_node_details', () => {
 
     it('should handle mix of existing and non-existent nodes', async () => {
         const result = await client.callTool(testInputSchema, {
-            name: 'get_node_details',
+            name: 'get_code_analyzer_node_details',
             params: {
                 engine: 'pmd',
                 language: 'apex',
@@ -277,7 +277,7 @@ describe('get_node_details', () => {
 
     it('should not duplicate parent class nodes when multiple child nodes share the same parent', async () => {
         const result = await client.callTool(testInputSchema, {
-            name: 'get_node_details',
+            name: 'get_code_analyzer_node_details',
             params: {
                 engine: 'pmd',
                 language: 'apex',
@@ -296,7 +296,7 @@ describe('get_node_details', () => {
 
     it('should include all parent classes in inheritance chain', async () => {
         const result = await client.callTool(testInputSchema, {
-            name: 'get_node_details',
+            name: 'get_code_analyzer_node_details',
             params: {
                 engine: 'pmd',
                 language: 'apex',
@@ -317,7 +317,7 @@ describe('get_node_details', () => {
 
     it('should return error when language is empty', async () => {
         const result = await client.callTool(testInputSchema, {
-            name: 'get_node_details',
+            name: 'get_code_analyzer_node_details',
             params: {
                 engine: 'pmd',
                 language: '',
@@ -332,7 +332,7 @@ describe('get_node_details', () => {
 
     it('should return node details with correct structure for Method node', async () => {
         const result = await client.callTool(testInputSchema, {
-            name: 'get_node_details',
+            name: 'get_code_analyzer_node_details',
             params: {
                 engine: 'pmd',
                 language: 'apex',
@@ -363,7 +363,7 @@ describe('get_node_details', () => {
 
     it('should return DML statement nodes with inherited attributes from AbstractDmlStatement', async () => {
         const result = await client.callTool(testInputSchema, {
-            name: 'get_node_details',
+            name: 'get_code_analyzer_node_details',
             params: {
                 engine: 'pmd',
                 language: 'apex',

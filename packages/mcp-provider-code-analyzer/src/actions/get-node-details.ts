@@ -32,10 +32,23 @@ type InheritSchemaAttribute = {
     type: string;
 };
 
+type XPathPattern = {
+    rule_name: string;
+    description: string;
+    message: string;
+    xpath: string;
+};
+
+type XPathPatternCatalog = {
+    description?: string;
+    patterns?: XPathPattern[];
+};
+
 type AstReference = {
     nodes: Record<string, AstNode>;
     inheritSchema?: Record<string, InheritSchemaAttribute[]>;
     important_notes?: Array<{ title: string; content: string }>;
+    xpath_pattern_catalog?: XPathPatternCatalog;
 };
 
 type NodeDetail = {
@@ -48,6 +61,11 @@ type NodeDetail = {
     attributes: Array<{
         name: string;
         type: string;
+        description: string;
+    }>;
+    xpathExamples?: Array<{
+        rule_name: string;
+        xpath: string;
         description: string;
     }>;
 };
@@ -124,9 +142,12 @@ export class GetNodeDetailsActionImpl implements GetNodeDetailsAction {
             const nodeDetails = this.getNodeDetails(astReference, input.nodeNames);
             const importantNotes = this.getImportantNotes(astReference, normalizedLanguage);
 
+            // Add XPath examples from pattern catalog
+            const nodeDetailsWithExamples = this.addXPathExamples(nodeDetails, astReference);
+
             return {
                 status: "success",
-                nodeDetails,
+                nodeDetails: nodeDetailsWithExamples,
                 importantNotes
             };
 
@@ -229,6 +250,61 @@ export class GetNodeDetailsActionImpl implements GetNodeDetailsAction {
         return nodeDetails;
     }
 
+
+    /**
+     * Adds XPath pattern examples to node details by finding patterns that use the requested nodes.
+     * 
+     * For each node in nodeDetails, searches the xpath_pattern_catalog for patterns that
+     * reference that node in their XPath expression. This helps LLMs see real-world examples
+     * of how nodes are used in XPath rules.
+     * 
+     * @param nodeDetails - Array of node details to enhance with examples
+     * @param astReference - The AST reference containing xpath_pattern_catalog
+     * @returns Array of node details with xpathExamples added
+     */
+    private addXPathExamples(nodeDetails: NodeDetail[], astReference: AstReference): NodeDetail[] {
+        const catalog = astReference.xpath_pattern_catalog;
+        const patterns = catalog?.patterns;
+        if (!patterns || patterns.length === 0) {
+            return nodeDetails;
+        }
+
+        return nodeDetails.map(nodeDetail => {
+            // Skip parent classes and error nodes
+            if (nodeDetail.category === "Inheritance" || nodeDetail.description.includes("not found")) {
+                return nodeDetail;
+            }
+
+            const nodeName = nodeDetail.name;
+            const examples: Array<{ rule_name: string; xpath: string; description: string }> = [];
+
+            // Find patterns that use this node
+            for (const pattern of patterns) {
+                if (!pattern.xpath) continue;
+
+                // Check if XPath contains this node (e.g., //MethodCallExpression, //Method, etc.)
+                // Match patterns like //NodeName or //NodeName[ or //NodeName/ or //NodeName]
+                const nodePattern = new RegExp(`//${nodeName}(?:\\[|/|\\s|$|\\|)`, 'i');
+                if (nodePattern.test(pattern.xpath)) {
+                    examples.push({
+                        rule_name: pattern.rule_name,
+                        xpath: pattern.xpath,
+                        description: pattern.description || pattern.message
+                    });
+                }
+            }
+
+            // Limit to top 5 examples to keep response size manageable
+            if (examples.length > 0) {
+                return {
+                    ...nodeDetail,
+                    xpathExamples: examples.slice(0, 5)
+                };
+            }
+
+            return nodeDetail;
+        });
+    }
 
     /**
      * Retrieves important notes for the specified language from the AST reference.

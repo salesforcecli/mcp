@@ -2,7 +2,7 @@ import { McpProvider, McpTool, Services } from "@salesforce/mcp-provider-api";
 import { CodeAnalyzerMcpProvider } from "../src/provider.js";
 import { CodeAnalyzerRunMcpTool } from "../src/tools/run_code_analyzer.js";
 import { CreateCodeAnalyzerCustomRuleMcpTool } from "../src/tools/create_code_analyzer_custom_rule.js";
-import { GetNodeDetailsMcpTool } from "../src/tools/get_node_details.js";
+import { GetNodeDetailsMcpTool } from "../src/tools/get_code_analyzer_node_details.js";
 import { StubServices } from "./test-doubles.js";
 import { CodeAnalyzerDescribeRuleMcpTool } from "../src/tools/describe_code_analyzer_rule.js";
 import { CodeAnalyzerListRulesMcpTool } from "../src/tools/list_code_analyzer_rules.js";

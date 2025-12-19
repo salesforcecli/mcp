@@ -32,7 +32,7 @@ describe('CreateCustomRuleActionImpl', () => {
             expect(output.instructionsForLlm).toBeDefined();
             expect(output.instructionsForLlm).toContain('XPath');
             expect(output.nextStep).toBeDefined();
-            expect(output.nextStep?.action).toContain('get_node_details');
+            expect(output.nextStep?.action).toContain('get_code_analyzer_node_details');
             expect(output.nextStep?.then).toContain('apply_code_analyzer_custom_rule');
         });
 

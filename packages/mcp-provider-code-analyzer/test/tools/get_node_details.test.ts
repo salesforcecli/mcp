@@ -1,6 +1,6 @@
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
-import { GetNodeDetailsMcpTool } from "../../src/tools/get_node_details.js";
+import { GetNodeDetailsMcpTool } from "../../src/tools/get_code_analyzer_node_details.js";
 import { GetNodeDetailsAction, GetNodeDetailsInput, GetNodeDetailsOutput } from "../../src/actions/get-node-details.js";
 
 describe("Tests for GetNodeDetailsMcpTool", () => {
@@ -19,7 +19,7 @@ describe("Tests for GetNodeDetailsMcpTool", () => {
     });
 
     it("When getName is called, then tool name is returned", () => {
-        expect(tool.getName()).toEqual('get_node_details');
+        expect(tool.getName()).toEqual('get_code_analyzer_node_details');
     });
 
     it("When getConfig is called, then the correct configuration is returned", () => {

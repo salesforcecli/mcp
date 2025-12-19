@@ -21,10 +21,12 @@
     "@salesforce/code-analyzer-regex-engine": "^0.30.0",
     "@salesforce/code-analyzer-retirejs-engine": "^0.29.0",
     "@salesforce/mcp-provider-api": "^0.4.0",
+    "js-yaml": "^4.1.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@types/js-yaml": "^4.0.9",
     "@salesforce/mcp-test-client": "0.0.1",
     "@types/node": "^22.16.5",
     "@vitest/coverage-istanbul": "^4.0.14",

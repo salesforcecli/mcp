@@ -9,23 +9,24 @@ const DESCRIPTION: string = `Get detailed information about AST nodes for buildi
 WHEN TO USE THIS TOOL:
 - After calling create_code_analyzer_custom_rule, use this tool to get detailed node information
 - Call this with the array of node names you identified from availableNodes
-- This provides attributes (direct + inherited from parent classes) and important notes needed to build XPath expressions
+- This provides attributes (direct + inherited from parent classes), XPath examples from PMD rules, and important notes needed to build XPath expressions
 
 ⚠️ IMPORTANT:
 - Always call this tool after identifying which nodes you need from availableNodes
 - Pass an array of node names (e.g., ["UserClass", "Method", "MethodCallExpression"])
 - The tool returns ALL attributes for each node: direct attributes + inherited attributes from parent classes
+- Each node includes XPath examples from PMD rules that demonstrate real-world usage
 
 Example workflow:
 1. Call create_code_analyzer_custom_rule(engine, language) → get availableNodes
 2. Identify needed nodes (e.g., UserClass, Method)
-3. Call get_node_details(engine, language, ["UserClass", "Method"]) → get all attributes (direct + parent class) and important notes
-4. Use the complete attribute list to build XPath expression`;
+3. Call get_code_analyzer_node_details(engine, language, ["UserClass", "Method"]) → get all attributes (direct + parent class), XPath examples, and important notes
+4. Use the complete attribute list and XPath examples to build XPath expression`;
 
 export const inputSchema = z.object({
-    engine: z.enum(['pmd', 'eslint', 'regex']).describe("Required: Which engine to get node details for."),
-    language: z.string().describe("Required: The target language. Examples: 'apex', 'javascript', 'typescript', 'html', 'xml', 'visualforce'"),
-    nodeNames: z.array(z.string()).min(1).describe("Required: Array of node names to get details for. Example: ['UserClass', 'Method', 'MethodCallExpression']")
+    engine: z.enum(['pmd', 'eslint', 'regex']).describe("Which engine to get node details for."),
+    language: z.enum(['apex', 'javascript', 'typescript', 'html', 'xml', 'visualforce']).describe("The target language."),
+    nodeNames: z.array(z.string()).min(1).describe("Array of node names to get details for. Example: ['UserClass', 'Method', 'MethodCallExpression']")
 });
 type InputArgsShape = typeof inputSchema.shape;
 
@@ -41,8 +42,13 @@ const outputSchema = z.object({
             name: z.string().describe("Attribute name (e.g., '@Image', '@Name')"),
             type: z.string().describe("Attribute type (e.g., 'string', 'boolean', 'array')"),
             description: z.string().describe("Description of what the attribute represents")
-        })).describe("List of attributes. For requested nodes, these are direct attributes only. For parent classes, these are all attributes available from that parent.")
-    })).optional().describe("Array of node details. Includes requested nodes (with only direct attributes) and their parent classes (as separate entries with all their attributes)"),
+        })).describe("List of attributes. For requested nodes, these are direct attributes only. For parent classes, these are all attributes available from that parent."),
+        xpathExamples: z.array(z.object({
+            rule_name: z.string().describe("Name of the PMD rule that uses this node"),
+            xpath: z.string().describe("XPath expression from the rule that demonstrates usage of this node"),
+            description: z.string().describe("Description of the rule")
+        })).optional().describe("XPath pattern examples from PMD rules that use this node (extracted from xpath_pattern_catalog)")
+    })).optional().describe("Array of node details. Includes requested nodes (with only direct attributes) and their parent classes (as separate entries with all their attributes). Each node includes XPath examples from PMD rules."),
     importantNotes: z.array(z.object({
         title: z.string().describe("Title of the important note"),
         content: z.string().describe("Content explaining the important note")
@@ -52,7 +58,7 @@ const outputSchema = z.object({
 type OutputArgsShape = typeof outputSchema.shape;
 
 export class GetNodeDetailsMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
-    public static readonly NAME: string = 'get_node_details';
+    public static readonly NAME: string = 'get_code_analyzer_node_details';
     private readonly action: GetNodeDetailsAction;
 
     public constructor(
@@ -102,7 +108,6 @@ export class GetNodeDetailsMcpTool extends McpTool<InputArgsShape, OutputArgsSha
     public async exec(input: GetNodeDetailsInput): Promise<CallToolResult> {
         let output: GetNodeDetailsOutput;
         try {
-            validateInput(input);
             output = await this.action.exec(input);
         } catch (e) {
             output = { 
@@ -114,29 +119,6 @@ export class GetNodeDetailsMcpTool extends McpTool<InputArgsShape, OutputArgsSha
             content: [{ type: "text", text: JSON.stringify(output, null, 2) }],
             structuredContent: output
         };
-    }
-}
-
-/**
- * Validates the input parameters for the get node details tool.
- * 
- * Ensures that engine, language, and nodeNames are provided and that language is not empty.
- * Note: Engine and nodeNames are also validated by Zod schema, but this provides an additional check.
- * 
- * @param input - The input parameters to validate
- * @throws Error if engine is missing, language is missing/empty, or nodeNames array is empty
- */
-function validateInput(input: GetNodeDetailsInput): void {
-    if (!input.engine) {
-        throw new Error("Valid engine is required.");
-    }
-
-    if (!input.language || input.language.trim().length === 0) {
-        throw new Error("language is required and cannot be empty");
-    }
-
-    if (!input.nodeNames || input.nodeNames.length === 0) {
-        throw new Error("At least one node name is required in nodeNames array");
     }
 }
 

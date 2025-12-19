@@ -21,7 +21,7 @@ This tool is engine and language specific. If the user requests multiple rules:
   AND you already have the availableNodes list from the previous response in your context,
   then SKIP calling this tool again.
 - Instead, extract the node names you need from the previous response's availableNodes array,
-  and call get_node_details([node_names]) directly with those node names.
+  and call get_code_analyzer_node_details([node_names]) directly with those node names.
 - This will give you the attributes, category, and important notes without re-fetching the full node list.
 - This significantly reduces token usage for subsequent rule generation requests.
 
@@ -29,14 +29,14 @@ Example: User wants 5 rules - 3 for PMD+Apex, 2 for PMD+JavaScript
 → Call this tool 2x (once for PMD+Apex, once for PMD+JavaScript)`;
 
 export const inputSchema = z.object({
-    engine: z.enum(['pmd', 'eslint', 'regex']).describe("Required: Which engine to create the rule for."),
-    language: z.string().describe("Required: The target language for the custom rule. Examples: 'apex', 'javascript', 'typescript', 'html', 'xml', 'visualforce'") });
+    engine: z.enum(['pmd', 'eslint', 'regex']).describe("Which engine to create the rule for."),
+    language: z.enum(['apex', 'javascript', 'typescript', 'html', 'xml', 'visualforce']).describe("The target language for the custom rule.") });
 type InputArgsShape = typeof inputSchema.shape;
 
 const outputSchema = z.object({
     status: z.string().describe("'ready_for_xpath_generation' if successful, 'error' otherwise"),
     knowledgeBase: z.object({
-        availableNodes: z.array(z.string()).describe("Array of available node names (use get_node_details for full info)"),
+        availableNodes: z.array(z.string()).describe("Array of available node names (use get_code_analyzer_node_details for full info)"),
         nodeCount: z.number().describe("Total number of available nodes")
     }).optional().describe("Minimal knowledge base - node names only for token efficiency"),
     instructionsForLlm: z.string().optional().describe("Concise guidelines for generating XPath"),
@@ -97,7 +97,6 @@ export class CreateCodeAnalyzerCustomRuleMcpTool extends McpTool<InputArgsShape,
     public async exec(input: CreateCustomRuleInput): Promise<CallToolResult> {
         let output: CreateCustomRuleOutput;
         try {
-            validateInput(input);
             output = await this.action.exec(input);
         } catch (e) {
             output = { 
@@ -109,25 +108,6 @@ export class CreateCodeAnalyzerCustomRuleMcpTool extends McpTool<InputArgsShape,
             content: [{ type: "text", text: JSON.stringify(output, null, 2) }],
             structuredContent: output
         };
-    }
-}
-
-/**
- * Validates the input parameters for the custom rule creation tool.
- * 
- * Ensures that both engine and language are provided and that language is not empty.
- * Note: Engine is also validated by Zod schema, but this provides an additional check.
- * 
- * @param input - The input parameters to validate
- * @throws Error if engine is missing or language is missing/empty
- */
-function validateInput(input: CreateCustomRuleInput): void {
-    if (!input.engine) {
-        throw new Error("Valid engine is required.");
-    }
-
-    if (!input.language || input.language.trim().length === 0) {
-        throw new Error("language is required and cannot be empty");
     }
 }
 

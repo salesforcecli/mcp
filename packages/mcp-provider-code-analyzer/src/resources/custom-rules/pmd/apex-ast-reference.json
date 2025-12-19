@@ -30,12 +30,16 @@
       "content": "XPath must return nodes, not booleans. Place predicates inside node selectors: //Node[@attr = 'value' and condition], NOT //Node[@attr = 'value'] and condition."
     },
     {
+      "title": "Union Operator vs Boolean Operators",
+      "content": "When combining multiple node selectors, use the union operator | (pipe) to return a node set, NOT the boolean operator 'or'. The 'or' operator returns true/false (boolean), which causes PMD errors: 'XPath rule expression returned a non-node (class net.sf.saxon.value.BooleanValue)'. Use | to combine node selectors that should all be matched, ensuring the XPath returns a node set rather than a boolean value."
+    },
+    {
       "title": "XPath Navigation and String Matching",
       "content": "Use ancestor::Node for containing context (e.g., ancestor::Method, ancestor::UserClass) and descendant::Node for contained elements. Use string functions on @Image (preserves casing): ends-with(@Image, 'Exception'), contains(@Image, 'Value'). For method-scoped searches: ancestor::Method//MethodCallExpression."
     },
     {
       "title": "Try-Catch Block Detection",
-      "content": "Use descendant::TryCatchFinallyBlockStatement to check if a method contains try-catch. Check within method scope, not class scope."
+      "content": "Use descendant::TryCatchFinallyBlockStatement to check if a method contains try-catch. Check within method scope, not class scope. To check if a statement is wrapped in try-catch, use ancestor::TryCatchFinallyBlockStatement from the statement node to traverse up the AST tree and verify containment."
     },
     {
       "title": "Empty String Behavior",
@@ -1922,5 +1926,115 @@
         "AbstractApexNode"
       ]
     }
+  },
+  "xpath_pattern_catalog": {
+    "description": "XPath patterns extracted from PMD Apex rules (minimal format for LLM learning)",
+    "extracted_at": "2025-12-18",
+    "pmd_version": "7.18.0",
+    "total_rules": 17,
+    "patterns": [
+      {
+        "rule_name": "ApexUnitTestMethodShouldHaveIsTestAnnotation",
+        "description": "Apex test methods should have `@isTest` annotation instead of the `testMethod` keyword,\nas `testMethod` is deprecated.\nSalesforce advices to use [@isTest](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_isTest.htm)\nannotation for test classes and methods.",
+        "message": "Apex test methods should have @isTest annotation.",
+        "xpath": "//Method[ModifierNode[@DeprecatedTestMethod = true()]]"
+      },
+      {
+        "rule_name": "AvoidFutureAnnotation",
+        "description": "Usage of the `@Future` annotation should be limited. The `@Future` annotation is a legacy way to execute asynchronous Apex code, but it has several limitations:\n- Methods must be static\n- Only primitive data types, primitive arrays, or collections of primitive data types can be parameters\n- No way to monitor job status or handle failures\n- No support for chaining jobs\n\nConsider implementing the `Queueable` interface instead, which provides:\n- Better error handling and monitoring capabilities\n- Support for more complex data types\n- Ability to chain jobs\n\nSee more here: <https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm>",
+        "message": "Usage of @Future annotation should be limited. Consider implementing the Queueable interface instead.",
+        "xpath": "//Method/ModifierNode/Annotation[lower-case(@Name) = 'future']"
+      },
+      {
+        "rule_name": "DebugsShouldUseLoggingLevel",
+        "description": "The first parameter of System.debug, when using the signature with two parameters, is a LoggingLevel enum.\n\nHaving the Logging Level specified provides a cleaner log, and improves readability of it.",
+        "message": "Calls to System.debug should specify a logging level.",
+        "xpath": "//MethodCallExpression[lower-case(@FullMethodName)='system.debug'][count(*)=2\n    or ($strictMode=true() and count(*)=3 and lower-case(VariableExpression/@Image)='debug')]"
+      },
+      {
+        "rule_name": "ForLoopsMustUseBraces",
+        "description": "Avoid using 'for' statements without using surrounding braces. If the code formatting or\nindentation is lost then it becomes difficult to separate the code being controlled\nfrom the rest.",
+        "message": "Avoid using 'for' statements without curly braces",
+        "xpath": "//ForLoopStatement/BlockStatement[@CurlyBrace= false()]\n|\n//ForEachStatement/BlockStatement[@CurlyBrace= false()]"
+      },
+      {
+        "rule_name": "IfElseStmtsMustUseBraces",
+        "description": "Avoid using if..else statements without using surrounding braces. If the code formatting\n            or indentation is lost then it becomes difficult to separate the code being controlled\n            from the rest.",
+        "message": "Avoid using 'if...else' statements without curly braces",
+        "xpath": "//IfBlockStatement/BlockStatement[@CurlyBrace= false()][count(child::*) > 0]\n|\n//IfElseBlockStatement/BlockStatement[@CurlyBrace= false()][count(child::*) > 0]"
+      },
+      {
+        "rule_name": "IfStmtsMustUseBraces",
+        "description": "Avoid using if statements without using braces to surround the code block. If the code\n            formatting or indentation is lost then it becomes difficult to separate the code being\n            controlled from the rest.",
+        "message": "Avoid using if statements without curly braces",
+        "xpath": "//IfBlockStatement/BlockStatement[@CurlyBrace= false()]"
+      },
+      {
+        "rule_name": "OneDeclarationPerLine",
+        "description": "Apex allows the use of several variables declaration of the same type on one line. However, it\ncan lead to quite messy code. This rule looks for several declarations on the same line.",
+        "message": "Use one statement for each line, it enhances code readability.",
+        "xpath": "//VariableDeclarationStatements\n  [count(VariableDeclaration) > 1 and ($reportInForLoopInitializer = true() or name(parent::*) != 'ForLoopStatement')]\n  [$strictMode or count(distinct-values(VariableDeclaration/@BeginLine)) != count(VariableDeclaration)]\n|\n//FieldDeclarationStatements\n  [count(FieldDeclaration) > 1]\n  [$strictMode or count(distinct-values(FieldDeclaration/VariableExpression/@BeginLine)) != count(FieldDeclaration/VariableExpression)]"
+      },
+      {
+        "rule_name": "WhileLoopsMustUseBraces",
+        "description": "Avoid using 'while' statements without using braces to surround the code block. If the code\nformatting or indentation is lost then it becomes difficult to separate the code being\ncontrolled from the rest.",
+        "message": "Avoid using 'while' statements without curly braces",
+        "xpath": "//WhileLoopStatement/BlockStatement[@CurlyBrace= false()]"
+      },
+      {
+        "rule_name": "AvoidDirectAccessTriggerMap",
+        "description": "Avoid directly accessing Trigger.old and Trigger.new as it can lead to a bug. Triggers should be bulkified and iterate through the map to handle the actions for each item separately.",
+        "message": "Avoid directly accessing Trigger.old and Trigger.new",
+        "xpath": "//ArrayLoadExpression[TriggerVariableExpression and LiteralExpression]"
+      },
+      {
+        "rule_name": "EmptyCatchBlock",
+        "description": "Empty Catch Block finds instances where an exception is caught, but nothing is done.\n      In most circumstances, this swallows an exception which should either be acted on\n      or reported.",
+        "message": "Avoid empty catch blocks",
+        "xpath": "//CatchBlockStatement[./BlockStatement[count(*) = 0] and\n    not(matches(@VariableName, $allowExceptionNameRegex)) and\n    ($allowCommentedBlocks = false() or @ContainsComment = false())]"
+      },
+      {
+        "rule_name": "EmptyIfStmt",
+        "description": "Empty If Statement finds instances where a condition is checked but nothing is done about it.",
+        "message": "Avoid empty 'if' statements",
+        "xpath": "//IfBlockStatement\n          [BlockStatement[count(*) = 0]]"
+      },
+      {
+        "rule_name": "EmptyStatementBlock",
+        "description": "Empty block statements serve no purpose and should be removed.",
+        "message": "Avoid empty block statements.",
+        "xpath": "//Method[$reportEmptyPrivateNoArgConstructor = true()\n    or (@Constructor != true()\n    or ./ModifierNode[@Private != true()]\n    or ./Parameter[count(*) > 0])]/ModifierNode[@Abstract != true()\n        and ($reportEmptyVirtualMethod = true() or @Virtual != true())\n        and ../BlockStatement[count(*) = 0]\n    ]\n| //Method/BlockStatement//BlockStatement\n    [not(parent::CatchBlockStatement)]\n    [count(*) = 0]\n    [@RealLoc = true()]"
+      },
+      {
+        "rule_name": "EmptyTryOrFinallyBlock",
+        "description": "Avoid empty try or finally blocks - what's the point?",
+        "message": "Avoid empty try or finally blocks",
+        "xpath": "//TryCatchFinallyBlockStatement[./BlockStatement[count(*) = 0]]"
+      },
+      {
+        "rule_name": "EmptyWhileStmt",
+        "description": "Empty While Statement finds all instances where a while statement does nothing.\n      If it is a timing loop, then you should use Thread.sleep() for it; if it is\n      a while loop that does a lot in the exit expression, rewrite it to make it clearer.",
+        "message": "Avoid empty 'while' statements",
+        "xpath": "//WhileLoopStatement[./BlockStatement[count(*) = 0]]"
+      },
+      {
+        "rule_name": "TestMethodsMustBeInTestClasses",
+        "description": "Test methods marked as a testMethod or annotated with @IsTest,\n      but not residing in a test class should be moved to a proper\n      class or have the @IsTest annotation added to the class.\n      \n      Support for tests inside functional classes was removed in Spring-13 (API Version 27.0),\n      making classes that violate this rule fail compile-time. This rule is mostly usable when\n      dealing with legacy code.",
+        "message": "Test methods must be in test classes",
+        "xpath": "//UserClass[\n      not(./ModifierNode/Annotation[lower-case(@Name) = 'istest']) and\n      (\n        (./Method/ModifierNode/Annotation[lower-case(@Name) = 'istest']) or\n        (./Method/ModifierNode[@Test = true()])\n      )\n    ]"
+      },
+      {
+        "rule_name": "AvoidDebugStatements",
+        "description": "Debug statements contribute to longer transactions and consume Apex CPU time even when debug logs are not being captured.\n\nWhen possible make use of other debugging techniques such as the Apex Replay Debugger and Checkpoints that could cover *most* use cases.\n\nFor other valid use cases that the statement is in fact valid make use of the `@SuppressWarnings` annotation or the `//NOPMD` comment.",
+        "message": "Avoid debug statements since they impact on performance",
+        "xpath": "//MethodCallExpression[lower-case(@FullMethodName)='system.debug']"
+      },
+      {
+        "rule_name": "EagerlyLoadedDescribeSObjectResult",
+        "description": "This rule finds `DescribeSObjectResult`s which could have been loaded eagerly via `SObjectType.getDescribe()`.\n\nWhen using `SObjectType.getDescribe()` or `Schema.describeSObjects()` without supplying a `SObjectDescribeOptions`,\nimplicitly it will be using `SObjectDescribeOptions.DEFAULT` and then all\nchild relationships will be loaded eagerly regardless whether this information is needed or not.\nThis has a potential negative performance impact. Instead [`SObjectType.getDescribe(options)`](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Schema_SObjectType.htm#unique_346834793)\nor [`Schema.describeSObjects(SObjectTypes, options)`](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_schema.htm#apex_System_Schema_describeSObjects)\nshould be used and a `SObjectDescribeOptions` should be supplied. By using\n`SObjectDescribeOptions.DEFERRED` the describe attributes will be lazily initialized at first use.\n\nLazy loading `DescribeSObjectResult` on picklist fields is not always recommended. The lazy loaded\ndescribe objects might not be 100% accurate. It might be safer to explicitly use\n`SObjectDescribeOptions.FULL` in such a case. The same applies when you need the same `DescribeSObjectResult`\nto be consistent across different contexts and API versions.\n\nProperties:\n\n* `noDefault`: The behavior of `SObjectDescribeOptions.DEFAULT` changes from API Version 43 to 44:\n    With API Version 43, the attributes are loaded eagerly. With API Version 44, they are loaded lazily.\n    Simply using `SObjectDescribeOptions.DEFAULT` doesn't automatically make use of lazy loading.\n    (unless \"Use Improved Schema Caching\" critical update is applied, `SObjectDescribeOptions.DEFAULT` does fallback\n    to lazy loading)\n    With this property enabled, such usages are found.\n    You might ignore this, if you can make sure, that you don't run a mix of API Versions.",
+        "message": "DescribeSObjectResult could be being loaded eagerly with all child relationships.",
+        "xpath": "//MethodCallExpression\n    [\n        lower-case(@MethodName) = \"getdescribe\" and ReferenceExpression[@SObjectType = true()]\n        or lower-case(@MethodName) = \"describesobjects\"\n    ]\n    [not(VariableExpression/ReferenceExpression\n            [lower-case(@Image) = (\"sobjectdescribeoptions\", \"fielddescribeoptions\")]\n         )\n    ]\n|\n//ReferenceExpression\n    [$noDefault = true()]\n    [lower-case(@Image) = \"sobjectdescribeoptions\"]\n    [parent::VariableExpression[lower-case(@Image) = \"default\"]]"
+      }
+    ]
   }
 }
