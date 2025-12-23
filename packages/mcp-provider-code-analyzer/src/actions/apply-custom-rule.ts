@@ -195,13 +195,6 @@ export class ApplyCustomRuleActionImpl implements ApplyCustomRuleAction {
 
 
             // Step 6: Generate rule files for all valid rules
-            const severityLabels: Record<number, string> = {
-                1: "Critical",
-                2: "High",
-                3: "Moderate",
-                4: "Low",
-                5: "Info"
-            };
 
             for (const ruleConfig of ruleConfigs) {
                 let ruleFilename: string;
@@ -215,15 +208,6 @@ export class ApplyCustomRuleActionImpl implements ApplyCustomRuleAction {
                     ruleFilename = `${ruleConfig.rule_name.toLowerCase().replace(/\s+/g, '-')}-rules.xml`;
                     ruleFilePath = path.join(customRulesDir, ruleFilename);
                     fileResult = this.createPmdRulesetXml(ruleConfig as PmdRuleConfig, ruleFilePath);
-                } else if (ruleEngine === 'eslint') {
-                    ruleFilename = `${ruleConfig.rule_name.toLowerCase().replace(/\s+/g, '-')}.js`;
-                    ruleFilePath = path.join(customRulesDir, ruleFilename);
-                    fileResult = this.createEslintRuleFile(ruleConfig as EslintRuleConfig, ruleFilePath);
-                } else if (ruleEngine === 'regex') {
-                    // Regex rules are stored directly in code-analyzer.yml, no file needed
-                    ruleFilename = '';
-                    ruleFilePath = '';
-                    fileResult = {success: true};
                 } else {
                     // TypeScript thinks this is unreachable, but we handle it defensively
                     const ruleName = (ruleConfig as RuleConfig).rule_name || 'unknown';
@@ -273,8 +257,7 @@ export class ApplyCustomRuleActionImpl implements ApplyCustomRuleAction {
             let rulesetIndex = 0;
             for (const ruleConfig of ruleConfigs) {
                 const ruleEngine = ruleConfig.engine;
-                // Only PMD and ESLint create files; regex rules don't have file paths
-                if (ruleEngine !== 'regex' && rulesetIndex < rulesetPaths.length) {
+                if (rulesetIndex < rulesetPaths.length) {
                     if (!rulesetsByEngine[ruleEngine]) {
                         rulesetsByEngine[ruleEngine] = [];
                     }
@@ -283,8 +266,6 @@ export class ApplyCustomRuleActionImpl implements ApplyCustomRuleAction {
                 }
             }
 
-            // Determine primary engine for messages (use first rule's engine)
-            const primaryEngine = ruleConfigs.length > 0 ? ruleConfigs[0].engine : 'pmd';
 
 
             // Step 7: Update code-analyzer.yml with all rulesets (grouped by engine)
@@ -391,17 +372,14 @@ ${engineCommands}
 
 engines:
   pmd:
-    disable_engine: false
     custom_rulesets: []
-  flow:
-    disable_engine: true  # Disabled - requires Python 3.10+
 `;
             fs.writeFileSync(configPath, minimalConfig, 'utf-8');
 
             return {
                 configPath,
                 created: true,
-                message: "Created minimal code-analyzer.yml (Flow engine disabled due to missing Python 3.10+)"
+                message: "Created minimal code-analyzer.yml"
             };
         } catch (e) {
             return {
