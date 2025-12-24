@@ -10,6 +10,12 @@ import {
 } from "./constants.js";
 import { emptyFilters, QueryFilters } from "./entities/query.js";
 
+/**
+ * Validates a selector string for query purposes.
+ * - Supports engines, severities (names/numbers), and tags (categories/languages/general).
+ * - Also allows custom tokens (rule=, file=, fileEndsWith=) which are considered valid bypass tokens.
+ * Returns either {valid:true} or {valid:false, invalidTokens:[...]} with unique invalid entries.
+ */
 export function validateSelectorForQuery(selector: string): { valid: true } | { valid: false, invalidTokens: string[] } {
     const allowedLower = new Set<string>([
         ...ENGINE_NAMES.map(s => s.toLowerCase()),
@@ -20,77 +26,83 @@ export function validateSelectorForQuery(selector: string): { valid: true } | { 
         ...LANGUAGES.map(s => s.toLowerCase()),
         ...ENGINE_SPECIFIC_TAGS.map(s => s.toLowerCase())
     ]);
-    const invalid: string[] = [];
-    const parts = selector.split(':').map(s => s.trim()).filter(s => s.length > 0);
-    for (let token of parts) {
-        if (token.startsWith('(') && token.endsWith(')')) {
-            const inner = token.slice(1, -1);
-            const innerTokens = inner.split(',').map(s => s.trim()).filter(s => s.length > 0);
-            if (innerTokens.length === 0) {
-                invalid.push(token);
+    const invalidTokens: string[] = [];
+    const selectorGroups: string[] = selector.split(':').map(str => str.trim()).filter(str => str.length > 0);
+    for (const rawGroup of selectorGroups) {
+        if (rawGroup.startsWith('(') && rawGroup.endsWith(')')) {
+            const groupBody = rawGroup.slice(1, -1);
+            const groupTokens = groupBody.split(',').map(str => str.trim()).filter(str => str.length > 0);
+            if (groupTokens.length === 0) {
+                invalidTokens.push(rawGroup);
                 continue;
             }
-            for (let t of innerTokens) {
-                const tl = t.toLowerCase();
-                if (tl.startsWith('file=')
-                    || tl.startsWith('fileendswith=')
-                    || tl.startsWith('rule=')) {
+            for (const groupToken of groupTokens) {
+                const normalizedGroupToken = groupToken.toLowerCase();
+                if (normalizedGroupToken.startsWith('file=')
+                    || normalizedGroupToken.startsWith('fileendswith=')
+                    || normalizedGroupToken.startsWith('rule=')) {
                     continue;
                 }
-                if (!allowedLower.has(tl)) {
-                    invalid.push(t);
+                if (!allowedLower.has(normalizedGroupToken)) {
+                    invalidTokens.push(groupToken);
                 }
             }
             continue;
         }
-        const tl = token.toLowerCase();
-        if (tl.startsWith('file=') || tl.startsWith('fileendswith=') || tl.startsWith('rule=')) {
+        const normalizedToken = rawGroup.toLowerCase();
+        if (normalizedToken.startsWith('file=') || normalizedToken.startsWith('fileendswith=') || normalizedToken.startsWith('rule=')) {
             continue;
         }
-        if (!allowedLower.has(tl)) {
-            invalid.push(token);
+        if (!allowedLower.has(normalizedToken)) {
+            invalidTokens.push(rawGroup);
         }
     }
-    return invalid.length === 0 ? { valid: true } : { valid: false, invalidTokens: Array.from(new Set(invalid)) };
+    return invalidTokens.length === 0 ? { valid: true } : { valid: false, invalidTokens: Array.from(new Set(invalidTokens)) };
 }
 
+/**
+ * Parses a selector string into first-class query filters.
+ * - AND semantics across ':'-separated groups.
+ * - OR semantics within parenthesized groups, e.g. "(Security,Performance)".
+ * - Supports custom tokens: rule=, file=, fileEndsWith=.
+ */
 export function parseSelectorToFilters(selector: string): QueryFilters {
-    const filters = emptyFilters();
-    const parts = selector.split(':').map(s => s.trim()).filter(s => s.length > 0);
+    const filters: QueryFilters = emptyFilters();
+    const selectorGroups: string[] = selector.split(':').map(str => str.trim()).filter(str => str.length > 0);
 
-    for (const part of parts) {
-        const tokens = part.startsWith('(') && part.endsWith(')')
-            ? part.slice(1, -1).split(',').map(s => s.trim()).filter(s => s.length > 0)
-            : [part];
-        for (let raw of tokens) {
-            const t = raw.toLowerCase();
-            if (ENGINE_NAMES.map(s => s.toLowerCase()).includes(t)) {
-                pushUnique(filters.engines, t);
+    for (const group of selectorGroups) {
+        const groupTokens: string[] = group.startsWith('(') && group.endsWith(')')
+            ? group.slice(1, -1).split(',').map(str => str.trim()).filter(str => str.length > 0)
+            : [group];
+        for (const rawToken of groupTokens) {
+            const normalizedToken = rawToken.toLowerCase();
+            if (ENGINE_NAMES.map(name => name.toLowerCase()).includes(normalizedToken)) {
+                pushUnique(filters.engines, normalizedToken);
                 continue;
             }
-            if (SEVERITY_NAMES.map(s => s.toLowerCase()).includes(t)) {
-                const mapped = SEVERITY_NAME_TO_NUMBER[SEVERITY_NAMES.find(n => n.toLowerCase() === t)!];
-                pushUnique(filters.severities, mapped);
+            if (SEVERITY_NAMES.map(name => name.toLowerCase()).includes(normalizedToken)) {
+                const severityNumber = SEVERITY_NAME_TO_NUMBER[SEVERITY_NAMES.find(n => n.toLowerCase() === normalizedToken)!];
+                pushUnique(filters.severities, severityNumber);
                 continue;
             }
-            if (['1', '2', '3', '4', '5'].includes(t)) {
-                pushUnique(filters.severities, Number(t));
+            if (['1', '2', '3', '4', '5'].includes(normalizedToken)) {
+                pushUnique(filters.severities, Number(normalizedToken));
                 continue;
             }
-            if (t.startsWith('rule=')) {
-                pushUnique(filters.rules, raw.slice(raw.indexOf('=') + 1).toLowerCase());
+            if (normalizedToken.startsWith('rule=')) {
+                pushUnique(filters.rules, rawToken.slice(rawToken.indexOf('=') + 1).toLowerCase());
                 continue;
             }
-            if (t.startsWith('file=')) {
-                pushUnique(filters.fileContains, raw.slice(raw.indexOf('=') + 1).toLowerCase());
+            if (normalizedToken.startsWith('file=')) {
+                pushUnique(filters.fileContains, rawToken.slice(rawToken.indexOf('=') + 1).toLowerCase());
                 continue;
             }
-            if (t.startsWith('fileendswith=')) {
-                pushUnique(filters.fileEndsWith, raw.slice(raw.indexOf('=') + 1).toLowerCase());
+            if (normalizedToken.startsWith('fileendswith=')) {
+                pushUnique(filters.fileEndsWith, rawToken.slice(rawToken.indexOf('=') + 1).toLowerCase());
                 continue;
             }
             // Treat remaining as tag/category/language, case-insensitive
-            pushUnique(filters.tags, raw.toLowerCase());
+            pushUnique(filters.tags, rawToken.toLowerCase());
         }
     }
     return filters;
