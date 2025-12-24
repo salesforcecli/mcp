@@ -5,6 +5,7 @@ import { McpTool, McpToolConfig, ReleaseState, Services, Toolset } from "@salesf
 import { getMessage } from "../messages.js";
 import { getErrorMessage } from "../utils.js";
 import { RunAnalyzerAction, RunAnalyzerActionImpl, RunInput, RunOutput } from "../actions/run-analyzer.js";
+import { CodeAnalyzerListRulesMcpTool } from "./list_code_analyzer_rules.js";
 import { CodeAnalyzerConfigFactoryImpl } from "../factories/CodeAnalyzerConfigFactory.js";
 import { EnginePluginsFactoryImpl } from "../factories/EnginePluginsFactory.js";
 
@@ -19,10 +20,24 @@ const DESCRIPTION: string = `A tool for performing static analysis against code.
     `- When the user asks you to generate files, use this tool to scan those files.\n` +
     `- When the user asks you to check code for problems, use this tool to do that.\n` +
     `\n` +
+    `Optional: Provide a "selector" (same semantics as "list_code_analyzer_rules") to choose which rules to run.\n` +
+    `Examples:\n` +
+    `- "Security:pmd" → run Security-tagged PMD rules\n` +
+    `- "Critical" → run all Critical-severity rules\n` +
+    `- "(Security,Performance):eslint" → ESLint rules tagged Security or Performance\n` +
+    `\n` +
     `After completion: Use the "query_code_analyzer_results" tool to filter and explain results, e.g., top-N most severe violations or violations by category/tag.`;
 
 export const inputSchema = z.object({
-    target: z.array(z.string()).describe(`A JSON-formatted array of between 1 and ${MAX_ALLOWABLE_TARGET_COUNT} files on the users machine that should be scanned. These paths MUST be ABSOLUTE paths, and not relative paths.`)
+    target: z.array(z.string()).describe(`A JSON-formatted array of between 1 and ${MAX_ALLOWABLE_TARGET_COUNT} files on the users machine that should be scanned. These paths MUST be ABSOLUTE paths, and not relative paths.`),
+    selector: z.string().describe(
+        `A selector for Code Analyzer rules. Must meet the criteria outlined in the tool-level description.\n` +
+        `Examples:\n` +
+        `- "Security:pmd"\n` +
+        `- "Critical"\n` +
+        `- "(Security,Performance):eslint"\n` +
+        `- "pmd:High"`
+    )
 });
 type InputArgsShape = typeof inputSchema.shape;
 
@@ -81,18 +96,74 @@ export class CodeAnalyzerRunMcpTool extends McpTool<InputArgsShape, OutputArgsSh
     }
 
     public async exec(input: RunInput): Promise<CallToolResult> {
-        let output: RunOutput;
         try {
             validateInput(input);
-            output = await this.action.exec(input);
+
+            const selectorValidationError: CallToolResult | null = validateSelectorIfProvided(input.selector);
+            if (selectorValidationError) {
+                return selectorValidationError;
+            }
+
+            const unsupportedEngineError: CallToolResult | null = rejectUnsupportedEnginesIfPresent(input.selector);
+            if (unsupportedEngineError) {
+                return unsupportedEngineError;
+            }
+
+            const output: RunOutput = await this.action.exec(input);
+            return {
+                content: [{ type: "text", text: JSON.stringify(output) }],
+                structuredContent: output
+            };
         } catch (e) {
-            output = { status: getErrorMessage(e) };
+            const output: RunOutput = { status: getErrorMessage(e) };
+            return {
+                content: [{ type: "text", text: JSON.stringify(output) }],
+                structuredContent: output
+            };
         }
-        return {
-            content: [{ type: "text", text: JSON.stringify(output) }],
-            structuredContent: output
-        };
     }
+}
+
+function selectorIncludesEngine(selectorLower: string, engineLower: 'sfge' | 'flow'): boolean {
+    // Match token boundaries: start or one of "(:," before, and end or one of ":),"
+    const pattern = new RegExp(`(^|[(:,])\\s*${engineLower}\\s*(?=[:),]|$)`, 'i');
+    return pattern.test(selectorLower);
+}
+
+function validateSelectorIfProvided(selector: string | undefined): CallToolResult | null {
+    if (!selector || selector.trim().length === 0) {
+        return null;
+    }
+    const validation = CodeAnalyzerListRulesMcpTool.validateSelector(selector);
+    if (validation.valid === false) {
+        const msg = `Invalid selector token(s): ${validation.invalidTokens.join(', ')}`;
+        return makeErrorResult(msg);
+    }
+    return null;
+}
+
+function rejectUnsupportedEnginesIfPresent(selector: string | undefined): CallToolResult | null {
+    if (!selector || selector.trim().length === 0) {
+        return null;
+    }
+    const sel = selector.trim().toLowerCase();
+    const unsupported: string[] = [];
+    if (selectorIncludesEngine(sel, 'sfge')) unsupported.push('sfge');
+    if (selectorIncludesEngine(sel, 'flow')) unsupported.push('flow');
+    if (unsupported.length === 0) {
+        return null;
+    }
+    const msg = `Unsupported engine(s) for this tool: ${unsupported.join(', ')}. Please remove them from the selector.`;
+    return makeErrorResult(msg);
+}
+
+function makeErrorResult(message: string): CallToolResult {
+    const structured = { status: message };
+    return {
+        isError: true,
+        content: [{ type: "text", text: JSON.stringify(structured) }],
+        structuredContent: structured
+    };
 }
 
 function validateInput(input: RunInput): void {

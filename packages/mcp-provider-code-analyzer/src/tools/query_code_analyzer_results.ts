@@ -23,7 +23,14 @@ const DESCRIPTION: string =
 
 export const inputSchema = z.object({
     resultsFile: z.string().describe("Absolute path to a results JSON file produced by the code analyzer., if results file is not provided, call run_code_analyzer tool to generate a results file first."),
-    selector: z.string().describe('Selector (same semantics as "list_code_analyzer_rules"): colon-separated tokens with optional OR-groups in parentheses, e.g., "Security:(pmd,eslint):High".'),
+    selector: z.string().describe(
+        `Selector (same semantics as "list_code_analyzer_rules"): colon-separated tokens with optional OR-groups in parentheses.\n` +
+        `Examples:\n` +
+        `- "Security:pmd"\n` +
+        `- "Critical"\n` +
+        `- "(Security,Performance):eslint"\n` +
+        `- "pmd:High"\n`
+    ),
     topN: z.number().int().positive().max(1000).default(5).describe("Return at most this many violations after filtering and sorting (default 5).")
 });
 type InputArgsShape = typeof inputSchema.shape;
