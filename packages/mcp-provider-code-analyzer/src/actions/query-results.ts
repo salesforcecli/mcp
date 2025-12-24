@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { SEVERITY_NUMBER_TO_NAME } from "../constants.js";
 import { QueryFilters } from "../entities/query.js";
+import { getErrorMessage } from "../utils.js";
 
 type JsonViolationOutput = {
     rule: string;
@@ -70,44 +71,48 @@ export interface QueryResultsAction {
 
 export class QueryResultsActionImpl implements QueryResultsAction {
     public async exec(input: QueryResultsInput): Promise<QueryResultsOutput> {
-        const absResultsFile = path.resolve(input.resultsFile);
-        const data: JsonResultsOutput = JSON.parse(fs.readFileSync(absResultsFile, 'utf8'));
-        const allViolations: JsonViolationOutput[] = Array.isArray(data?.violations) ? data.violations : [];
+        try {
+            const absResultsFile = path.resolve(input.resultsFile);
+            const data: JsonResultsOutput = JSON.parse(fs.readFileSync(absResultsFile, 'utf8'));
+            const allViolations: JsonViolationOutput[] = Array.isArray(data?.violations) ? data.violations : [];
 
-        const filters = input.filters;
-        let filtered: JsonViolationOutput[] = allViolations.filter(v => matchesFilters(v, filters));
+            const filters = input.filters;
+            let filtered: JsonViolationOutput[] = allViolations.filter(v => matchesFilters(v, filters));
 
-        const sortBy = input.sortBy ?? 'severity';
-        const sortDirection = input.sortDirection ?? 'asc';
-        filtered = sortViolations(filtered, sortBy, sortDirection);
-        const topN = input.topN ?? 5;
-        const limited = filtered.slice(0, topN);
+            const sortBy = input.sortBy ?? 'severity';
+            const sortDirection = input.sortDirection ?? 'asc';
+            filtered = sortViolations(filtered, sortBy, sortDirection);
+            const topN = input.topN ?? 5;
+            const limited = filtered.slice(0, topN);
 
-        const mapped = limited.map(v => {
-            const primary = v.locations?.[v.primaryLocationIndex] ?? {};
+            const mapped = limited.map(v => {
+                const primary = v.locations?.[v.primaryLocationIndex] ?? {};
+                return {
+                    rule: v.rule,
+                    engine: v.engine,
+                    severity: v.severity,
+                    severityName: SEVERITY_NUMBER_TO_NAME[v.severity as 1|2|3|4|5] ?? String(v.severity),
+                    tags: v.tags,
+                    message: v.message,
+                    primaryLocation: {
+                        file: primary.file,
+                        startLine: primary.startLine,
+                        startColumn: primary.startColumn
+                    },
+                    resources: v.resources
+                };
+            });
+
             return {
-                rule: v.rule,
-                engine: v.engine,
-                severity: v.severity,
-                severityName: SEVERITY_NUMBER_TO_NAME[v.severity as 1|2|3|4|5] ?? String(v.severity),
-                tags: v.tags,
-                message: v.message,
-                primaryLocation: {
-                    file: primary.file,
-                    startLine: primary.startLine,
-                    startColumn: primary.startColumn
-                },
-                resources: v.resources
+                status: 'success',
+                resultsFile: absResultsFile,
+                totalViolations: data?.violationCounts?.total ?? allViolations.length,
+                totalMatches: filtered.length,
+                violations: mapped
             };
-        });
-
-        return {
-            status: 'success',
-            resultsFile: absResultsFile,
-            totalViolations: data?.violationCounts?.total ?? allViolations.length,
-            totalMatches: filtered.length,
-            violations: mapped
-        };
+        } catch (e) {
+            return { status: getErrorMessage(e as unknown) };
+        }
     }
 }
 

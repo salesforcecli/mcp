@@ -10,6 +10,17 @@ import {
 } from "./constants.js";
 import { emptyFilters, QueryFilters } from "./entities/query.js";
 
+// Precompute allowed selector tokens (lowercased) once at module scope
+const ALLOWED_SELECTOR_TOKENS_LOWER: ReadonlySet<string> = new Set<string>([
+    ...ENGINE_NAMES.map(s => s.toLowerCase()),
+    ...SEVERITY_NAMES.map(s => s.toLowerCase()),
+    ...SEVERITY_NUMBERS.map(n => String(n)),
+    ...GENERAL_TAGS.map(s => s.toLowerCase()),
+    ...CATEGORIES.map(s => s.toLowerCase()),
+    ...LANGUAGES.map(s => s.toLowerCase()),
+    ...ENGINE_SPECIFIC_TAGS.map(s => s.toLowerCase())
+]);
+
 /**
  * Validates a selector string for query purposes.
  * - Supports engines, severities (names/numbers), and tags (categories/languages/general).
@@ -17,15 +28,6 @@ import { emptyFilters, QueryFilters } from "./entities/query.js";
  * Returns either {valid:true} or {valid:false, invalidTokens:[...]} with unique invalid entries.
  */
 export function validateSelectorForQuery(selector: string): { valid: true } | { valid: false, invalidTokens: string[] } {
-    const allowedLower = new Set<string>([
-        ...ENGINE_NAMES.map(s => s.toLowerCase()),
-        ...SEVERITY_NAMES.map(s => s.toLowerCase()),
-        ...SEVERITY_NUMBERS.map(n => String(n)),
-        ...GENERAL_TAGS.map(s => s.toLowerCase()),
-        ...CATEGORIES.map(s => s.toLowerCase()),
-        ...LANGUAGES.map(s => s.toLowerCase()),
-        ...ENGINE_SPECIFIC_TAGS.map(s => s.toLowerCase())
-    ]);
     const invalidTokens: string[] = [];
     const selectorGroups: string[] = selector.split(':').map(str => str.trim()).filter(str => str.length > 0);
     for (const rawGroup of selectorGroups) {
@@ -43,7 +45,7 @@ export function validateSelectorForQuery(selector: string): { valid: true } | { 
                     || normalizedGroupToken.startsWith('rule=')) {
                     continue;
                 }
-                if (!allowedLower.has(normalizedGroupToken)) {
+                if (!ALLOWED_SELECTOR_TOKENS_LOWER.has(normalizedGroupToken)) {
                     invalidTokens.push(groupToken);
                 }
             }
@@ -53,7 +55,7 @@ export function validateSelectorForQuery(selector: string): { valid: true } | { 
         if (normalizedToken.startsWith('file=') || normalizedToken.startsWith('fileendswith=') || normalizedToken.startsWith('rule=')) {
             continue;
         }
-        if (!allowedLower.has(normalizedToken)) {
+        if (!ALLOWED_SELECTOR_TOKENS_LOWER.has(normalizedToken)) {
             invalidTokens.push(rawGroup);
         }
     }
@@ -90,15 +92,24 @@ export function parseSelectorToFilters(selector: string): QueryFilters {
                 continue;
             }
             if (normalizedToken.startsWith('rule=')) {
-                pushUnique(filters.rules, rawToken.slice(rawToken.indexOf('=') + 1).toLowerCase());
+                const ruleValue = rawToken.slice(rawToken.indexOf('=') + 1).trim().toLowerCase();
+                if (ruleValue.length > 0) {
+                    pushUnique(filters.rules, ruleValue);
+                }
                 continue;
             }
             if (normalizedToken.startsWith('file=')) {
-                pushUnique(filters.fileContains, rawToken.slice(rawToken.indexOf('=') + 1).toLowerCase());
+                const fileContainsValue = rawToken.slice(rawToken.indexOf('=') + 1).trim().toLowerCase();
+                if (fileContainsValue.length > 0) {
+                    pushUnique(filters.fileContains, fileContainsValue);
+                }
                 continue;
             }
             if (normalizedToken.startsWith('fileendswith=')) {
-                pushUnique(filters.fileEndsWith, rawToken.slice(rawToken.indexOf('=') + 1).toLowerCase());
+                const fileEndsWithValue = rawToken.slice(rawToken.indexOf('=') + 1).trim().toLowerCase();
+                if (fileEndsWithValue.length > 0) {
+                    pushUnique(filters.fileEndsWith, fileEndsWithValue);
+                }
                 continue;
             }
             // Treat remaining as tag/category/language, case-insensitive

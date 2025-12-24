@@ -24,7 +24,9 @@ const DESCRIPTION: string =
 export const inputSchema = z.object({
     resultsFile: z.string().describe("Absolute path to a results JSON file produced by the code analyzer., if results file is not provided, call run_code_analyzer tool to generate a results file first."),
     selector: z.string().describe('Selector (same semantics as "list_code_analyzer_rules"): colon-separated tokens with optional OR-groups in parentheses, e.g., "Security:(pmd,eslint):High".'),
-    topN: z.number().int().positive().max(1000).default(5).describe("Return at most this many violations after filtering and sorting (default 5).")
+    topN: z.number().int().positive().max(1000).default(5).describe("Return at most this many violations after filtering and sorting (default 5)."),
+    sortBy: z.enum(['severity', 'rule', 'engine', 'file', 'none']).optional().describe("Optional primary sort field."),
+    sortDirection: z.enum(['asc', 'desc']).optional().describe("Optional sort direction.")
 });
 type InputArgsShape = typeof inputSchema.shape;
 
@@ -106,13 +108,15 @@ export class CodeAnalyzerQueryResultsMcpTool extends McpTool<InputArgsShape, Out
             const output: QueryResultsOutput = await this.action.exec({
                 resultsFile: input.resultsFile,
                 filters,
-                topN: input.topN
+                topN: input.topN,
+                sortBy: input.sortBy,
+                sortDirection: input.sortDirection
             } as QueryResultsInput);
             emitQueryTelemetry(this.telemetryService, {
                 resultsFile: output.resultsFile ?? path.resolve(input.resultsFile),
                 selector: input.selector,
-                sortBy: 'severity',
-                sortDirection: 'asc',
+                sortBy: input.sortBy,
+                sortDirection: input.sortDirection,
                 topN: input.topN ?? 5,
                 totalViolations: output.totalViolations ?? 0,
                 totalMatches: output.totalMatches ?? 0
@@ -135,8 +139,8 @@ export class CodeAnalyzerQueryResultsMcpTool extends McpTool<InputArgsShape, Out
 type QueryTelemetry = {
     resultsFile: string;
     selector?: string;
-    sortBy: 'severity'|'rule'|'engine'|'file'|'none';
-    sortDirection: 'asc'|'desc';
+    sortBy?: 'severity'|'rule'|'engine'|'file'|'none';
+    sortDirection?: 'asc'|'desc';
     topN: number;
     totalViolations: number;
     totalMatches: number;
@@ -149,12 +153,12 @@ function emitQueryTelemetry(telemetryService: TelemetryService | undefined, data
         sfcaEvent: Constants.McpTelemetryEvents.RESULTS_QUERY,
         resultsFile: data.resultsFile,
         topN: data.topN,
-        sortBy: data.sortBy,
-        sortDirection: data.sortDirection,
         totalViolations: data.totalViolations,
         totalMatches: data.totalMatches,
         selector: data.selector
     };
+    if (data.sortBy) (telemetry as any).sortBy = data.sortBy;
+    if (data.sortDirection) (telemetry as any).sortDirection = data.sortDirection;
     telemetryService.sendEvent(Constants.TelemetryEventName, telemetry);
 }
 
