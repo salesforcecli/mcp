@@ -85,6 +85,17 @@ export class QueryResultsActionImpl implements QueryResultsAction {
             const topN = input.topN ?? 5;
             const limited = filtered.slice(0, topN);
 
+            // Transform each violation to a lean shape.
+            // We expose only the "primary" location for quick navigation (Problems, summaries).
+            // Example:
+            //   v.locations = [{ file: "/a.ts", ... }, { file: "/b.ts", ... }]
+            //   v.primaryLocationIndex = 1  → primary = locations[1] ("/b.ts")
+            // If locations are missing, we fallback to an empty primary location.
+            //
+            // Note: This uses Array.map (not a Map), so there are no "keys" here and no possibility of key collisions.
+            // When publishing diagnostics later, grouping by file path intentionally aggregates multiple diagnostics per file rather than overwriting them.
+            // If a stable per-violation identifier is ever needed, consider:
+            //   `${v.engine}:${v.rule}:${primary.file ?? ''}:${primary.startLine ?? 0}:${primary.startColumn ?? 0}:${v.primaryLocationIndex ?? 0}`
             const mapped = limited.map(v => {
                 const primary = v.locations?.[v.primaryLocationIndex] ?? {};
                 return {
