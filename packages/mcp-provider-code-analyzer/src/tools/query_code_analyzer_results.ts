@@ -126,7 +126,17 @@ export class CodeAnalyzerQueryResultsMcpTool extends McpTool<InputArgsShape, Out
                 structuredContent: output
             };
         } catch (e) {
-            const output = { status: getErrorMessage(e) };
+            const errMsg = getErrorMessage(e);
+            // Emit failure telemetry on unexpected errors
+            if (this.telemetryService) {
+                this.telemetryService.sendEvent(Constants.TelemetryEventName, {
+                    source: Constants.TelemetrySource,
+                    sfcaEvent: Constants.McpTelemetryEvents.RESULTS_QUERY,
+                    outcome: 'failure',
+                    error: errMsg
+                });
+            }
+            const output = { status: errMsg };
             return {
                 isError: true,
                 content: [{ type: "text", text: JSON.stringify(output) }],
