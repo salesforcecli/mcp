@@ -30,13 +30,9 @@ const DESCRIPTION: string = `A tool for performing static analysis against code.
 
 export const inputSchema = z.object({
     target: z.array(z.string()).describe(`A JSON-formatted array of between 1 and ${MAX_ALLOWABLE_TARGET_COUNT} files on the users machine that should be scanned. These paths MUST be ABSOLUTE paths, and not relative paths.`),
-    selector: z.string().describe(
-        `A selector for Code Analyzer rules. Must meet the criteria outlined in the tool-level description.\n` +
-        `Examples:\n` +
-        `- "Security:pmd"\n` +
-        `- "Critical"\n` +
-        `- "(Security,Performance):eslint"\n` +
-        `- "pmd:High"`
+    selector: z.string().optional().describe(
+        `Optional selector for Code Analyzer rules (same semantics as "list_code_analyzer_rules"). If omitted, "recommended" rules run.\n` +
+        `Examples: "Security:pmd", "Critical", "(Security,Performance):eslint", "pmd:High"`
     )
 });
 type InputArgsShape = typeof inputSchema.shape;
