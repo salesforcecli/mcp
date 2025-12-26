@@ -31,6 +31,7 @@ type RunAnalyzerActionOptions = {
 // NOTE: THIS MUST ALIGN WITH THE ZOD SCHEMA DEFINED IN `tools/run_code_analyzer.ts`.
 export type RunInput = {
     target: string[]
+    selector?: string
 }
 
 // NOTE: THIS MUST ALIGN WITH THE ZOD SCHEMA DEFINED IN `tools/run_code_analyzer.ts`.
@@ -87,8 +88,11 @@ export class RunAnalyzerActionImpl implements RunAnalyzerAction {
             ...input.target
         ], input.target);
 
-        // At this time, we're hardcoding for the recommended rules.
-        const ruleSelection: RuleSelection = await analyzer.selectRules(['recommended'], {workspace});
+        // Select rules based on optional selector, defaulting to "recommended"
+        const selector: string = (input.selector && input.selector.trim().length > 0)
+            ? input.selector.trim()
+            : 'recommended';
+        const ruleSelection: RuleSelection = await analyzer.selectRules([selector], {workspace});
 
         const results: RunResults = await analyzer.run(ruleSelection, {workspace});
         this.emitEngineTelemetry(ruleSelection, results, enginePlugins.flatMap(p => p.getAvailableEngineNames()));
