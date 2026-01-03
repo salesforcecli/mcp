@@ -1,3 +1,21 @@
+# [0.5.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.4.0...mcp-provider-dx-core@0.5.0) (2025-12-09)
+
+
+### Features
+
+* Add “List Code Analyzer Rules” tool with selector validation and provider wiring ([#347](https://github.com/salesforcecli/mcp/issues/347)) ([eee78a8](https://github.com/salesforcecli/mcp/commit/eee78a80c0306547aeb5797af97ede67317b9d0e))
+
+
+
+# [0.4.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.3.6...mcp-provider-dx-core@0.4.0) (2025-11-06)
+
+
+### Features
+
+* Add e2e test to validate AFV server startup W-19829954 ([#315](https://github.com/salesforcecli/mcp/issues/315)) ([6adf542](https://github.com/salesforcecli/mcp/commit/6adf5421a984710e5bb497b017d9958ca67cfc4b)), closes [#316](https://github.com/salesforcecli/mcp/issues/316)
+
+
+
 ## [0.3.6](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.3.5...mcp-provider-dx-core@0.3.6) (2025-10-06)
 
 

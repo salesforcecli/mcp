@@ -179,16 +179,17 @@ These are the available toolsets.
 | Toolset| Description|
 | ----- | ----- |
 | `all` | Enables all available tools from all toolsets. Use caution, this will load over 60 tools. |
-| `orgs` | [Tools to manage your authorized orgs.](README.md#orgs-toolset)|
+| `aura-experts` | [Tools which provides Aura component analysis, blueprinting, and migration expertise.](README.md#aura-experts-toolset)|
+| `code-analysis` | [Tools for static analysis of your code using Salesforce Code Analyzer](README.md#code-analysis-toolset)|
 | `data` | [Tools to manage the data in your org, such as listing all accounts.](README.md#data-toolset)|
-| `users` | [Tools to manage org users, such as assigning a permission set.](README.md#users-toolset)|
+| `lwc-experts`  | [Tools to assist with LWC development, testing, optimization, and best practices.](README.md#lwc-experts-toolset)|
 | `metadata` | [Tools to deploy and retrieve metadata to and from your org and your DX project.](README.md#metadata-toolset)|
-| `testing` | [Tools to test your code and features](README.md#testing-toolset)|
-| `other` | [Other useful tools, such as tools for static analysis of your code using Salesforce Code Analyzer.](README.md#other-toolset)|
 | `mobile` | [Tools for mobile development and capabilities.](README.md#mobile-toolset)|
 | `mobile-core` | [A subset of mobile tools focused on essential mobile capabilities.](README.md#mobile-core-toolset)|
-| `aura-experts` | [Tools which provides Aura component analysis, blueprinting, and migration expertise.](README.md#aura-experts-toolset)|
-| `lwc-experts`  | [Tools to assist with LWC development, testing, optimization, and best practices.](README.md#lwc-experts-toolset)|
+| `orgs` | [Tools to manage your authorized orgs.](README.md#orgs-toolset)|
+| `scale-products` | [Tools for detecting and fixing Apex performance antipatterns.](README.md#scale-products-toolset)|
+| `testing` | [Tools to test your code and features](README.md#testing-toolset)|
+| `users` | [Tools to manage org users, such as assigning a permission set.](README.md#users-toolset)|
 
 ## Configure Tools
 
@@ -283,7 +284,7 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
  - `guide_lwc_best_practices` - (GA) Offers LWC development best practices and coding standards guidance
  - `guide_lwc_development` - (GA) Comprehensive LWC development workflow and implementation guidelines
  - `guide_lwc_rtl_support` - (GA) Right-to-Left internationalization support and RTL development guidance
- - `guide_lwc_slds2_uplift_linter_fixes` - (GA) Analyzes the given LWC code along with the slds-linter output to fix issues using the SLDS2 knowledge
+ - `guide_lwc_slds2_uplift_linter_fixes` - (NON-GA) Analyzes the given LWC code along with the slds-linter output to fix issues using the SLDS2 knowledge
  - `guide_lwc_security` - (GA) Comprehensive security analysis in accordance with Product Security Guidelines and Lightning Web Security Guidelines
  - `guide_design_general` - (GA) Comprehensive SLDS guidelines and best practices for Lightning Web Components with accessibility, responsive design, and component usage patterns
 
@@ -292,7 +293,7 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
  - `orchestrate_lwc_component_creation` - (GA) Step-by-step component creation workflow guidance
  - `orchestrate_lwc_component_optimization` - (GA)  Performance optimization and best practices for LWC components
  - `orchestrate_lwc_component_testing` - (GA) Comprehensive testing workflow and test generation guidance
- - `orchestrate_lwc_slds2_uplift` - (GA) Migration guidance for upgrading to SLDS2 design system
+ - `orchestrate_lwc_slds2_uplift` - (NON-GA) Migration guidance for upgrading to SLDS2 design system
 
 #### LDS (Lightning Data Service) Tools
 
@@ -315,5 +316,9 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
 
 - `run_code_analyzer` - (NON-GA) Performs a static analysis of your code using Salesforce Code Analyzer. Includes validating that the code conforms to best practices, checking for security vulnerabilities, and identifying possible performance issues.
 - `describe_code_analyzer_rule` - (NON-GA) Gets the description of a Salesforce Code Analyzer rule, including the engine it belongs to, its severity, and associated tags.
+
+### Scale Products Toolset
+
+- `scan_apex_class_for_antipatterns` - (NON-GA) Analyzes Apex class files for performance antipatterns and provides recommendations for fixing them. Currently detects: (1) Schema.getGlobalDescribe() usage with optimized alternatives, (2) SOQL queries without WHERE or LIMIT clauses, (3) SOQL queries with unused fields (with fix generation). Distinguishes between different severity levels (e.g., usage in loops vs. ordinary usage). Requires an absolute path to the Apex class file.
 
 </details>

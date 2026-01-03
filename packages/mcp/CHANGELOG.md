@@ -1,3 +1,61 @@
+## [0.24.3](https://github.com/salesforcecli/mcp/compare/0.24.3-dev.0...0.24.3) (2025-12-12)
+
+
+
+## [0.24.3-dev.0](https://github.com/salesforcecli/mcp/compare/0.24.2...0.24.3-dev.0) (2025-12-12)
+
+
+
+## [0.24.2](https://github.com/salesforcecli/mcp/compare/0.24.1...0.24.2) (2025-12-04)
+
+
+### Bug Fixes
+
+* bump api ([#346](https://github.com/salesforcecli/mcp/issues/346)) ([acf9e9d](https://github.com/salesforcecli/mcp/commit/acf9e9d0d578f9acfd074ad804a44f096d13e30f))
+
+
+
+## [0.24.1](https://github.com/salesforcecli/mcp/compare/0.24.0...0.24.1) (2025-12-04)
+
+
+
+# [0.24.0](https://github.com/salesforcecli/mcp/compare/0.23.9...0.24.0) (2025-12-04)
+
+
+### Features
+
+* @W-20318377 - update @salesforce/telemetry to 6.4.1 ([#342](https://github.com/salesforcecli/mcp/issues/342)) ([5332937](https://github.com/salesforcecli/mcp/commit/533293774110206ef65fb438bf545e539d64bf61))
+
+
+
+## [0.23.9](https://github.com/salesforcecli/mcp/compare/0.23.8...0.23.9) (2025-12-04)
+
+
+
+## [0.23.8](https://github.com/salesforcecli/mcp/compare/0.23.7...0.23.8) (2025-12-03)
+
+
+
+## [0.23.7](https://github.com/salesforcecli/mcp/compare/0.23.6...0.23.7) (2025-12-03)
+
+
+
+## [0.23.6](https://github.com/salesforcecli/mcp/compare/0.23.5...0.23.6) (2025-11-14)
+
+
+
+## [0.23.5](https://github.com/salesforcecli/mcp/compare/0.23.4...0.23.5) (2025-11-07)
+
+
+### Bug Fixes
+
+* add shrinkwrap lockfile @W-19291869@ ([#188](https://github.com/salesforcecli/mcp/issues/188)) ([915e19d](https://github.com/salesforcecli/mcp/commit/915e19d5a25232ca6fde62cf71c698f9d19ba8a5))
+* listen on `SIGTERM` for telemetry ([#296](https://github.com/salesforcecli/mcp/issues/296)) ([2115e37](https://github.com/salesforcecli/mcp/commit/2115e3733f7bb8cbfc997635bbe7b807333d931b))
+* switch slds tools to non ga @W-20093690 ([#322](https://github.com/salesforcecli/mcp/issues/322)) ([1abc80a](https://github.com/salesforcecli/mcp/commit/1abc80aa179d12500c7cd547aa6783548bfee554))
+* **telemetry:** always set `isError` for tool events ([#308](https://github.com/salesforcecli/mcp/issues/308)) ([a7f9568](https://github.com/salesforcecli/mcp/commit/a7f95689d650d30900b920b5ee609b3af488b0e1))
+
+
+
 ## [0.23.4](https://github.com/salesforcecli/mcp/compare/0.23.3...0.23.4) (2025-10-06)
 
 
