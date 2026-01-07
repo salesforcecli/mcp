@@ -54,7 +54,7 @@
     "@salesforce/mcp-provider-scale-products": "0.0.2",
     "@salesforce/source-deploy-retrieve": "^12.22.0",
     "@salesforce/source-tracking": "^7.4.8",
-    "@salesforce/telemetry": "6.4.1",
+    "@salesforce/telemetry": "6.4.5",
     "@salesforce/ts-types": "^2.0.11",
     "zod": "^3.25.76"
   },
