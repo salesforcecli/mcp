@@ -1,3 +1,7 @@
+## [0.4.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-api@0.4.0...mcp-provider-api@0.4.1) (2025-12-04)
+
+
+
 # [0.4.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-api@0.3.0...mcp-provider-api@0.4.0) (2025-09-19)
 
 
