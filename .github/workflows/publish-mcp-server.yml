@@ -250,6 +250,7 @@ jobs:
           - "mcp-provider-code-analyzer"
       fail-fast: false
     uses: ./.github/workflows/e2e.yml
+    secrets: inherit
     with:
       os: ${{ matrix.os }}
       command: ${{matrix.command }}

@@ -1,3 +1,12 @@
+## [0.24.4](https://github.com/salesforcecli/mcp/compare/0.24.3...0.24.4) (2026-01-09)
+
+
+### Bug Fixes
+
+* update copyright header + bump telemetry lib ([#358](https://github.com/salesforcecli/mcp/issues/358)) ([0656afb](https://github.com/salesforcecli/mcp/commit/0656afb49facc916ee463530e8d52d5733f02be0)), closes [#357](https://github.com/salesforcecli/mcp/issues/357)
+
+
+
 ## [0.24.3](https://github.com/salesforcecli/mcp/compare/0.24.3-dev.0...0.24.3) (2025-12-12)
 
 
