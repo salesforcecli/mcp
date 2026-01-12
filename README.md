@@ -306,6 +306,7 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
  - `create_lds_graphql_read_query` - (GA) Create GraphQL read queries for LDS
  - `explore_lds_graphql_schema` - (GA) Explore GraphQL schema structure for Salesforce LDS
  - `guide_lds_graphql` - (GA) LDS GraphQL usage patterns and guidelines
+ - `create_lds_graphql_mutation_query` - (GA) Comprehensive guidance text for creating GraphQL mutation queries.
 
 #### Migration & Integration Tools
 
