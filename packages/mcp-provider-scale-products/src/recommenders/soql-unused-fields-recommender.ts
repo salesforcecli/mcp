@@ -30,11 +30,14 @@ export class SOQLUnusedFieldsRecommender implements BaseRecommender {
     const instances = detections.map(detection => {
       const metadata = detection.metadata as SOQLUnusedFieldsMetadata;
       
+      // Extract original fields from the SOQL query
+      const originalFields = SOQLParser.extractFields(detection.codeBefore);
+      
       // Generate the actual fixed SOQL
       const codeAfter = this.generateFixedSOQL(
         detection.codeBefore,
         metadata.unusedFields,
-        metadata.originalFields
+        originalFields
       );
 
       return {
@@ -44,8 +47,7 @@ export class SOQLUnusedFieldsRecommender implements BaseRecommender {
         codeBefore: detection.codeBefore,
         codeAfter, 
         severity: detection.severity,
-        unusedFields: metadata.unusedFields,
-        originalFields: metadata.originalFields,
+        severitySource: detection.severitySource,
         metadata: detection.metadata,
       };
     });

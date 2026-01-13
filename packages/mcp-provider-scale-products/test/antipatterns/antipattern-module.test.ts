@@ -61,8 +61,9 @@ public class TestClass {
     expect(result.fixInstruction.length).toBeGreaterThan(0);
     
     // Both instances share the same type-level instruction
-    expect(result.detectedInstances[0].severity).toBe("medium");
-    expect(result.detectedInstances[1].severity).toBe("high");
+    // GGD is always CRITICAL per parity requirements
+    expect(result.detectedInstances[0].severity).toBe("critical");
+    expect(result.detectedInstances[1].severity).toBe("critical");
   });
 
   it("should return empty detections when no antipatterns found", () => {

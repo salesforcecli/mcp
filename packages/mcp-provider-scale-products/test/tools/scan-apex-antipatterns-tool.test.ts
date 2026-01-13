@@ -4,10 +4,11 @@ import * as path from "node:path";
 import * as os from "node:os";
 import { ScanApexAntipatternsTool } from "../../src/tools/scan-apex-antipatterns-tool.js";
 import { ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
-import { SpyTelemetryService } from "../test-doubles.js";
+import { StubServices, SpyTelemetryService } from "../test-doubles.js";
 
 describe("ScanApexAntipatternsTool", () => {
   let tool: ScanApexAntipatternsTool;
+  let services: StubServices;
   let telemetryService: SpyTelemetryService;
   let tempDir: string;
   let testFilePath: string;
@@ -20,8 +21,9 @@ describe("ScanApexAntipatternsTool", () => {
   };
 
   beforeEach(() => {
-    telemetryService = new SpyTelemetryService();
-    tool = new ScanApexAntipatternsTool(telemetryService);
+    services = new StubServices();
+    telemetryService = services.telemetryService as SpyTelemetryService;
+    tool = new ScanApexAntipatternsTool(services);
     // Create a temporary directory for test files
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "apex-test-"));
   });
@@ -403,5 +405,25 @@ public class TestClass {
     expect(telemetryService.sendEventCallHistory.some(e => 
       e.eventName === "scan_apex_antipatterns_completed"
     )).toBe(true);
+  });
+
+  it("should show static analysis message when no org is authenticated", async () => {
+    const apexCode = `
+public class TestClass {
+    void m() { Schema.getGlobalDescribe(); }
+}`;
+    testFilePath = createTestFile("TestClass.cls", apexCode);
+
+    const input = {
+      className: "TestClass",
+      apexFilePath: testFilePath,
+    };
+
+    const result = await tool.exec(input);
+    const text = (result.content[0] as any).text;
+    
+    // Should show static analysis message since StubOrgService returns undefined
+    expect(text).toContain("Static Analysis only");
+    expect(text).toContain("ApexGuru");
   });
 });

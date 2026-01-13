@@ -50,11 +50,13 @@ export class StubOrgService implements OrgService {
   }
 
   public getDefaultTargetOrg(): Promise<OrgConfigInfo | undefined> {
-    throw new Error("Method not implemented.");
+    // Return undefined by default to simulate no org authenticated
+    // Tests can override this for runtime data scenarios
+    return Promise.resolve(undefined);
   }
 
   public getDefaultTargetDevHub(): Promise<OrgConfigInfo | undefined> {
-    throw new Error("Method not implemented.");
+    return Promise.resolve(undefined);
   }
 
   public findOrgByUsernameOrAlias(_allOrgs: SanitizedOrgAuthorization[], _usernameOrAlias: string): SanitizedOrgAuthorization | undefined {
