@@ -1,3 +1,21 @@
+# [0.25.0](https://github.com/salesforcecli/mcp/compare/0.24.4...0.25.0) (2026-01-13)
+
+
+### Features
+
+* update lwc-experts and aura-experts packages and add two new tools. ([#359](https://github.com/salesforcecli/mcp/issues/359)) ([b8bdd89](https://github.com/salesforcecli/mcp/commit/b8bdd89af842fc841b1228caa038c9d9b008ab85))
+
+
+
+## [0.24.4](https://github.com/salesforcecli/mcp/compare/0.24.3...0.24.4) (2026-01-09)
+
+
+### Bug Fixes
+
+* update copyright header + bump telemetry lib ([#358](https://github.com/salesforcecli/mcp/issues/358)) ([0656afb](https://github.com/salesforcecli/mcp/commit/0656afb49facc916ee463530e8d52d5733f02be0)), closes [#357](https://github.com/salesforcecli/mcp/issues/357)
+
+
+
 ## [0.24.3](https://github.com/salesforcecli/mcp/compare/0.24.3-dev.0...0.24.3) (2025-12-12)
 
 

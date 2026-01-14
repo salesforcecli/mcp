@@ -287,7 +287,9 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
  - `guide_lwc_slds2_uplift_linter_fixes` - (NON-GA) Analyzes the given LWC code along with the slds-linter output to fix issues using the SLDS2 knowledge
  - `guide_lwc_security` - (GA) Comprehensive security analysis in accordance with Product Security Guidelines and Lightning Web Security Guidelines
  - `guide_design_general` - (GA) Comprehensive SLDS guidelines and best practices for Lightning Web Components with accessibility, responsive design, and component usage patterns
-
+ - `guide_utam_generation` -  (NON-GA) Provides UTAM Page Object generation guidelines and best practices. 
+ - `create_lightning_type` - (GA) Provides guidance for creating Custom Lightning Types (CLT) for Salesforce applications,
+ * Einstein Agent actions, Lightning Web Components, and Lightning Platform integrations.
 #### Workflow Tools
 
  - `orchestrate_lwc_component_creation` - (GA) Step-by-step component creation workflow guidance
@@ -305,6 +307,7 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
  - `create_lds_graphql_read_query` - (GA) Create GraphQL read queries for LDS
  - `explore_lds_graphql_schema` - (GA) Explore GraphQL schema structure for Salesforce LDS
  - `guide_lds_graphql` - (GA) LDS GraphQL usage patterns and guidelines
+ - `create_lds_graphql_mutation_query` - (GA) Comprehensive guidance text for creating GraphQL mutation queries.
 
 #### Migration & Integration Tools
 

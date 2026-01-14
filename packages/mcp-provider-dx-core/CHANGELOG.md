@@ -1,3 +1,21 @@
+# [0.6.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.5.1...mcp-provider-dx-core@0.6.0) (2026-01-12)
+
+
+### Features
+
+* **ca:** add Selector-Based Query Tool for Analyzer Results ([#353](https://github.com/salesforcecli/mcp/issues/353)) ([11dc928](https://github.com/salesforcecli/mcp/commit/11dc928df1fb44cee4626ec9322a951383b19650))
+
+
+
+## [0.5.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.5.0...mcp-provider-dx-core@0.5.1) (2026-01-08)
+
+
+### Bug Fixes
+
+* update copyright header + bump telemetry lib ([#358](https://github.com/salesforcecli/mcp/issues/358)) ([0656afb](https://github.com/salesforcecli/mcp/commit/0656afb49facc916ee463530e8d52d5733f02be0)), closes [#357](https://github.com/salesforcecli/mcp/issues/357)
+
+
+
 # [0.5.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.4.0...mcp-provider-dx-core@0.5.0) (2025-12-09)
 
 
