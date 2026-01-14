@@ -24,6 +24,7 @@ import { Telemetry } from './telemetry.js';
 import { SfMcpServer } from './sf-mcp-server.js';
 import { registerToolsets } from './utils/registry-utils.js';
 import { Services } from './services.js';
+import { getAllAllowedOrgs, validateSandboxOrgs } from './utils/auth.js';
 
 /**
  * Sanitizes an array of org usernames by replacing specific orgs with a placeholder.
@@ -115,6 +116,10 @@ You can also use special values to control access to orgs:
     'allow-non-ga-tools': Flags.boolean({
       summary: 'Enable the ability to register tools that are not yet generally available (GA)',
     }),
+    'sandbox-only': Flags.boolean({
+      summary: 'Require all allowed orgs to be sandboxes (not production orgs)',
+      description: 'When enabled, the server will check on startup that all allowed orgs are sandboxes by querying the Organization.IsSandbox field. If any production orgs are detected, the server will fail to start with an error message.',
+    }),
   };
 
   public static examples = [
@@ -137,6 +142,10 @@ You can also use special values to control access to orgs:
     {
       description: 'Allow tools that are not generally available (NON-GA) to be registered with the server',
       command: '<%= config.bin %> --toolsets all --orgs DEFAULT_TARGET_ORG --allow-non-ga-tools',
+    },
+    {
+      description: 'Start the server with sandbox-only validation to ensure no production orgs are used',
+      command: '<%= config.bin %> --toolsets all --orgs DEFAULT_TARGET_ORG --sandbox-only',
     },
   ];
 
@@ -168,6 +177,13 @@ You can also use special values to control access to orgs:
 
     await Cache.safeSet('allowedOrgs', new Set(flags.orgs));
     this.logToStderr(`Allowed orgs:\n${flags.orgs.map((org) => `- ${org}`).join('\n')}`);
+
+    // Validate sandbox-only requirement if flag is set
+    if (flags['sandbox-only']) {
+      const allowedOrgs = await getAllAllowedOrgs();
+      await validateSandboxOrgs(allowedOrgs);
+    }
+
     const server = new SfMcpServer(
       {
         name: 'sf-mcp-server',
