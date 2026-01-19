@@ -53,7 +53,7 @@ describe("ScanApexAntipatternsTool - Error Handling", () => {
 
     // Verify error telemetry was sent
     const errorEvents = telemetryService.sendEventCallHistory.filter(
-      e => e.eventName === "scan_apex_antipatterns_error"
+      e => e.eventName === "scale_mcp_scan_apex_antipatterns_error"
     );
     expect(errorEvents.length).toBe(1);
     expect(errorEvents[0].event.error).toBe("Simulated scan error");
@@ -88,7 +88,7 @@ describe("ScanApexAntipatternsTool - Error Handling", () => {
 
     // Verify error telemetry was sent with String(error)
     const errorEvents = telemetryService.sendEventCallHistory.filter(
-      e => e.eventName === "scan_apex_antipatterns_error"
+      e => e.eventName === "scale_mcp_scan_apex_antipatterns_error"
     );
     expect(errorEvents.length).toBe(1);
     expect(errorEvents[0].event.error).toBe("String error");

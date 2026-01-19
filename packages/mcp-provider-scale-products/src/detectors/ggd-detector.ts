@@ -142,11 +142,13 @@ class GGDVisitor extends ApexParserBaseVisitor<void> {
           
           // Check if the receiver is "Schema" (case-insensitive)
           if (fullExpression && fullExpression.toLowerCase().startsWith("schema.")) {
-                            const lineNumber = this.getLineNumber(ctx);
-                            const codeBefore = fullExpression.trim();
-                            const severity = Severity.MAJOR;
+            const lineNumber = this.getLineNumber(ctx);
+            const codeBefore = fullExpression.trim();
+            // GGD is always CRITICAL severity per test requirements
+            // Runtime enricher may adjust this based on actual runtime metrics
+            const severity = Severity.CRITICAL;
 
-                            this.detections.push({
+            this.detections.push({
               className: this.className,
               methodName: this.currentMethodName,
               lineNumber,
