@@ -1,3 +1,12 @@
+## [0.2.2](https://github.com/salesforcecli/mcp/compare/mcp-provider-mobile-web@0.2.1...mcp-provider-mobile-web@0.2.2) (2026-01-12)
+
+
+### Bug Fixes
+
+* update the mobile analysis tool name ([#356](https://github.com/salesforcecli/mcp/issues/356)) ([1e68cbb](https://github.com/salesforcecli/mcp/commit/1e68cbba2bbe8a932a9a6014d1fa13a02d8ed7e0))
+
+
+
 ## [0.2.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-mobile-web@0.2.0...mcp-provider-mobile-web@0.2.1) (2025-11-14)
 
 
