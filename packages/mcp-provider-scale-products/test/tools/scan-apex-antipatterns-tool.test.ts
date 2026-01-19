@@ -265,8 +265,8 @@ public class TestClass {
     expect(telemetryService.sendEventCallHistory.length).toBeGreaterThan(0);
     
     const eventNames = telemetryService.sendEventCallHistory.map(e => e.eventName);
-    expect(eventNames).toContain("scan_apex_antipatterns_started");
-    expect(eventNames).toContain("scan_apex_antipatterns_completed");
+    expect(eventNames).toContain("scale_mcp_tool_invocation");
+    expect(eventNames).toContain("scale_mcp_scan_results");
   });
 
   it("should return error when file does not exist", async () => {
@@ -403,7 +403,7 @@ public class TestClass {
     
     expect(result.content[0].type).toBe("text");
     expect(telemetryService.sendEventCallHistory.some(e => 
-      e.eventName === "scan_apex_antipatterns_completed"
+      e.eventName === "scale_mcp_scan_results"
     )).toBe(true);
   });
 
@@ -423,7 +423,7 @@ public class TestClass {
     const text = (result.content[0] as any).text;
     
     // Should show static analysis message since StubOrgService returns undefined
-    expect(text).toContain("Static Analysis only");
+    expect(text).toContain("statically generated based on code context");
     expect(text).toContain("ApexGuru");
   });
 });
