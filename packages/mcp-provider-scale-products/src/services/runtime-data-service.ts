@@ -13,6 +13,29 @@ import {
 } from "../models/runtime-data.js";
 
 /**
+ * Enum representing the status of runtime data fetch
+ */
+export enum RuntimeDataStatus {
+  /** Runtime data was successfully fetched and used */
+  SUCCESS = "success",
+  /** No org connection available (not logged in) */
+  NO_ORG_CONNECTION = "no_org_connection",
+  /** API returned access denied (ApexGuru not enabled) */
+  ACCESS_DENIED = "access_denied",
+  /** API call failed for other reasons */
+  API_ERROR = "api_error",
+}
+
+/**
+ * Result of fetching runtime data, includes status and optional data
+ */
+export interface RuntimeDataResult {
+  status: RuntimeDataStatus;
+  data: ClassRuntimeData | undefined;
+  message?: string;
+}
+
+/**
  * Configuration options for RuntimeDataService
  */
 export interface RuntimeDataServiceConfig {
@@ -53,12 +76,12 @@ export class RuntimeDataService {
    * 
    * @param connection - Salesforce connection object
    * @param request - The request parameters including orgId and class names
-   * @returns RuntimeReport on success, null on failure (for graceful fallback)
+   * @returns Object containing status, data, and optional message
    */
   public async fetchRuntimeData(
     connection: Connection,
     request: RuntimeDataRequest
-  ): Promise<RuntimeReport | null> {
+  ): Promise<{ report: RuntimeReport | null; status: RuntimeDataStatus; message?: string }> {
     for (let attempt = 0; attempt <= this.retryAttempts; attempt++) {
       try {
         // Create an AbortController for timeout handling
@@ -83,34 +106,54 @@ export class RuntimeDataService {
           });
 
           clearTimeout(timeoutId);
-
+          
           // Parse and validate response
           const data = response as RuntimeReport;
 
           if (data.status !== "SUCCESS") {
-            console.warn(
-              `RuntimeDataService: API returned non-success status: ${data.message}`
-            );
-            return null;
+            const isAccessDenied = data.message?.toLowerCase().includes("access denied") ||
+                                   data.message?.toLowerCase().includes("permission");
+            
+            if (isAccessDenied) {
+              return {
+                report: null,
+                status: RuntimeDataStatus.ACCESS_DENIED,
+                message: data.message,
+              };
+            }
+            
+            return {
+              report: null,
+              status: RuntimeDataStatus.API_ERROR,
+              message: data.message,
+            };
           }
 
-          return data;
+          return {
+            report: data,
+            status: RuntimeDataStatus.SUCCESS,
+          };
         } finally {
           clearTimeout(timeoutId);
         }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        console.error(
-          `RuntimeDataService: Error on attempt ${attempt + 1}: ${errorMessage}`
-        );
 
         if (attempt === this.retryAttempts) {
-          return null;
+          return {
+            report: null,
+            status: RuntimeDataStatus.API_ERROR,
+            message: errorMessage,
+          };
         }
       }
     }
 
-    return null;
+    return {
+      report: null,
+      status: RuntimeDataStatus.API_ERROR,
+      message: "All retry attempts exhausted",
+    };
   }
 
   /**
@@ -124,7 +167,6 @@ export class RuntimeDataService {
     report: RuntimeReport,
     className: string
   ): ClassRuntimeData | undefined {
-    
     return report.classData[className];
   }
 

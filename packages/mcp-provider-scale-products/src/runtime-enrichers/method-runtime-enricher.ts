@@ -59,7 +59,6 @@ export class MethodRuntimeEnricher implements BaseRuntimeEnricher {
     _className: string
   ): DetectedAntipattern[] {
     if (!classRuntimeData.methods || classRuntimeData.methods.length === 0) {
-      // No method runtime data available, return original detections
       return detections;
     }
 
@@ -67,9 +66,8 @@ export class MethodRuntimeEnricher implements BaseRuntimeEnricher {
     const runtimeByMethod = this.buildMethodNameMap(classRuntimeData.methods);
 
     // Enrich each detection
-    return detections.map((detection) => {
+    const enrichedDetections = detections.map((detection) => {
       if (!detection.methodName) {
-        // No method name on detection - keep original
         return detection;
       }
 
@@ -91,6 +89,8 @@ export class MethodRuntimeEnricher implements BaseRuntimeEnricher {
       // No matching runtime data - keep original detection
       return detection;
     });
+
+    return enrichedDetections;
   }
 
   /**

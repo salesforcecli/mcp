@@ -49,7 +49,7 @@ export class SOQLNoWhereLimitDetector implements BaseDetector {
         }
       }
     } catch (error) {
-      console.error(`Error detecting SOQL antipatterns in ${className}:`, error);
+      // Error detecting - continue with empty detections
     }
 
     return detections;

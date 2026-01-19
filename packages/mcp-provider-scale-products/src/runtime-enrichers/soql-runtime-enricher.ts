@@ -60,7 +60,6 @@ export class SOQLRuntimeEnricher implements BaseRuntimeEnricher {
     className: string
   ): DetectedAntipattern[] {
     if (!classRuntimeData.soqlRuntimeData || classRuntimeData.soqlRuntimeData.length === 0) {
-      // No SOQL runtime data available, return original detections
       return detections;
     }
 
@@ -68,7 +67,7 @@ export class SOQLRuntimeEnricher implements BaseRuntimeEnricher {
     const runtimeByLine = this.buildLineNumberMap(classRuntimeData.soqlRuntimeData, className);
 
     // Enrich each detection
-    return detections.map((detection) => {
+    const enrichedDetections = detections.map((detection) => {
       const runtimeData = runtimeByLine.get(detection.lineNumber);
 
       if (runtimeData) {
@@ -87,6 +86,8 @@ export class SOQLRuntimeEnricher implements BaseRuntimeEnricher {
       // No matching runtime data - keep original detection
       return detection;
     });
+
+    return enrichedDetections;
   }
 
   /**

@@ -79,13 +79,11 @@ export class SOQLUnusedFieldsRecommender implements BaseRecommender {
   ): string {
     // Safety check: Skip nested queries
     if (SOQLParser.hasNestedQueries(originalSOQL)) {
-      console.warn('Nested queries detected, skipping fix generation');
       return '';
     }
 
     // Safety check: Don't remove all fields
     if (unusedFields.length >= originalFields.length) {
-      console.warn('Would remove all fields, skipping fix generation');
       return '';
     }
 

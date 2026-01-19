@@ -22,14 +22,15 @@ import { ClassRuntimeData } from "../models/runtime-data.js";
 import {
   RuntimeDataService,
   RuntimeDataServiceConfig,
+  RuntimeDataStatus,
 } from "../services/runtime-data-service.js";
+import { ScaleTelemetryService } from "../services/scale-telemetry-service.js";
 import { SOQLRuntimeEnricher } from "../runtime-enrichers/soql-runtime-enricher.js";
 import { MethodRuntimeEnricher } from "../runtime-enrichers/method-runtime-enricher.js";
 
 /** Runtime API endpoint path */
 const RUNTIME_API_PATH = "/services/data/v65.0/scalemcp/apexguru/class-runtime-data";
 
-// Define input schema - no org parameters needed, resolved automatically
 const scanApexInputSchema = z.object({
   className: z
     .string()
@@ -55,11 +56,14 @@ type OutputArgsShape = z.ZodRawShape;
 export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgsShape> {
   private readonly services: Services;
   private readonly antipatternRegistry: AntipatternRegistry;
+  private readonly scaleTelemetryService: ScaleTelemetryService;
 
   public constructor(services: Services) {
     super();
     this.services = services;
     this.antipatternRegistry = this.initializeRegistry();
+    const telemetryService = this.services.getTelemetryService();
+    this.scaleTelemetryService = new ScaleTelemetryService(telemetryService);
   }
 
   /**
@@ -68,13 +72,9 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
   private initializeRegistry(): AntipatternRegistry {
     const registry = new AntipatternRegistry();
 
-    // Create shared runtime enrichers
     const soqlRuntimeEnricher = new SOQLRuntimeEnricher();
     const methodRuntimeEnricher = new MethodRuntimeEnricher();
 
-    // Register GGD (Schema.getGlobalDescribe) antipattern module
-    // Using AST-based detector for accurate syntax tree analysis
-    // Uses MethodRuntimeEnricher for runtime severity calculation
     const ggdModule = new AntipatternModule(
       new GGDDetector(),
       new GGDRecommender(),
@@ -82,8 +82,7 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
     );
     registry.register(ggdModule);
 
-    // Register SOQL No WHERE/LIMIT antipattern module
-    // Uses SOQLRuntimeEnricher for runtime severity calculation
+  
     const soqlModule = new AntipatternModule(
       new SOQLNoWhereLimitDetector(),
       new SOQLNoWhereLimitRecommender(),
@@ -91,9 +90,6 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
     );
     registry.register(soqlModule);
 
-    // Register SOQL Unused Fields antipattern module
-    // Performs field usage analysis and generates optimized queries
-    // Uses SOQLRuntimeEnricher for runtime severity calculation
     const soqlUnusedFieldsModule = new AntipatternModule(
       new SOQLUnusedFieldsDetector(),
       new SOQLUnusedFieldsRecommender(),
@@ -137,12 +133,19 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
-    const telemetryService = this.services.getTelemetryService();
+    const orgInfo = await this.resolveOrgConnection();
     
-    // Validate and read the Apex file
-    let apexCode: string;
+    this.scaleTelemetryService.emitToolInvocation(
+      this.getName(),
+      orgInfo,
+      {
+        className: input.className,
+        hasOrgConnection: orgInfo !== null,
+      }
+    );
+    
+   let apexCode: string;
     try {
-      // Validate file exists
       if (!fs.existsSync(input.apexFilePath)) {
         return {
           content: [
@@ -169,7 +172,6 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
         };
       }
 
-      // Read the file content
       apexCode = await fs.promises.readFile(input.apexFilePath, "utf-8");
     } catch (error) {
       return {
@@ -185,62 +187,70 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
       };
     }
 
-    // Try to resolve org connection for runtime data
-    const orgInfo = await this.resolveOrgConnection();
-
-    telemetryService.sendEvent("scan_apex_antipatterns_started", {
-      className: input.className,
-      filePath: input.apexFilePath,
-      codeLength: apexCode.length,
-      hasOrgConnection: orgInfo !== null,
-    });
-
     try {
-      // Fetch runtime data if org connection is available
       let classRuntimeData: ClassRuntimeData | undefined;
-      let runtimeDataFetched = false;
+      let runtimeDataStatus: RuntimeDataStatus = RuntimeDataStatus.NO_ORG_CONNECTION;
+
+      let requestId: string | undefined;
 
       if (orgInfo) {
-        classRuntimeData = await this.fetchRuntimeData(
+        const runtimeResult = await this.fetchRuntimeData(
           orgInfo.connection,
           orgInfo.orgId,
           orgInfo.userId,
           input.className
         );
-        runtimeDataFetched = classRuntimeData !== undefined;
+        classRuntimeData = runtimeResult.data;
+        runtimeDataStatus = runtimeResult.status;
+        requestId = runtimeResult.requestId;
+
+        if (runtimeDataStatus !== RuntimeDataStatus.SUCCESS) {
+          const errorType = runtimeDataStatus === RuntimeDataStatus.ACCESS_DENIED
+            ? "ACCESS_DENIED"
+            : runtimeDataStatus === RuntimeDataStatus.NO_ORG_CONNECTION
+            ? "NO_ORG_CONNECTION"
+            : "API_ERROR";
+          
+          this.scaleTelemetryService.emitRuntimeFetchError(
+            this.getName(),
+            orgInfo,
+            input.className,
+            errorType,
+            runtimeResult.message || `Runtime data fetch failed with status: ${runtimeDataStatus}`,
+            requestId
+          );
+        }
       }
 
       const antipatternResults: AntipatternResult[] = [];
 
-      // Run all registered antipattern modules with optional runtime data
       for (const module of this.antipatternRegistry.getAllModules()) {
         const result = module.scan(input.className, apexCode, classRuntimeData);
         
-        // Only include if instances were detected
         if (result.detectedInstances.length > 0) {
           antipatternResults.push(result);
         }
       }
 
-      // Build final scan result
       const scanResult: ScanResult = {
         antipatternResults,
       };
 
-      // Calculate totals for telemetry
-      const totalIssues = antipatternResults.reduce(
+      const totalAntipatterns = antipatternResults.reduce(
         (sum, result) => sum + result.detectedInstances.length,
         0
       );
 
-      telemetryService.sendEvent("scan_apex_antipatterns_completed", {
-        className: input.className,
-        totalIssues,
-        antipatternTypes: antipatternResults.map((r) => r.antipatternType).join(","),
-        runtimeDataUsed: runtimeDataFetched,
-      });
+      this.scaleTelemetryService.emitScanResults(
+        this.getName(),
+        orgInfo,
+        scanResult,
+        input.className,
+        runtimeDataStatus,
+        requestId
+      );
 
-      if (totalIssues === 0) {
+      if (totalAntipatterns === 0) {
         return {
           content: [
             {
@@ -251,11 +261,10 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
         };
       }
 
-      // Format the response with scan result
       const responseText = this.formatResponse(
         input.className,
         scanResult,
-        runtimeDataFetched
+        runtimeDataStatus
       );
 
       return {
@@ -267,10 +276,12 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
         ],
       };
     } catch (error) {
-      telemetryService.sendEvent("scan_apex_antipatterns_error", {
-        className: input.className,
-        error: error instanceof Error ? error.message : String(error),
-      });
+      this.scaleTelemetryService.emitExecutionError(
+        this.getName(),
+        orgInfo,
+        input.className,
+        error instanceof Error ? error.message : String(error)
+      );
 
       return {
         content: [
@@ -302,7 +313,6 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
       const orgService = this.services.getOrgService();
       const defaultOrg = await orgService.getDefaultTargetOrg();
 
-      // OrgConfigInfo stores username in the 'value' property
       if (!defaultOrg?.value) {
         return null;
       }
@@ -312,40 +322,37 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
       const orgId = org.getOrgId();
       const instanceUrl = connection.instanceUrl;
       const userId = connection.getUsername();
-      console.log("orgId", orgId);
-      console.log("instanceUrl", instanceUrl);
-      console.log("userId", userId);
       if (!orgId || !instanceUrl || !userId) {
         return null;
       }
 
       return { orgId, instanceUrl, connection, userId };
     } catch (error) {
-      // Log but don't fail - we'll continue with static analysis
-      console.warn(
-        "Could not resolve org connection for runtime data:",
-        error instanceof Error ? error.message : String(error)
-      );
       return null;
     }
   }
 
   /**
    * Fetches runtime data for a class from the ApexGuru Connect endpoint
-   * Returns undefined on failure for graceful fallback
+   * Returns result with status and optional data for appropriate messaging
    * 
    * @param connection - Salesforce connection object
    * @param orgId - Salesforce Org ID
    * @param userId - Salesforce User ID
    * @param className - Name of the Apex class
-   * @returns ClassRuntimeData if available, undefined otherwise
+   * @returns Object containing status, optional ClassRuntimeData, requestId, and message
    */
   private async fetchRuntimeData(
     connection: Connection,
     orgId: string,
     userId: string,
     className: string
-  ): Promise<ClassRuntimeData | undefined> {
+  ): Promise<{ 
+    data: ClassRuntimeData | undefined; 
+    status: RuntimeDataStatus;
+    requestId?: string;
+    message?: string;
+  }> {
     try {
       const config: RuntimeDataServiceConfig = {
         apiPath: RUNTIME_API_PATH,
@@ -355,25 +362,39 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
 
       const service = new RuntimeDataService(config);
       const requestId = RuntimeDataService.generateRequestId(orgId, userId);
-      console.log("requestId", requestId);
 
-      const report = await service.fetchRuntimeData(connection, {
+      const requestPayload = {
         requestId,
         orgId,
         classes: [className],
-      });
-      if (report) {
+      };
+
+      const result = await service.fetchRuntimeData(connection, requestPayload);
+      
+      if (result.report) {
+        const classData = RuntimeDataService.getClassData(result.report, className);
         
-        return RuntimeDataService.getClassData(report, className);
+        return {
+          data: classData,
+          status: result.status,
+          requestId,
+          message: result.message,
+        };
       }
 
-      return undefined;
+      return {
+        data: undefined,
+        status: result.status,
+        requestId,
+        message: result.message,
+      };
     } catch (error) {
-      console.warn(
-        `Failed to fetch runtime data for ${className}:`,
-        error instanceof Error ? error.message : String(error)
-      );
-      return undefined;
+      return {
+        data: undefined,
+        status: RuntimeDataStatus.API_ERROR,
+        requestId: RuntimeDataService.generateRequestId(orgId, userId),
+        message: error instanceof Error ? error.message : String(error),
+      };
     }
   }
 
@@ -383,7 +404,7 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
   private formatResponse(
     className: string,
     scanResult: ScanResult,
-    runtimeDataUsed: boolean
+    runtimeDataStatus: RuntimeDataStatus
   ): string {
     const totalIssues = scanResult.antipatternResults.reduce(
       (sum, result) => sum + result.detectedInstances.length,
@@ -393,14 +414,9 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
     let response = `# Antipattern Scan Results for '${className}'\n\n`;
     response += `Found ${totalIssues} issue(s) across ${scanResult.antipatternResults.length} antipattern type(s).\n`;
     
-    if (runtimeDataUsed) {
-      response += `\n**Note:** Severity levels are based on actual runtime metrics from the org.\n`;
-    } else {
-      response += `\n**Note:** This report is based on Static Analysis only. In order to leverage Runtime insights, make sure you are authenticated to an org and onboarded to ApexGuru.\n`;
-    }
+    response += this.getRuntimeDataMessage(runtimeDataStatus);
     response += `\n`;
 
-    // Add scan results in JSON format
     response += `## Scan Results\n\n`;
     response += "Results are grouped by antipattern type. Each type has:\n";
     response += "- **fixInstruction**: How to fix this antipattern type (applies to all instances)\n";
@@ -414,7 +430,6 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
     response += JSON.stringify(displayResult, null, 2);
     response += "\n```\n\n";
 
-    // Note for LLM
     response += `## Instructions for LLM\n\n`;
     response += `The scan result contains multiple antipattern types. For each type:\n`;
     response += `1. Read the \`fixInstruction\` - this explains how to fix this antipattern\n`;
@@ -428,6 +443,26 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
   }
 
   /**
+   * Returns the appropriate message based on runtime data fetch status
+   */
+  private getRuntimeDataMessage(status: RuntimeDataStatus): string {
+    switch (status) {
+      case RuntimeDataStatus.SUCCESS:
+        return `\n**Note:** Severity levels are based on actual runtime metrics from the org.\n`;
+      
+      case RuntimeDataStatus.ACCESS_DENIED:
+        return `\n**Note:** The following insights are statically generated based on code context. For runtime intelligence, please contact Salesforce customer support and get ApexGuru enabled.\n`;
+      
+      case RuntimeDataStatus.NO_ORG_CONNECTION:
+        return `\n**Note:** The following insights are statically generated based on code context. For runtime intelligence, please ensure that you're logged in to an org that has ApexGuru enabled.\n`;
+      
+      case RuntimeDataStatus.API_ERROR:
+      default:
+        return `\n**Note:** The following insights are statically generated based on code context. Runtime data fetch failed. For runtime intelligence, please ensure ApexGuru is enabled for your org.\n`;
+    }
+  }
+
+  /**
    * Transform scan results to add 💡 icon for runtime-derived severity
    * Creates a display-friendly copy of the results
    * Removes internal severitySource field from output
@@ -437,7 +472,6 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
       antipatternResults: scanResult.antipatternResults.map((result) => ({
         ...result,
         detectedInstances: result.detectedInstances.map((instance) => {
-          // Destructure to separate severitySource from rest of properties
           const { severitySource, ...rest } = instance;
           return {
             ...rest,

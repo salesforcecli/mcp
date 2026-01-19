@@ -101,7 +101,6 @@ export class SOQLUnusedFieldsDetector implements BaseDetector {
 
       return detections;
     } catch (error) {
-      console.error(`Error detecting unused fields in ${className}:`, error);
       return [];
     }
   }

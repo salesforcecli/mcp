@@ -35,7 +35,7 @@ export class GGDDetector implements BaseDetector {
       const visitor = new GGDVisitor(className, apexCode, detections);
       visitor.visit(compilationUnit);
     } catch (error) {
-      console.error(`Error parsing ${className}:`, error);
+      // Error parsing - return empty detections
     }
 
     return detections;
