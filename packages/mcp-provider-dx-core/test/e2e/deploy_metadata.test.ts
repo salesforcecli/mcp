@@ -295,26 +295,41 @@ describe('deploy_metadata', () => {
         directory: testSession.project.dir,
       },
     });
-    console.log(JSON.stringify(deployResult,null,2));
 
     expect(deployResult.isError).to.equal(true);
     expect(deployResult.content.length).to.equal(1);
     if (deployResult.content[0].type !== 'text') assert.fail();
 
     const deployText = deployResult.content[0].text;
-    expect(deployText).to.contain('Deploy result:');
+    expect(deployText).to.contain('Failed to deploy metadata: 1 conflicts detected');
 
-    const deployMatch = deployText.match(/Deploy result: ({.*})/);
+    // deploying with ignoreConflicts=true should succeed
+    const ignoreConflictDeployResult = await client.callTool(deployMetadataSchema, {
+      name: 'deploy_metadata',
+      params: {
+        ignoreConflicts: true,
+        usernameOrAlias: orgUsername,
+        directory: testSession.project.dir,
+      },
+    });
+
+    expect(ignoreConflictDeployResult.content.length).to.equal(1);
+    if (ignoreConflictDeployResult.content[0].type !== 'text') assert.fail();
+
+    const responseText = ignoreConflictDeployResult.content[0].text;
+    expect(responseText).to.contain('Deploy result:');
+
+    // Parse the deploy result JSON
+    const deployMatch = responseText.match(/Deploy result: ({.*})/);
     expect(deployMatch).to.not.be.null;
 
-    const result = JSON.parse(deployMatch![1]) as {
+    const ignoreConflictsDeployRes = JSON.parse(deployMatch![1]) as {
       success: boolean;
       done: boolean;
       numberComponentsDeployed: number;
     };
-
-    expect(result.success).to.be.true;
-    expect(result.done).to.be.true;
-    expect(result.numberComponentsDeployed).to.equal(1);
+    expect(ignoreConflictsDeployRes.success).to.be.true;
+    expect(ignoreConflictsDeployRes.done).to.be.true;
+    expect(ignoreConflictsDeployRes.numberComponentsDeployed).to.equal(1);
   });
 });

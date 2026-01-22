@@ -21,6 +21,7 @@ import { McpTestClient, DxMcpTransport } from '@salesforce/mcp-test-client';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { z } from 'zod';
 import { ensureString } from '@salesforce/ts-types';
+import { AuthInfo, Connection } from '@salesforce/core';
 import { retrieveMetadataParams } from '../../src/tools/retrieve_metadata.js';
 
 describe('retrieve_metadata', () => {
@@ -233,5 +234,96 @@ describe('retrieve_metadata', () => {
     if (!apexClass) assert.fail();
     expect(apexClass.fullName).to.equal('GeocodingService');
     expect(apexClass.fileName).to.equal('unpackaged/classes/GeocodingService.cls');
+  });
+
+  it('should retrieve remote edit when ignoreConflicts is set to true', async () => {
+    // 1. Setup: Use a CustomApplication file
+    const customAppPath = path.join(
+      testSession.project.dir,
+      'force-app',
+      'main',
+      'default',
+      'applications',
+      'Dreamhouse.app-meta.xml'
+    );
+
+    // 2. Make local edit
+    await fs.promises.writeFile(
+      customAppPath,
+      (await fs.promises.readFile(customAppPath, { encoding: 'utf-8' })).replace('Lightning App Builder', 'App Builder')
+    );
+
+    // 3. Make remote edit using Tooling API
+    const conn = await Connection.create({
+      authInfo: await AuthInfo.create({ username: orgUsername }),
+    });
+
+    const customApp = await conn.singleRecordQuery<{
+      Id: string;
+      Metadata: { description: string | null };
+    }>("SELECT Id, Metadata FROM CustomApplication WHERE DeveloperName = 'Dreamhouse'", { tooling: true });
+
+    await conn.tooling.sobject('CustomApplication').update({
+      Id: customApp.Id,
+      Metadata: {
+        ...customApp.Metadata,
+        description: customApp.Metadata.description
+          ? `${customApp.Metadata.description} - Remote edit via Tooling API`
+          : 'Remote edit via Tooling API',
+      },
+    });
+
+    // 4. Retrieve without ignoreConflicts - should fail with conflicts error
+    const retrieveResult = await client.callTool(retrieveMetadataSchema, {
+      name: 'retrieve_metadata',
+      params: {
+        usernameOrAlias: orgUsername,
+        directory: testSession.project.dir,
+      },
+    });
+
+    expect(retrieveResult.isError).to.equal(true);
+    expect(retrieveResult.content[0].type).to.equal('text');
+    if (retrieveResult.content[0].type !== 'text') assert.fail();
+
+    const retrieveText = retrieveResult.content[0].text;
+    expect(retrieveText).to.contain('Failed to retrieve metadata: 1 conflicts detected');
+
+    // 5. Retrieve with ignoreConflicts=true - should succeed
+    const ignoreConflictRetrieveResult = await client.callTool(retrieveMetadataSchema, {
+      name: 'retrieve_metadata',
+      params: {
+        ignoreConflicts: true,
+        usernameOrAlias: orgUsername,
+        directory: testSession.project.dir,
+      },
+    });
+
+    expect(ignoreConflictRetrieveResult.content[0].type).to.equal('text');
+    const responseText = (ignoreConflictRetrieveResult.content[0] as { text: string }).text;
+    expect(responseText).to.contain('Retrieve result:');
+
+    const retrieveMatch = responseText.match(/Retrieve result: ({.*})/);
+    expect(retrieveMatch).to.not.be.null;
+
+    const ignoreConflictsRetrieveRes = JSON.parse(retrieveMatch![1]) as {
+      success: boolean;
+      done: boolean;
+      fileProperties: Array<{
+        type: string;
+        fullName: string;
+        fileName: string;
+      }>;
+    };
+    expect(ignoreConflictsRetrieveRes.success).to.be.true;
+    expect(ignoreConflictsRetrieveRes.done).to.be.true;
+
+    // Verify the CustomApplication was retrieved
+    const customAppFile = ignoreConflictsRetrieveRes.fileProperties.find(
+      (fp) => fp.type === 'CustomApplication'
+    );
+    expect(customAppFile).to.not.be.undefined;
+    expect(customAppFile!.fullName).to.equal('Dreamhouse');
+    expect(customAppFile!.fileName).to.equal('unpackaged/applications/Dreamhouse.app');
   });
 });
