@@ -47,7 +47,6 @@ export class SOQLAstUtils {
       
       return visitor.queries;
     } catch (error) {
-      console.error("Error parsing Apex code for SOQL queries:", error);
       return [];
     }
   }
@@ -385,7 +384,6 @@ export class SOQLParser {
   ): string {
     // Safety check: Skip nested queries
     if (this.hasNestedQueries(soqlText)) {
-      console.warn('SOQL contains nested queries, skipping optimization for safety');
       return '';
     }
 
@@ -394,7 +392,6 @@ export class SOQLParser {
     const parts = soqlText.split(splitPattern);
 
     if (parts.length < 2) {
-      console.error('Invalid SOQL format: missing FROM clause');
       return '';
     }
 
@@ -405,7 +402,6 @@ export class SOQLParser {
 
     // Safety check: Ensure at least one field remains
     if (updatedFields.length === 0) {
-      console.warn('All fields would be removed, skipping optimization');
       return '';
     }
 

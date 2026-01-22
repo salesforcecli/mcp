@@ -1,18 +1,20 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { ScanApexAntipatternsTool } from "../../src/tools/scan-apex-antipatterns-tool.js";
-import { SpyTelemetryService } from "../test-doubles.js";
+import { StubServices, SpyTelemetryService } from "../test-doubles.js";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
 
 describe("ScanApexAntipatternsTool - Error Handling", () => {
   let tool: ScanApexAntipatternsTool;
+  let services: StubServices;
   let telemetryService: SpyTelemetryService;
   let tempDir: string;
 
   beforeEach(() => {
-    telemetryService = new SpyTelemetryService();
-    tool = new ScanApexAntipatternsTool(telemetryService);
+    services = new StubServices();
+    telemetryService = services.telemetryService as SpyTelemetryService;
+    tool = new ScanApexAntipatternsTool(services);
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "apex-error-test-"));
   });
 
@@ -51,7 +53,7 @@ describe("ScanApexAntipatternsTool - Error Handling", () => {
 
     // Verify error telemetry was sent
     const errorEvents = telemetryService.sendEventCallHistory.filter(
-      e => e.eventName === "scan_apex_antipatterns_error"
+      e => e.eventName === "scale_mcp_scan_apex_antipatterns_error"
     );
     expect(errorEvents.length).toBe(1);
     expect(errorEvents[0].event.error).toBe("Simulated scan error");
@@ -86,7 +88,7 @@ describe("ScanApexAntipatternsTool - Error Handling", () => {
 
     // Verify error telemetry was sent with String(error)
     const errorEvents = telemetryService.sendEventCallHistory.filter(
-      e => e.eventName === "scan_apex_antipatterns_error"
+      e => e.eventName === "scale_mcp_scan_apex_antipatterns_error"
     );
     expect(errorEvents.length).toBe(1);
     expect(errorEvents[0].event.error).toBe("String error");

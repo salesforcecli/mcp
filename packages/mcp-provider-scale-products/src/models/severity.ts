@@ -3,19 +3,14 @@
  */
 export enum Severity {
   /**
-   * Low severity - minor performance impact
+   * Minor severity - low performance impact
    */
-  LOW = "low",
+  MINOR = "minor",
 
   /**
-   * Medium severity - noticeable performance impact
+   * Major severity - noticeable performance impact
    */
-  MEDIUM = "medium",
-
-  /**
-   * High severity - significant performance impact
-   */
-  HIGH = "high",
+  MAJOR = "major",
 
   /**
    * Critical severity - severe performance or functional impact

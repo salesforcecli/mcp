@@ -27,7 +27,7 @@ describe('SOQLNoWhereLimitDetector', () => {
       expect(detections).toHaveLength(1);
       expect(detections[0].className).toBe('Test');
       expect(detections[0].methodName).toBe('method1');
-      expect(detections[0].severity).toBe(Severity.HIGH);
+      expect(detections[0].severity).toBe(Severity.MAJOR);
     });
 
     it('should NOT detect SOQL with WHERE but no LIMIT', () => {
@@ -90,7 +90,7 @@ describe('SOQLNoWhereLimitDetector', () => {
       const detections = detector.detect('Test', code);
       
       expect(detections).toHaveLength(1);
-      expect(detections[0].severity).toBe(Severity.HIGH);
+      expect(detections[0].severity).toBe(Severity.MAJOR);
     });
 
     it('should detect SOQL in while loop without WHERE/LIMIT', () => {

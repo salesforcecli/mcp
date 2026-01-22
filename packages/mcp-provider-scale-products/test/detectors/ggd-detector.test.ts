@@ -15,7 +15,7 @@ describe("GGDDetectorAst", () => {
       expect(detector.getAntipatternType()).toBe(AntipatternType.GGD);
     });
 
-    it("should detect Schema.getGlobalDescribe() with MEDIUM severity", () => {
+    it("should detect Schema.getGlobalDescribe() with CRITICAL severity", () => {
       const apexCode = `
 public class TestClass {
     public void testMethod() {
@@ -28,7 +28,7 @@ public class TestClass {
       expect(detections).toHaveLength(1);
       expect(detections[0].className).toBe("TestClass");
       expect(detections[0].methodName).toBe("testMethod");
-      expect(detections[0].severity).toBe(Severity.MEDIUM);
+      expect(detections[0].severity).toBe(Severity.CRITICAL);
       expect(detections[0].codeBefore).toContain("Schema.getGlobalDescribe()");
       expect(detections[0].lineNumber).toBeGreaterThan(0);
     });
@@ -44,7 +44,7 @@ public class TestClass {
       const detections = detector.detect("TestClass", apexCode);
 
       expect(detections).toHaveLength(1);
-      expect(detections[0].severity).toBe(Severity.MEDIUM);
+      expect(detections[0].severity).toBe(Severity.CRITICAL);
     });
 
     it("should detect mixed case 'Schema.getGlobalDescribe()'", () => {
@@ -61,8 +61,8 @@ public class TestClass {
     });
   });
 
-  describe("Loop Detection - HIGH Severity", () => {
-    it("should assign HIGH severity when GGD is inside a for loop", () => {
+  describe("Loop Detection - CRITICAL Severity", () => {
+    it("should assign CRITICAL severity when GGD is inside a for loop", () => {
       const apexCode = `
 public class TestClass {
     public void testMethod() {
@@ -75,11 +75,11 @@ public class TestClass {
       const detections = detector.detect("TestClass", apexCode);
 
       expect(detections).toHaveLength(1);
-      expect(detections[0].severity).toBe(Severity.HIGH);
+      expect(detections[0].severity).toBe(Severity.CRITICAL);
       expect(detections[0].methodName).toBe("testMethod");
     });
 
-    it("should assign HIGH severity when GGD is inside a while loop", () => {
+    it("should assign CRITICAL severity when GGD is inside a while loop", () => {
       const apexCode = `
 public class TestClass {
     public void testMethod() {
@@ -92,10 +92,10 @@ public class TestClass {
       const detections = detector.detect("TestClass", apexCode);
 
       expect(detections).toHaveLength(1);
-      expect(detections[0].severity).toBe(Severity.HIGH);
+      expect(detections[0].severity).toBe(Severity.CRITICAL);
     });
 
-    it("should assign HIGH severity when GGD is inside a do-while loop", () => {
+    it("should assign CRITICAL severity when GGD is inside a do-while loop", () => {
       const apexCode = `
 public class TestClass {
     public void testMethod() {
@@ -108,7 +108,7 @@ public class TestClass {
       const detections = detector.detect("TestClass", apexCode);
 
       expect(detections).toHaveLength(1);
-      expect(detections[0].severity).toBe(Severity.HIGH);
+      expect(detections[0].severity).toBe(Severity.CRITICAL);
     });
 
     it("should detect GGD in enhanced for loop (for-each)", () => {
@@ -124,10 +124,10 @@ public class TestClass {
       const detections = detector.detect("TestClass", apexCode);
 
       expect(detections).toHaveLength(1);
-      expect(detections[0].severity).toBe(Severity.HIGH);
+      expect(detections[0].severity).toBe(Severity.CRITICAL);
     });
 
-    it("should detect GGD in nested loops with HIGH severity", () => {
+    it("should detect GGD in nested loops with CRITICAL severity", () => {
       const apexCode = `
 public class TestClass {
     public void testMethod() {
@@ -142,7 +142,7 @@ public class TestClass {
       const detections = detector.detect("TestClass", apexCode);
 
       expect(detections).toHaveLength(1);
-      expect(detections[0].severity).toBe(Severity.HIGH);
+      expect(detections[0].severity).toBe(Severity.CRITICAL);
     });
 
     it("should detect multiple GGD calls in same loop", () => {
@@ -159,8 +159,8 @@ public class TestClass {
       const detections = detector.detect("TestClass", apexCode);
 
       expect(detections).toHaveLength(2);
-      expect(detections[0].severity).toBe(Severity.HIGH);
-      expect(detections[1].severity).toBe(Severity.HIGH);
+      expect(detections[0].severity).toBe(Severity.CRITICAL);
+      expect(detections[1].severity).toBe(Severity.CRITICAL);
     });
   });
 
@@ -181,19 +181,19 @@ public class TestClass {
 
       expect(detections).toHaveLength(2);
       expect(detections[0].methodName).toBe("method1");
-      expect(detections[0].severity).toBe(Severity.MEDIUM);
+      expect(detections[0].severity).toBe(Severity.CRITICAL);
       expect(detections[1].methodName).toBe("method2");
-      expect(detections[1].severity).toBe(Severity.MEDIUM);
+      expect(detections[1].severity).toBe(Severity.CRITICAL);
     });
 
-    it("should detect GGD in loop and outside loop with correct severities", () => {
+    it("should detect GGD in loop and outside loop with CRITICAL severity", () => {
       const apexCode = `
 public class TestClass {
     public void testMethod() {
-        Schema.getGlobalDescribe(); // MEDIUM
+        Schema.getGlobalDescribe(); // CRITICAL
         
         for (String name : names) {
-            Schema.getGlobalDescribe(); // HIGH
+            Schema.getGlobalDescribe(); // CRITICAL
         }
     }
 }`;
@@ -201,8 +201,8 @@ public class TestClass {
       const detections = detector.detect("TestClass", apexCode);
 
       expect(detections).toHaveLength(2);
-      expect(detections[0].severity).toBe(Severity.MEDIUM);
-      expect(detections[1].severity).toBe(Severity.HIGH);
+      expect(detections[0].severity).toBe(Severity.CRITICAL);
+      expect(detections[1].severity).toBe(Severity.CRITICAL);
     });
 
     it("should handle multiple methods with loops", () => {
@@ -224,9 +224,9 @@ public class TestClass {
       const detections = detector.detect("TestClass", apexCode);
 
       expect(detections).toHaveLength(2);
-      expect(detections[0].severity).toBe(Severity.HIGH);
+      expect(detections[0].severity).toBe(Severity.CRITICAL);
       expect(detections[0].methodName).toBe("method1");
-      expect(detections[1].severity).toBe(Severity.HIGH);
+      expect(detections[1].severity).toBe(Severity.CRITICAL);
       expect(detections[1].methodName).toBe("method2");
     });
   });
@@ -416,8 +416,8 @@ public class TestClass {
       const detections = detector.detect("TestClass", apexCode);
 
       expect(detections).toHaveLength(1);
-      // Should be MEDIUM because it's not in a loop
-      expect(detections[0].severity).toBe(Severity.MEDIUM);
+      // GGD is always CRITICAL regardless of context
+      expect(detections[0].severity).toBe(Severity.CRITICAL);
     });
 
     it("should handle GGD in try-catch block", () => {
@@ -435,7 +435,7 @@ public class TestClass {
       const detections = detector.detect("TestClass", apexCode);
 
       expect(detections).toHaveLength(1);
-      expect(detections[0].severity).toBe(Severity.MEDIUM);
+      expect(detections[0].severity).toBe(Severity.CRITICAL);
     });
   });
 
@@ -455,11 +455,11 @@ public class ObjectMetadataHandler {
 
       const detections = detector.detect("ObjectMetadataHandler", apexCode);
 
-      // Should detect 2 GGD calls, both in loop
+      // Should detect 2 GGD calls, both CRITICAL
       expect(detections).toHaveLength(2);
-      expect(detections[0].severity).toBe(Severity.HIGH);
+      expect(detections[0].severity).toBe(Severity.CRITICAL);
       expect(detections[0].methodName).toBe("processObjectNames");
-      expect(detections[1].severity).toBe(Severity.HIGH);
+      expect(detections[1].severity).toBe(Severity.CRITICAL);
     });
 
     it("should detect multiple GGD calls scenario", () => {
@@ -479,8 +479,8 @@ public class TestClass {
       const detections = detector.detect("TestClass", apexCode);
 
       expect(detections).toHaveLength(2);
-      expect(detections[0].severity).toBe(Severity.MEDIUM);
-      expect(detections[1].severity).toBe(Severity.MEDIUM);
+      expect(detections[0].severity).toBe(Severity.CRITICAL);
+      expect(detections[1].severity).toBe(Severity.CRITICAL);
     });
 
     it("should detect inefficient usage for known SObjects", () => {
@@ -494,7 +494,7 @@ public class TestClass {
       const detections = detector.detect("TestClass", apexCode);
 
       expect(detections).toHaveLength(1);
-      expect(detections[0].severity).toBe(Severity.MEDIUM);
+      expect(detections[0].severity).toBe(Severity.CRITICAL);
     });
   });
 
