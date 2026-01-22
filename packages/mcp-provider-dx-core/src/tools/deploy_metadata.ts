@@ -15,7 +15,7 @@
  */
 
 import { z } from 'zod';
-import { Connection, Lifecycle, Org, SfError, SfProject } from '@salesforce/core';
+import { Connection, Org, SfError, SfProject } from '@salesforce/core';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { ComponentSet, ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
 import { ensureString } from '@salesforce/ts-types';
@@ -159,18 +159,15 @@ Deploy X to my org and run A,B and C apex tests.`,
 
     let jobId: string = '';
     try {
-      // Clear old conflict listeners for force deploy
-      if (input.ignoreConflicts) {
-        const lifecycle = Lifecycle.getInstance();
-        lifecycle.removeAllListeners('scopedPreDeploy');
-      }
-
       const stl = await SourceTracking.create({
         org,
         project,
-        subscribeSDREvents: true,
-        ignoreConflicts: input.ignoreConflicts ?? false,
+        subscribeSDREvents: true,  // Always subscribe for tracking updates (post-deploy)
+        ignoreConflicts: input.ignoreConflicts ?? false,  // Only controls pre-deploy conflict checks
       });
+
+      // Force refresh of the global ShadowRepo singleton cache to detect new changes
+      await stl.reReadLocalTrackingCache();
 
       const componentSet = await buildDeployComponentSet(connection, project, stl, input.sourceDir, input.manifest);
 
