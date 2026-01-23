@@ -34,7 +34,7 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
         expect(config.title).toEqual('Run Code Analyzer');
         expect(config.description).toContain('A tool for performing static analysis against code.');
         expect(config.inputSchema).toBeTypeOf('object');
-        expect(Object.keys(config.inputSchema as object)).toEqual(['target']);
+        expect(Object.keys(config.inputSchema as object).sort()).toEqual(['selector', 'target']);
         expect(config.outputSchema).toBeTypeOf('object');
         expect(Object.keys(config.outputSchema as object)).toEqual(['status', 'resultsFile', 'summary']);
         expect(config.annotations).toEqual({readOnlyHint: false});

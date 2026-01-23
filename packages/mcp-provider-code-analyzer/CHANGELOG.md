@@ -1,3 +1,12 @@
+# [0.4.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-code-analyzer@0.3.1...mcp-provider-code-analyzer@0.4.0) (2026-01-12)
+
+
+### Features
+
+* **ca:** add Selector-Based Query Tool for Analyzer Results ([#353](https://github.com/salesforcecli/mcp/issues/353)) ([11dc928](https://github.com/salesforcecli/mcp/commit/11dc928df1fb44cee4626ec9322a951383b19650))
+
+
+
 ## [0.3.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-code-analyzer@0.3.0...mcp-provider-code-analyzer@0.3.1) (2025-12-11)
 
 

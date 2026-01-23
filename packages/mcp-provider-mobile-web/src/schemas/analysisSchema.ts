@@ -61,7 +61,7 @@ export const ExpertsCodeAnalysisIssuesSchema = z.object({
   orchestrationInstructions: z
     .string()
     .default(
-      "If you have not already executed the 'sfmobile-web-offline-guidance' tool in this conversation thread: (1) Immediately call the 'sfmobile-web-offline-guidance' tool, (2) Execute all review instructions from the guidance tool's output against the user's LWC component code in the specified format, (3) Combine the review results from step 2 with this tool's analysis results, then refactor the component based on all combined review recommendations.",
+      "If you have not already executed the 'get_mobile_lwc_offline_guidance' tool in this conversation thread: (1) Immediately call the 'get_mobile_lwc_offline_guidance' tool, (2) Execute all review instructions from the guidance tool's output against the user's LWC component code in the specified format, (3) Combine the review results from step 2 with this tool's analysis results, then refactor the component based on all combined review recommendations.",
     )
     .describe(
       'Instructions for the MCP client on how to orchestrate this tool with the companion guidance tool for comprehensive offline compatibility review.',
@@ -104,7 +104,7 @@ export const ExpertsReviewInstructionsSchema = z.object({
   orchestrationInstructions: z
     .string()
     .default(
-      "If you have not already executed the 'sfmobile-web-offline-analysis' tool in this conversation thread: (1) Execute all review instructions provided in this response against the user's LWC component code, producing structured review results in the specified format, (2) Immediately call the 'sfmobile-web-offline-analysis' tool with the user's component code as input, (3) Combine your review results from step 1 with the analysis results from step 2, then refactor the component based on all combined review recommendations.",
+      "If you have not already executed the 'get_mobile_lwc_offline_analysis' tool in this conversation thread: (1) Execute all review instructions provided in this response against the user's LWC component code, producing structured review results in the specified format, (2) Immediately call the 'get_mobile_lwc_offline_analysis' tool with the user's component code as input, (3) Combine your review results from step 1 with the analysis results from step 2, then refactor the component based on all combined review recommendations.",
     )
     .describe(
       'Instructions for the MCP client on how to orchestrate this tool with the companion analysis tool for comprehensive offline compatibility review.',
