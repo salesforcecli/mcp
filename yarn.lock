@@ -3104,10 +3104,10 @@
     semver "^7.7.2"
     zod "^3.25.76"
 
-"@salesforce/mcp-provider-aura-experts@0.3.5":
-  version "0.3.5"
-  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-aura-experts/-/mcp-provider-aura-experts-0.3.5.tgz#5079e656805137242da06619f0b325ea355ab042"
-  integrity sha512-4B3mcTnQInXvS0vCGnJ4CyRlm/Ie7zTUNXiY0nMm86er77HL8jQaEU9b93bfaH40Rsz0gZUFTc0Tb/5U15yjVQ==
+"@salesforce/mcp-provider-aura-experts@0.3.6":
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-aura-experts/-/mcp-provider-aura-experts-0.3.6.tgz#73417d16f1f53409b2798c6631706f7377c9df51"
+  integrity sha512-gYMb8P9b1/LEYCY9IBHj1YujHHpwcgUrQxZpPuJKTmpq3eopGkrUhERfmD0+xu8OvfQ8RiwA++zw2S0HqRonQA==
   dependencies:
     "@modelcontextprotocol/sdk" "^1.9.0"
     "@salesforce/core" "^8.19.1"
@@ -3121,16 +3121,32 @@
     zod "^3.24.2"
     zod-to-json-schema "^3.24.3"
 
-"@salesforce/mcp-provider-lwc-experts@0.6.3":
-  version "0.6.3"
-  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-lwc-experts/-/mcp-provider-lwc-experts-0.6.3.tgz#176eb9b4cf7fe6c78f1c65ee90896c6d73139293"
-  integrity sha512-sPGfHOtjfMmf5jXqXHjFm9wiyVd9WCBch8i9VcR0h+rhBtX/hbDGC5Io6cn2Bynf+WPluwRM9oKEdrtL5DyUMg==
+"@salesforce/mcp-provider-dx-core@0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-dx-core/-/mcp-provider-dx-core-0.5.1.tgz#3f5713a0081cf13cdea0dfd915a4dba8c55dd3a5"
+  integrity sha512-UhKiAKBJ537YeDkjsyRsJ5KW52+fjdbDHNicRdjUTr/TR8KsiB501Dop0WLaqBfvjBu57NwTg5dl8Ubhc7z2wA==
+  dependencies:
+    "@modelcontextprotocol/sdk" "^1.18.0"
+    "@salesforce/agents" "^0.15.4"
+    "@salesforce/apex-node" "^8.2.1"
+    "@salesforce/core" "^8.23.1"
+    "@salesforce/kit" "^3.1.6"
+    "@salesforce/mcp-provider-api" "^0.4.0"
+    "@salesforce/source-deploy-retrieve" "^12.22.0"
+    "@salesforce/source-tracking" "^7.4.8"
+    "@salesforce/ts-types" "^2.0.11"
+    open "^10.1.2"
+    zod "^3.25.76"
+
+"@salesforce/mcp-provider-lwc-experts@0.6.5":
+  version "0.6.5"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-lwc-experts/-/mcp-provider-lwc-experts-0.6.5.tgz#d8f0a25aa0516b738521e4b4e36097862bc3e21e"
+  integrity sha512-hioQPlZKJQyb0Rjij6ng1k26I0eUQxvPo2n8nMf3fDHpR6nqiWvfq7/5yA/8NMf19eYf/pqsAFg50qnPJbXC9g==
   dependencies:
     "@modelcontextprotocol/sdk" "^1.9.0"
     "@salesforce/core" "^8.19.0"
     "@salesforce/mcp-provider-api" "0.4.0"
     "@types/eventsource" "^1.1.15"
-    commander "^13.1.0"
     cors "^2.8.5"
     eventsource "^3.0.7"
     express "^5.1.0"
@@ -3138,10 +3154,10 @@
     zod "^3.24.2"
     zod-to-json-schema "^3.24.5"
 
-"@salesforce/o11y-reporter@1.6.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/o11y-reporter/-/o11y-reporter-1.6.0.tgz#b2c5e538d64337c44b69ce5ec8b43c55d6c409eb"
-  integrity sha512-FAdmfTtRlpuCwXSwPFrpp+mYn8h47EUAaHKL1PpVZYU+DoktVXrDoKTm3MxKRarcqtK1fc4PaO3UOcL5tIT1iA==
+"@salesforce/o11y-reporter@1.7.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/o11y-reporter/-/o11y-reporter-1.7.0.tgz#9ad4877ab4df18a80e904be564a2063b4563bbe2"
+  integrity sha512-K4kY3yf2RD2T/RYIID3Ucrlbi9cdR57Lak58o1KLhl4gO+LHMatuk5FJbYpEIuaOqE83G5/pIJ1dOps0BVBcVA==
   dependencies:
     o11y "^258.7.0"
     o11y_schema "256.154.0"
@@ -3190,14 +3206,14 @@
     isomorphic-git "^1.34.2"
     ts-retry-promise "^0.8.1"
 
-"@salesforce/telemetry@6.4.1":
-  version "6.4.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/telemetry/-/telemetry-6.4.1.tgz#ad6cc5ae65d80f7c6317dd184523aee3a1e0d3aa"
-  integrity sha512-bfKRn7PShTKGe8SOUeXjWPchAGJ6vFbSRhMVq6Ty/5gSeSGegGl+cpA09fqLfBqzk9aLhP38E2VFNY7DsYhifA==
+"@salesforce/telemetry@6.4.5":
+  version "6.4.5"
+  resolved "https://registry.yarnpkg.com/@salesforce/telemetry/-/telemetry-6.4.5.tgz#2dd5973c52ad7e4fc4ae1b2e3f5b69d4ab8f9da8"
+  integrity sha512-RQkSl4DQe9FtlyPj+gMJ36uch67GUOggSk5dUcar6/8X+M5lVKXQ+OR12+QvMl2Ft9rjDKqBJ7Z4BAZ8DC5o3Q==
   dependencies:
-    "@salesforce/core" "^8.23.4"
+    "@salesforce/core" "^8.24.0"
     "@salesforce/kit" "^3.2.4"
-    "@salesforce/o11y-reporter" "1.6.0"
+    "@salesforce/o11y-reporter" "1.7.0"
     applicationinsights "^2.9.8"
     got "^11"
     proxy-agent "^6.5.0"

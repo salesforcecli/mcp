@@ -209,7 +209,7 @@ The following sections list all the tools that are included in a specific toolse
 - `create_org_snapshot` - (NON-GA) Create a scratch org snapshot. 
 - `create_scratch_org` - (NON-GA) Create a scratch org. 
 - `delete_org` - (NON-GA) Delete a locally-authorized Salesforce scratch org or sandbox.
-- `org_open` - (NON-GA) Open an org in a browser. 
+- `open_org` - (NON-GA) Open an org in a browser. 
 
 **NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
 
@@ -286,7 +286,9 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
  - `guide_lwc_slds2_uplift_linter_fixes` - (NON-GA) Analyzes the given LWC code along with the slds-linter output to fix issues using the SLDS2 knowledge
  - `guide_lwc_security` - (GA) Comprehensive security analysis in accordance with Product Security Guidelines and Lightning Web Security Guidelines
  - `guide_design_general` - (GA) Comprehensive SLDS guidelines and best practices for Lightning Web Components with accessibility, responsive design, and component usage patterns
-
+ - `guide_utam_generation` -  (NON-GA) Provides UTAM Page Object generation guidelines and best practices. 
+ - `create_lightning_type` - (GA) Provides guidance for creating Custom Lightning Types (CLT) for Salesforce applications,
+ * Einstein Agent actions, Lightning Web Components, and Lightning Platform integrations.
 #### Workflow Tools
 
  - `orchestrate_lwc_component_creation` - (GA) Step-by-step component creation workflow guidance
@@ -304,6 +306,7 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
  - `create_lds_graphql_read_query` - (GA) Create GraphQL read queries for LDS
  - `explore_lds_graphql_schema` - (GA) Explore GraphQL schema structure for Salesforce LDS
  - `guide_lds_graphql` - (GA) LDS GraphQL usage patterns and guidelines
+ - `create_lds_graphql_mutation_query` - (GA) Comprehensive guidance text for creating GraphQL mutation queries.
 
 #### Migration & Integration Tools
 
