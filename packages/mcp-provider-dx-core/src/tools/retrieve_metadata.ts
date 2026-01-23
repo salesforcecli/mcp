@@ -178,7 +178,7 @@ async function buildRetrieveComponentSet(
   sourceDir?: string[],
   manifestPath?: string,
 ): Promise<ComponentSet> {
-  if (sourceDir || manifestPath) {
+  if (sourceDir ?? manifestPath) {
     return ComponentSetBuilder.build({
       apiversion: connection.getApiVersion(),
       sourceapiversion: ensureString((await project.resolveProjectConfig()).sourceApiVersion),
