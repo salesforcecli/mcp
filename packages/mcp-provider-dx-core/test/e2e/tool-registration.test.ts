@@ -90,7 +90,7 @@ describe('specific tool registration', () => {
     try {
       const initialTools = (await client.listTools()).tools.map((t) => t.name).sort();
 
-      expect(initialTools.length).to.equal(7);
+      expect(initialTools.length).to.equal(4);
       expect(initialTools).to.deep.equal(
         [
           'run_soql_query',
