@@ -21,8 +21,7 @@
       "request": "attach",
       "name": "Attach to Debug Hook Process",
       "skipFiles": ["<node_internals>/**"],
-      "sourceMaps": true,
-      "outFiles": ["${workspaceFolder}/packages/mcp/lib/**/*.js"]
+      "sourceMaps": true
     }
   ]
 }

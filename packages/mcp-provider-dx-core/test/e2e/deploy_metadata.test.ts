@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import fs from 'node:fs';
 import path from 'node:path';
 import { expect, assert } from 'chai';
 import { McpTestClient, DxMcpTransport } from '@salesforce/mcp-test-client';
 import { TestSession } from '@salesforce/cli-plugins-testkit';
 import { z } from 'zod';
+import { AuthInfo, Connection } from '@salesforce/core';
 import { ensureString } from '@salesforce/ts-types';
 import { deployMetadataParams } from '../../src/tools/deploy_metadata.js';
 
@@ -226,5 +228,108 @@ describe('deploy_metadata', () => {
     expect(deployResult.numberComponentsDeployed).to.equal(1);
     expect(deployResult.numberTestsCompleted).to.equal(11);
     expect(deployResult.runTestsEnabled).to.be.true;
+  });
+
+  it('should deploy remote edit when ignoreConflicts is set to true', async () => { 
+    // deploy the whole project to ensure the file exists
+    const fullProjectDeploy = await client.callTool(deployMetadataSchema, {
+      name: 'deploy_metadata',
+      params: {
+        usernameOrAlias: orgUsername,
+        directory: testSession.project.dir,
+      },
+    });
+
+    expect(fullProjectDeploy.isError).to.be.false;
+    expect(fullProjectDeploy.content.length).to.equal(1);
+
+    const customAppPath = path.join(
+      testSession.project.dir,
+      'force-app',
+      'main',
+      'default',
+      'applications',
+      'Dreamhouse.app-meta.xml',
+    );
+
+    // local edit
+    await fs.promises.writeFile(
+      customAppPath,
+      (await fs.promises.readFile(customAppPath, { encoding: 'utf-8' })).replace('Lightning App Builder', 'App Builder')
+    );
+
+    // Make a remote edit using Tooling API
+    const conn = await Connection.create({
+      authInfo: await AuthInfo.create({ username: orgUsername }),
+    });
+
+    const customApp = await conn.singleRecordQuery<{ 
+      Id: string; 
+      Metadata: {
+        description: string | null;
+      };
+    }>(
+      "SELECT Id, Metadata FROM CustomApplication WHERE DeveloperName = 'Dreamhouse'",
+      {
+        tooling: true,
+      }
+    );
+
+    const updatedMetadata = {
+      ...customApp.Metadata,
+      description: customApp.Metadata.description 
+        ? `${customApp.Metadata.description} - Remote edit via Tooling API`
+        : 'Remote edit via Tooling API',
+    };
+
+    await conn.tooling.sobject('CustomApplication').update({
+      Id: customApp.Id,
+      Metadata: updatedMetadata,
+    });
+
+    // Deploy without ignoreConflicts - should throw conflicts error
+    const deployResult = await client.callTool(deployMetadataSchema, {
+      name: 'deploy_metadata',
+      params: {
+        usernameOrAlias: orgUsername,
+        directory: testSession.project.dir,
+      },
+    });
+
+    expect(deployResult.isError).to.equal(true);
+    expect(deployResult.content.length).to.equal(1);
+    if (deployResult.content[0].type !== 'text') assert.fail();
+
+    const deployText = deployResult.content[0].text;
+    expect(deployText).to.contain('Failed to deploy metadata: 1 conflicts detected');
+
+    // deploying with ignoreConflicts=true should succeed
+    const ignoreConflictDeployResult = await client.callTool(deployMetadataSchema, {
+      name: 'deploy_metadata',
+      params: {
+        ignoreConflicts: true,
+        usernameOrAlias: orgUsername,
+        directory: testSession.project.dir,
+      },
+    });
+
+    expect(ignoreConflictDeployResult.content.length).to.equal(1);
+    if (ignoreConflictDeployResult.content[0].type !== 'text') assert.fail();
+
+    const responseText = ignoreConflictDeployResult.content[0].text;
+    expect(responseText).to.contain('Deploy result:');
+
+    // Parse the deploy result JSON
+    const deployMatch = responseText.match(/Deploy result: ({.*})/);
+    expect(deployMatch).to.not.be.null;
+
+    const ignoreConflictsDeployRes = JSON.parse(deployMatch![1]) as {
+      success: boolean;
+      done: boolean;
+      numberComponentsDeployed: number;
+    };
+    expect(ignoreConflictsDeployRes.success).to.be.true;
+    expect(ignoreConflictsDeployRes.done).to.be.true;
+    expect(ignoreConflictsDeployRes.numberComponentsDeployed).to.equal(1);
   });
 });

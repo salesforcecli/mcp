@@ -14,9 +14,9 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.18.0",
-    "@salesforce/mcp-provider-api": "^0.4.0",
-    "@salesforce/core": "^8.17.0",
-    "@salesforce/source-deploy-retrieve": "^12.22.13",
+    "@salesforce/mcp-provider-api": "^0.4.1",
+    "@salesforce/core": "^8.24.3",
+    "@salesforce/source-deploy-retrieve": "^12.31.7",
     "@salesforce/ts-types": "^2.0.12",
     "axios": "^1.10.0",
     "zod": "^3.25.76"
