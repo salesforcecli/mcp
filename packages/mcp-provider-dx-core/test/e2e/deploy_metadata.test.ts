@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import fs from 'node:fs';
 import path from 'node:path';
 import { expect, assert } from 'chai';
 import { McpTestClient, DxMcpTransport } from '@salesforce/mcp-test-client';
@@ -229,16 +230,7 @@ describe('deploy_metadata', () => {
     expect(deployResult.runTestsEnabled).to.be.true;
   });
 
-  it('should deploy remote edit when ignoreConflicts is set to true', async () => {
-    const customAppPath = path.join(
-      testSession.project.dir,
-      'force-app',
-      'main',
-      'default',
-      'applications',
-      'Dreamhouse.app-meta.xml',
-    );
-
+  it('should deploy remote edit when ignoreConflicts is set to true', async () => { 
     // deploy the whole project to ensure the file exists
     const fullProjectDeploy = await client.callTool(deployMetadataSchema, {
       name: 'deploy_metadata',
@@ -250,6 +242,21 @@ describe('deploy_metadata', () => {
 
     expect(fullProjectDeploy.isError).to.be.false;
     expect(fullProjectDeploy.content.length).to.equal(1);
+
+    const customAppPath = path.join(
+      testSession.project.dir,
+      'force-app',
+      'main',
+      'default',
+      'applications',
+      'Dreamhouse.app-meta.xml',
+    );
+
+    // local edit
+    await fs.promises.writeFile(
+      customAppPath,
+      (await fs.promises.readFile(customAppPath, { encoding: 'utf-8' })).replace('Lightning App Builder', 'App Builder')
+    );
 
     // Make a remote edit using Tooling API
     const conn = await Connection.create({
@@ -280,35 +287,49 @@ describe('deploy_metadata', () => {
       Metadata: updatedMetadata,
     });
 
-    // Deploy with ignoreConflicts=true - should override remote edit
+    // Deploy without ignoreConflicts - should throw conflicts error
     const deployResult = await client.callTool(deployMetadataSchema, {
       name: 'deploy_metadata',
       params: {
-        sourceDir: [customAppPath],
+        usernameOrAlias: orgUsername,
+        directory: testSession.project.dir,
+      },
+    });
+
+    expect(deployResult.isError).to.equal(true);
+    expect(deployResult.content.length).to.equal(1);
+    if (deployResult.content[0].type !== 'text') assert.fail();
+
+    const deployText = deployResult.content[0].text;
+    expect(deployText).to.contain('Failed to deploy metadata: 1 conflicts detected');
+
+    // deploying with ignoreConflicts=true should succeed
+    const ignoreConflictDeployResult = await client.callTool(deployMetadataSchema, {
+      name: 'deploy_metadata',
+      params: {
         ignoreConflicts: true,
         usernameOrAlias: orgUsername,
         directory: testSession.project.dir,
       },
     });
 
-    expect(deployResult.isError).to.equal(false);
-    expect(deployResult.content.length).to.equal(1);
-    if (deployResult.content[0].type !== 'text') assert.fail();
+    expect(ignoreConflictDeployResult.content.length).to.equal(1);
+    if (ignoreConflictDeployResult.content[0].type !== 'text') assert.fail();
 
-    const deployText = deployResult.content[0].text;
-    expect(deployText).to.contain('Deploy result:');
+    const responseText = ignoreConflictDeployResult.content[0].text;
+    expect(responseText).to.contain('Deploy result:');
 
-    const deployMatch = deployText.match(/Deploy result: ({.*})/);
+    // Parse the deploy result JSON
+    const deployMatch = responseText.match(/Deploy result: ({.*})/);
     expect(deployMatch).to.not.be.null;
 
-    const result = JSON.parse(deployMatch![1]) as {
+    const ignoreConflictsDeployRes = JSON.parse(deployMatch![1]) as {
       success: boolean;
       done: boolean;
       numberComponentsDeployed: number;
     };
-
-    expect(result.success).to.be.true;
-    expect(result.done).to.be.true;
-    expect(result.numberComponentsDeployed).to.equal(1);
+    expect(ignoreConflictsDeployRes.success).to.be.true;
+    expect(ignoreConflictsDeployRes.done).to.be.true;
+    expect(ignoreConflictsDeployRes.numberComponentsDeployed).to.equal(1);
   });
 });

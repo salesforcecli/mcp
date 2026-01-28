@@ -15,7 +15,7 @@
  */
 
 import { z } from 'zod';
-import { Connection, Lifecycle, Org, SfProject } from '@salesforce/core';
+import { Connection, Org, SfProject } from '@salesforce/core';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { ComponentSet, ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
 import { ensureString } from '@salesforce/ts-types';
@@ -129,18 +129,15 @@ Retrieve X metadata from my org and ignore any conflicts between the local proje
     }
 
     try {
-      // Clear old conflict listeners for force retrieve
-      if (input.ignoreConflicts) {
-        const lifecycle = Lifecycle.getInstance();
-        lifecycle.removeAllListeners('scopedPreRetrieve');
-      }
-
       const stl = await SourceTracking.create({
         org,
         project,
-        subscribeSDREvents: true,
+        subscribeSDREvents: true, // Always subscribe for tracking updates (post-retrieve)
         ignoreConflicts: input.ignoreConflicts ?? false,
       });
+
+      // Force refresh of the global ShadowRepo singleton cache to detect new changes
+      await stl.reReadLocalTrackingCache();
 
       const componentSet = await buildRetrieveComponentSet(connection, project, stl, input.sourceDir, input.manifest);
       if (componentSet.size === 0) {
@@ -181,7 +178,7 @@ async function buildRetrieveComponentSet(
   sourceDir?: string[],
   manifestPath?: string,
 ): Promise<ComponentSet> {
-  if (sourceDir || manifestPath) {
+  if (sourceDir ?? manifestPath) {
     return ComponentSetBuilder.build({
       apiversion: connection.getApiVersion(),
       sourceapiversion: ensureString((await project.resolveProjectConfig()).sourceApiVersion),
