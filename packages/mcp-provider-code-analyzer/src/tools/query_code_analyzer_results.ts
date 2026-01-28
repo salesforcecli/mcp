@@ -67,6 +67,7 @@ export class CodeAnalyzerQueryResultsMcpTool extends McpTool<InputArgsShape, Out
     }
 
     public getReleaseState(): ReleaseState {
+        // TODO: Change to GA when ready
         return ReleaseState.NON_GA;
     }
 
