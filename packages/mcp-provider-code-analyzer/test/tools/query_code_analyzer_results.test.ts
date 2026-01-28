@@ -28,7 +28,7 @@ describe("CodeAnalyzerQueryResultsMcpTool", () => {
   
   it("When getReleaseState is called, then 'non-ga' is returned", () => {
     const tool = new CodeAnalyzerQueryResultsMcpTool();
-    expect(tool.getReleaseState()).toEqual(ReleaseState.NON_GA);
+    expect(tool.getReleaseState()).toEqual(ReleaseState.GA);
   });
 
   it("exposes metadata (name, release state, toolsets, config)", () => {
