@@ -4,6 +4,7 @@ import { describe, it, expect } from "vitest";
 import { CodeAnalyzerQueryResultsMcpTool } from "../../src/tools/query_code_analyzer_results.js";
 import type { QueryResultsAction, QueryResultsInput, QueryResultsOutput } from "../../src/actions/query-results.js";
 import { SpyTelemetryService, type SendTelemetryEvent } from "../test-doubles.js";
+import { ReleaseState } from "@salesforce/mcp-provider-api";
 
 class StubQueryResultsAction implements QueryResultsAction {
   public lastInput: QueryResultsInput | undefined;
@@ -24,6 +25,12 @@ class StubQueryResultsAction implements QueryResultsAction {
 }
 
 describe("CodeAnalyzerQueryResultsMcpTool", () => {
+  
+  it("When getReleaseState is called, then 'non-ga' is returned", () => {
+    const tool = new CodeAnalyzerQueryResultsMcpTool();
+    expect(tool.getReleaseState()).toEqual(ReleaseState.NON_GA);
+  });
+
   it("exposes metadata (name, release state, toolsets, config)", () => {
     const tool = new CodeAnalyzerQueryResultsMcpTool(new StubQueryResultsAction());
     expect(tool.getName()).toBe("query_code_analyzer_results");
