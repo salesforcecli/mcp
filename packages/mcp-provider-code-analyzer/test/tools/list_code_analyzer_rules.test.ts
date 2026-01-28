@@ -59,7 +59,7 @@ describe('CodeAnalyzerListRulesMcpTool', () => {
     it('exposes metadata: name, release state, toolsets', () => {
         const tool = new CodeAnalyzerListRulesMcpTool(new StubListRulesAction({ status: 'success', rules: [] }));
         expect(tool.getName()).toEqual('list_code_analyzer_rules');
-        expect(tool.getReleaseState()).toEqual(ReleaseState.NON_GA);
+        expect(tool.getReleaseState()).toEqual(ReleaseState.GA);
         expect(tool.getToolsets()).toEqual([Toolset.CODE_ANALYSIS]);
     });
 
