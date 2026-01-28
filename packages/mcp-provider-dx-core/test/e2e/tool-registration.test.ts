@@ -96,9 +96,6 @@ describe('specific tool registration', () => {
           'run_soql_query',
           'get_username',
           'resume_tool_operation',
-          'describe_code_analyzer_rule',
-          'run_code_analyzer',
-          'list_code_analyzer_rules',
           'query_code_analyzer_results',
         ].sort(),
       );
