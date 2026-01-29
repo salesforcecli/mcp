@@ -20,7 +20,7 @@ describe('run_code_analyzer', () => {
     beforeAll(async () => {
         try {
             const transport = DxMcpTransport({
-                args: ['--toolsets', 'code-analysis', '--orgs', 'DEFAULT_TARGET_ORG', '--no-telemetry', '--allow-non-ga-tools']
+                args: ['--toolsets', 'code-analysis', '--orgs', 'DEFAULT_TARGET_ORG', '--no-telemetry']
             });
             await client.connect(transport);
         } catch (error) {
