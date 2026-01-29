@@ -26,7 +26,7 @@ class StubQueryResultsAction implements QueryResultsAction {
 
 describe("CodeAnalyzerQueryResultsMcpTool", () => {
   
-  it("When getReleaseState is called, then 'non-ga' is returned", () => {
+  it("When getReleaseState is called, then 'ga' is returned", () => {
     const tool = new CodeAnalyzerQueryResultsMcpTool();
     expect(tool.getReleaseState()).toEqual(ReleaseState.GA);
   });
