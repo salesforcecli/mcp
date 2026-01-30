@@ -1,3 +1,12 @@
+# [0.26.0](https://github.com/salesforcecli/mcp/compare/0.25.0...0.26.0) (2026-01-30)
+
+
+### Features
+
+* add ignoreConflicts param for deploy/retrieve W-20002028 ([#321](https://github.com/salesforcecli/mcp/issues/321)) ([63c764b](https://github.com/salesforcecli/mcp/commit/63c764b0b5908d6a6cdfd25a2c65b2ec617b64e9)), closes [#320](https://github.com/salesforcecli/mcp/issues/320)
+
+
+
 # [0.25.0](https://github.com/salesforcecli/mcp/compare/0.24.4...0.25.0) (2026-01-13)
 
 
