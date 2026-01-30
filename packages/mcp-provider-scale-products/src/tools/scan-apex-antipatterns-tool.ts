@@ -29,8 +29,8 @@ import { SOQLRuntimeEnricher } from "../runtime-enrichers/soql-runtime-enricher.
 import { MethodRuntimeEnricher } from "../runtime-enrichers/method-runtime-enricher.js";
 import { directoryParam, usernameOrAliasParam } from "../shared/params.js";
 
-/** Runtime API endpoint path */
-const RUNTIME_API_PATH = "/services/data/v65.0/scalemcp/apexguru/class-runtime-data";
+/** Runtime API endpoint base path (API version will be dynamically inserted) */
+const RUNTIME_API_BASE_PATH = "/services/data/{version}/scalemcp/apexguru/class-runtime-data";
 
 const scanApexInputSchema = z.object({
   className: z
@@ -365,8 +365,10 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
     message?: string;
   }> {
     try {
+      const apiVersion = connection.getApiVersion();
+      const apiPath = RUNTIME_API_BASE_PATH.replace("{version}", `v${apiVersion}`);
       const config: RuntimeDataServiceConfig = {
-        apiPath: RUNTIME_API_PATH,
+        apiPath,
         timeoutMs: 30000,
         retryAttempts: 2,
       };
