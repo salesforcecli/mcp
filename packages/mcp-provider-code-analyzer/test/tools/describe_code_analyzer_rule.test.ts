@@ -10,7 +10,7 @@ describe("Tests for DescribeRuleTool", () => {
         tool = new CodeAnalyzerDescribeRuleMcpTool();
     });
 
-    it("When getReleaseState is called, then 'non-ga' is returned", () => {
+    it("When getReleaseState is called, then 'ga' is returned", () => {
         expect(tool.getReleaseState()).toEqual(ReleaseState.GA);
     })
 
