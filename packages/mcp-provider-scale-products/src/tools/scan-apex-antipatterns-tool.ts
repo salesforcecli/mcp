@@ -27,6 +27,7 @@ import {
 import { ScaleTelemetryService } from "../services/scale-telemetry-service.js";
 import { SOQLRuntimeEnricher } from "../runtime-enrichers/soql-runtime-enricher.js";
 import { MethodRuntimeEnricher } from "../runtime-enrichers/method-runtime-enricher.js";
+import { directoryParam, usernameOrAliasParam } from "../shared/params.js";
 
 /** Runtime API endpoint path */
 const RUNTIME_API_PATH = "/services/data/v65.0/scalemcp/apexguru/class-runtime-data";
@@ -42,6 +43,8 @@ const scanApexInputSchema = z.object({
     .string()
     .optional()
     .describe("Optional unique identifier for this scan (e.g., 'orgId:className'). Defaults to className if not provided."),
+  directory: directoryParam,
+  usernameOrAlias: usernameOrAliasParam,
 });
 
 type InputArgs = z.infer<typeof scanApexInputSchema>;
@@ -133,7 +136,9 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
-    const orgInfo = await this.resolveOrgConnection();
+    process.chdir(input.directory);
+    
+    const orgInfo = await this.resolveOrgConnection(input.usernameOrAlias);
     
     this.scaleTelemetryService.emitToolInvocation(
       this.getName(),
@@ -298,12 +303,13 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
   }
 
   /**
-   * Resolves org connection from the default target org
+   * Resolves org connection from the provided username/alias or the default target org
    * Returns null if no org is authenticated
    * 
+   * @param usernameOrAlias - Optional username or alias to use instead of default target org
    * @returns Object with orgId, instanceUrl, connection, and userId, or null if unavailable
    */
-  private async resolveOrgConnection(): Promise<{ 
+  private async resolveOrgConnection(usernameOrAlias?: string): Promise<{ 
     orgId: string; 
     instanceUrl: string; 
     connection: Connection;
@@ -311,13 +317,18 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
   } | null> {
     try {
       const orgService = this.services.getOrgService();
-      const defaultOrg = await orgService.getDefaultTargetOrg();
-
-      if (!defaultOrg?.value) {
-        return null;
+      
+      // Use provided usernameOrAlias, or fall back to default target org
+      let targetOrg = usernameOrAlias;
+      if (!targetOrg) {
+        const defaultOrg = await orgService.getDefaultTargetOrg();
+        if (!defaultOrg?.value) {
+          return null;
+        }
+        targetOrg = defaultOrg.value;
       }
 
-      const connection = await orgService.getConnection(defaultOrg.value);
+      const connection = await orgService.getConnection(targetOrg);
       const org = await Org.create({ connection });
       const orgId = org.getOrgId();
       const instanceUrl = connection.instanceUrl;

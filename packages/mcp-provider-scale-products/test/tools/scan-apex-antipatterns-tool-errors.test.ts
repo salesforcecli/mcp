@@ -38,6 +38,7 @@ describe("ScanApexAntipatternsTool - Error Handling", () => {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -73,6 +74,7 @@ describe("ScanApexAntipatternsTool - Error Handling", () => {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -106,6 +108,7 @@ describe("ScanApexAntipatternsTool - Error Handling", () => {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -130,6 +133,7 @@ describe("ScanApexAntipatternsTool - Error Handling", () => {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -152,6 +156,7 @@ describe("ScanApexAntipatternsTool - Error Handling", () => {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);

@@ -69,6 +69,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -102,6 +103,7 @@ public class CleanClass {
     const input = {
       className: "CleanClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -126,6 +128,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -153,6 +156,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -177,6 +181,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -195,6 +200,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -217,6 +223,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -238,6 +245,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -257,6 +265,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     await tool.exec(input);
@@ -273,6 +282,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: path.join(tempDir, "NonExistent.cls"),
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -290,6 +300,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: subDir,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -307,6 +318,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: readOnlyFile,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -327,6 +339,7 @@ public class TestClass {
     const input = {
       className: "EmptyClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -344,6 +357,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     // Delete the file after creating it to cause a read error during processing
@@ -363,6 +377,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     await tool.exec(input);
@@ -379,6 +394,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -397,6 +413,7 @@ public class TestClass {
     const input = {
       className: "LargeClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -417,6 +434,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
