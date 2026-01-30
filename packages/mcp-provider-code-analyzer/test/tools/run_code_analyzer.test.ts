@@ -17,8 +17,8 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
         tool = new CodeAnalyzerRunMcpTool();
     });
 
-    it("When getReleaseState is called, then 'non-ga' is returned", () => {
-        expect(tool.getReleaseState()).toEqual(ReleaseState.NON_GA);
+    it("When getReleaseState is called, then 'ga' is returned", () => {
+        expect(tool.getReleaseState()).toEqual(ReleaseState.GA);
     })
 
     it("When getToolsets is called, then 'code-analysis' is returned", () => {
