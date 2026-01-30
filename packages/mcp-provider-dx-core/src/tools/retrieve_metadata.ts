@@ -33,12 +33,19 @@ import { textResponse } from '../shared/utils.js';
  * - manifest: Full file path for manifest (XML file) of components to retrieve.
  * - usernameOrAlias: Username or alias of the Salesforce org to retrieve from.
  * - directory: Directory of the local project.
+ * - ignoreConflicts: Ignore conflicts and retrieve and save files to your local filesystem, even if they overwrite your local changes.
  *
  * Returns:
  * - textResponse: Retrieve result.
  */
 
 export const retrieveMetadataParams = z.object({
+  ignoreConflicts: z.boolean()
+  .describe(
+    'Ignore conflicts and retrieve and save files to your local filesystem, even if they overwrite your local changes.',
+  )
+  .optional()
+  .default(false),
   sourceDir: z
     .array(z.string())
     .describe(
@@ -77,14 +84,15 @@ export class RetrieveMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsS
       description: `Retrieve metadata from an org to your local project.
 
 AGENT INSTRUCTIONS:
-If the user doesn't specify what to retrieve exactly ("retrieve my changes"), leave the "sourceDir" and "manifest" params empty so the tool calculates which files to retrieve.
+If the user doesn't specify what to retrieve exactly ("retrieve my changes"), leave the "sourceDir", "ignoreConflicts", and "manifest" params empty so the tool calculates which files to retrieve.
 
 EXAMPLE USAGE:
 Retrieve changes
 Retrieve changes from my org
 Retrieve this file from my org
 Retrieve the metadata in the manifest
-Retrieve X metadata from my org`,
+Retrieve X metadata from my org
+Retrieve X metadata from my org and ignore any conflicts between the local project and org`,
       inputSchema: retrieveMetadataParams.shape,
       outputSchema: undefined,
       annotations: {
@@ -113,7 +121,7 @@ Retrieve X metadata from my org`,
 
     const org = await Org.create({ connection });
 
-    if (!input.sourceDir && !input.manifest && !(await org.tracksSource())) {
+    if (!input.sourceDir && !input.manifest && !input.ignoreConflicts && !(await org.tracksSource())) {
       return textResponse(
         'This org does not have source-tracking enabled or does not support source-tracking. You should specify the files or a manifest to retrieve.',
         true,
@@ -124,11 +132,14 @@ Retrieve X metadata from my org`,
       const stl = await SourceTracking.create({
         org,
         project,
-        subscribeSDREvents: true,
+        subscribeSDREvents: true, // Always subscribe for tracking updates (post-retrieve)
+        ignoreConflicts: input.ignoreConflicts ?? false,
       });
 
-      const componentSet = await buildRetrieveComponentSet(connection, project, stl, input.sourceDir, input.manifest);
+      // Force refresh of the global ShadowRepo singleton cache to detect new changes
+      await stl.reReadLocalTrackingCache();
 
+      const componentSet = await buildRetrieveComponentSet(connection, project, stl, input.sourceDir, input.manifest);
       if (componentSet.size === 0) {
         // STL found no changes
         return textResponse('No remote changes to retrieve were found.');
@@ -167,7 +178,7 @@ async function buildRetrieveComponentSet(
   sourceDir?: string[],
   manifestPath?: string,
 ): Promise<ComponentSet> {
-  if (sourceDir || manifestPath) {
+  if (sourceDir ?? manifestPath) {
     return ComponentSetBuilder.build({
       apiversion: connection.getApiVersion(),
       sourceapiversion: ensureString((await project.resolveProjectConfig()).sourceApiVersion),

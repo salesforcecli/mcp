@@ -209,7 +209,7 @@ The following sections list all the tools that are included in a specific toolse
 - `create_org_snapshot` - (NON-GA) Create a scratch org snapshot. 
 - `create_scratch_org` - (NON-GA) Create a scratch org. 
 - `delete_org` - (NON-GA) Delete a locally-authorized Salesforce scratch org or sandbox.
-- `org_open` - (NON-GA) Open an org in a browser. 
+- `open_org` - (NON-GA) Open an org in a browser. 
 
 **NOTE:** The tools marked NON-GA are not yet generally available, specify the `--allow-non-ga-tools` flag to use them. 
 
