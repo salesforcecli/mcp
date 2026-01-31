@@ -85,14 +85,15 @@ export class SOQLUnusedFieldsDetector implements BaseDetector {
 
         if (unusedFields.length > 0 && unusedFields.length < soql.fields.length) {
           // Found unused fields (but not all fields are unused)
-          const metadata = this.buildMetadata(soql, assignedVar, unusedFields, apexCode, visitor.soqlQueries);
+          const metadata = this.buildMetadata(assignedVar, unusedFields);
 
           detections.push({
             className,
             methodName: soql.methodName,
             lineNumber: soql.lineNumber,
             codeBefore: this.formatQueryForDisplay(soql.query),
-            severity: soql.isInLoop ? Severity.HIGH : Severity.MEDIUM,
+            severity: soql.isInLoop ? Severity.MAJOR : Severity.MINOR,
+            severitySource: "static",
             metadata,
           });
         }
@@ -100,7 +101,6 @@ export class SOQLUnusedFieldsDetector implements BaseDetector {
 
       return detections;
     } catch (error) {
-      console.error(`Error detecting unused fields in ${className}:`, error);
       return [];
     }
   }
@@ -228,44 +228,17 @@ export class SOQLUnusedFieldsDetector implements BaseDetector {
    * Build metadata for detection result
    * Provides context for fix generation and display
    * 
-   * @param soql - SOQL query information
    * @param assignedVar - Assigned variable name
    * @param unusedFields - Fields that are unused
-   * @param apexCode - Full code
-   * @param allSoqls - All SOQL queries in the class
-   * @returns Metadata object
+   * @returns Metadata object 
    */
   private buildMetadata(
-    soql: SOQLQueryInfo,
     assignedVar: string | null | undefined,
-    unusedFields: string[],
-    apexCode: string,
-    allSoqls: SOQLQueryInfo[]
+    unusedFields: string[]
   ): SOQLUnusedFieldsMetadata {
-    const laterSOQLs = allSoqls
-      .filter(s => s.lineNumber > soql.lineNumber)
-      .map(s => ({ query: s.query, lineNumber: s.lineNumber }));
-    
-    const usedInLaterSOQLs: string[] = assignedVar 
-      ? SOQLFieldTracker.findColumnsUsedInLaterSOQLs(assignedVar, laterSOQLs, soql.fields)
-      : [];
-
-    const completeUsageDetected: boolean = assignedVar
-      ? SOQLFieldTracker.checkIfCompleteSOQLResultsAreUsed(
-          assignedVar, apexCode, soql.endLineNumber, 1, soql.fields
-        )
-      : false;
-
     return {
       unusedFields,
-      originalFields: soql.fields,
       assignedVariable: assignedVar ?? null,
-      isInLoop: soql.isInLoop,
-      isReturned: assignedVar ? SOQLFieldTracker.isReturnedInCode(assignedVar, apexCode) : false,
-      isClassMember: false, // Already checked in skip logic
-      hasNestedQueries: SOQLParser.hasNestedQueries(soql.query),
-      usedInLaterSOQLs,
-      completeUsageDetected,
     };
   }
 

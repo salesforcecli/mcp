@@ -12,7 +12,7 @@ export class ScaleProductsMcpProvider extends McpProvider {
 
   public provideTools(services: Services): Promise<McpTool[]> {
     return Promise.resolve([
-      new ScanApexAntipatternsTool(services.getTelemetryService()),
+      new ScanApexAntipatternsTool(services),
     ]);
   }
 

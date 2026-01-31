@@ -111,17 +111,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone, Industry FROM Account LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone', 'Industry'],
-          originalFields: ['Id', 'Name', 'Phone', 'Industry'],
           assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -143,17 +137,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone FROM Account WHERE Name != null LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone'],
-          originalFields: ['Id', 'Name', 'Phone'],
           assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -171,17 +159,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone FROM Account ORDER BY Name ASC LIMIT 10]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone'],
-          originalFields: ['Id', 'Name', 'Phone'],
           assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -199,17 +181,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone, (SELECT Id FROM Contacts) FROM Account]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone'],
-          originalFields: ['Id', 'Name', 'Phone'],
           assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: true,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -225,17 +201,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name FROM Account LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Id', 'Name'],
-          originalFields: ['Id', 'Name'],
           assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -251,17 +221,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone FROM Account LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Name', 'Phone'],
-          originalFields: ['Id', 'Name', 'Phone'],
           assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -281,17 +245,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
           methodName: 'method1',
           lineNumber: 5,
           codeBefore: '[SELECT Id, Name, Phone FROM Account LIMIT 1]',
-          severity: Severity.MEDIUM,
+          severity: Severity.MINOR,
+          severitySource: "static",
           metadata: {
             unusedFields: ['Phone'],
-            originalFields: ['Id', 'Name', 'Phone'],
             assignedVariable: 'acc',
-            isInLoop: false,
-            isReturned: false,
-            isClassMember: false,
-            hasNestedQueries: false,
-            usedInLaterSOQLs: [],
-            completeUsageDetected: false,
           } as SOQLUnusedFieldsMetadata,
         },
         {
@@ -299,17 +257,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
           methodName: 'method2',
           lineNumber: 10,
           codeBefore: '[SELECT Id, FirstName, LastName, Email FROM Contact LIMIT 1]',
-          severity: Severity.HIGH,
+          severity: Severity.MAJOR,
+          severitySource: "static",
           metadata: {
             unusedFields: ['Email'],
-            originalFields: ['Id', 'FirstName', 'LastName', 'Email'],
             assignedVariable: 'con',
-            isInLoop: true,
-            isReturned: false,
-            isClassMember: false,
-            hasNestedQueries: false,
-            usedInLaterSOQLs: [],
-            completeUsageDetected: false,
           } as SOQLUnusedFieldsMetadata,
         },
       ];
@@ -320,11 +272,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
       
       const instance1 = result.detectedInstances[0];
       expect(instance1.codeAfter).not.toContain('Phone');
-      expect(instance1.severity).toBe(Severity.MEDIUM);
+      expect(instance1.severity).toBe(Severity.MINOR);
       
       const instance2 = result.detectedInstances[1];
       expect(instance2.codeAfter).not.toContain('Email');
-      expect(instance2.severity).toBe(Severity.HIGH);
+      expect(instance2.severity).toBe(Severity.MAJOR);
     });
 
     it('should preserve all detection metadata', () => {
@@ -333,17 +285,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone FROM Account LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone'],
-          originalFields: ['Id', 'Name', 'Phone'],
           assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -355,11 +301,10 @@ describe('SOQLUnusedFieldsRecommender', () => {
       expect(instance.lineNumber).toBe(5);
       expect(instance.codeBefore).toBeDefined();
       expect(instance.codeAfter).toBeDefined();
-      expect(instance.severity).toBe(Severity.MEDIUM);
+      expect(instance.severity).toBe(Severity.MINOR);
       expect(instance.metadata).toBeDefined();
       const metadata = instance.metadata as SOQLUnusedFieldsMetadata;
       expect(metadata.unusedFields).toEqual(['Phone']);
-      expect(metadata.originalFields).toEqual(['Id', 'Name', 'Phone']);
     });
   });
 
@@ -370,17 +315,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone FROM Account LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone'],
-          originalFields: ['Id', 'Name', 'Phone'],
           assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -411,17 +350,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, FirstName, Account.Name, Account.Phone FROM Contact LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Account.Phone'],
-          originalFields: ['Id', 'FirstName', 'Account.Name', 'Account.Phone'],
           assignedVariable: 'con',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -438,17 +371,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, CustomField__c, AnotherField__c FROM Account LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['CustomField__c'],
-          originalFields: ['Id', 'Name', 'CustomField__c', 'AnotherField__c'],
           assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -465,17 +392,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Apttus_Proposal__Primary__c, SfdcQuoteStatus__c FROM Account LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['SfdcQuoteStatus__c'],
-          originalFields: ['Id', 'Name', 'Apttus_Proposal__Primary__c', 'SfdcQuoteStatus__c'],
           assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -494,23 +415,17 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone FROM Account LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone'],
-          originalFields: ['Id', 'Name', 'Phone'],
           assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
       const result = recommender.recommend([detection]);
 
-      expect(result.detectedInstances[0].severity).toBe(Severity.MEDIUM);
+      expect(result.detectedInstances[0].severity).toBe(Severity.MINOR);
     });
 
     it('should preserve HIGH severity for loop context', () => {
@@ -519,23 +434,17 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone FROM Account LIMIT 1]',
-        severity: Severity.HIGH,
+        severity: Severity.MAJOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone'],
-          originalFields: ['Id', 'Name', 'Phone'],
           assignedVariable: 'acc',
-          isInLoop: true,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
       const result = recommender.recommend([detection]);
 
-      expect(result.detectedInstances[0].severity).toBe(Severity.HIGH);
+      expect(result.detectedInstances[0].severity).toBe(Severity.MAJOR);
     });
   });
 
@@ -546,17 +455,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'processBatch',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone, Fax, Website, Industry, AnnualRevenue FROM Account WHERE Id IN :ids]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone', 'Fax', 'Website', 'AnnualRevenue'],
-          originalFields: ['Id', 'Name', 'Phone', 'Fax', 'Website', 'Industry', 'AnnualRevenue'],
           assignedVariable: 'accounts',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -577,17 +480,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'validateContact',
         lineNumber: 5,
         codeBefore: '[SELECT Id, FirstName, LastName, Email, Phone, Title, Department FROM Contact WHERE Id = :id]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone', 'Title', 'Department'],
-          originalFields: ['Id', 'FirstName', 'LastName', 'Email', 'Phone', 'Title', 'Department'],
           assignedVariable: 'con',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -610,17 +507,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone FROM Account LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone'],
-          originalFields: ['Id', 'Name', 'Phone'],
           assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -631,23 +522,17 @@ describe('SOQLUnusedFieldsRecommender', () => {
       expect(metadata.unusedFields).toEqual(['Phone']);
     });
 
-    it('should include originalFields property', () => {
+    it('should include assignedVariable property', () => {
       const detection: DetectedAntipattern = {
         className: 'TestClass',
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone FROM Account LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone'],
-          originalFields: ['Id', 'Name', 'Phone'],
-          assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
+          assignedVariable: 'myAccount',
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -655,20 +540,13 @@ describe('SOQLUnusedFieldsRecommender', () => {
 
       const instance = result.detectedInstances[0];
       const metadata = instance.metadata as SOQLUnusedFieldsMetadata;
-      expect(metadata.originalFields).toEqual(['Id', 'Name', 'Phone']);
+      expect(metadata.assignedVariable).toBe('myAccount');
     });
 
     it('should preserve metadata object', () => {
       const metadata: SOQLUnusedFieldsMetadata = {
         unusedFields: ['Phone'],
-        originalFields: ['Id', 'Name', 'Phone'],
         assignedVariable: 'acc',
-        isInLoop: false,
-        isReturned: false,
-        isClassMember: false,
-        hasNestedQueries: false,
-        usedInLaterSOQLs: [],
-        completeUsageDetected: false,
       };
 
       const detection: DetectedAntipattern = {
@@ -676,7 +554,8 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone FROM Account LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata,
       };
 
@@ -694,17 +573,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone, Fax, Website, Industry FROM Account LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone', 'Fax', 'Website'],
-          originalFields: ['Id', 'Name', 'Phone', 'Fax', 'Website', 'Industry'],
           assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -724,17 +597,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone FROM Account WHERE Id IN :accountIds]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone'],
-          originalFields: ['Id', 'Name', 'Phone'],
           assignedVariable: 'accounts',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -751,17 +618,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone, Industry FROM Account ORDER BY Name ASC, Industry DESC]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone'],
-          originalFields: ['Id', 'Name', 'Phone', 'Industry'],
           assignedVariable: 'accounts',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -777,17 +638,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone FROM Account WHERE (Name LIKE \'%Test%\' OR Industry = \'Tech\') AND AnnualRevenue > 1000000]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone'],
-          originalFields: ['Id', 'Name', 'Phone'],
           assignedVariable: 'accounts',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -804,17 +659,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone FROM Account ORDER BY Name NULLS FIRST]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone'],
-          originalFields: ['Id', 'Name', 'Phone'],
           assignedVariable: 'accounts',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -832,17 +681,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone FROM Account FOR REFERENCE]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone'],
-          originalFields: ['Id', 'Name', 'Phone'],
           assignedVariable: 'accounts',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -860,17 +703,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone, Fax, Website, Industry, AnnualRevenue, NumberOfEmployees, Description, Type, Rating, Ownership, TickerSymbol, Site FROM Account LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone', 'Fax', 'Website', 'AnnualRevenue', 'NumberOfEmployees', 'Description', 'Type', 'Rating', 'Ownership', 'TickerSymbol', 'Site'],
-          originalFields: ['Id', 'Name', 'Phone', 'Fax', 'Website', 'Industry', 'AnnualRevenue', 'NumberOfEmployees', 'Description', 'Type', 'Rating', 'Ownership', 'TickerSymbol', 'Site'],
           assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -889,17 +726,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone, Industry FROM Account LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone'],
-          originalFields: ['Id', 'Name', 'Phone', 'Industry'],
           assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -917,17 +748,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Account.Owner.Name, Account.Owner.Email FROM Contact LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Account.Owner.Email'],
-          originalFields: ['Id', 'Name', 'Account.Owner.Name', 'Account.Owner.Email'],
           assignedVariable: 'con',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -946,17 +771,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone, CustomField__c, AnotherCustom__c FROM Account LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone', 'AnotherCustom__c'],
-          originalFields: ['Id', 'Name', 'Phone', 'CustomField__c', 'AnotherCustom__c'],
           assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -975,17 +794,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, (SELECT Id FROM Contacts) FROM Account]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Name'],
-          originalFields: ['Id', 'Name'],
           assignedVariable: 'acc',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: true,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -1004,17 +817,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Phone FROM Account LIMIT 50000]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Phone'],
-          originalFields: ['Id', 'Name', 'Phone'],
           assignedVariable: 'accounts',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -1031,17 +838,11 @@ describe('SOQLUnusedFieldsRecommender', () => {
         methodName: 'testMethod',
         lineNumber: 5,
         codeBefore: '[SELECT Id, Name, Field_1__c, Field_2__c, Field_3__c FROM CustomObject__c LIMIT 1]',
-        severity: Severity.MEDIUM,
+        severity: Severity.MINOR,
+        severitySource: "static",
         metadata: {
           unusedFields: ['Field_2__c', 'Field_3__c'],
-          originalFields: ['Id', 'Name', 'Field_1__c', 'Field_2__c', 'Field_3__c'],
           assignedVariable: 'obj',
-          isInLoop: false,
-          isReturned: false,
-          isClassMember: false,
-          hasNestedQueries: false,
-          usedInLaterSOQLs: [],
-          completeUsageDetected: false,
         } as SOQLUnusedFieldsMetadata,
       };
 
@@ -1054,4 +855,3 @@ describe('SOQLUnusedFieldsRecommender', () => {
     });
   });
 });
-
