@@ -16,7 +16,14 @@
 
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { AuthInfo, ConfigAggregator, ConfigInfo, OrgConfigProperties, type OrgAuthorization } from '@salesforce/core';
+import {
+  AuthInfo,
+  Connection,
+  ConfigAggregator,
+  ConfigInfo,
+  OrgConfigProperties,
+  type OrgAuthorization,
+} from '@salesforce/core';
 import { type SanitizedOrgAuthorization } from '@salesforce/mcp-provider-api';
 import {
   getAllAllowedOrgs,
@@ -25,6 +32,7 @@ import {
   sanitizeOrgs,
   findOrgByUsernameOrAlias,
   filterAllowedOrgs,
+  validateSandboxOrgs,
 } from '../../src/utils/auth.js';
 import Cache from '../../src/utils/cache.js';
 
@@ -939,6 +947,208 @@ describe('auth tests', () => {
         path: '/global/path2',
       });
       expect(configAggregatorCreateStub.calledTwice).to.be.true; // ConfigAggregator is called every time to get the path.
+    });
+  });
+
+  describe('validateSandboxOrgs', () => {
+    let authInfoCreateStub: sinon.SinonStub;
+    let connectionCreateStub: sinon.SinonStub;
+    let connectionQueryStub: sinon.SinonStub;
+    let consoleErrorStub: sinon.SinonStub;
+
+    beforeEach(() => {
+      authInfoCreateStub = sandbox.stub(AuthInfo, 'create');
+      connectionQueryStub = sandbox.stub();
+      connectionCreateStub = sandbox.stub(Connection, 'create');
+      consoleErrorStub = sandbox.stub(console, 'error');
+
+      // Default connection setup
+      const mockConnection = {
+        query: connectionQueryStub,
+      };
+      connectionCreateStub.resolves(mockConnection);
+    });
+
+    it('should pass validation when all orgs are sandboxes', async () => {
+      const mockOrgs: SanitizedOrgAuthorization[] = [
+        {
+          username: 'sandbox1@example.com',
+          aliases: ['sandbox1'],
+          instanceUrl: 'https://sandbox1.salesforce.com',
+          isScratchOrg: false,
+          isDevHub: false,
+          isSandbox: true,
+          orgId: '00D000000000001EAA',
+          oauthMethod: 'web',
+          isExpired: false,
+          configs: null,
+        },
+        {
+          username: 'sandbox2@example.com',
+          aliases: ['sandbox2'],
+          instanceUrl: 'https://sandbox2.salesforce.com',
+          isScratchOrg: false,
+          isDevHub: false,
+          isSandbox: true,
+          orgId: '00D000000000002EAA',
+          oauthMethod: 'web',
+          isExpired: false,
+          configs: null,
+        },
+      ];
+
+      const mockAuthInfo = { username: 'test' };
+      authInfoCreateStub.resolves(mockAuthInfo);
+
+      // Mock SOQL query returning IsSandbox = true
+      connectionQueryStub.resolves({
+        records: [{ IsSandbox: true }],
+      });
+
+      // Should not throw
+      await validateSandboxOrgs(mockOrgs);
+
+      expect(authInfoCreateStub.calledTwice).to.be.true;
+      expect(connectionQueryStub.calledTwice).to.be.true;
+    });
+
+    it('should throw error when production org is detected', async () => {
+      const mockOrgs: SanitizedOrgAuthorization[] = [
+        {
+          username: 'production@example.com',
+          aliases: ['prod'],
+          instanceUrl: 'https://login.salesforce.com',
+          isScratchOrg: false,
+          isDevHub: false,
+          isSandbox: false,
+          orgId: '00D000000000001EAA',
+          oauthMethod: 'web',
+          isExpired: false,
+          configs: null,
+        },
+      ];
+
+      const mockAuthInfo = { username: 'test' };
+      authInfoCreateStub.resolves(mockAuthInfo);
+
+      // Mock SOQL query returning IsSandbox = false (production org)
+      connectionQueryStub.resolves({
+        records: [{ IsSandbox: false }],
+      });
+
+      try {
+        await validateSandboxOrgs(mockOrgs);
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).to.be.instanceOf(Error);
+        expect((error as Error).message).to.include('Production org(s) detected');
+        expect((error as Error).message).to.include('prod');
+      }
+    });
+
+    it('should throw error with multiple production orgs', async () => {
+      const mockOrgs: SanitizedOrgAuthorization[] = [
+        {
+          username: 'production1@example.com',
+          aliases: ['prod1'],
+          instanceUrl: 'https://login.salesforce.com',
+          isScratchOrg: false,
+          isDevHub: false,
+          isSandbox: false,
+          orgId: '00D000000000001EAA',
+          oauthMethod: 'web',
+          isExpired: false,
+          configs: null,
+        },
+        {
+          username: 'production2@example.com',
+          aliases: ['prod2'],
+          instanceUrl: 'https://login.salesforce.com',
+          isScratchOrg: false,
+          isDevHub: false,
+          isSandbox: false,
+          orgId: '00D000000000002EAA',
+          oauthMethod: 'web',
+          isExpired: false,
+          configs: null,
+        },
+      ];
+
+      const mockAuthInfo = { username: 'test' };
+      authInfoCreateStub.resolves(mockAuthInfo);
+
+      // Mock SOQL query returning IsSandbox = false for both orgs
+      connectionQueryStub.resolves({
+        records: [{ IsSandbox: false }],
+      });
+
+      try {
+        await validateSandboxOrgs(mockOrgs);
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).to.be.instanceOf(Error);
+        expect((error as Error).message).to.include('Production org(s) detected');
+        expect((error as Error).message).to.include('prod1');
+        expect((error as Error).message).to.include('prod2');
+      }
+    });
+
+
+    it('should warn but not fail when org validation connection fails', async () => {
+      const mockOrgs: SanitizedOrgAuthorization[] = [
+        {
+          username: 'broken@example.com',
+          aliases: ['broken'],
+          instanceUrl: 'https://broken.salesforce.com',
+          isScratchOrg: false,
+          isDevHub: false,
+          isSandbox: false,
+          orgId: '00D000000000001EAA',
+          oauthMethod: 'web',
+          isExpired: false,
+          configs: null,
+        },
+      ];
+
+      authInfoCreateStub.rejects(new Error('Connection failed'));
+
+      // Should not throw, but should log warning
+      await validateSandboxOrgs(mockOrgs);
+
+      expect(consoleErrorStub.called).to.be.true;
+      expect(consoleErrorStub.firstCall.args[0]).to.include('Warning: Unable to validate sandbox status');
+    });
+
+    it('should use username when no alias is available', async () => {
+      const mockOrgs: SanitizedOrgAuthorization[] = [
+        {
+          username: 'production@example.com',
+          aliases: null,
+          instanceUrl: 'https://login.salesforce.com',
+          isScratchOrg: false,
+          isDevHub: false,
+          isSandbox: false,
+          orgId: '00D000000000001EAA',
+          oauthMethod: 'web',
+          isExpired: false,
+          configs: null,
+        },
+      ];
+
+      const mockAuthInfo = { username: 'test' };
+      authInfoCreateStub.resolves(mockAuthInfo);
+
+      connectionQueryStub.resolves({
+        records: [{ IsSandbox: false }],
+      });
+
+      try {
+        await validateSandboxOrgs(mockOrgs);
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).to.be.instanceOf(Error);
+        expect((error as Error).message).to.include('production@example.com');
+      }
     });
   });
 });
