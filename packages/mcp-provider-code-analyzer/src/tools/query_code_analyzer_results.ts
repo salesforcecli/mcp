@@ -6,6 +6,7 @@ import { getErrorMessage } from "../utils.js";
 import * as Constants from "../constants.js";
 import { QueryResultsAction, QueryResultsActionImpl, QueryResultsInput, QueryResultsOutput } from "../actions/query-results.js";
 import { validateSelectorForQuery, parseSelectorToFilters } from "../selector.js";
+import { DEFAULT_TOPN_POLICY_LIMIT, enforceTopNLimit, makePolicyError } from "../policies.js";
 
 const DESCRIPTION: string =
     `Query a Code Analyzer results JSON file and return filtered violations.\n` +
@@ -13,8 +14,8 @@ const DESCRIPTION: string =
     `Use this after running "run_code_analyzer" to read the generated results file.\n` +
     `After completion, this tool will summarize and explain the filtered results to the user.\n` +
     `\n` +
-    `Policy: To avoid overwhelming results, this tool returns no more than the top 10 violations by default.\n` +
-    `Requesting more than 10 requires an explicit opt-in via allowLargeResultSet=true and is not recommended.\n` +
+    `Policy: To avoid overwhelming results, this tool returns no more than the top ${DEFAULT_TOPN_POLICY_LIMIT} violations by default.\n` +
+    `Requesting more than ${DEFAULT_TOPN_POLICY_LIMIT} requires an explicit opt-in via allowLargeResultSet=true and is not recommended.\n` +
     `\n` +
     `Examples (natural language → selector/topN):\n` +
     `- "Top 5 security in PMD" → selector: "Security:pmd", topN: 5\n` +
@@ -27,8 +28,8 @@ const DESCRIPTION: string =
 export const inputSchema = z.object({
     resultsFile: z.string().describe("Absolute path to a results JSON file produced by the code analyzer., if results file is not provided, call run_code_analyzer tool to generate a results file first."),
     selector: z.string().describe('Selector (same semantics as "list_code_analyzer_rules"): colon-separated tokens with optional OR-groups in parentheses, e.g., "Security:(pmd,eslint):High".'),
-    topN: z.number().int().positive().max(1000).default(5).describe("Return at most this many violations after filtering and sorting (default 5). Requests >10 require allowLargeResultSet=true."),
-    allowLargeResultSet: z.boolean().optional().describe("Explicit opt-in to request more than the top 10 violations. Defaults to false and is not recommended."),
+    topN: z.number().int().positive().max(1000).default(5).describe(`Return at most this many violations after filtering and sorting (default 5). Requests >${DEFAULT_TOPN_POLICY_LIMIT} require allowLargeResultSet=true.`),
+    allowLargeResultSet: z.boolean().optional().describe(`Explicit opt-in to request more than the top ${DEFAULT_TOPN_POLICY_LIMIT} violations. Defaults to false and is not recommended.`),
     sortBy: z.enum(['severity', 'rule', 'engine', 'file', 'none']).optional().describe("Optional primary sort field."),
     sortDirection: z.enum(['asc', 'desc']).optional().describe("Optional sort direction.")
 });
@@ -97,15 +98,10 @@ export class CodeAnalyzerQueryResultsMcpTool extends McpTool<InputArgsShape, Out
     public async exec(input: z.infer<typeof inputSchema>): Promise<CallToolResult> {
         try {
             validateInput(input);
-            // Enforce policy: cap results to top 10 unless explicitly allowed
-            if ((input.topN ?? 5) > 10 && !input.allowLargeResultSet) {
-                const msg = "Requested topN exceeds 10. Provide topN <= 10 or set allowLargeResultSet=true.";
-                const output = { status: msg };
-                return {
-                    isError: true,
-                    content: [{ type: "text", text: JSON.stringify(output) }],
-                    structuredContent: output
-                };
+            // Enforce policy: cap results to top N unless explicitly allowed
+            const limitCheck = enforceTopNLimit(input.topN, input.allowLargeResultSet, DEFAULT_TOPN_POLICY_LIMIT);
+            if (limitCheck.ok === false) {
+                return makePolicyError(limitCheck.message, limitCheck.code);
             }
             // Validate selector similarly to list-rules tool
             const validation = validateSelectorForQuery(input.selector);

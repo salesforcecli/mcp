@@ -5,6 +5,7 @@ import {ListRulesAction, ListRulesInput, ListRulesOutput, ListRulesActionImpl} f
 import {CodeAnalyzerConfigFactoryImpl} from "../factories/CodeAnalyzerConfigFactory.js";
 import {EnginePluginsFactoryImpl} from "../factories/EnginePluginsFactory.js";
 import {getErrorMessage} from "../utils.js";
+import { isFullListSelector, makePolicyError } from "../policies.js";
 import {
     ENGINE_NAMES,
     SEVERITY_NUMBERS,
@@ -127,27 +128,6 @@ export class CodeAnalyzerListRulesMcpTool extends McpTool<InputArgsShape, Output
         return invalid.length === 0 ? { valid: true } : { valid: false, invalidTokens: Array.from(new Set(invalid)) };
     }
 
-    /**
-     * Determines whether the selector resolves to the full unfiltered list of rules.
-     * This occurs when the selector is exactly "All" (case-insensitive), optionally with whitespace
-     * or wrapped in a single OR-group like "(All)".
-     */
-    private static isFullListSelector(selector: string): boolean {
-        if (!selector) return false;
-        const trimmed = selector.trim();
-        const lower = trimmed.toLowerCase();
-        if (lower === "all") return true;
-        // Single OR group containing only "All"
-        if (lower.startsWith("(") && lower.endsWith(")")) {
-            const inner = lower.slice(1, -1).trim();
-            // Accept common "all" variants inside the group, possibly with extra whitespace
-            if (inner === "all") return true;
-            const innerTokens = inner.split(",").map(t => t.trim()).filter(Boolean);
-            if (innerTokens.length === 1 && innerTokens[0] === "all") return true;
-        }
-        return false;
-    }
-
     public constructor(
         action: ListRulesAction = new ListRulesActionImpl({
             configFactory: new CodeAnalyzerConfigFactoryImpl(),
@@ -206,13 +186,9 @@ export class CodeAnalyzerListRulesMcpTool extends McpTool<InputArgsShape, Output
             };
         }
         // Enforce strict filter policy: do not allow returning the entire rules list unless explicitly requested
-        if (CodeAnalyzerListRulesMcpTool.isFullListSelector(input.selector) && !input.allowFullList) {
+        if (isFullListSelector(input.selector) && !input.allowFullList) {
             const msg = "Selector resolves to the full rules list. Provide at least two filters (e.g., 'pmd:Security') or set allowFullList=true to proceed.";
-            return {
-                isError: true,
-                content: [{ type: "text", text: JSON.stringify({ status: msg }) }],
-                structuredContent: { status: msg }
-            };
+            return makePolicyError(msg, 'POLICY_FULL_LIST_REJECTED');
         }
         try {
             output = await this.action.exec(input);

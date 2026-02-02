@@ -80,6 +80,7 @@ describe("CodeAnalyzerQueryResultsMcpTool", () => {
     const res = await tool.exec({ resultsFile: absResultsFile, selector: "Security", topN: 50 });
     expect(res.isError).toBe(true);
     expect(res.structuredContent?.status).toContain("exceeds 10");
+    expect((res.structuredContent as any).code).toBe('POLICY_TOPN_LIMIT');
   });
 
   it("allows topN > 10 when allowLargeResultSet is true", async () => {
