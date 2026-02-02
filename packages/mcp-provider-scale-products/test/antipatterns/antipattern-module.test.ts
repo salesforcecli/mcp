@@ -3,6 +3,8 @@ import { AntipatternModule } from "../../src/antipatterns/antipattern-module.js"
 import { GGDDetector } from "../../src/detectors/ggd-detector.js";
 import { GGDRecommender } from "../../src/recommenders/ggd-recommender.js";
 import { AntipatternType } from "../../src/models/antipattern-type.js";
+import { MethodRuntimeEnricher } from "../../src/runtime-enrichers/method-runtime-enricher.js";
+import { SOQLRuntimeEnricher } from "../../src/runtime-enrichers/soql-runtime-enricher.js";
 
 describe("AntipatternModule", () => {
   it("should return AntipatternResult with grouped structure", () => {
@@ -160,5 +162,60 @@ public class MyClass {
     expect(() => {
       new AntipatternModule(detector); // No recommender - should not throw
     }).not.toThrow();
+  });
+
+  it("should throw error when runtime enricher does not support detector type", () => {
+    const detector = new GGDDetector();
+    const soqlEnricher = new SOQLRuntimeEnricher();
+
+    expect(() => {
+      new AntipatternModule(detector, new GGDRecommender(), soqlEnricher);
+    }).toThrow("RuntimeEnricher does not support detector antipattern type");
+  });
+
+  it("should enrich detections with runtime data when enricher and runtime data provided", () => {
+    const detector = new GGDDetector();
+    const recommender = new GGDRecommender();
+    const enricher = new MethodRuntimeEnricher();
+    const module = new AntipatternModule(detector, recommender, enricher);
+
+    const apexCode = `
+public class TestClass {
+    public void testMethod() {
+        Schema.getGlobalDescribe();
+    }
+}`;
+    const runtimeData = {
+      methods: [
+        {
+          methodName: "testMethod",
+          entrypoints: [
+            {
+              entrypointName: "Trigger",
+              avgCpuTime: 3000,
+              avgDbTime: 100,
+              sumCpuTime: 6000,
+              sumDbTime: 200,
+            },
+          ],
+        },
+      ],
+      soqlRuntimeData: [],
+    };
+
+    const result = module.scan("TestClass", apexCode, runtimeData);
+
+    expect(result.detectedInstances).toHaveLength(1);
+    expect(result.detectedInstances[0].severitySource).toBe("runtime");
+    expect(result.detectedInstances[0].entrypoints_impacted_by_method).toBeTruthy();
+  });
+
+  it("should indicate hasRuntimeEnricher correctly", () => {
+    const detector = new GGDDetector();
+    const withEnricher = new AntipatternModule(detector, new GGDRecommender(), new MethodRuntimeEnricher());
+    const withoutEnricher = new AntipatternModule(detector, new GGDRecommender());
+
+    expect(withEnricher.hasRuntimeEnricher()).toBe(true);
+    expect(withoutEnricher.hasRuntimeEnricher()).toBe(false);
   });
 });

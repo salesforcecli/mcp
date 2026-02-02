@@ -1,10 +1,21 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
 import { ScanApexAntipatternsTool } from "../../src/tools/scan-apex-antipatterns-tool.js";
 import { ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
 import { StubServices, SpyTelemetryService } from "../test-doubles.js";
+import { Org } from "@salesforce/core";
+
+vi.mock("@salesforce/core", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@salesforce/core")>();
+  return {
+    ...actual,
+    Org: {
+      create: vi.fn().mockResolvedValue({ getOrgId: () => "org1" }),
+    },
+  };
+});
 
 describe("ScanApexAntipatternsTool", () => {
   let tool: ScanApexAntipatternsTool;
@@ -12,6 +23,7 @@ describe("ScanApexAntipatternsTool", () => {
   let telemetryService: SpyTelemetryService;
   let tempDir: string;
   let testFilePath: string;
+  let originalCwd: string;
 
   // Helper function to create a test file
   const createTestFile = (fileName: string, content: string): string => {
@@ -21,6 +33,8 @@ describe("ScanApexAntipatternsTool", () => {
   };
 
   beforeEach(() => {
+    // Save original working directory
+    originalCwd = process.cwd();
     services = new StubServices();
     telemetryService = services.telemetryService as SpyTelemetryService;
     tool = new ScanApexAntipatternsTool(services);
@@ -29,9 +43,23 @@ describe("ScanApexAntipatternsTool", () => {
   });
 
   afterEach(() => {
+    // Restore original working directory before cleanup to avoid Windows EPERM errors
+    // The tool changes directory with process.chdir(), so we need to change back
+    try {
+      process.chdir(originalCwd);
+    } catch (error) {
+      // Ignore errors when changing back - directory might not exist anymore
+    }
+    
     // Clean up temporary directory
+    // Note: On Windows, if files are still locked, cleanup may fail with EPERM.
+    // This is acceptable as temp directories will be cleaned up by the OS eventually.
     if (fs.existsSync(tempDir)) {
-      fs.rmSync(tempDir, { recursive: true, force: true });
+      try {
+        fs.rmSync(tempDir, { recursive: true, force: true });
+      } catch {
+        // Ignore cleanup errors - temp directory will be cleaned up by OS eventually
+      }
     }
   });
 
@@ -443,5 +471,226 @@ public class TestClass {
     // Should show static analysis message since StubOrgService returns undefined
     expect(text).toContain("statically generated based on code context");
     expect(text).toContain("ApexGuru");
+  });
+
+  it("should show runtime metrics message and runtime severity when org and runtime API succeed", async () => {
+    const apexCode = `
+public class TestClass {
+    public void testMethod() {
+        Schema.getGlobalDescribe();
+    }
+}`;
+    testFilePath = createTestFile("TestClass.cls", apexCode);
+
+    const mockConnection = {
+      getApiVersion: () => "65.0",
+      instanceUrl: "https://test.salesforce.com",
+      getUsername: () => "user@test.com",
+      request: vi.fn().mockResolvedValue({
+        status: "SUCCESS",
+        message: "OK",
+        classData: {
+          TestClass: {
+            methods: [
+              {
+                methodName: "testMethod",
+                entrypoints: [
+                  {
+                    entrypointName: "Trigger",
+                    avgCpuTime: 500,
+                    avgDbTime: 100,
+                    sumCpuTime: 1000,
+                    sumDbTime: 200,
+                  },
+                ],
+              },
+            ],
+            soqlRuntimeData: [],
+          },
+        },
+      }),
+    };
+
+    (services as any).orgService = {
+      getConnection: async () => mockConnection as any,
+      getDefaultTargetOrg: async () => undefined,
+      getAllowedOrgUsernames: async () => new Set<string>(),
+      getAllowedOrgs: async () => [],
+      getDefaultTargetDevHub: async () => undefined,
+      findOrgByUsernameOrAlias: () => undefined,
+    };
+
+    const input = {
+      className: "TestClass",
+      apexFilePath: testFilePath,
+      directory: tempDir,
+      usernameOrAlias: "user@test.com",
+    };
+
+    const result = await tool.exec(input);
+    const text = (result.content[0] as any).text;
+
+    expect(text).toContain("actual runtime metrics");
+    expect(text).toContain("💡");
+  });
+
+  it("should show access denied message when runtime API returns access denied", async () => {
+    const apexCode = `
+public class TestClass {
+    public void testMethod() {
+        Schema.getGlobalDescribe();
+    }
+}`;
+    testFilePath = createTestFile("TestClass.cls", apexCode);
+
+    const mockConnection = {
+      getApiVersion: () => "65.0",
+      instanceUrl: "https://test.salesforce.com",
+      getUsername: () => "user@test.com",
+      request: vi.fn().mockResolvedValue({
+        status: "FAILURE",
+        message: "Access denied to ApexGuru",
+        classData: {},
+      }),
+    };
+
+    (services as any).orgService = {
+      getConnection: async () => mockConnection as any,
+      getDefaultTargetOrg: async () => undefined,
+      getAllowedOrgUsernames: async () => new Set<string>(),
+      getAllowedOrgs: async () => [],
+      getDefaultTargetDevHub: async () => undefined,
+      findOrgByUsernameOrAlias: () => undefined,
+    };
+
+    const input = {
+      className: "TestClass",
+      apexFilePath: testFilePath,
+      directory: tempDir,
+      usernameOrAlias: "user@test.com",
+    };
+
+    const result = await tool.exec(input);
+    const text = (result.content[0] as any).text;
+
+    expect(text).toContain("contact Salesforce customer support");
+    expect(text).toContain("ApexGuru");
+  });
+
+  it("should show runtime fetch failed message when runtime API returns error", async () => {
+    const apexCode = `
+public class TestClass {
+    public void testMethod() {
+        Schema.getGlobalDescribe();
+    }
+}`;
+    testFilePath = createTestFile("TestClass.cls", apexCode);
+
+    const mockConnection = {
+      getApiVersion: () => "65.0",
+      instanceUrl: "https://test.salesforce.com",
+      getUsername: () => "user@test.com",
+      request: vi.fn().mockResolvedValue({
+        status: "FAILURE",
+        message: "Internal server error",
+        classData: {},
+      }),
+    };
+
+    (services as any).orgService = {
+      getConnection: async () => mockConnection as any,
+      getDefaultTargetOrg: async () => undefined,
+      getAllowedOrgUsernames: async () => new Set<string>(),
+      getAllowedOrgs: async () => [],
+      getDefaultTargetDevHub: async () => undefined,
+      findOrgByUsernameOrAlias: () => undefined,
+    };
+
+    const input = {
+      className: "TestClass",
+      apexFilePath: testFilePath,
+      directory: tempDir,
+      usernameOrAlias: "user@test.com",
+    };
+
+    const result = await tool.exec(input);
+    const text = (result.content[0] as any).text;
+
+    expect(text).toContain("Runtime data fetch failed");
+    expect(text).toContain("statically generated");
+  });
+
+  it("should proceed with static analysis when getConnection throws", async () => {
+    const apexCode = `
+public class TestClass {
+    public void testMethod() {
+        Schema.getGlobalDescribe();
+    }
+}`;
+    testFilePath = createTestFile("TestClass.cls", apexCode);
+
+    (services as any).orgService = {
+      getConnection: async () => {
+        throw new Error("Connection failed");
+      },
+      getDefaultTargetOrg: async () => undefined,
+      getAllowedOrgUsernames: async () => new Set<string>(),
+      getAllowedOrgs: async () => [],
+      getDefaultTargetDevHub: async () => undefined,
+      findOrgByUsernameOrAlias: () => undefined,
+    };
+
+    const input = {
+      className: "TestClass",
+      apexFilePath: testFilePath,
+      directory: tempDir,
+      usernameOrAlias: "user@test.com",
+    };
+
+    const result = await tool.exec(input);
+    const text = (result.content[0] as any).text;
+
+    expect(result.content).toHaveLength(1);
+    expect(text).toContain("statically generated");
+  });
+
+  it("should proceed with static analysis when org has no orgId", async () => {
+    const apexCode = `
+public class TestClass {
+    public void testMethod() {
+        Schema.getGlobalDescribe();
+    }
+}`;
+    testFilePath = createTestFile("TestClass.cls", apexCode);
+
+    vi.mocked(Org.create).mockResolvedValueOnce({ getOrgId: () => "" } as any);
+
+    const mockConnection = {
+      getApiVersion: () => "65.0",
+      instanceUrl: "https://test.salesforce.com",
+      getUsername: () => "user@test.com",
+      request: vi.fn().mockResolvedValue({ status: "SUCCESS", message: "OK", classData: {} }),
+    };
+
+    (services as any).orgService = {
+      getConnection: async () => mockConnection as any,
+      getDefaultTargetOrg: async () => undefined,
+      getAllowedOrgUsernames: async () => new Set<string>(),
+      getAllowedOrgs: async () => [],
+      getDefaultTargetDevHub: async () => undefined,
+      findOrgByUsernameOrAlias: () => undefined,
+    };
+
+    const input = {
+      className: "TestClass",
+      apexFilePath: testFilePath,
+      directory: tempDir,
+      usernameOrAlias: "user@test.com",
+    };
+
+    const result = await tool.exec(input);
+    const text = (result.content[0] as any).text;
+
+    expect(text).toContain("statically generated");
   });
 });
