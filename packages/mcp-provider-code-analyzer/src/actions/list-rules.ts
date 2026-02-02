@@ -18,8 +18,18 @@ type ListRulesActionOptions = {
 export type ListRulesInput = {
     selector: string
     /**
-     * When true, allows returning the complete list of rules matching the "All" selector.
-     * If false or omitted, a selector that equates to the full set (e.g., "All") will be rejected.
+     * Explicit opt-in to return the full, unfiltered rules list.
+     *
+     * - Defaults to false and is not recommended (may return very large payloads).
+     * - When false (default), selectors that resolve to the full set (e.g., "All" or "(All)") are rejected.
+     * - "(All,Security)" is NOT considered a full-list selector and is allowed without opt-in.
+     *
+     * Examples:
+     * - { selector: "All" }                          → rejected (requires allowFullList: true)
+     * - { selector: "All", allowFullList: true }     → allowed
+     * - { selector: "(All)" }                        → rejected (requires allowFullList: true)
+     * - { selector: "(All,Security)" }               → allowed (not a full-list selector)
+     * - Prefer combining filters, e.g. "pmd:Security" or "(Security,Performance):eslint:2"
      */
     allowFullList?: boolean
 };
