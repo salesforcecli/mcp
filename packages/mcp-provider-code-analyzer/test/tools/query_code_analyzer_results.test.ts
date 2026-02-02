@@ -73,6 +73,24 @@ describe("CodeAnalyzerQueryResultsMcpTool", () => {
     expect(tool.getName()).toBe("query_code_analyzer_results");
   });
 
+  it("rejects requests with topN > 10 unless allowLargeResultSet is true", async () => {
+    const stubAction = new StubQueryResultsAction();
+    const tool = new CodeAnalyzerQueryResultsMcpTool(stubAction);
+    const absResultsFile = path.join(os.tmpdir(), "dummy-results.json");
+    const res = await tool.exec({ resultsFile: absResultsFile, selector: "Security", topN: 50 });
+    expect(res.isError).toBe(true);
+    expect(res.structuredContent?.status).toContain("exceeds 10");
+  });
+
+  it("allows topN > 10 when allowLargeResultSet is true", async () => {
+    const stubAction = new StubQueryResultsAction();
+    const tool = new CodeAnalyzerQueryResultsMcpTool(stubAction);
+    const absResultsFile = path.join(os.tmpdir(), "dummy-results.json");
+    const res = await tool.exec({ resultsFile: absResultsFile, selector: "Security", topN: 50, allowLargeResultSet: true } as any);
+    expect(res.isError).not.toBe(true);
+    expect(stubAction.lastInput?.topN).toBe(50);
+  });
+
   it("returns isError with message for invalid selector", async () => {
     const stubAction = new StubQueryResultsAction();
     const tool = new CodeAnalyzerQueryResultsMcpTool(stubAction);
