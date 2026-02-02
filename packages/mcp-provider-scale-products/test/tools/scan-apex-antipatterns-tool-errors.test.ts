@@ -10,8 +10,11 @@ describe("ScanApexAntipatternsTool - Error Handling", () => {
   let services: StubServices;
   let telemetryService: SpyTelemetryService;
   let tempDir: string;
+  let originalCwd: string;
 
   beforeEach(() => {
+    // Save original working directory
+    originalCwd = process.cwd();
     services = new StubServices();
     telemetryService = services.telemetryService as SpyTelemetryService;
     tool = new ScanApexAntipatternsTool(services);
@@ -19,8 +22,23 @@ describe("ScanApexAntipatternsTool - Error Handling", () => {
   });
 
   afterEach(() => {
+    // Restore original working directory before cleanup to avoid Windows EPERM errors
+    // The tool changes directory with process.chdir(), so we need to change back
+    try {
+      process.chdir(originalCwd);
+    } catch (error) {
+      // Ignore errors when changing back - directory might not exist anymore
+    }
+    
+    // Clean up temporary directory
+    // Note: On Windows, if files are still locked, cleanup may fail with EPERM.
+    // temp directories will be cleaned up by the OS eventually.
     if (fs.existsSync(tempDir)) {
-      fs.rmSync(tempDir, { recursive: true, force: true });
+      try {
+        fs.rmSync(tempDir, { recursive: true, force: true });
+      } catch {
+        // Ignore cleanup errors - temp directory will be cleaned up by OS eventually
+      }
     }
   });
 
