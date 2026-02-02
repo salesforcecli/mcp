@@ -130,7 +130,7 @@ export class CodeAnalyzerListRulesMcpTool extends McpTool<InputArgsShape, Output
     }
 
     public getReleaseState(): ReleaseState {
-        return ReleaseState.NON_GA;
+        return ReleaseState.GA;
     }
 
     public getToolsets(): Toolset[] {
