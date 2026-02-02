@@ -303,11 +303,13 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
   }
 
   /**
-   * Resolves org connection from the provided username/alias or the default target org
-   * Returns null if no org is authenticated
+   * Resolves org connection from the explicitly provided username/alias
+   * Returns null if usernameOrAlias is not provided (will proceed with static-only analysis)
    * 
-   * @param usernameOrAlias - Optional username or alias to use instead of default target org
-   * @returns Object with orgId, instanceUrl, connection, and userId, or null if unavailable
+   * Users must explicitly specify which org to use via usernameOrAlias parameter.
+   * 
+   * @param usernameOrAlias - Username or alias for the org to use (must be explicitly provided)
+   * @returns Object with orgId, instanceUrl, connection, and userId, or null if usernameOrAlias not provided
    */
   private async resolveOrgConnection(usernameOrAlias?: string): Promise<{ 
     orgId: string; 
@@ -315,20 +317,13 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
     connection: Connection;
     userId: string;
   } | null> {
+    if (!usernameOrAlias) {
+      return null;
+    }
+
     try {
       const orgService = this.services.getOrgService();
-      
-      // Use provided usernameOrAlias, or fall back to default target org
-      let targetOrg = usernameOrAlias;
-      if (!targetOrg) {
-        const defaultOrg = await orgService.getDefaultTargetOrg();
-        if (!defaultOrg?.value) {
-          return null;
-        }
-        targetOrg = defaultOrg.value;
-      }
-
-      const connection = await orgService.getConnection(targetOrg);
+      const connection = await orgService.getConnection(usernameOrAlias);
       const org = await Org.create({ connection });
       const orgId = org.getOrgId();
       const instanceUrl = connection.instanceUrl;
