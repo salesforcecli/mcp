@@ -35,6 +35,7 @@ const DESCRIPTION: string = `A tool for selecting Code Analyzer rules based on a
     `\n` +
     `Policy: To prevent overly broad results, the full unfiltered list of rules is not returned unless you explicitly set allowFullList=true.\n` +
     `This flag defaults to false and its use is not recommended.\n` +
+    `Note: Listing large rule sets can significantly increase token consumption.\n` +
     `\n` +
     `Examples:\n` +
     `- "Recommended" → all rules tagged as Recommended.\n` +

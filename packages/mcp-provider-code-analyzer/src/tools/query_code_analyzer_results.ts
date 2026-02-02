@@ -16,6 +16,7 @@ const DESCRIPTION: string =
     `\n` +
     `Policy: To avoid overwhelming results, this tool returns no more than the top ${DEFAULT_TOPN_POLICY_LIMIT} violations by default.\n` +
     `Requesting more than ${DEFAULT_TOPN_POLICY_LIMIT} requires an explicit opt-in via allowLargeResultSet=true and is not recommended.\n` +
+    `Note: Querying larger result sets can significantly increase token consumption.\n` +
     `\n` +
     `Examples (natural language → selector/topN):\n` +
     `- "Top 5 security in PMD" → selector: "Security:pmd", topN: 5\n` +
