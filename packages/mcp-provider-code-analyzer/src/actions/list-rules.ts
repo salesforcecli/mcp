@@ -17,6 +17,11 @@ type ListRulesActionOptions = {
 
 export type ListRulesInput = {
     selector: string
+    /**
+     * When true, allows returning the complete list of rules matching the "All" selector.
+     * If false or omitted, a selector that equates to the full set (e.g., "All") will be rejected.
+     */
+    allowFullList?: boolean
 };
 
 

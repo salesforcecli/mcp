@@ -104,6 +104,21 @@ describe('CodeAnalyzerListRulesMcpTool', () => {
         expect(result.structuredContent?.status).toContain('Invalid selector token(s): <empty>');
       });
 
+    it('rejects full list selector "All" unless allowFullList is true', async () => {
+        const tool = new CodeAnalyzerListRulesMcpTool(new StubListRulesAction({ status: 'success', rules: [] }));
+        const result = await tool.exec({ selector: 'All' });
+        expect(result.isError).toBe(true);
+        expect(result.structuredContent?.status).toContain('Selector resolves to the full rules list');
+    });
+
+    it('allows full list when allowFullList is true', async () => {
+        const expected: ListRulesOutput = { status: 'success', rules: [] };
+        const tool = new CodeAnalyzerListRulesMcpTool(new StubListRulesAction(expected));
+        const result = await tool.exec({ selector: 'All', allowFullList: true });
+        expect(result.isError).not.toBe(true);
+        expect(result.structuredContent).toEqual(expected);
+    });
+
     it('validateSelector accepts OR groups in parentheses', () => {
         const res = CodeAnalyzerListRulesMcpTool.validateSelector('pmd:(Performance,Security):2');
         expect(res.valid).toBe(true);

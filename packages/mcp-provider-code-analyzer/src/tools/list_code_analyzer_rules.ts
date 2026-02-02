@@ -32,6 +32,9 @@ const DESCRIPTION: string = `A tool for selecting Code Analyzer rules based on a
     `A selector is a colon-separated (:) string of tokens; tags and severity names are case-insensitive.\n` +
     `You can OR multiple tokens of the same type by grouping them in parentheses and separating with commas, e.g. "(Performance,Security)".\n` +
     `\n` +
+    `Policy: To prevent overly broad results, the full unfiltered list of rules is not returned unless you explicitly set allowFullList=true.\n` +
+    `This flag defaults to false and its use is not recommended.\n` +
+    `\n` +
     `Examples:\n` +
     `- "Recommended" → all rules tagged as Recommended.\n` +
     `- "Performance:pmd:Critical" → rules in the PMD engine with the Performance tag and Critical severity.\n` +
@@ -55,7 +58,12 @@ const DESCRIPTION: string = `A tool for selecting Code Analyzer rules based on a
     `;
 
 export const inputSchema = z.object({
-    selector: z.string().describe("A selector for Code Analyzer rules. Must meet the criteria outlined in the tool-level description.")
+    selector: z.string().describe("A selector for Code Analyzer rules. Must meet the criteria outlined in the tool-level description."),
+    allowFullList: z.boolean().optional().describe(
+        "Explicit opt-in to return the full list of rules (e.g., when using the 'All' selector). " +
+        "If not set, selectors that resolve to the complete unfiltered rules list will be rejected. " +
+        "Defaults to false and is not recommended."
+    )
 });
 type InputArgsShape = typeof inputSchema.shape;
 
@@ -119,6 +127,27 @@ export class CodeAnalyzerListRulesMcpTool extends McpTool<InputArgsShape, Output
         return invalid.length === 0 ? { valid: true } : { valid: false, invalidTokens: Array.from(new Set(invalid)) };
     }
 
+    /**
+     * Determines whether the selector resolves to the full unfiltered list of rules.
+     * This occurs when the selector is exactly "All" (case-insensitive), optionally with whitespace
+     * or wrapped in a single OR-group like "(All)".
+     */
+    private static isFullListSelector(selector: string): boolean {
+        if (!selector) return false;
+        const trimmed = selector.trim();
+        const lower = trimmed.toLowerCase();
+        if (lower === "all") return true;
+        // Single OR group containing only "All"
+        if (lower.startsWith("(") && lower.endsWith(")")) {
+            const inner = lower.slice(1, -1).trim();
+            // Accept common "all" variants inside the group, possibly with extra whitespace
+            if (inner === "all") return true;
+            const innerTokens = inner.split(",").map(t => t.trim()).filter(Boolean);
+            if (innerTokens.length === 1 && innerTokens[0] === "all") return true;
+        }
+        return false;
+    }
+
     public constructor(
         action: ListRulesAction = new ListRulesActionImpl({
             configFactory: new CodeAnalyzerConfigFactoryImpl(),
@@ -170,6 +199,15 @@ export class CodeAnalyzerListRulesMcpTool extends McpTool<InputArgsShape, Output
         const validation = CodeAnalyzerListRulesMcpTool.validateSelector(input.selector);
         if (validation.valid === false) {
             const msg = `Invalid selector token(s): ${validation.invalidTokens.join(', ')}`;
+            return {
+                isError: true,
+                content: [{ type: "text", text: JSON.stringify({ status: msg }) }],
+                structuredContent: { status: msg }
+            };
+        }
+        // Enforce strict filter policy: do not allow returning the entire rules list unless explicitly requested
+        if (CodeAnalyzerListRulesMcpTool.isFullListSelector(input.selector) && !input.allowFullList) {
+            const msg = "Selector resolves to the full rules list. Provide at least two filters (e.g., 'pmd:Security') or set allowFullList=true to proceed.";
             return {
                 isError: true,
                 content: [{ type: "text", text: JSON.stringify({ status: msg }) }],
