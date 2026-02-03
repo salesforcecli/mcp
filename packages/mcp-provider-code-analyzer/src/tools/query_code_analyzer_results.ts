@@ -6,7 +6,7 @@ import { getErrorMessage } from "../utils.js";
 import * as Constants from "../constants.js";
 import { QueryResultsAction, QueryResultsActionImpl, QueryResultsInput, QueryResultsOutput } from "../actions/query-results.js";
 import { validateSelectorForQuery, parseSelectorToFilters } from "../selector.js";
-import { DEFAULT_TOPN_POLICY_LIMIT, enforceTopNLimit, makePolicyError } from "../policies.js";
+import { DEFAULT_TOPN_POLICY_LIMIT, computeEffectiveTopN } from "../policies.js";
 
 const DESCRIPTION: string =
     `Query a Code Analyzer results JSON file and return filtered violations.\n` +
@@ -100,10 +100,7 @@ export class CodeAnalyzerQueryResultsMcpTool extends McpTool<InputArgsShape, Out
         try {
             validateInput(input);
             // Enforce policy: cap results to top N unless explicitly allowed
-            const limitCheck = enforceTopNLimit(input.topN, input.allowLargeResultSet, DEFAULT_TOPN_POLICY_LIMIT);
-            if (limitCheck.ok === false) {
-                return makePolicyError(limitCheck.message, limitCheck.code);
-            }
+            const { effectiveTopN, truncated } = computeEffectiveTopN(input.topN, input.allowLargeResultSet, DEFAULT_TOPN_POLICY_LIMIT);
             // Validate selector similarly to list-rules tool
             const validation = validateSelectorForQuery(input.selector);
             if (validation.valid === false) {
@@ -119,7 +116,7 @@ export class CodeAnalyzerQueryResultsMcpTool extends McpTool<InputArgsShape, Out
             const output: QueryResultsOutput = await this.action.exec({
                 resultsFile: input.resultsFile,
                 filters,
-                topN: input.topN,
+                topN: effectiveTopN,
                 sortBy: input.sortBy,
                 sortDirection: input.sortDirection
             } as QueryResultsInput);
@@ -128,12 +125,20 @@ export class CodeAnalyzerQueryResultsMcpTool extends McpTool<InputArgsShape, Out
                 selector: input.selector,
                 sortBy: input.sortBy,
                 sortDirection: input.sortDirection,
-                topN: input.topN ?? 5,
+                topN: effectiveTopN,
                 totalViolations: output.totalViolations ?? 0,
                 totalMatches: output.totalMatches ?? 0
             });
+            const contentItems: { type: "text"; text: string }[] = [];
+            if (truncated) {
+                contentItems.push({
+                    type: "text",
+                    text: `Note: Showing only the first ${DEFAULT_TOPN_POLICY_LIMIT} violations. Set allowLargeResultSet=true to retrieve more.`
+                });
+            }
+            contentItems.push({ type: "text", text: JSON.stringify(output) });
             return {
-                content: [{ type: "text", text: JSON.stringify(output) }],
+                content: contentItems,
                 structuredContent: output
             };
         } catch (e) {

@@ -47,3 +47,29 @@ export function isFullListSelector(selector: string): boolean {
   return false;
 }
 
+export const DEFAULT_LIST_POLICY_LIMIT = 10;
+
+export function capArrayIfFullList<T>(
+  selector: string,
+  allowFullList: boolean | undefined,
+  items: T[],
+  limit: number = DEFAULT_LIST_POLICY_LIMIT
+): { items: T[]; truncated: boolean } {
+  if (isFullListSelector(selector) && !allowFullList) {
+    return { items: items.slice(0, limit), truncated: items.length > limit };
+  }
+  return { items, truncated: false };
+}
+
+export function computeEffectiveTopN(
+  topN: number | undefined,
+  allowLargeResultSet: boolean | undefined,
+  limit: number = DEFAULT_TOPN_POLICY_LIMIT
+): { effectiveTopN: number; truncated: boolean } {
+  const requested = topN ?? 5;
+  if (requested > limit && !allowLargeResultSet) {
+    return { effectiveTopN: limit, truncated: true };
+  }
+  return { effectiveTopN: requested, truncated: false };
+}
+
