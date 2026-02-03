@@ -5,6 +5,7 @@ import {ListRulesAction, ListRulesInput, ListRulesOutput, ListRulesActionImpl} f
 import {CodeAnalyzerConfigFactoryImpl} from "../factories/CodeAnalyzerConfigFactory.js";
 import {EnginePluginsFactoryImpl} from "../factories/EnginePluginsFactory.js";
 import {getErrorMessage} from "../utils.js";
+import { isFullListSelector, makePolicyError } from "../policies.js";
 import {
     ENGINE_NAMES,
     SEVERITY_NUMBERS,
@@ -32,6 +33,10 @@ const DESCRIPTION: string = `A tool for selecting Code Analyzer rules based on a
     `A selector is a colon-separated (:) string of tokens; tags and severity names are case-insensitive.\n` +
     `You can OR multiple tokens of the same type by grouping them in parentheses and separating with commas, e.g. "(Performance,Security)".\n` +
     `\n` +
+    `Policy: To prevent overly broad results, the full unfiltered list of rules is not returned unless you explicitly set allowFullList=true.\n` +
+    `This flag defaults to false and its use is not recommended.\n` +
+    `Note: Listing large rule sets can significantly increase token consumption.\n` +
+    `\n` +
     `Examples:\n` +
     `- "Recommended" → all rules tagged as Recommended.\n` +
     `- "Performance:pmd:Critical" → rules in the PMD engine with the Performance tag and Critical severity.\n` +
@@ -55,7 +60,12 @@ const DESCRIPTION: string = `A tool for selecting Code Analyzer rules based on a
     `;
 
 export const inputSchema = z.object({
-    selector: z.string().describe("A selector for Code Analyzer rules. Must meet the criteria outlined in the tool-level description.")
+    selector: z.string().describe("A selector for Code Analyzer rules. Must meet the criteria outlined in the tool-level description."),
+    allowFullList: z.boolean().optional().describe(
+        "Explicit opt-in to return the full list of rules (e.g., when using the 'All' selector). " +
+        "If not set, selectors that resolve to the complete unfiltered rules list will be rejected. " +
+        "Defaults to false and is not recommended."
+    )
 });
 type InputArgsShape = typeof inputSchema.shape;
 
@@ -175,6 +185,11 @@ export class CodeAnalyzerListRulesMcpTool extends McpTool<InputArgsShape, Output
                 content: [{ type: "text", text: JSON.stringify({ status: msg }) }],
                 structuredContent: { status: msg }
             };
+        }
+        // Enforce strict filter policy: do not allow returning the entire rules list unless explicitly requested
+        if (isFullListSelector(input.selector) && !input.allowFullList) {
+            const msg = "Selector resolves to the full rules list. Provide at least two filters (e.g., 'pmd:Security') or set allowFullList=true to proceed.";
+            return makePolicyError(msg, 'POLICY_FULL_LIST_REJECTED');
         }
         try {
             output = await this.action.exec(input);

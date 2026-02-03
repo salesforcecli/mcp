@@ -128,6 +128,37 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
             expect(result.content[0].text).toEqual(JSON.stringify(expectedOutput));
             expect(result.structuredContent).toEqual(expectedOutput);
         });
+
+        it('When selector has invalid tokens, then return validation error (no action call)', async () => {
+            const spyAction: SpyRunAction = new SpyRunAction();
+            tool = new CodeAnalyzerRunMcpTool(spyAction);
+            const result: CallToolResult = await tool.exec({
+                target: [path.join(PATH_TO_SAMPLE_TARGETS, 'ApexTarget1.cls')],
+                selector: 'NotATag:9999'
+            } as RunInput);
+            expect(result.isError).toBe(true);
+            expect(result.structuredContent?.status).toContain('Invalid selector token(s):');
+            // Ensure action was not invoked
+            expect(spyAction.execCallHistory).toHaveLength(0);
+        });
+
+        it.each([
+            { selector: 'sfge:Security', engine: 'sfge' },
+            { selector: 'flow:High', engine: 'flow' },
+            { selector: '(Security,sfge)', engine: 'sfge' },
+            { selector: 'pmd:(Performance,flow):2', engine: 'flow' },
+        ])('When selector includes unsupported engine ($engine), return error', async ({ selector }) => {
+            const spyAction: SpyRunAction = new SpyRunAction();
+            tool = new CodeAnalyzerRunMcpTool(spyAction);
+            const result: CallToolResult = await tool.exec({
+                target: [path.join(PATH_TO_SAMPLE_TARGETS, 'ApexTarget1.cls'), path.join(PATH_TO_SAMPLE_TARGETS, 'ApexTarget2.cls')],
+                selector
+            } as RunInput);
+            expect(result.isError).toBe(true);
+            expect(result.structuredContent?.status).toContain('Unsupported engine(s) for this tool');
+            // Ensure action was not invoked
+            expect(spyAction.execCallHistory).toHaveLength(0);
+        });
     });
 });
 

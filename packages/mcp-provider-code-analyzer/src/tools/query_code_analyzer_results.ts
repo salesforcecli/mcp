@@ -6,12 +6,17 @@ import { getErrorMessage } from "../utils.js";
 import * as Constants from "../constants.js";
 import { QueryResultsAction, QueryResultsActionImpl, QueryResultsInput, QueryResultsOutput } from "../actions/query-results.js";
 import { validateSelectorForQuery, parseSelectorToFilters } from "../selector.js";
+import { DEFAULT_TOPN_POLICY_LIMIT, computeEffectiveTopN } from "../policies.js";
 
 const DESCRIPTION: string =
     `Query a Code Analyzer results JSON file and return filtered violations.\n` +
     `Supports filters like severity, category/tag, engine, rule, and file name, plus top-N and sorting.\n` +
     `Use this after running "run_code_analyzer" to read the generated results file.\n` +
     `After completion, this tool will summarize and explain the filtered results to the user.\n` +
+    `\n` +
+    `Policy: To avoid overwhelming results, this tool returns no more than the top ${DEFAULT_TOPN_POLICY_LIMIT} violations by default.\n` +
+    `Requesting more than ${DEFAULT_TOPN_POLICY_LIMIT} requires an explicit opt-in via allowLargeResultSet=true and is not recommended.\n` +
+    `Note: Querying larger result sets can significantly increase token consumption.\n` +
     `\n` +
     `Examples (natural language → selector/topN):\n` +
     `- "Top 5 security in PMD" → selector: "Security:pmd", topN: 5\n` +
@@ -24,7 +29,8 @@ const DESCRIPTION: string =
 export const inputSchema = z.object({
     resultsFile: z.string().describe("Absolute path to a results JSON file produced by the code analyzer., if results file is not provided, call run_code_analyzer tool to generate a results file first."),
     selector: z.string().describe('Selector (same semantics as "list_code_analyzer_rules"): colon-separated tokens with optional OR-groups in parentheses, e.g., "Security:(pmd,eslint):High".'),
-    topN: z.number().int().positive().max(1000).default(5).describe("Return at most this many violations after filtering and sorting (default 5)."),
+    topN: z.number().int().positive().max(1000).default(5).describe(`Return at most this many violations after filtering and sorting (default 5). Requests >${DEFAULT_TOPN_POLICY_LIMIT} require allowLargeResultSet=true.`),
+    allowLargeResultSet: z.boolean().optional().describe(`Explicit opt-in to request more than the top ${DEFAULT_TOPN_POLICY_LIMIT} violations. Defaults to false and is not recommended.`),
     sortBy: z.enum(['severity', 'rule', 'engine', 'file', 'none']).optional().describe("Optional primary sort field."),
     sortDirection: z.enum(['asc', 'desc']).optional().describe("Optional sort direction.")
 });
@@ -93,6 +99,8 @@ export class CodeAnalyzerQueryResultsMcpTool extends McpTool<InputArgsShape, Out
     public async exec(input: z.infer<typeof inputSchema>): Promise<CallToolResult> {
         try {
             validateInput(input);
+            // Enforce policy: cap results to top N unless explicitly allowed
+            const { effectiveTopN, truncated } = computeEffectiveTopN(input.topN, input.allowLargeResultSet, DEFAULT_TOPN_POLICY_LIMIT);
             // Validate selector similarly to list-rules tool
             const validation = validateSelectorForQuery(input.selector);
             if (validation.valid === false) {
@@ -108,7 +116,7 @@ export class CodeAnalyzerQueryResultsMcpTool extends McpTool<InputArgsShape, Out
             const output: QueryResultsOutput = await this.action.exec({
                 resultsFile: input.resultsFile,
                 filters,
-                topN: input.topN,
+                topN: effectiveTopN,
                 sortBy: input.sortBy,
                 sortDirection: input.sortDirection
             } as QueryResultsInput);
@@ -117,12 +125,20 @@ export class CodeAnalyzerQueryResultsMcpTool extends McpTool<InputArgsShape, Out
                 selector: input.selector,
                 sortBy: input.sortBy,
                 sortDirection: input.sortDirection,
-                topN: input.topN ?? 5,
+                topN: effectiveTopN,
                 totalViolations: output.totalViolations ?? 0,
                 totalMatches: output.totalMatches ?? 0
             });
+            const contentItems: { type: "text"; text: string }[] = [];
+            if (truncated) {
+                contentItems.push({
+                    type: "text",
+                    text: `Note: Showing only the first ${DEFAULT_TOPN_POLICY_LIMIT} violations. Set allowLargeResultSet=true to retrieve more.`
+                });
+            }
+            contentItems.push({ type: "text", text: JSON.stringify(output) });
             return {
-                content: [{ type: "text", text: JSON.stringify(output) }],
+                content: contentItems,
                 structuredContent: output
             };
         } catch (e) {
