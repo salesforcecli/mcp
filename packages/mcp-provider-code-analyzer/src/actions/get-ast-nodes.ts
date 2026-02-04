@@ -12,32 +12,98 @@
  */
 export function getAstNodes(code: string, language: string): string[] {
   const lang = (language ?? '').toLowerCase().trim();
-  if (lang === 'xml' || lang === 'html') {
-    return extractXmlTagNames(code);
-  }
+  
   return [];
 }
 
+
+import { XMLParser } from "fast-xml-parser";
+import * as fs from "fs";
+
+interface AstNode {
+  nodeName: string;
+  attributes: Record<string, string>;
+  parent?: string;
+  ancestors: string[];
+}
+
+const parser = new XMLParser({
+  ignoreAttributes: false,
+  attributeNamePrefix: "@_",
+});
+
 /**
- * Very lightweight XML/HTML tag name extractor.
- * - Collects tag names from opening tags and self-closing tags.
- * - Skips closing tags and comments/doctype/cdata.
- * - Preserves first-seen case and de-duplicates by lowercase.
+ * Recursively traverse XML object tree
  */
-function extractXmlTagNames(xmlLike: string): string[] {
-  const results: string[] = [];
-  const seen = new Set<string>();
-  const re = /<\s*([A-Za-z_][\w.\-:]*)\b(?![^>]*\/?>\s*<\/)/g; // match opening or self-closing, not closing
-  // Also allow self-closing like <br/>
-  // Exclude declarations/comments: handled implicitly since they start with <! or <? which won't match group 1
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(xmlLike)) !== null) {
-    const name = m[1];
-    const key = name.toLowerCase();
-    if (!seen.has(key)) {
-      seen.add(key);
-      results.push(name);
+function traverse(
+  node: any,
+  nodeName: string,
+  ancestors: string[],
+  parent?: string,
+  result: AstNode[] = []
+) {
+  if (typeof node !== "object" || node === null) return result;
+
+  // Extract attributes
+  const attributes: Record<string, string> = {};
+  for (const key of Object.keys(node)) {
+    if (key.startsWith("@_")) {
+      attributes[key.substring(2)] = String(node[key]);
     }
   }
-  return results;
+
+  // Store current node
+  result.push({
+    nodeName,
+    attributes,
+    parent,
+    ancestors,
+  });
+
+  // Traverse children
+  for (const key of Object.keys(node)) {
+    if (key.startsWith("@_") || key === "#text") continue;
+
+    const child = node[key];
+
+    if (Array.isArray(child)) {
+      for (const c of child) {
+        traverse(c, key, [...ancestors, nodeName], nodeName, result);
+      }
+    } else {
+      traverse(child, key, [...ancestors, nodeName], nodeName, result);
+    }
+  }
+
+  return result;
 }
+
+/**
+ * Load and process AST XML
+ */
+function extractAstNodes(xmlPath: string): AstNode[] {
+  const xml = fs.readFileSync(xmlPath, "utf8");
+  const parsed = parser.parse(xml);
+
+  const rootName = Object.keys(parsed)[0];
+  const rootNode = parsed[rootName];
+
+  return traverse(rootNode, rootName, []);
+}
+
+// ---------- USAGE ----------
+
+const astNodes = extractAstNodes("ast.xml");
+
+// Print summary
+console.log(`Total nodes: ${astNodes.length}`);
+
+// Sample output
+console.log(astNodes.slice(0, 10));
+
+// Optional: write to file for inspection
+fs.writeFileSync(
+  "ast-nodes.json",
+  JSON.stringify(astNodes, null, 2),
+  "utf8"
+);
