@@ -12,7 +12,32 @@
  */
 export function getAstNodes(code: string, language: string): string[] {
   const lang = (language ?? '').toLowerCase().trim();
-  
+    // 1. Read user utterance and normalize rule intent (engine, language, rule type)
+
+    // 2. Generate minimal Apex sample code representing the rule violation
+
+    // 3. Run PMD ast-dump on generated Apex code to produce AST XML
+
+    // 4. Parse AST XML and extract all AST nodes with hierarchy information
+
+    // 5. Identify and filter relevant AST nodes required for the rule logic
+
+    // 6. Enrich AST nodes using cached AST metadata (descriptions, attributes)
+
+    // 7. Prepare structured prompt input using rule intent + relevant AST nodes
+
+    // 8. Call LLM to generate XPath expression based on AST structure
+
+    // 9. Validate generated XPath against extracted AST nodes
+
+    // 10. Generate custom PMD rule XML using rule template and XPath
+
+    // 11. Create or update custom PMD rules XML file
+
+    // 12. Create or update code-analyzer configuration to reference custom rules
+
+    // 13. (Optional) Run PMD with sample code to validate rule behavior
+
   return [];
 }
 
