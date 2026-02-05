@@ -9,6 +9,8 @@ import {EnginePluginsFactory, EnginePluginsFactoryImpl} from "./factories/Engine
 import {RunAnalyzerActionImpl} from "./actions/run-analyzer.js";
 import {DescribeRuleActionImpl} from "./actions/describe-rule.js";
 import { ListRulesActionImpl } from "./actions/list-rules.js";
+import { GenerateXpathPromptMcpTool } from "./tools/generate_xpath_prompt.js";
+import { GetAstNodesActionImpl } from "./actions/get-ast-nodes.js";
 
 export class CodeAnalyzerMcpProvider extends McpProvider {
     public getName(): string {
@@ -34,7 +36,8 @@ export class CodeAnalyzerMcpProvider extends McpProvider {
                 enginePluginsFactory,
                 telemetryService: services.getTelemetryService()
             })),
-            new CodeAnalyzerQueryResultsMcpTool(new QueryResultsActionImpl(), services.getTelemetryService())
+            new CodeAnalyzerQueryResultsMcpTool(new QueryResultsActionImpl(), services.getTelemetryService()),
+            new GenerateXpathPromptMcpTool(new GetAstNodesActionImpl(), services.getTelemetryService())
         ]);
     }
 }

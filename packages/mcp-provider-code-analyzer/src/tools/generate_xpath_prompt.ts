@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { McpTool, McpToolConfig, ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
+import { McpTool, McpToolConfig, ReleaseState, TelemetryService, Toolset } from "@salesforce/mcp-provider-api";
+import { GetAstNodesActionImpl, type GetAstNodesAction, type GetAstNodesInput, type GetAstNodesOutput } from "../actions/get-ast-nodes.js";
 
 const DESCRIPTION: string =
   `Purpose: First step for creating a PMD XPath-based custom rule.
@@ -34,11 +35,17 @@ type OutputArgsShape = typeof outputSchema.shape;
 
 export class GenerateXpathPromptMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
   public static readonly NAME: string = 'get_ast_nodes_to_generate_xpath';
+  private readonly action: GetAstNodesAction;
+  private readonly telemetryService?: TelemetryService;
 
-  public constructor() {
+  public constructor(
+    action: GetAstNodesAction = new GetAstNodesActionImpl(),
+    telemetryService?: TelemetryService
+  ) {
     super();
+    this.action = action;
+    this.telemetryService = telemetryService;
   }
-
   public getReleaseState(): ReleaseState {
     return ReleaseState.NON_GA;
   }
