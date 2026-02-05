@@ -23,6 +23,7 @@ import type { SourceComponent } from '@salesforce/source-deploy-retrieve';
 import {
   EnrichmentStatus,
   type EnrichmentRequestRecord,
+  type MetadataTypeAndName,
 } from '@salesforce/metadata-enrichment';
 
 export class EnrichmentRecords {
@@ -46,6 +47,42 @@ export class EnrichmentRecords {
     }
   }
 
+  public addSkippedComponents(componentsToSkip: Set<MetadataTypeAndName>): void {
+    for (const component of componentsToSkip) {
+      if (!component.componentName) continue;
+
+      // Check if record already exists
+      const existingRecord = Array.from(this.recordSet).find((r) => r.componentName === component.componentName);
+      if (existingRecord) continue;
+
+      // Create a new record for the skipped component
+      this.recordSet.add({
+        componentName: component.componentName,
+        componentType: { name: component.typeName } as SourceComponent['type'],
+        requestBody: { contentBundles: [], metadataType: 'Generic', maxTokens: 50 },
+        response: null,
+        message: null,
+        status: EnrichmentStatus.SKIPPED,
+      });
+    }
+  }
+
+  public updateWithStatus(componentsToUpdate: Set<MetadataTypeAndName>, status: EnrichmentStatus): void {
+    const componentsToUpdateMap = new Map<string, MetadataTypeAndName>();
+    for (const component of componentsToUpdate) {
+      if (component.componentName) {
+        componentsToUpdateMap.set(component.componentName, component);
+      }
+    }
+
+    for (const record of this.recordSet) {
+      const componentToUpdate = componentsToUpdateMap.get(record.componentName);
+      if (componentToUpdate) {
+        record.status = status;
+      }
+    }
+  }
+
   public updateWithResults(results: EnrichmentRequestRecord[]): void {
     const resultsMap = new Map(results.map((r) => [r.componentName, r]));
     for (const record of this.recordSet) {
@@ -60,4 +97,5 @@ export class EnrichmentRecords {
       }
     }
   }
+
 }

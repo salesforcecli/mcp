@@ -18,7 +18,6 @@ import { z } from "zod";
 import { SfProject } from '@salesforce/core';
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import {
-  baseAbsolutePathParam,
   directoryParam,
   usernameOrAliasParam,
 } from "@salesforce/mcp-provider-dx-core";
@@ -31,13 +30,13 @@ import {
 } from "@salesforce/mcp-provider-api";
 import { ComponentSetBuilder } from "@salesforce/source-deploy-retrieve";
 import { EnrichmentRecords } from "../shared/enrichmentRecords.js";
+import { ComponentProcessor } from "../shared/componentProcessor.js";
 import { EnrichmentHandler, EnrichmentStatus, FileProcessor } from "@salesforce/metadata-enrichment";
 
 /*
  * Enrich metadata in a Salesforce org.
  *
  * Parameters:
- * - sourceDir: Path to the local source files to deploy.
  * - usernameOrAlias: The username or alias for the Salesforce org to run this tool against.
  * - directory: The directory to run the tool from.
  * - metadataEntries: The metadata entries to enrich in format <componentType>:<componentName>
@@ -46,13 +45,6 @@ import { EnrichmentHandler, EnrichmentStatus, FileProcessor } from "@salesforce/
  * - Metadata enrichment result.
  */
 export const enrichMetadataSchema = z.object({
-
-  sourceDir: z
-    .array(baseAbsolutePathParam)
-    .describe(
-      `Path to the local source files for metadata enrichment. Leave this unset if the user is vague about what to enrich.`
-    )
-    .optional(),
 
   usernameOrAlias: usernameOrAliasParam,
 
@@ -97,23 +89,23 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       `Enrich the metadata for components in your Salesforce org.
 
       AGENT INSTRUCTIONS:
-      If the user doesn't specify what to enrich exactly ("enrich my metadata"), 
-      leave the "sourceDir" param empty and ask the user to provide component names to enrich based on their local source project.
+      If the user doesn't specify what to enrich exactly ("enrich my metadata"), ask the user to provide specific component names based on their local project.
 
-      This tool only supports enriching Lightning Web Components (LWC).
+      This tool only supports enriching Lightning Web Components (LWC). 
       For LWCs, the corresponding type is "LightningComponentBundle" (case sensitive) when making enrichment requests.
+      If any non-LWC is specified by the user for enrichment, the tool will skip those components but proceed with enriching any specified LWC.
       
-      If the user specifies multiple components, try to batch the enrichment requests together as the tool can handle multiple components at a time.
+      If the user specifies multiple components, batch the enrichment requests together as the tool can handle enriching multiple components at a time.
 
       This is a different action from retrieving metadata (#retrieve_metadata) or deploying metadata (#deploy_metadata).
-      This tool (#enrich_metadata) is for enrichment only and other tools should be used based on user's intended action.
+      This tool (#enrich_metadata) is for enrichment only and other tools should be used instead based on the user's intended action.
 
       EXAMPLE USAGE:
-      - Enrich this file in my org
       - Enrich this component in my org
       - Enrich X in my org
       - Enrich X metadata in my org
-      - Enrich X, Y, Z in my org`,
+      - Enrich X, Y, Z in my org
+      - Enrich X, Y, Z metadata in my org`,
       inputSchema: enrichMetadataSchema.shape,
       outputSchema: undefined,
       annotations: {
@@ -160,10 +152,20 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
     const projectSourceComponents = projectComponentSet.getSourceComponents().toArray();
     const enrichmentRecords = new EnrichmentRecords(projectSourceComponents);
 
+    const componentsToSkip = ComponentProcessor.getComponentsToSkip(
+      projectSourceComponents,
+      input.metadataEntries,
+      project.getPath()
+    );
+    enrichmentRecords.addSkippedComponents(componentsToSkip);
+    enrichmentRecords.updateWithStatus(componentsToSkip, EnrichmentStatus.SKIPPED);
+
     const componentsEligibleToProcess = projectSourceComponents.filter((component) => {
       const componentName = component.fullName ?? component.name;
       if (!componentName) return false;
-      if (component.type?.name !== 'LightningComponentBundle') return false;
+      for (const skip of componentsToSkip) {
+        if (skip.componentName === componentName) return false;
+      }
       return true;
     });
 
@@ -188,18 +190,26 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
     );
     enrichmentRecords.updateWithResults(Array.from(fileUpdatedRecords));
 
-    const componentList =
-      Array.from(enrichmentRecords.recordSet)
-        .filter((record) => record.status === EnrichmentStatus.SUCCESS)
-        .map((record) => record.componentName)
-        .join(', ') || 'none';
+    const successfulRecords = Array.from(enrichmentRecords.recordSet).filter(
+      (record) => record.status === EnrichmentStatus.SUCCESS
+    );
+
+    let summary: string;
+    if (successfulRecords.length === 0) {
+      summary = 'No components were enriched.';
+    } else {
+      const header = 'Metadata enrichment completed. Components enriched:';
+      const bullets = successfulRecords.map((r) => `  • ${r.componentName}`);
+      summary = [header, ...bullets].join('\n');
+    }
+
     return {
       isError: false,
       content: [
-        {
-          type: 'text',
-          text: `Metadata enrichment completed. Components enriched: ${componentList}.`,
-        },
+        { 
+          type: 'text', 
+          text: summary 
+        }
       ],
     };
   }
