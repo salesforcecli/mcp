@@ -17,7 +17,11 @@
 import { z } from "zod";
 import { SfProject } from '@salesforce/core';
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { sanitizePath } from '../shared/utils.js';
+import {
+  baseAbsolutePathParam,
+  directoryParam,
+  usernameOrAliasParam,
+} from "@salesforce/mcp-provider-dx-core";
 import {
   McpTool,
   McpToolConfig,
@@ -44,35 +48,15 @@ import { EnrichmentHandler, EnrichmentStatus, FileProcessor } from "@salesforce/
 export const enrichMetadataSchema = z.object({
 
   sourceDir: z
-    .array(z.string())
+    .array(baseAbsolutePathParam)
     .describe(
-      `Path to the local source files for metadata enrichment. Leave this unset if the user is vague about what to deploy.`
+      `Path to the local source files for metadata enrichment. Leave this unset if the user is vague about what to enrich.`
     )
     .optional(),
 
-  usernameOrAlias: z.string()
-    .describe(
-      `The username or alias for the Salesforce org to run this tool against.
+  usernameOrAlias: usernameOrAliasParam,
 
-      A username follows the <name@domain.com> format.
-      If the user refers to an org with a string not following that format, it can be a valid alias.
-
-      IMPORTANT:
-      - If it is not clear what the username or alias is, run the #get_username tool to resolve it.
-      - NEVER guess or make-up a username or alias.`
-    ),
-
-  directory: z.string()
-    .refine(sanitizePath, 'Invalid path: Must be an absolute path and cannot contain path traversal sequences')
-    .describe(
-      `The directory to run the tool from.
-      
-      AGENT INSTRUCTIONS:
-      We need to know where the user wants to run this tool from.
-      Look at your current Workspace Context to determine this filepath.
-      ALWAYS USE A FULL PATH TO THE DIRECTORY.
-      Unless the user explicitly asks for a different directory, or a new directory is created from the action of a tool, use this same directory for future tool calls.`
-    ),
+  directory: directoryParam,
 
   metadataEntries: z.array(z.string())
     .describe(
@@ -113,16 +97,23 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       `Enrich the metadata for components in your Salesforce org.
 
       AGENT INSTRUCTIONS:
-      If the user doesn't specify what to enrich exactly ("enrich my metadata"), leave the "sourceDir" param empty.
-      Ask the user to provide the specific file or component names to enrich.
+      If the user doesn't specify what to enrich exactly ("enrich my metadata"), 
+      leave the "sourceDir" param empty and ask the user to provide component names to enrich based on their local source project.
+
+      This tool only supports enriching Lightning Web Components (LWC).
+      For LWCs, the corresponding type is "LightningComponentBundle" (case sensitive) when making enrichment requests.
       
-      EXAMPLE USAGES:
+      If the user specifies multiple components, try to batch the enrichment requests together as the tool can handle multiple components at a time.
+
+      This is a different action from retrieving metadata (#retrieve_metadata) or deploying metadata (#deploy_metadata).
+      This tool (#enrich_metadata) is for enrichment only and other tools should be used based on user's intended action.
+
+      EXAMPLE USAGE:
       - Enrich this file in my org
-      - Enrich the metadata for this file in my org
       - Enrich this component in my org
-      - Enrich the metadata for this component in my org
+      - Enrich X in my org
       - Enrich X metadata in my org
-      - Enrich X, Y, Z metadata in my org`,
+      - Enrich X, Y, Z in my org`,
       inputSchema: enrichMetadataSchema.shape,
       outputSchema: undefined,
       annotations: {
@@ -156,9 +147,6 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
         ],
       };
     }
-
-    // TODO - Not needed?
-    // process.chdir(input.directory);
 
     const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
     const project = await SfProject.resolve(input.directory);
