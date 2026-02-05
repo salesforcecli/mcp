@@ -1,3 +1,118 @@
+export type GetAstNodesInput = {
+  code: string;
+  language: string;
+};
+
+export type GetAstNodesOutput = {
+  status: string;
+  nodes: string[];
+};
+
+export interface GetAstNodesAction {
+  exec(input: GetAstNodesInput): Promise<GetAstNodesOutput>;
+}
+
+export class GetAstNodesActionImpl implements GetAstNodesAction {
+  public async exec(input: GetAstNodesInput): Promise<GetAstNodesOutput> {
+    try {
+      const nodes = extractAstNodeNames(input.code, input.language);
+      return { status: "success", nodes };
+    } catch (e) {
+      return { status: (e as Error)?.message ?? String(e), nodes: [] };
+    }
+  }
+}
+
+// ---- Minimal, dependency-free extraction helpers (xml/html only for now) ----
+function extractAstNodeNames(code: string, language: string): string[] {
+  const lang = (language ?? "").toLowerCase().trim();
+  if (lang === "xml" || lang === "html") {
+    return extractXmlTagNames(code);
+  }
+  // Placeholder for other languages
+  return [];
+}
+
+function extractXmlTagNames(xmlLike: string): string[] {
+  const results: string[] = [];
+  const seen = new Set<string>();
+  const length = xmlLike.length;
+
+  let i = 0;
+  while (i < length) {
+    const ch = xmlLike.charCodeAt(i);
+    if (ch !== CharCode.LT) {
+      i++;
+      continue;
+    }
+    const next = charAt(xmlLike, i + 1);
+    if (next === "/" || next === "!" || next === "?") {
+      i = advanceToNextTagEnd(xmlLike, i + 1);
+      continue;
+    }
+    let j = i + 1;
+    while (j < length && isWhitespace(xmlLike.charCodeAt(j))) j++;
+    if (j >= length || !isNameStartChar(xmlLike.charCodeAt(j))) {
+      i = advanceToNextTagEnd(xmlLike, j);
+      continue;
+    }
+    const start = j;
+    j++;
+    while (j < length && isNameChar(xmlLike.charCodeAt(j))) j++;
+    const name = xmlLike.slice(start, j);
+    const key = name.toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      results.push(name);
+    }
+    i = advanceToNextTagEnd(xmlLike, j);
+  }
+  return results;
+}
+
+const enum CharCode {
+  LT = 60,
+  GT = 62,
+  SPACE = 32,
+  TAB = 9,
+  CR = 13,
+  LF = 10,
+  UNDERSCORE = 95,
+  COLON = 58,
+  DOT = 46,
+  DASH = 45
+}
+
+function charAt(s: string, idx: number): string {
+  return idx < s.length ? (s[idx] as string) : "";
+}
+
+function isWhitespace(code: number): boolean {
+  return code === CharCode.SPACE || code === CharCode.TAB || code === CharCode.CR || code === CharCode.LF;
+}
+
+function isAsciiLetter(code: number): boolean {
+  return (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
+}
+
+function isDigit(code: number): boolean {
+  return code >= 48 && code <= 57;
+}
+
+function isNameStartChar(code: number): boolean {
+  return isAsciiLetter(code) || code === CharCode.UNDERSCORE || code === CharCode.COLON;
+}
+
+function isNameChar(code: number): boolean {
+  return isNameStartChar(code) || isDigit(code) || code === CharCode.DOT || code === CharCode.DASH;
+}
+
+function advanceToNextTagEnd(s: string, idx: number): number {
+  const len = s.length;
+  while (idx < len && s.charCodeAt(idx) !== CharCode.GT) idx++;
+  return Math.min(idx + 1, len);
+}
+
 /**
  * Returns a list of AST node identifiers for the given source code.
  * Minimal implementation with zero external dependencies:
@@ -40,6 +155,8 @@ export function getAstNodes(code: string, language: string): string[] {
 
   return [];
 }
+
+export default getAstNodes;
 
 
 import { XMLParser } from "fast-xml-parser";
@@ -115,20 +232,3 @@ function extractAstNodes(xmlPath: string): AstNode[] {
 
   return traverse(rootNode, rootName, []);
 }
-
-// ---------- USAGE ----------
-
-const astNodes = extractAstNodes("ast.xml");
-
-// Print summary
-console.log(`Total nodes: ${astNodes.length}`);
-
-// Sample output
-console.log(astNodes.slice(0, 10));
-
-// Optional: write to file for inspection
-fs.writeFileSync(
-  "ast-nodes.json",
-  JSON.stringify(astNodes, null, 2),
-  "utf8"
-);
