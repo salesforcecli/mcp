@@ -47,7 +47,7 @@ export class ComponentProcessor {
     return new Set([...missingComponents, ...filteredComponents]);
   }
 
-  private static filterComponents(
+  public static filterComponents(
     sourceComponents: SourceComponent[],
     requestedComponents: Set<MetadataTypeAndName | null>,
   ): Set<MetadataTypeAndName> {
@@ -79,7 +79,7 @@ export class ComponentProcessor {
     return filteredComponents;
   }
 
-  private static diffRequestedComponents(
+  public static diffRequestedComponents(
     sourceComponents: SourceComponent[],
     requestedComponents: Set<MetadataTypeAndName>,
   ): Set<MetadataTypeAndName> {
@@ -93,7 +93,7 @@ export class ComponentProcessor {
     return missingComponents;
   }
 
-  private static parseRequestedComponents(metadataEntries: string[], projectDir?: string): Set<MetadataTypeAndName> {
+  public static parseRequestedComponents(metadataEntries: string[], projectDir?: string): Set<MetadataTypeAndName> {
     const requestedComponents = new Set<MetadataTypeAndName>();
 
     for (const entry of metadataEntries) {
@@ -113,7 +113,7 @@ export class ComponentProcessor {
     return requestedComponents;
   }
 
-  private static getExistingSourceComponentNames(sourceComponents: SourceComponent[]): Set<string> {
+  public static getExistingSourceComponentNames(sourceComponents: SourceComponent[]): Set<string> {
     const existingSourceComponentNames = new Set<string>();
     for (const component of sourceComponents) {
       const componentName = component.fullName ?? component.name;
@@ -124,7 +124,7 @@ export class ComponentProcessor {
     return existingSourceComponentNames;
   }
 
-  private static createSourceComponentMap(sourceComponents: SourceComponent[]): Map<string, SourceComponent> {
+  public static createSourceComponentMap(sourceComponents: SourceComponent[]): Map<string, SourceComponent> {
     const componentMap = new Map<string, SourceComponent>();
 
     for (const component of sourceComponents) {
@@ -137,7 +137,7 @@ export class ComponentProcessor {
     return componentMap;
   }
 
-  private static parseMetadataEntry(rawEntry: string, projectDir?: string): MetadataTypeAndName | null {
+  public static parseMetadataEntry(rawEntry: string, projectDir?: string): MetadataTypeAndName | null {
     try {
       const registry = new RegistryAccess(undefined, projectDir);
       // Split on the first colon, and then join the rest back together to support names that include colons
