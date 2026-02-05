@@ -92,6 +92,47 @@ describe("EnrichmentRecords", () => {
     });
   });
 
+  describe("addSkippedComponents", () => {
+    it("adds new skipped component records", () => {
+      const records = new EnrichmentRecords([
+        createSourceComponent({ fullName: "a", name: "a" }),
+      ]);
+      records.addSkippedComponents(
+        new Set([
+          { typeName: "LightningComponentBundle", componentName: "skippedCmp" },
+        ])
+      );
+      const arr = Array.from(records.recordSet);
+      expect(arr).toHaveLength(2);
+      const skipped = arr.find((r) => r.componentName === "skippedCmp");
+      expect(skipped).toBeDefined();
+      expect(skipped!.status).toBe(EnrichmentStatus.SKIPPED);
+    });
+  });
+
+  describe("updateWithStatus", () => {
+    it("updates status for matching records", () => {
+      const components = [
+        createSourceComponent({ fullName: "c1", name: "c1" }),
+        createSourceComponent({ fullName: "c2", name: "c2" }),
+      ];
+      const records = new EnrichmentRecords(components);
+      records.updateWithStatus(
+        new Set([
+          { typeName: "LightningComponentBundle", componentName: "c1" },
+        ]),
+        EnrichmentStatus.SKIPPED
+      );
+      const arr = Array.from(records.recordSet);
+      expect(arr.find((r) => r.componentName === "c1")!.status).toBe(
+        EnrichmentStatus.SKIPPED
+      );
+      expect(arr.find((r) => r.componentName === "c2")!.status).toBe(
+        EnrichmentStatus.NOT_PROCESSED
+      );
+    });
+  });
+
   describe("updateWithResults", () => {
     it("updates records with result data and sets SUCCESS when response is present", () => {
       const components = [

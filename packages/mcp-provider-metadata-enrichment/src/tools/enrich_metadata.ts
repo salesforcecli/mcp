@@ -45,11 +45,8 @@ import { EnrichmentHandler, EnrichmentStatus, FileProcessor } from "@salesforce/
  * - Metadata enrichment result.
  */
 export const enrichMetadataSchema = z.object({
-
   usernameOrAlias: usernameOrAliasParam,
-
   directory: directoryParam,
-
   metadataEntries: z.array(z.string())
     .describe(
       `The metadata entries to enrich. Leave this unset if the user is vague about what to enrich. 
@@ -86,19 +83,19 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
     return {
       title: "Enrich Metadata",
       description: 
-      `Enrich the metadata for components in your Salesforce org.
+      `Enrich metadata components in your DX project by adding AI-generated descriptions.
 
       AGENT INSTRUCTIONS:
       If the user doesn't specify what to enrich exactly ("enrich my metadata"), ask the user to provide specific component names based on their local project.
 
-      This tool only supports enriching Lightning Web Components (LWC). 
-      For LWCs, the corresponding type is "LightningComponentBundle" (case sensitive) when making enrichment requests.
-      If any non-LWC is specified by the user for enrichment, the tool will skip those components but proceed with enriching any specified LWC.
+      This tool currently supports enriching only Lightning Web Components, represented by the LightningComponentBundle (case sensitive)metadata type.
+      LightningComponentBundle is the type that is used when making enrichment requests.
+      If any non-LWC is specified by the user for enrichment, the tool will skip those components, but will proceed with enriching any specified LWC.
       
       If the user specifies multiple components, batch the enrichment requests together as the tool can handle enriching multiple components at a time.
 
       This is a different action from retrieving metadata (#retrieve_metadata) or deploying metadata (#deploy_metadata).
-      This tool (#enrich_metadata) is for enrichment only and other tools should be used instead based on the user's intended action.
+      These other tools should be used instead if the user is intending to retrieve or deploy metadata rather than enrich.
 
       EXAMPLE USAGE:
       - Enrich this component in my org
@@ -193,15 +190,24 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
     const successfulRecords = Array.from(enrichmentRecords.recordSet).filter(
       (record) => record.status === EnrichmentStatus.SUCCESS
     );
+    const skippedRecords = Array.from(enrichmentRecords.recordSet).filter(
+      (record) => record.status === EnrichmentStatus.SKIPPED
+    );
 
-    let summary: string;
+    const summaryParts: string[] = [];
     if (successfulRecords.length === 0) {
-      summary = 'No components were enriched.';
+      summaryParts.push('No components were enriched.');
     } else {
-      const header = 'Metadata enrichment completed. Components enriched:';
-      const bullets = successfulRecords.map((r) => `  • ${r.componentName}`);
-      summary = [header, ...bullets].join('\n');
+      summaryParts.push('Metadata enrichment completed. Components enriched:');
+      summaryParts.push(...successfulRecords.map((r) => `  • ${r.componentName}`));
     }
+    if (skippedRecords.length > 0) {
+      summaryParts.push('Skipped:');
+      summaryParts.push(
+        ...skippedRecords.map((r) => `  • ${r.componentName}: ${r.message ?? 'Skipped'}`)
+      );
+    }
+    const summary = summaryParts.join('\n');
 
     return {
       isError: false,
