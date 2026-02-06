@@ -1,16 +1,29 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
 import { ScanApexAntipatternsTool } from "../../src/tools/scan-apex-antipatterns-tool.js";
 import { ReleaseState, Toolset } from "@salesforce/mcp-provider-api";
-import { SpyTelemetryService } from "../test-doubles.js";
+import { StubServices, SpyTelemetryService } from "../test-doubles.js";
+import { Org } from "@salesforce/core";
+
+vi.mock("@salesforce/core", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@salesforce/core")>();
+  return {
+    ...actual,
+    Org: {
+      create: vi.fn().mockResolvedValue({ getOrgId: () => "org1" }),
+    },
+  };
+});
 
 describe("ScanApexAntipatternsTool", () => {
   let tool: ScanApexAntipatternsTool;
+  let services: StubServices;
   let telemetryService: SpyTelemetryService;
   let tempDir: string;
   let testFilePath: string;
+  let originalCwd: string;
 
   // Helper function to create a test file
   const createTestFile = (fileName: string, content: string): string => {
@@ -20,16 +33,33 @@ describe("ScanApexAntipatternsTool", () => {
   };
 
   beforeEach(() => {
-    telemetryService = new SpyTelemetryService();
-    tool = new ScanApexAntipatternsTool(telemetryService);
+    // Save original working directory
+    originalCwd = process.cwd();
+    services = new StubServices();
+    telemetryService = services.telemetryService as SpyTelemetryService;
+    tool = new ScanApexAntipatternsTool(services);
     // Create a temporary directory for test files
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "apex-test-"));
   });
 
   afterEach(() => {
+    // Restore original working directory before cleanup to avoid Windows EPERM errors
+    // The tool changes directory with process.chdir(), so we need to change back
+    try {
+      process.chdir(originalCwd);
+    } catch (error) {
+      // Ignore errors when changing back - directory might not exist anymore
+    }
+    
     // Clean up temporary directory
+    // Note: On Windows, if files are still locked, cleanup may fail with EPERM.
+    // This is acceptable as temp directories will be cleaned up by the OS eventually.
     if (fs.existsSync(tempDir)) {
-      fs.rmSync(tempDir, { recursive: true, force: true });
+      try {
+        fs.rmSync(tempDir, { recursive: true, force: true });
+      } catch {
+        // Ignore cleanup errors - temp directory will be cleaned up by OS eventually
+      }
     }
   });
 
@@ -67,6 +97,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -100,6 +131,7 @@ public class CleanClass {
     const input = {
       className: "CleanClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -124,6 +156,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -151,6 +184,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -175,6 +209,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -193,6 +228,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -215,6 +251,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -236,6 +273,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -255,6 +293,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     await tool.exec(input);
@@ -263,14 +302,15 @@ public class TestClass {
     expect(telemetryService.sendEventCallHistory.length).toBeGreaterThan(0);
     
     const eventNames = telemetryService.sendEventCallHistory.map(e => e.eventName);
-    expect(eventNames).toContain("scan_apex_antipatterns_started");
-    expect(eventNames).toContain("scan_apex_antipatterns_completed");
+    expect(eventNames).toContain("scale_mcp_tool_invocation");
+    expect(eventNames).toContain("scale_mcp_scan_results");
   });
 
   it("should return error when file does not exist", async () => {
     const input = {
       className: "TestClass",
       apexFilePath: path.join(tempDir, "NonExistent.cls"),
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -288,6 +328,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: subDir,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -298,6 +339,26 @@ public class TestClass {
     expect(text).toContain("directory, not a file");
   });
 
+  it("should return error when file is not an Apex file", async () => {
+    const nonApexFile = path.join(tempDir, "test.js");
+    fs.writeFileSync(nonApexFile, "const x = 1;");
+
+    const input = {
+      className: "TestClass",
+      apexFilePath: nonApexFile,
+      directory: tempDir,
+    };
+
+    const result = await tool.exec(input);
+    
+    expect(result.isError).toBe(true);
+    expect(result.content[0].type).toBe("text");
+    const text = (result.content[0] as any).text;
+    expect(text).toContain("Invalid file type");
+    expect(text).toContain("only scans Apex files");
+    expect(text).toContain(".cls or .trigger");
+  });
+
   it.skipIf(process.platform === "win32")("should return error when file cannot be read", async () => {
     const readOnlyFile = path.join(tempDir, "readonly.cls");
     fs.writeFileSync(readOnlyFile, "public class Test {}", { mode: 0o000 });
@@ -305,6 +366,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: readOnlyFile,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -325,6 +387,7 @@ public class TestClass {
     const input = {
       className: "EmptyClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -342,6 +405,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     // Delete the file after creating it to cause a read error during processing
@@ -361,6 +425,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     await tool.exec(input);
@@ -377,6 +442,7 @@ public class TestClass {
     const input = {
       className: "TestClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
@@ -395,13 +461,256 @@ public class TestClass {
     const input = {
       className: "LargeClass",
       apexFilePath: testFilePath,
+      directory: tempDir,
     };
 
     const result = await tool.exec(input);
     
     expect(result.content[0].type).toBe("text");
     expect(telemetryService.sendEventCallHistory.some(e => 
-      e.eventName === "scan_apex_antipatterns_completed"
+      e.eventName === "scale_mcp_scan_results"
     )).toBe(true);
+  });
+
+  it("should show static analysis message when no org is authenticated", async () => {
+    const apexCode = `
+public class TestClass {
+    void m() { Schema.getGlobalDescribe(); }
+}`;
+    testFilePath = createTestFile("TestClass.cls", apexCode);
+
+    const input = {
+      className: "TestClass",
+      apexFilePath: testFilePath,
+      directory: tempDir,
+    };
+
+    const result = await tool.exec(input);
+    const text = (result.content[0] as any).text;
+    
+    // Should show static analysis message since StubOrgService returns undefined
+    expect(text).toContain("Showing static insights only");
+    expect(text).toContain("Sign in to an authorized Salesforce org");
+  });
+
+  it("should show runtime metrics message and runtime severity when org and runtime API succeed", async () => {
+    const apexCode = `
+public class TestClass {
+    public void testMethod() {
+        Schema.getGlobalDescribe();
+    }
+}`;
+    testFilePath = createTestFile("TestClass.cls", apexCode);
+
+    const mockConnection = {
+      getApiVersion: () => "65.0",
+      instanceUrl: "https://test.salesforce.com",
+      getUsername: () => "user@test.com",
+      request: vi.fn().mockResolvedValue({
+        status: "SUCCESS",
+        message: "OK",
+        classData: {
+          TestClass: {
+            methods: [
+              {
+                methodName: "testMethod",
+                entrypoints: [
+                  {
+                    entrypointName: "Trigger",
+                    avgCpuTime: 500,
+                    avgDbTime: 100,
+                    sumCpuTime: 1000,
+                    sumDbTime: 200,
+                  },
+                ],
+              },
+            ],
+            soqlRuntimeData: [],
+          },
+        },
+      }),
+    };
+
+    (services as any).orgService = {
+      getConnection: async () => mockConnection as any,
+      getDefaultTargetOrg: async () => undefined,
+      getAllowedOrgUsernames: async () => new Set<string>(),
+      getAllowedOrgs: async () => [],
+      getDefaultTargetDevHub: async () => undefined,
+      findOrgByUsernameOrAlias: () => undefined,
+    };
+
+    const input = {
+      className: "TestClass",
+      apexFilePath: testFilePath,
+      directory: tempDir,
+      usernameOrAlias: "user@test.com",
+    };
+
+    const result = await tool.exec(input);
+    const text = (result.content[0] as any).text;
+
+    expect(text).toContain("actual runtime metrics");
+    expect(text).toContain("💡");
+  });
+
+  it("should show access denied message when runtime API returns access denied", async () => {
+    const apexCode = `
+public class TestClass {
+    public void testMethod() {
+        Schema.getGlobalDescribe();
+    }
+}`;
+    testFilePath = createTestFile("TestClass.cls", apexCode);
+
+    const mockConnection = {
+      getApiVersion: () => "65.0",
+      instanceUrl: "https://test.salesforce.com",
+      getUsername: () => "user@test.com",
+      request: vi.fn().mockResolvedValue({
+        status: "FAILURE",
+        message: "Access denied to ApexGuru",
+        classData: {},
+      }),
+    };
+
+    (services as any).orgService = {
+      getConnection: async () => mockConnection as any,
+      getDefaultTargetOrg: async () => undefined,
+      getAllowedOrgUsernames: async () => new Set<string>(),
+      getAllowedOrgs: async () => [],
+      getDefaultTargetDevHub: async () => undefined,
+      findOrgByUsernameOrAlias: () => undefined,
+    };
+
+    const input = {
+      className: "TestClass",
+      apexFilePath: testFilePath,
+      directory: tempDir,
+      usernameOrAlias: "user@test.com",
+    };
+
+    const result = await tool.exec(input);
+    const text = (result.content[0] as any).text;
+
+    expect(text).toContain("contact Salesforce Support to enable the full Scale Center suite");
+    expect(text).toContain("ApexGuru (static analysis) is active");
+  });
+
+  it("should show runtime fetch failed message when runtime API returns error", async () => {
+    const apexCode = `
+public class TestClass {
+    public void testMethod() {
+        Schema.getGlobalDescribe();
+    }
+}`;
+    testFilePath = createTestFile("TestClass.cls", apexCode);
+
+    const mockConnection = {
+      getApiVersion: () => "65.0",
+      instanceUrl: "https://test.salesforce.com",
+      getUsername: () => "user@test.com",
+      request: vi.fn().mockResolvedValue({
+        status: "FAILURE",
+        message: "Internal server error",
+        classData: {},
+      }),
+    };
+
+    (services as any).orgService = {
+      getConnection: async () => mockConnection as any,
+      getDefaultTargetOrg: async () => undefined,
+      getAllowedOrgUsernames: async () => new Set<string>(),
+      getAllowedOrgs: async () => [],
+      getDefaultTargetDevHub: async () => undefined,
+      findOrgByUsernameOrAlias: () => undefined,
+    };
+
+    const input = {
+      className: "TestClass",
+      apexFilePath: testFilePath,
+      directory: tempDir,
+      usernameOrAlias: "user@test.com",
+    };
+
+    const result = await tool.exec(input);
+    const text = (result.content[0] as any).text;
+
+    expect(text).toContain("Unable to fetch runtime metrics from ApexGuru");
+    expect(text).toContain("Showing static insights only");
+  });
+
+  it("should proceed with static analysis when getConnection throws", async () => {
+    const apexCode = `
+public class TestClass {
+    public void testMethod() {
+        Schema.getGlobalDescribe();
+    }
+}`;
+    testFilePath = createTestFile("TestClass.cls", apexCode);
+
+    (services as any).orgService = {
+      getConnection: async () => {
+        throw new Error("Connection failed");
+      },
+      getDefaultTargetOrg: async () => undefined,
+      getAllowedOrgUsernames: async () => new Set<string>(),
+      getAllowedOrgs: async () => [],
+      getDefaultTargetDevHub: async () => undefined,
+      findOrgByUsernameOrAlias: () => undefined,
+    };
+
+    const input = {
+      className: "TestClass",
+      apexFilePath: testFilePath,
+      directory: tempDir,
+      usernameOrAlias: "user@test.com",
+    };
+
+    const result = await tool.exec(input);
+    const text = (result.content[0] as any).text;
+
+    expect(result.content).toHaveLength(1);
+    expect(text).toContain("Showing static insights only");
+  });
+
+  it("should proceed with static analysis when org has no orgId", async () => {
+    const apexCode = `
+public class TestClass {
+    public void testMethod() {
+        Schema.getGlobalDescribe();
+    }
+}`;
+    testFilePath = createTestFile("TestClass.cls", apexCode);
+
+    vi.mocked(Org.create).mockResolvedValueOnce({ getOrgId: () => "" } as any);
+
+    const mockConnection = {
+      getApiVersion: () => "65.0",
+      instanceUrl: "https://test.salesforce.com",
+      getUsername: () => "user@test.com",
+      request: vi.fn().mockResolvedValue({ status: "SUCCESS", message: "OK", classData: {} }),
+    };
+
+    (services as any).orgService = {
+      getConnection: async () => mockConnection as any,
+      getDefaultTargetOrg: async () => undefined,
+      getAllowedOrgUsernames: async () => new Set<string>(),
+      getAllowedOrgs: async () => [],
+      getDefaultTargetDevHub: async () => undefined,
+      findOrgByUsernameOrAlias: () => undefined,
+    };
+
+    const input = {
+      className: "TestClass",
+      apexFilePath: testFilePath,
+      directory: tempDir,
+      usernameOrAlias: "user@test.com",
+    };
+
+    const result = await tool.exec(input);
+    const text = (result.content[0] as any).text;
+
+    expect(text).toContain("Showing static insights only");
   });
 });
