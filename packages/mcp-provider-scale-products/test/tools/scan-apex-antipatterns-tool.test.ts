@@ -469,8 +469,8 @@ public class TestClass {
     const text = (result.content[0] as any).text;
     
     // Should show static analysis message since StubOrgService returns undefined
-    expect(text).toContain("statically generated based on code context");
-    expect(text).toContain("ApexGuru");
+    expect(text).toContain("Showing static insights only");
+    expect(text).toContain("Sign in to an authorized Salesforce org");
   });
 
   it("should show runtime metrics message and runtime severity when org and runtime API succeed", async () => {
@@ -573,8 +573,8 @@ public class TestClass {
     const result = await tool.exec(input);
     const text = (result.content[0] as any).text;
 
-    expect(text).toContain("contact Salesforce customer support");
-    expect(text).toContain("ApexGuru");
+    expect(text).toContain("contact Salesforce Support to enable the full Scale Center suite");
+    expect(text).toContain("ApexGuru (static analysis) is active");
   });
 
   it("should show runtime fetch failed message when runtime API returns error", async () => {
@@ -616,8 +616,8 @@ public class TestClass {
     const result = await tool.exec(input);
     const text = (result.content[0] as any).text;
 
-    expect(text).toContain("Runtime data fetch failed");
-    expect(text).toContain("statically generated");
+    expect(text).toContain("Unable to fetch runtime metrics from ApexGuru");
+    expect(text).toContain("Showing static insights only");
   });
 
   it("should proceed with static analysis when getConnection throws", async () => {
@@ -651,7 +651,7 @@ public class TestClass {
     const text = (result.content[0] as any).text;
 
     expect(result.content).toHaveLength(1);
-    expect(text).toContain("statically generated");
+    expect(text).toContain("Showing static insights only");
   });
 
   it("should proceed with static analysis when org has no orgId", async () => {
@@ -691,6 +691,6 @@ public class TestClass {
     const result = await tool.exec(input);
     const text = (result.content[0] as any).text;
 
-    expect(text).toContain("statically generated");
+    expect(text).toContain("Showing static insights only");
   });
 });
