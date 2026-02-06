@@ -88,11 +88,10 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       AGENT INSTRUCTIONS:
       If the user doesn't specify what to enrich exactly ("enrich my metadata"), ask the user to provide specific component names based on their local project.
 
-      This tool currently supports enriching only Lightning Web Components, represented by the LightningComponentBundle (case sensitive)metadata type.
-      LightningComponentBundle is the type that is used when making enrichment requests.
+      This tool currently supports enriching only Lightning Web Components, represented by the LightningComponentBundle (case sensitive) metadata type which is used for enrichment requests.
       If any non-LWC is specified by the user for enrichment, the tool will skip those components, but will proceed with enriching any specified LWC.
       
-      If the user specifies multiple components, batch the enrichment requests together as the tool can handle enriching multiple components at a time.
+      If the user specifies multiple components, batch the enrichment requests together as the tool can handle multiple component enrichment at a time.
 
       This is a different action from retrieving metadata (#retrieve_metadata) or deploying metadata (#deploy_metadata).
       These other tools should be used instead if the user is intending to retrieve or deploy metadata rather than enrich.
@@ -172,7 +171,7 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
         content: [
           {
             type: 'text',
-            text: `No eligible Lightning Component Bundle (LWC) components were found for enrichment.`,
+            text: `No eligible LWCs were found for enrichment.`,
           },
         ],
       }
