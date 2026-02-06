@@ -459,14 +459,14 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
         return `\n**Note:** Severity levels are based on actual runtime metrics from the org.\n`;
       
       case RuntimeDataStatus.ACCESS_DENIED:
-        return `\n**Note:** The following insights are statically generated based on code context. For runtime intelligence, please contact Salesforce customer support and get ApexGuru enabled.\n`;
+        return `\n**Note:** ApexGuru (static analysis) is active. To unlock runtime intelligence and see how this code affects your production org, contact Salesforce Support to enable the full Scale Center suite.\n`;
       
       case RuntimeDataStatus.NO_ORG_CONNECTION:
-        return `\n**Note:** The following insights are statically generated based on code context. For runtime intelligence, please ensure that you're logged in to an org that has ApexGuru enabled.\n`;
+        return `\n**Note:** Showing static insights only. Sign in to an authorized Salesforce org to correlate these code violations with production runtime metrics from ApexGuru.\n`;
       
       case RuntimeDataStatus.API_ERROR:
       default:
-        return `\n**Note:** The following insights are statically generated based on code context. Runtime data fetch failed. For runtime intelligence, please ensure ApexGuru is enabled for your org.\n`;
+        return `\n**Note:** Showing static insights only. Unable to fetch runtime metrics from ApexGuru. Please try again or verify your org has the Scale Center suite enabled.\n`;
     }
   }
 
