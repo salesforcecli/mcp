@@ -177,6 +177,21 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
         };
       }
 
+      // Validate it's an Apex file (.cls or .trigger)
+      const validExtensions = ['.cls', '.trigger'];
+      const fileExtension = input.apexFilePath.toLowerCase().slice(input.apexFilePath.lastIndexOf('.'));
+      if (!validExtensions.includes(fileExtension)) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: Invalid file type. This tool only scans Apex files (.cls or .trigger). Received: ${input.apexFilePath}`,
+            },
+          ],
+          isError: true,
+        };
+      }
+
       apexCode = await fs.promises.readFile(input.apexFilePath, "utf-8");
     } catch (error) {
       return {

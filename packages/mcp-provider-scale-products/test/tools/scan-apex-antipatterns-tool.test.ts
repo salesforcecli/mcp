@@ -339,6 +339,26 @@ public class TestClass {
     expect(text).toContain("directory, not a file");
   });
 
+  it("should return error when file is not an Apex file", async () => {
+    const nonApexFile = path.join(tempDir, "test.js");
+    fs.writeFileSync(nonApexFile, "const x = 1;");
+
+    const input = {
+      className: "TestClass",
+      apexFilePath: nonApexFile,
+      directory: tempDir,
+    };
+
+    const result = await tool.exec(input);
+    
+    expect(result.isError).toBe(true);
+    expect(result.content[0].type).toBe("text");
+    const text = (result.content[0] as any).text;
+    expect(text).toContain("Invalid file type");
+    expect(text).toContain("only scans Apex files");
+    expect(text).toContain(".cls or .trigger");
+  });
+
   it.skipIf(process.platform === "win32")("should return error when file cannot be read", async () => {
     const readOnlyFile = path.join(tempDir, "readonly.cls");
     fs.writeFileSync(readOnlyFile, "public class Test {}", { mode: 0o000 });
