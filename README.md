@@ -48,17 +48,19 @@ Here's an example for VS Code with Copilot in which you create and update a `.vs
 }
 ```
 
-The `args` format shown in the preceding example is the same for all MCP clients; it's how you customize the DX MCP Server for your particular environment. Notes:
+The `args` format shown in the preceding example is the same for all MCP clients; it's how you customize the DX MCP Server for your particular environment. 
 
+**Notes**:
 - The `"-y", "@salesforce/mcp"` part tells `npx` to automatically install the `@salesforce/mcp` package instead of asking permission. Don't change this. 
-- See the *Reference* sections below for the possible flags you can pass the `args` option, and possible values you can pass to the `--orgs`, `--toolsets`, and `--tools` flags. 
+- For possible flags that you can pass to the `args` option, and the possible values that you can pass to the `--orgs`, `--toolsets`, and `--tools` flags, see these sections:
+  - [Available Flags for the `args` Option](./README.md#available-flags-for-the-args-option)
+  - [Configure Orgs](./README.md#configure-orgs)
+  - [Configure Toolsets](./README.md#configure-toolsets)
+  - [Configure Tools](./README.md#configure-tools)
 - When writing the `args` option, surround both the flag names and their values in double quotes, and separate all flags and values with commas. Some flags are Boolean and don't take a value.
 - The preceding example shows three flags that take a string value (`--orgs`, `--toolsets`, and `--tools`) and one Boolean flag (`--allow-non-ga-tools`).  This configuration starts a DX MCP Server that enables all the MCP tools in the `orgs`, `metadata`, `data`, and `users` toolsets and a specific tool called `run_apex_tests`.  It also enables tools in these configured toolsets that aren't yet generally available. 
 
-<details>
-<summary>Reference: MCP Client Configurations</summary>
-
-## MCP Client Configurations
+## MCP Client Configurations 
 
 Here are examples of configuring the Salesforce DX MCP Server in various MCP clients. 
 
@@ -124,10 +126,6 @@ For these other clients, refer to their documentation for adding MCP servers and
 - [Zed](https://github.com/zed-industries/zed)
 - [Trae](https://docs.trae.ai/ide/model-context-protocol?_lang=en)
 
-</details>
-<details>
-<summary>Reference: Available Flags for the `args` Option</summary>
-
 ## Available Flags for the "args" Option
 
 These are the flags that you can pass to the `args` option. 
@@ -141,11 +139,6 @@ These are the flags that you can pass to the `args` option.
 | `--debug` | Boolean flag that requests that the DX MCP Server print debug logs. | No | Debug mode is disabled by default. <br/> <br/>**NOTE:** Not all MCP clients expose MCP logs, so this flag might not work for all IDEs. |
 | `--allow-non-ga-tools` | Boolean flag to allow the DX MCP Server to use both the generally available (GA) and NON-GA tools that are in the toolsets or tools you specify. | No | By default, the DX MCP server uses only the tools marked GA. |
 | `--dynamic-tools` | (experimental) Boolean flag that enables dynamic tool discovery and loading. When specified, the DX MCP server starts with a minimal set of core tools and loads new tools as needed. | No| This flag is useful for reducing the initial context size and improving LLM performance. Dynamic tool discovery is disabled by default.<br/> <br/>**NOTE:** This feature works in VSCode and Cline but may not work in other environments.|
-
-</details>
-<details>
-
-<summary>Reference: Configure Orgs</summary>
 
 ## Configure Orgs
 
@@ -161,11 +154,6 @@ These are the available values for the `--orgs` flag:
 | `DEFAULT_TARGET_DEV_HUB` | Allow access to your default Dev Hub org. If you've set a local default Dev Hub org in your DX project, the MCP server uses it. If not, the server uses a globally-set default Dev Hub org.|
 | `ALLOW_ALL_ORGS` | Allow access to all authorized orgs. Use this value with caution.|
 | `<username or alias>` | Allow access to a specific org by specifying its username or alias.|
-
-</details>
-
-<details>
-<summary>Reference: Configure Toolsets and Tools</summary>
 
 ## Configure Toolsets
 
@@ -290,6 +278,7 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
  - `guide_utam_generation` -  (NON-GA) Provides UTAM Page Object generation guidelines and best practices. 
  - `create_lightning_type` - (GA) Provides guidance for creating Custom Lightning Types (CLT) for Salesforce applications,
  * Einstein Agent actions, Lightning Web Components, and Lightning Platform integrations.
+
 #### Workflow Tools
 
  - `orchestrate_lwc_component_creation` - (GA) Step-by-step component creation workflow guidance
