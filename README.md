@@ -60,7 +60,7 @@ The `args` format shown in the preceding example is the same for all MCP clients
 - When writing the `args` option, surround both the flag names and their values in double quotes, and separate all flags and values with commas. Some flags are Boolean and don't take a value.
 - The preceding example shows three flags that take a string value (`--orgs`, `--toolsets`, and `--tools`) and one Boolean flag (`--allow-non-ga-tools`).  This configuration starts a DX MCP Server that enables all the MCP tools in the `orgs`, `metadata`, `data`, and `users` toolsets and a specific tool called `run_apex_tests`.  It also enables tools in these configured toolsets that aren't yet generally available. 
 
-## MCP Client Configurations
+## MCP Client Configurations 
 
 Here are examples of configuring the Salesforce DX MCP Server in various MCP clients. 
 
