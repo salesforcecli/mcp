@@ -31,8 +31,6 @@ import { TestApexMcpTool } from './tools/run_apex_test.js';
 
 export {
   usernameOrAliasParam,
-  useToolingApiParam,
-  baseAbsolutePathParam,
   directoryParam,
 } from './shared/params.js';
 
