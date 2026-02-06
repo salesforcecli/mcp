@@ -6,6 +6,7 @@ This guide covers how to develop and extend the Scale Products MCP Provider.
 
 - [Getting Started](#getting-started)
 - [Architecture Overview](#architecture-overview)
+- [Understanding Runtime Enrichment](#understanding-runtime-enrichment)
 - [Adding New Antipatterns](#adding-new-antipatterns)
 - [Adding New Tools](#adding-new-tools)
 - [Testing Guidelines](#testing-guidelines)
@@ -47,7 +48,9 @@ The package follows a **SOLID architecture** with clear separation of concerns:
 │                        MCP Tool Layer                        │
 │  (scan-apex-antipatterns-tool.ts)                           │
 │  - Reads Apex file                                          │
-│  - Orchestrates scanning                                     │
+│  - Resolves org connection automatically                    │
+│  - Fetches runtime data from ApexGuru                       │
+│  - Orchestrates scanning + enrichment                       │
 │  - Formats results for LLM                                   │
 └─────────────────────────────────────────────────────────────┘
                               │
@@ -55,28 +58,87 @@ The package follows a **SOLID architecture** with clear separation of concerns:
 ┌─────────────────────────────────────────────────────────────┐
 │                   Antipattern Module Layer                   │
 │  (antipattern-module.ts + antipattern-registry.ts)         │
-│  - Couples detector with recommender                        │
+│  - Couples detector + recommender + runtime enricher        │
 │  - Manages all registered antipattern modules               │
 └─────────────────────────────────────────────────────────────┘
                               │
-                ┌─────────────┴─────────────┐
-                ▼                           ▼
-┌───────────────────────────┐   ┌───────────────────────────┐
-│    Detector Layer         │   │   Recommender Layer       │
-│  (detectors/)             │   │  (recommenders/)          │
-│  - Detect antipatterns    │   │  - Generate fix           │
-│  - Return metadata        │   │    instructions           │
-│  - Assign severity        │   │  - Provide context        │
-└───────────────────────────┘   └───────────────────────────┘
+          ┌───────────────────┼───────────────────┐
+          ▼                   ▼                   ▼
+┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
+│    Detector     │  │   Recommender   │  │RuntimeEnricher  │
+│  (detectors/)   │  │ (recommenders/) │  │(runtime-        │
+│                 │  │                 │  │ enrichers/)     │
+│  - Detect       │  │  - Generate fix │  │                 │
+│    antipatterns │  │    instructions │  │  - Map runtime  │
+│  - Return       │  │  - Provide      │  │    data to      │
+│    metadata     │  │    context      │  │    detections   │
+│  - Static       │  │                 │  │  - Calculate    │
+│    severity     │  │                 │  │    severity     │
+└─────────────────┘  └─────────────────┘  └─────────────────┘
 ```
 
 ### Key Principles
 
-1. **Detectors** focus only on detection (what/where/severity)
+1. **Detectors** find antipatterns and assign static severity (what/where)
 2. **Recommenders** provide fix instructions for the LLM
-3. **LLM** generates the actual code fixes based on instructions
-4. **Modules** couple detectors with optional recommenders
-5. **Registry** manages all modules in one place
+3. **RuntimeEnrichers** calculate severity from actual org runtime metrics
+4. **LLM** generates the actual code fixes based on instructions
+5. **Modules** couple all three components together
+6. **Registry** manages all modules in one place
+
+## Understanding Runtime Enrichment
+
+Runtime enrichment is a core feature that calculates antipattern severity from **actual org runtime metrics** rather than static guesses. When a user is authenticated to an org with ApexGuru enabled, the tool automatically fetches performance data and uses it to determine how critical each antipattern is.
+
+### How It Works
+
+1. **Automatic org resolution**: The tool uses `OrgService` to get the default target org
+2. **Runtime data fetch**: Calls ApexGuru endpoint to get metrics (CPU time, query execution time, etc.)
+3. **Enrichment**: Each `RuntimeEnricher` maps runtime data to detected antipatterns
+4. **Severity calculation**: Real metrics determine severity (CRITICAL/HIGH/MEDIUM/LOW)
+5. **Graceful fallback**: If no org is authenticated, uses static analysis with a clear message
+
+### Built-in Runtime Enrichers
+
+| Enricher | Antipattern Types | Mapping Strategy |
+|----------|------------------|------------------|
+| `SOQLRuntimeEnricher` | SOQL-based antipatterns | Maps by line number from `uniqueQueryIdentifier` |
+| `MethodRuntimeEnricher` | Method-based antipatterns (GGD) | Maps by `methodName` field |
+
+### Severity Thresholds (ApexGuru Parity)
+
+The severity thresholds follow ApexGuru parity requirements:
+
+#### COCOD-Based (SOQL patterns)
+Uses `representativeCount` (Code Occurrence Count Data) as the primary threshold:
+
+```typescript
+const DEFAULT_SOQL_THRESHOLDS = {
+  criticalCocodCount: 10000000,  // COCOD > 10,000,000 → CRITICAL
+  majorCocodCount: 1000,         // COCOD > 1,000 → MAJOR
+  // COCOD ≤ 1,000 → MINOR
+};
+```
+
+#### CPU Time-Based (GGD and method-based antipatterns)
+Uses `avgCpuTime` from entrypoint metrics:
+
+```typescript
+const DEFAULT_METHOD_THRESHOLDS = {
+  criticalAvgCpuTime: 2000,  // Any entrypoint with avgCpuTime > 2,000 ms → CRITICAL
+  // Has entrypoint mapping → MAJOR
+  // No entrypoint mapping → MINOR
+};
+```
+
+You can pass custom thresholds when creating an enricher:
+
+```typescript
+const strictEnricher = new SOQLRuntimeEnricher({
+  criticalCocodCount: 5000000,  // Stricter threshold
+  majorCocodCount: 500,
+});
+```
 
 ## Adding New Antipatterns
 
@@ -132,7 +194,7 @@ export class SoqlInLoopDetector implements BaseDetector {
           methodName: this.extractMethodName(lines, lineIndex),
           lineNumber: lineIndex + 1,
           codeBefore: line.trim(),
-          severity: Severity.HIGH,
+          severity: Severity.CRITICAL,
         });
       }
     }
@@ -284,7 +346,7 @@ public class TestClass {
     const detections = detector.detect("TestClass", apexCode);
     
     expect(detections.length).toBe(1);
-    expect(detections[0].severity).toBe(Severity.HIGH);
+    expect(detections[0].severity).toBe(Severity.CRITICAL);
   });
 
   it("should not detect SOQL outside loop", () => {
@@ -309,48 +371,117 @@ public class TestClass {
 - ✅ Test edge cases (comments, strings, loops, etc.)
 - ✅ Test error handling
 
-### Step 6: Register the Antipattern Module
+### Step 6: Select or Create a Runtime Enricher
 
-Register your new module in `src/index.ts`:
+Choose the appropriate runtime enricher based on your antipattern's mapping strategy:
+
+**Option A: Use an existing enricher** (most common)
+
+| If your antipattern... | Use this enricher |
+|------------------------|-------------------|
+| Is SOQL-based (maps by line number) | `SOQLRuntimeEnricher` |
+| Is method-based (maps by method name) | `MethodRuntimeEnricher` |
 
 ```typescript
-import { SoqlInLoopDetector } from "./detectors/soql-in-loop-detector.js";
-import { SoqlInLoopRecommender } from "./recommenders/soql-in-loop-recommender.js";
+import { SOQLRuntimeEnricher } from "../runtime-enrichers/soql-runtime-enricher.js";
 
-export class ScaleProductsProvider extends BaseProvider {
-  // ...existing code...
+// Use default thresholds (COCOD-based per ApexGuru parity)
+const enricher = new SOQLRuntimeEnricher();
 
-  protected getTools(): BaseTool[] {
-    const antipatternRegistry = new AntipatternRegistry();
-    
-    // Existing registrations
-    const ggdModule = new AntipatternModule(
-      new GGDDetector(),
-      new GGDRecommender()
-    );
-    antipatternRegistry.register(ggdModule);
+// Or customize COCOD thresholds for this antipattern
+const strictEnricher = new SOQLRuntimeEnricher({
+  criticalCocodCount: 5000000,  // COCOD > 5,000,000 → CRITICAL
+  majorCocodCount: 500,         // COCOD > 500 → MAJOR
+});
+```
 
-    // ← Add your new module
-    const soqlModule = new AntipatternModule(
-      new SoqlInLoopDetector(),
-      new SoqlInLoopRecommender()
-    );
-    antipatternRegistry.register(soqlModule);
+**Option B: Create a new enricher** (for different mapping strategies)
 
-    return [
-      new ScanApexAntipatternsTool(this.telemetryService, antipatternRegistry)
-    ];
+If your antipattern needs a different way to map runtime data (e.g., combining multiple data sources), create a new enricher in `src/runtime-enrichers/`:
+
+```typescript
+import { BaseRuntimeEnricher } from "./base-runtime-enricher.js";
+import { DetectedAntipattern } from "../models/detection-result.js";
+import { AntipatternType } from "../models/antipattern-type.js";
+import { ClassRuntimeData } from "../models/runtime-data.js";
+import { Severity } from "../models/severity.js";
+
+export class CustomRuntimeEnricher implements BaseRuntimeEnricher {
+  public getAntipatternTypes(): AntipatternType[] {
+    return [AntipatternType.MY_NEW_ANTIPATTERN];
+  }
+
+  public enrich(
+    detections: DetectedAntipattern[],
+    classRuntimeData: ClassRuntimeData,
+    className: string
+  ): DetectedAntipattern[] {
+    return detections.map((detection) => {
+      // Your custom mapping and severity logic
+      const severity = this.calculateSeverity(detection, classRuntimeData);
+      return { ...detection, severity };
+    });
+  }
+
+  private calculateSeverity(
+    detection: DetectedAntipattern,
+    runtimeData: ClassRuntimeData
+  ): Severity {
+    // Custom severity calculation
+    return Severity.MAJOR;
   }
 }
 ```
 
-### Step 7: Update Documentation
+### Step 7: Register the Antipattern Module
+
+Register your new module in `src/tools/scan-apex-antipatterns-tool.ts` within `initializeRegistry()`:
+
+```typescript
+import { SoqlInLoopDetector } from "../detectors/soql-in-loop-detector.js";
+import { SoqlInLoopRecommender } from "../recommenders/soql-in-loop-recommender.js";
+import { SOQLRuntimeEnricher } from "../runtime-enrichers/soql-runtime-enricher.js";
+
+private initializeRegistry(): AntipatternRegistry {
+  const registry = new AntipatternRegistry();
+
+  // Existing module: GGD with method-based runtime enricher
+  const ggdModule = new AntipatternModule(
+    new GGDDetector(),
+    new GGDRecommender(),
+    new MethodRuntimeEnricher()
+  );
+  registry.register(ggdModule);
+
+  // ← Add your new module with all three components
+  const soqlInLoopModule = new AntipatternModule(
+    new SoqlInLoopDetector(),      // Detector
+    new SoqlInLoopRecommender(),   // Recommender
+    new SOQLRuntimeEnricher()      // Runtime Enricher
+  );
+  registry.register(soqlInLoopModule);
+
+  return registry;
+}
+```
+
+**Module Registration Pattern:**
+- Each `AntipatternModule` takes three components: Detector, Recommender, RuntimeEnricher
+- The enricher must support the detector's antipattern type (validated at construction)
+- All three components work together: detect → enrich → recommend
+
+### Step 8: Update Documentation
 
 Update the README.md to document your new antipattern:
 
 ```markdown
 #### SOQL in Loop
 Detects SOQL queries inside loops which can hit governor limits.
+
+**Severity** (when authenticated to org with ApexGuru):
+- Based on actual query execution time and frequency from runtime data
+
+**Severity** (static analysis fallback):
 - **HIGH**: Any SOQL query inside a loop construct
 
 Provides recommendations to collect IDs and query outside the loop.
@@ -598,5 +729,6 @@ Common types:
 
 For questions or issues:
 1. Check existing tests for examples
-2. Review the GGD implementation as a reference
-3. Reach out to the Scale Products team
+2. Review the GGD implementation as a reference (detector, recommender, and enricher)
+3. See `src/runtime-enrichers/` for runtime enricher examples
+4. Reach out to the Scale Products team

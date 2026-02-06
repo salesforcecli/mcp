@@ -85,7 +85,6 @@ export class ApexAstUtils {
       
       return visitor.methods;
     } catch (error) {
-      console.error("Error parsing Apex code for methods:", error);
       return [];
     }
   }
@@ -103,7 +102,6 @@ export class ApexAstUtils {
       
       return visitor.loops;
     } catch (error) {
-      console.error("Error parsing Apex code for loops:", error);
       return [];
     }
   }
@@ -121,7 +119,6 @@ export class ApexAstUtils {
       
       return visitor.methodCalls;
     } catch (error) {
-      console.error("Error parsing Apex code for method calls:", error);
       return [];
     }
   }
@@ -139,7 +136,6 @@ export class ApexAstUtils {
       
       return visitor.queries;
     } catch (error) {
-      console.error("Error parsing Apex code for queries:", error);
       return [];
     }
   }
@@ -157,7 +153,6 @@ export class ApexAstUtils {
       
       return visitor.dmlStatements;
     } catch (error) {
-      console.error("Error parsing Apex code for DML:", error);
       return [];
     }
   }
@@ -175,7 +170,6 @@ export class ApexAstUtils {
       
       return visitor.classInfo;
     } catch (error) {
-      console.error("Error parsing Apex code for class info:", error);
       return null;
     }
   }
