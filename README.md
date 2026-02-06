@@ -181,6 +181,7 @@ These are the available toolsets.
 | `aura-experts` | [Tools which provides Aura component analysis, blueprinting, and migration expertise.](README.md#aura-experts-toolset)|
 | `code-analysis` | [Tools for static analysis of your code using Salesforce Code Analyzer](README.md#code-analysis-toolset)|
 | `data` | [Tools to manage the data in your org, such as listing all accounts.](README.md#data-toolset)|
+| `enrichment` | [Tools to enrich metadata for components in your org.](README.md#enrichment-toolset)|
 | `lwc-experts`  | [Tools to assist with LWC development, testing, optimization, and best practices.](README.md#lwc-experts-toolset)|
 | `metadata` | [Tools to deploy and retrieve metadata to and from your org and your DX project.](README.md#metadata-toolset)|
 | `mobile` | [Tools for mobile development and capabilities.](README.md#mobile-toolset)|
@@ -322,5 +323,9 @@ Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end gu
 ### Scale Products Toolset
 
 - `scan_apex_class_for_antipatterns` - (NON-GA) Analyzes Apex class files for performance antipatterns and provides recommendations for fixing them. Currently detects: (1) Schema.getGlobalDescribe() usage with optimized alternatives, (2) SOQL queries without WHERE or LIMIT clauses, (3) SOQL queries with unused fields (with fix generation). Distinguishes between different severity levels (e.g., usage in loops vs. ordinary usage). Requires an absolute path to the Apex class file.
+
+### Enrichment Toolset
+
+- `enrich_metadata` - (NON-GA) Enrich metadata from your org in your DX project.
 
 </details>
