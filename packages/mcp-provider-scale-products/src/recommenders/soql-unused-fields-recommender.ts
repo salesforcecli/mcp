@@ -30,11 +30,14 @@ export class SOQLUnusedFieldsRecommender implements BaseRecommender {
     const instances = detections.map(detection => {
       const metadata = detection.metadata as SOQLUnusedFieldsMetadata;
       
+      // Extract original fields from the SOQL query
+      const originalFields = SOQLParser.extractFields(detection.codeBefore);
+      
       // Generate the actual fixed SOQL
       const codeAfter = this.generateFixedSOQL(
         detection.codeBefore,
         metadata.unusedFields,
-        metadata.originalFields
+        originalFields
       );
 
       return {
@@ -44,8 +47,7 @@ export class SOQLUnusedFieldsRecommender implements BaseRecommender {
         codeBefore: detection.codeBefore,
         codeAfter, 
         severity: detection.severity,
-        unusedFields: metadata.unusedFields,
-        originalFields: metadata.originalFields,
+        severitySource: detection.severitySource,
         metadata: detection.metadata,
       };
     });
@@ -77,13 +79,11 @@ export class SOQLUnusedFieldsRecommender implements BaseRecommender {
   ): string {
     // Safety check: Skip nested queries
     if (SOQLParser.hasNestedQueries(originalSOQL)) {
-      console.warn('Nested queries detected, skipping fix generation');
       return '';
     }
 
     // Safety check: Don't remove all fields
     if (unusedFields.length >= originalFields.length) {
-      console.warn('Would remove all fields, skipping fix generation');
       return '';
     }
 
