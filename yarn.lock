@@ -3123,7 +3123,7 @@
 
 "@salesforce/mcp-provider-lwc-experts@0.6.6":
   version "0.6.6"
-  resolved "https://nexus-proxy.repo.local.sfdc.net/nexus/content/groups/npm-all/@salesforce/mcp-provider-lwc-experts/-/mcp-provider-lwc-experts-0.6.6.tgz#6be062258a6833cee70c0c5980cee32b2d592a24"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-lwc-experts/-/mcp-provider-lwc-experts-0.6.6.tgz#6be062258a6833cee70c0c5980cee32b2d592a24"
   integrity sha512-2GrF3Q25GeWj0/AiN8V8trzVeAIlE6MdD/lnU9K4koljZXDKSkGpgG1Wg7d9ZS7x/THjaePhfkFdQV/tsJ3iAQ==
   dependencies:
     "@modelcontextprotocol/sdk" "^1.9.0"
