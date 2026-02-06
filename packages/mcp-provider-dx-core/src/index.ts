@@ -29,6 +29,11 @@ import { RetrieveMetadataMcpTool } from './tools/retrieve_metadata.js';
 import { TestAgentsMcpTool } from './tools/run_agent_test.js';
 import { TestApexMcpTool } from './tools/run_apex_test.js';
 
+export {
+  usernameOrAliasParam,
+  directoryParam,
+} from './shared/params.js';
+
 export class DxCoreMcpProvider extends McpProvider {
   public getName(): string {
     return 'DxCoreMcpProvider';
