@@ -48,11 +48,11 @@ export const enrichMetadataSchema = z.object({
   usernameOrAlias: usernameOrAliasParam,
   directory: directoryParam,
   metadataEntries: z.array(z.string())
+    .optional()
     .describe(
       `The metadata entries to enrich. Leave this unset if the user is vague about what to enrich. 
       Format: <componentType>:<componentName>`
     ),
-
 });
 
 type InputArgs = z.infer<typeof enrichMetadataSchema>;
@@ -86,10 +86,14 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       `Enrich metadata components in your DX project by adding AI-generated descriptions.
 
       AGENT INSTRUCTIONS:
-      If the user doesn't specify what to enrich exactly ("enrich my metadata"), ask the user to provide specific component names based on their local project.
+      The org must be eligible for metadata enrichment. The Salesforce admin can help enable it.
 
-      This tool currently supports enriching only Lightning Web Components, represented by the LightningComponentBundle (case sensitive) metadata type which is used for enrichment requests.
-      If any non-LWC is specified by the user for enrichment, the tool will skip those components, but will proceed with enriching any specified LWC.
+      If the user doesn't specify what exactly to enrich ("enrich my metadata"), ask the user to provide specific component names from their local project.
+
+      This tool currently supports enriching only Lightning Web Components (LWC) which are represented by the LightningComponentBundle (case sensitive) metadata type.
+      LightningComponentBundle is the type used for the enrichment requests for LWC.
+      
+      If any non-LWC is specified by the user for enrichment, the tool will skip those components, but will proceed with enriching any other specified LWC.
       
       If the user specifies multiple components, batch the enrichment requests together as the tool can handle multiple component enrichment at a time.
 
@@ -105,7 +109,7 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       inputSchema: enrichMetadataSchema.shape,
       outputSchema: undefined,
       annotations: {
-        readOnlyHint: true,
+        openWorldHint: true,
       },
     };
   }
@@ -136,6 +140,7 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       };
     }
 
+    process.chdir(input.directory);
     const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
     const project = await SfProject.resolve(input.directory);
 
@@ -171,7 +176,7 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
         content: [
           {
             type: 'text',
-            text: `No eligible LWCs were found for enrichment.`,
+            text: `No eligible LWC was found for enrichment.`,
           },
         ],
       }

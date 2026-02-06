@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { mkdirSync } from "fs";
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { Connection, SfProject } from "@salesforce/core";
 import { ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
@@ -72,7 +73,7 @@ describe("EnrichMetadataMcpTool", () => {
   it("getConfig returns title and input schema keys", () => {
     const config = tool.getConfig();
     expect(config.title).toBe("Enrich Metadata");
-    expect(config.annotations).toEqual({ readOnlyHint: true });
+    expect(config.annotations).toEqual({ openWorldHint: true });
     expect(Object.keys(config.inputSchema as object).sort()).toEqual(
       ["directory", "metadataEntries", "usernameOrAlias"].sort()
     );
@@ -109,6 +110,7 @@ describe("EnrichMetadataMcpTool", () => {
     let servicesWithConnection: Services;
 
     beforeEach(() => {
+      mkdirSync("/tmp/proj", { recursive: true });
       const stub = new StubServices();
       servicesWithConnection = {
         ...stub,
@@ -159,6 +161,7 @@ describe("EnrichMetadataMcpTool", () => {
     const mockConnection = {} as Connection;
 
     beforeEach(() => {
+      mkdirSync("/tmp/proj", { recursive: true });
       vi.mocked(SfProject.resolve).mockResolvedValue({ getPath: () => "/tmp/proj" } as never);
       const lwcComponent = {
         fullName: "myLwc",
