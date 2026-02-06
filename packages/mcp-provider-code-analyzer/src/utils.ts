@@ -1,4 +1,4 @@
-
+// TODO: move this file into a `src/utils/` folder in a follow-up PR.
 /**
  * Helper function to easily get an error message from a catch statement
  */

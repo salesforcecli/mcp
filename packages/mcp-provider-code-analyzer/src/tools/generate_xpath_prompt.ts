@@ -70,10 +70,46 @@ export class GenerateXpathPromptMcpTool extends McpTool<InputArgsShape, OutputAr
     };
   }
 
-  // Intentionally minimal stub; will be implemented later
-  public async exec(_input: z.infer<typeof inputSchema>): Promise<CallToolResult> {
+  public async exec(input: z.infer<typeof inputSchema>): Promise<CallToolResult> {
+    const validationError = validateInput(input);
+    if (validationError) {
+      return validationError;
+    }
+
+    const astResult = await this.action.exec({
+      code: input.sampleCode,
+      language: input.language
+    });
+    if (astResult.status !== "success") {
+      const output = {
+        status: astResult.status,
+        prompt: ""
+      };
+      return {
+        content: [{ type: "text", text: JSON.stringify(output) }],
+        structuredContent: output
+      };
+    }
+
     const output = {
       status: "success",
+      prompt: JSON.stringify({
+        language: input.language,
+        astNodes: astResult.nodes
+      })
+    };
+    return {
+      content: [{ type: "text", text: JSON.stringify(output) }],
+      structuredContent: output
+    };
+  }
+}
+
+function validateInput(input: z.infer<typeof inputSchema>): CallToolResult | undefined {
+  const language = input.language?.trim();
+  if (!language) {
+    const output = {
+      status: "language is required",
       prompt: ""
     };
     return {
@@ -81,5 +117,19 @@ export class GenerateXpathPromptMcpTool extends McpTool<InputArgsShape, OutputAr
       structuredContent: output
     };
   }
+
+  const sampleCode = input.sampleCode?.trim();
+  if (!sampleCode) {
+    const output = {
+      status: `code in ${language} is required`,
+      prompt: ""
+    };
+    return {
+      content: [{ type: "text", text: JSON.stringify(output) }],
+      structuredContent: output
+    };
+  }
+
+  return undefined;
 }
 
