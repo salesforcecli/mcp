@@ -53,7 +53,15 @@ export async function getApexAstNodeMetadataByNames(
 
   const results: ApexAstNodeMetadata[] = [];
   for (const name of nodeNames) {
-    const node = index.get(name.toLowerCase());
+    const normalized = name.toLowerCase();
+    let node = index.get(normalized);
+    if (!node) {
+      node = reference.nodes.find((candidate) =>
+        (candidate.implements ?? []).some((iface) =>
+          iface.toLowerCase().includes(`<${normalized}>`)
+        )
+      );
+    }
     if (node) {
       results.push(node);
     }
