@@ -43,12 +43,13 @@ export class SOQLNoWhereLimitDetector implements BaseDetector {
             methodName: queryInfo.methodName,
             lineNumber: queryInfo.lineNumber,
             codeBefore,
-            severity: Severity.HIGH,
+            severity: Severity.MAJOR,
+            severitySource: "static",
           });
         }
       }
     } catch (error) {
-      console.error(`Error detecting SOQL antipatterns in ${className}:`, error);
+      // Error detecting - continue with empty detections
     }
 
     return detections;
