@@ -93,9 +93,12 @@ export class GenerateXpathPromptMcpTool extends McpTool<InputArgsShape, OutputAr
 
     const output = {
       status: "success",
-      prompt: JSON.stringify({
+      prompt: buildXpathPrompt({
+        sampleCode: input.sampleCode,
         language: input.language,
-        astNodes: astResult.nodes
+        engine: input.engine,
+        astNodes: astResult.nodes,
+        astMetadata: astResult.metadata
       })
     };
     return {
@@ -103,6 +106,50 @@ export class GenerateXpathPromptMcpTool extends McpTool<InputArgsShape, OutputAr
       structuredContent: output
     };
   }
+}
+
+type BuildPromptInput = {
+  sampleCode: string;
+  language: string;
+  engine: string;
+  astNodes: GetAstNodesOutput["nodes"];
+  astMetadata: GetAstNodesOutput["metadata"];
+};
+
+function buildXpathPrompt(input: BuildPromptInput): string {
+  const metadataByName = new Map(
+    input.astMetadata.map((node) => [node.name.toLowerCase(), node])
+  );
+  const nodeSummaries = input.astNodes.map((node) => {
+    const metadata = metadataByName.get(node.nodeName.toLowerCase());
+    return {
+      nodeName: node.nodeName,
+      parent: node.parent ?? null,
+      ancestors: node.ancestors,
+      attributes: node.attributes,
+      metadata: metadata ?? null
+    };
+  });
+
+  return [
+    "You are generating a PMD XPath query.",
+    "Goal: Generate an XPath expression that matches the violation described by the sample code.",
+    "",
+    "Context:",
+    `- Engine: ${input.engine}`,
+    `- Language: ${input.language}`,
+    "",
+    "Sample code (violates the rule):",
+    input.sampleCode,
+    "",
+    "AST nodes (from ast-dump) with extracted metadata:",
+    JSON.stringify(nodeSummaries, null, 2),
+    "",
+    "Task:",
+    "- Use the AST nodes and metadata above to write a precise XPath for the violation.",
+    "- Prefer minimal, stable XPath that avoids overfitting.",
+    "- Return only the XPath expression."
+  ].join("\n");
 }
 
 function validateInput(input: z.infer<typeof inputSchema>): CallToolResult | undefined {
