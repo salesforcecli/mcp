@@ -1,5 +1,6 @@
 import { generateAstXmlFromSource } from "../ast/generate-ast-xml.js";
 import { type AstNode, extractAstNodesFromXml } from "../ast/extract-ast-nodes.js";
+import { getApexAstNodeMetadataByNames, type ApexAstNodeMetadata } from "../ast/metadata/apex-ast-reference.js";
 
 export type GetAstNodesInput = {
   code: string;
@@ -9,6 +10,7 @@ export type GetAstNodesInput = {
 export type GetAstNodesOutput = {
   status: string;
   nodes: AstNode[];
+  metadata: ApexAstNodeMetadata[];
 };
 
 export interface GetAstNodesAction {
@@ -30,9 +32,12 @@ export class GetAstNodesActionImpl implements GetAstNodesAction {
       // - When replacing, remove dependency on local PMD bin path and avoid spawning external processes.
       const astXml = await generateAstXmlFromSource(input.code, input.language, pmdBinPath);
       const nodes = extractAstNodesFromXml(astXml);
-      return { status: "success", nodes };
+      const language = input.language?.toLowerCase().trim();
+      const nodeNames = Array.from(new Set(nodes.map((node) => node.nodeName)));
+      const metadata = await getCachedMetadataByLanguage(language, nodeNames);
+      return { status: "success", nodes, metadata };
     } catch (e) {
-      return { status: (e as Error)?.message ?? String(e), nodes: [] };
+      return { status: (e as Error)?.message ?? String(e), nodes: [], metadata: [] };
     }
   }
 }
@@ -92,5 +97,15 @@ export function getAstNodes(code: string, language: string): string[] {
 
     // 13. (Optional) Run PMD with sample code to validate rule behavior
 
+  return [];
+}
+
+async function getCachedMetadataByLanguage(
+  language: string,
+  nodeNames: string[]
+): Promise<ApexAstNodeMetadata[]> {
+  if (language === "apex") {
+    return getApexAstNodeMetadataByNames(nodeNames);
+  }
   return [];
 }
