@@ -148,7 +148,10 @@ function buildXpathPrompt(input: BuildPromptInput): string {
     "Task:",
     "- Use the AST nodes and metadata above to write a precise XPath for the violation.",
     "- Prefer minimal, stable XPath that avoids overfitting.",
-    "- Return only the XPath expression."
+    "- Return only the XPath expression.",
+    "",
+    "Next step:",
+    "- Call the tool 'create_custom_rule' with the generated XPath to create the custom rule."
   ].join("\n");
 }
 

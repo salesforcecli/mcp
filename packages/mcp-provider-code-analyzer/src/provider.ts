@@ -10,7 +10,9 @@ import {RunAnalyzerActionImpl} from "./actions/run-analyzer.js";
 import {DescribeRuleActionImpl} from "./actions/describe-rule.js";
 import { ListRulesActionImpl } from "./actions/list-rules.js";
 import { GenerateXpathPromptMcpTool } from "./tools/generate_xpath_prompt.js";
+import { CreateCustomRuleMcpTool } from "./tools/create_custom_rule.js";
 import { GetAstNodesActionImpl } from "./actions/get-ast-nodes.js";
+import { CreateCustomRuleActionImpl } from "./actions/create-custom-rule.js";
 
 export class CodeAnalyzerMcpProvider extends McpProvider {
     public getName(): string {
@@ -37,7 +39,8 @@ export class CodeAnalyzerMcpProvider extends McpProvider {
                 telemetryService: services.getTelemetryService()
             })),
             new CodeAnalyzerQueryResultsMcpTool(new QueryResultsActionImpl(), services.getTelemetryService()),
-            new GenerateXpathPromptMcpTool(new GetAstNodesActionImpl(), services.getTelemetryService())
+            new GenerateXpathPromptMcpTool(new GetAstNodesActionImpl(), services.getTelemetryService()),
+            new CreateCustomRuleMcpTool(new CreateCustomRuleActionImpl(), services.getTelemetryService())
         ]);
     }
 }
