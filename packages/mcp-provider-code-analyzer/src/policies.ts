@@ -18,7 +18,7 @@ export function enforceTopNLimit(
   allowLargeResultSet: boolean | undefined,
   limit: number = DEFAULT_TOPN_POLICY_LIMIT
 ): { ok: true } | { ok: false; message: string; code: PolicyErrorCode } {
-  const value = topN ?? 5;
+  const value = topN ?? DEFAULT_TOPN_POLICY_LIMIT;
   if (value > limit && !allowLargeResultSet) {
     return {
       ok: false,

@@ -8,29 +8,30 @@ import { QueryResultsAction, QueryResultsActionImpl, QueryResultsInput, QueryRes
 import { validateSelectorForQuery, parseSelectorToFilters } from "../selector.js";
 import { DEFAULT_TOPN_POLICY_LIMIT, computeEffectiveTopN } from "../policies.js";
 
-const DESCRIPTION: string =
-    `Query a Code Analyzer results JSON file and return filtered violations.\n` +
-    `Supports filters like severity, category/tag, engine, rule, and file name, plus top-N and sorting.\n` +
-    `Use this after running "run_code_analyzer" to read the generated results file.\n` +
-    `After completion, this tool will summarize and explain the filtered results to the user.\n` +
-    `\n` +
-    `Policy: To avoid overwhelming results, this tool returns no more than the top ${DEFAULT_TOPN_POLICY_LIMIT} violations by default.\n` +
-    `Requesting more than ${DEFAULT_TOPN_POLICY_LIMIT} requires an explicit opt-in via allowLargeResultSet=true and is not recommended.\n` +
-    `Note: Querying larger result sets can significantly increase token consumption.\n` +
-    `\n` +
-    `Examples (natural language → selector/topN):\n` +
-    `- "Top 5 security in PMD" → selector: "Security:pmd", topN: 5\n` +
-    `- "Top 10 critical" → selector: "Critical", topN: 10\n` +
-    `- "Top 5 security or performance in ESLint" → selector: "(Security,Performance):eslint", topN: 5\n` +
-    `- "Top 5 PMD High severity" → selector: "pmd:High", topN: 5\n` +
-    `- "Top 5 for rule MyRuleName" → selector: "rule=MyRuleName", topN: 5\n` +
-    `- "Top 5 in files under src/app" → selector: "file=src/app", topN: 5\n`;
+const DESCRIPTION: string = `Query a Code Analyzer results JSON file and return filtered violations.
+Supports filters like severity, category/tag, engine, rule, and file name, plus top-N and sorting.
+Use this after running "run_code_analyzer" to read the generated results file.
+After completion, this tool will summarize and explain the filtered results to the user.
+
+Policy: To avoid overwhelming results, this tool returns no more than the top ${DEFAULT_TOPN_POLICY_LIMIT} violations by default.
+Requesting more than ${DEFAULT_TOPN_POLICY_LIMIT} requires an explicit opt-in via allowLargeResultSet=true and is not recommended.
+Note: Querying larger result sets can significantly increase token consumption.
+
+Examples (natural language → selector/topN):
+- "Top 5 security in PMD" → selector: "Security:pmd", topN: 5
+- "Top 10 critical" → selector: "Critical", topN: 10
+- "Top 5 security or performance in ESLint" → selector: "(Security,Performance):eslint", topN: 5
+- "Top 5 PMD High severity" → selector: "pmd:High", topN: 5
+- "Top 5 for rule MyRuleName" → selector: "rule=MyRuleName", topN: 5
+- "Top 5 in files under src/app" → selector: "file=src/app", topN: 5
+`;
 
 export const inputSchema = z.object({
     resultsFile: z.string().describe("Absolute path to a results JSON file produced by the code analyzer., if results file is not provided, call run_code_analyzer tool to generate a results file first."),
     selector: z.string().describe('Selector (same semantics as "list_code_analyzer_rules"): colon-separated tokens with optional OR-groups in parentheses, e.g., "Security:(pmd,eslint):High".'),
-    topN: z.number().int().positive().max(1000).default(5).describe(`Return at most this many violations after filtering and sorting (default 5). Requests >${DEFAULT_TOPN_POLICY_LIMIT} require allowLargeResultSet=true.`),
-    allowLargeResultSet: z.boolean().optional().describe(`Explicit opt-in to request more than the top ${DEFAULT_TOPN_POLICY_LIMIT} violations. Defaults to false and is not recommended.`),
+    topN: z.number().int().positive().max(1000).default(DEFAULT_TOPN_POLICY_LIMIT)
+        .describe(`Return at most this many violations after filtering and sorting (default ${DEFAULT_TOPN_POLICY_LIMIT}). Never increase this number unless the user explicitly asks for a larger result set. Requests >${DEFAULT_TOPN_POLICY_LIMIT} require allowLargeResultSet=true.`),
+    allowLargeResultSet: z.boolean().optional().describe(`Explicit opt-in to request more than the top ${DEFAULT_TOPN_POLICY_LIMIT} violations. Defaults to false and is not recommended unless the user explicitly requests a larger result set.`),
     sortBy: z.enum(['severity', 'rule', 'engine', 'file', 'none']).optional().describe("Optional primary sort field."),
     sortDirection: z.enum(['asc', 'desc']).optional().describe("Optional sort direction.")
 });
