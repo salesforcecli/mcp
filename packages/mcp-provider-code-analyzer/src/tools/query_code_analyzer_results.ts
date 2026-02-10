@@ -31,7 +31,7 @@ export const inputSchema = z.object({
     selector: z.string().describe('Selector (same semantics as "list_code_analyzer_rules"): colon-separated tokens with optional OR-groups in parentheses, e.g., "Security:(pmd,eslint):High".'),
     topN: z.number().int().positive().max(1000).default(DEFAULT_TOPN_POLICY_LIMIT)
         .describe(`Return at most this many violations after filtering and sorting (default ${DEFAULT_TOPN_POLICY_LIMIT}). Never increase this number unless the user explicitly asks for a larger result set. Requests >${DEFAULT_TOPN_POLICY_LIMIT} require allowLargeResultSet=true.`),
-    allowLargeResultSet: z.boolean().optional().describe(`Explicit opt-in to request more than the top ${DEFAULT_TOPN_POLICY_LIMIT} violations. Defaults to false and is not recommended unless the user explicitly requests a larger result set.`),
+    allowLargeResultSet: z.boolean().optional().describe(`Explicit opt-in to request more than the top ${DEFAULT_TOPN_POLICY_LIMIT} violations. Defaults to false and is not recommended unless the user explicitly requests a larger result set. If set to true, you must also increase topN to the desired value.`),
     sortBy: z.enum(['severity', 'rule', 'engine', 'file', 'none']).optional().describe("Optional primary sort field."),
     sortDirection: z.enum(['asc', 'desc']).optional().describe("Optional sort direction.")
 });
