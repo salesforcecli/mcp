@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/mcp-provider-metadata-enrichment",
   "description": "MCP provider for enriching metadata in your Salesforce DX project",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Salesforce",
   "license": "Apache-2.0",
   "type": "module",
