@@ -89,7 +89,7 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       The org must be eligible for metadata enrichment. The Salesforce admin can help enable it.
 
       If the user doesn't specify what exactly to enrich ("enrich my metadata"), ask the user to provide specific component names from their local project.
-      Wildcards are supported for component names can match to components in the local project.
+      Wildcards are supported for component names, matching to components in the local project.
 
       This tool currently supports enriching only Lightning Web Components (LWC) which are represented by the LightningComponentBundle (case sensitive) metadata type.
       LightningComponentBundle is the type used for the enrichment requests for LWC.
