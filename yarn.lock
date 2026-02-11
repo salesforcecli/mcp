@@ -3133,10 +3133,10 @@
     zod "^3.24.2"
     zod-to-json-schema "^3.24.3"
 
-"@salesforce/mcp-provider-lwc-experts@0.6.5":
-  version "0.6.5"
-  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-lwc-experts/-/mcp-provider-lwc-experts-0.6.5.tgz#d8f0a25aa0516b738521e4b4e36097862bc3e21e"
-  integrity sha512-hioQPlZKJQyb0Rjij6ng1k26I0eUQxvPo2n8nMf3fDHpR6nqiWvfq7/5yA/8NMf19eYf/pqsAFg50qnPJbXC9g==
+"@salesforce/mcp-provider-lwc-experts@0.6.6":
+  version "0.6.6"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-lwc-experts/-/mcp-provider-lwc-experts-0.6.6.tgz#6be062258a6833cee70c0c5980cee32b2d592a24"
+  integrity sha512-2GrF3Q25GeWj0/AiN8V8trzVeAIlE6MdD/lnU9K4koljZXDKSkGpgG1Wg7d9ZS7x/THjaePhfkFdQV/tsJ3iAQ==
   dependencies:
     "@modelcontextprotocol/sdk" "^1.9.0"
     "@salesforce/core" "^8.19.0"
