@@ -231,12 +231,18 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
     }
     const summary = summaryParts.join('\n');
 
+    // Only return error response IFF there were only failed records
+    const isError =
+      successfulRecords.length === 0 &&
+      skippedRecords.length === 0 &&
+      failedRecords.length > 0;
+
     return {
-      isError: false,
+      isError,
       content: [
-        { 
-          type: 'text', 
-          text: summary 
+        {
+          type: 'text',
+          text: summary
         }
       ],
     };

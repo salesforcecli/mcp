@@ -300,5 +300,42 @@ describe("EnrichMetadataMcpTool", () => {
       expect(text).toContain("Failed:");
       expect(text).toContain("  • failedCmp: Enrichment API error");
     });
+
+    it("exec sets isError to true when there are only failed records", async () => {
+      const stub = new StubServices();
+      const servicesWithConnection = {
+        ...stub,
+        getOrgService: () => ({
+          getConnection: () => Promise.resolve(mockConnection),
+        }),
+      } as unknown as Services;
+      vi.spyOn(ComponentProcessor, "getComponentsToSkip").mockReturnValue(new Set());
+      vi.spyOn(EnrichmentHandler, "enrich").mockResolvedValue([
+        {
+          componentName: "failedCmp",
+          componentType: { name: "LightningComponentBundle" },
+          requestBody: { contentBundles: [], metadataType: "Generic", maxTokens: 50 },
+          response: null,
+          message: null,
+          status: EnrichmentStatus.FAIL,
+        },
+      ] as unknown as EnrichmentRequestRecord[]);
+      vi.spyOn(FileProcessor, "updateMetadataFiles").mockResolvedValue(
+        [] as unknown as Awaited<ReturnType<typeof FileProcessor.updateMetadataFiles>>
+      );
+
+      const tool = new EnrichMetadataMcpTool(servicesWithConnection);
+      const result = await tool.exec({
+        usernameOrAlias: "user@example.com",
+        directory: "/tmp/proj",
+        metadataEntries: ["LightningComponentBundle:failedCmp"],
+      });
+
+      expect(result.isError).toBe(true);
+      const text = result.content[0].type === "text" ? result.content[0].text : "";
+      expect(text).toContain("No components were enriched.");
+      expect(text).toContain("Failed:");
+      expect(text).toContain("  • failedCmp: Failed");
+    });
   });
 });
