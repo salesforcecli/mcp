@@ -89,6 +89,7 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       The org must be eligible for metadata enrichment. The Salesforce admin can help enable it.
 
       If the user doesn't specify what exactly to enrich ("enrich my metadata"), ask the user to provide specific component names from their local project.
+      Wildcards are supported for component names can match to components in the local project.
 
       This tool currently supports enriching only Lightning Web Components (LWC) which are represented by the LightningComponentBundle (case sensitive) metadata type.
       LightningComponentBundle is the type used for the enrichment requests for LWC.
@@ -97,8 +98,13 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       
       If the user specifies multiple components, batch the enrichment requests together as the tool can handle multiple component enrichment at a time.
 
+      Enrichment responses include components that were enriched successfully, failed, or were skipped.
+      Do not use previous conversation context or previous successful enrichment responses to determine this status.
+      The sole source of truth is the enrichment response each time enrichment is requested.
+
       This is a different action from retrieving metadata (#retrieve_metadata) or deploying metadata (#deploy_metadata).
       These other tools should be used instead if the user is intending to retrieve or deploy metadata rather than enrich.
+      If it is unclear what the user intends to do, ask them to clarify.
 
       EXAMPLE USAGE:
       - Enrich this component in my org
@@ -197,6 +203,9 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
     const skippedRecords = Array.from(enrichmentRecords.recordSet).filter(
       (record) => record.status === EnrichmentStatus.SKIPPED
     );
+    const failedRecords = Array.from(enrichmentRecords.recordSet).filter(
+      (record) => record.status === EnrichmentStatus.FAIL
+    );
 
     const summaryParts: string[] = [];
     if (successfulRecords.length === 0) {
@@ -209,6 +218,12 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       summaryParts.push('Skipped:');
       summaryParts.push(
         ...skippedRecords.map((r) => `  • ${r.componentName}: ${r.message ?? 'Skipped'}`)
+      );
+    }
+    if (failedRecords.length > 0) {
+      summaryParts.push('Failed:');
+      summaryParts.push(
+        ...failedRecords.map((r) => `  • ${r.componentName}: ${r.message ?? 'Failed'}`)
       );
     }
     const summary = summaryParts.join('\n');
