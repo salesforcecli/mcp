@@ -41,7 +41,7 @@
     "package.json"
   ],
   "scripts": {
-    "build": "tsc --build tsconfig.build.json --verbose && cp -R src/data dist/data",
+    "build": "tsc --build tsconfig.build.json --verbose && cp -R src/data dist/data && cp -R src/templates dist/templates",
     "clean": "tsc --build tsconfig.build.json --clean",
     "clean-all": "yarn clean && rimraf node_modules",
     "lint": "eslint **/*.ts",

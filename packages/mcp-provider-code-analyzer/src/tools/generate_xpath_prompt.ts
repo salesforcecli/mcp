@@ -18,6 +18,22 @@ const DESCRIPTION: string =
   Output:
   - prompt: A concise, high-signal prompt that guides an LLM to extract the AST context needed for XPath authoring from the sampleCode.
   
+  Use this tool when the user asks for rules like:
+  - Ban all System.debug statements in production code.
+  - Enforce that all Apex classes must end with Service, Controller, Handler, or Helper suffix.
+  - Detect hardcoded Salesforce IDs in Apex classes.
+  - Require that all test methods include assertions and cannot be empty.
+  - Prevent usage of @future methods without proper error handling.
+  - Enforce that all public methods must have proper documentation comments.
+  - Prevent nested if statements deeper than 3 levels.
+  - Require that all DML operations are wrapped in try-catch blocks.
+  - Ensure all SOQL queries use bind variables instead of string concatenation.
+  - Classes implementing Batchable must have proper error handling in execute().
+  - All methods with @TestVisible must be in test classes only.
+  - Enforce that all custom exceptions extend Exception class properly.
+  - Require that all Database.query calls use escapeSingleQuotes for user input.
+  - Ban the use of Test.isRunningTest() in production code.
+  
   Note: This tool only prepares the prompt. A subsequent tool will use these details to generate the final XPath-based custom rule.`; 
 
 export const inputSchema = z.object({
