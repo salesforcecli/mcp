@@ -89,25 +89,29 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       The org must be eligible for metadata enrichment. The Salesforce admin can help enable it.
 
       If the user doesn't specify what exactly to enrich ("enrich my metadata"), ask the user to provide specific component names from their local project.
-      Wildcards are supported for component names, matching to components in the local project.
+      Wildcards are supported for component names and match to components in the local project.
 
-      This tool currently supports enriching only Lightning Web Components (LWC) which are represented by the LightningComponentBundle (case sensitive) metadata type.
+      This tool currently only supports enriching Lightning Web Components (LWC) which are represented by the LightningComponentBundle (case sensitive) metadata type.
       LightningComponentBundle is the type used for the enrichment requests for LWC.
       
       If any non-LWC is specified by the user for enrichment, the tool will skip those components, but will proceed with enriching any other specified LWC.
       
-      If the user specifies multiple components, batch the enrichment requests together as the tool can handle multiple component enrichment at a time.
+      If the user specifies multiple components, batch the enrichment requests together as the tool can handle enriching multiple at a time.
 
       Enrichment responses include components that were enriched successfully, failed, or were skipped.
-      Do not use previous conversation context or previous successful enrichment responses to determine this status.
-      The sole source of truth is the enrichment response each time enrichment is requested.
+      Do not use previous conversation context or previous successful responses to determine enrichment status.
+      The sole source of truth is the enrichment response from each enrichment request.
 
-      This is a different action from retrieving metadata (#retrieve_metadata) or deploying metadata (#deploy_metadata).
-      These other tools should be used instead if the user is intending to retrieve or deploy metadata rather than enrich.
-      If it is unclear what the user intends to do, ask them to clarify.
+      This is a different tool from retrieving metadata (#retrieve_metadata) or deploying metadata (#deploy_metadata).
+      These other tools should be used instead if the user is intending to retrieve or deploy metadata.
+      If it is unclear what the user intends to do, ask them to clarify before proceeding.
 
       Enrichment updates the metadata files in the local project, but does not deploy them to the org.
-      The user will need to deploy metadata to the org in order to save it.
+      The user will need to deploy metadata to the org in order to save any changes.
+
+      Keep track of the previous state of the local metadata files before and after enrichment.
+      This may or may not include pre-existing metadata descriptions.
+      If the user asks to revert the changes for enriched metadata, you can revert the changed files back to the previous state.
 
       EXAMPLE USAGE:
       - Enrich this component in my org
