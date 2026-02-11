@@ -1,3 +1,7 @@
+## [0.5.2](https://github.com/salesforcecli/mcp/compare/mcp-provider-code-analyzer@0.5.1...mcp-provider-code-analyzer@0.5.2) (2026-02-11)
+
+
+
 ## [0.5.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-code-analyzer@0.5.0...mcp-provider-code-analyzer@0.5.1) (2026-02-11)
 
 
