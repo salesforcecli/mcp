@@ -153,6 +153,7 @@ describe("EnrichMetadataMcpTool", () => {
         expect(result.content[0].text).toContain("Metadata enrichment completed");
         expect(result.content[0].text).toContain("  • myLwc");
         expect(result.content[0].text).not.toContain("Skipped:");
+        expect(result.content[0].text).not.toContain("Failed:");
       }
     });
   });
@@ -224,6 +225,117 @@ describe("EnrichMetadataMcpTool", () => {
       expect(text).toContain("  • myLwc");
       expect(text).toContain("Skipped:");
       expect(text).toContain("  • otherCmp: Skipped");
+    });
+  });
+
+  describe("summary includes failed records", () => {
+    const mockConnection = {} as Connection;
+
+    beforeEach(() => {
+      mkdirSync("/tmp/proj", { recursive: true });
+      vi.mocked(SfProject.resolve).mockResolvedValue({ getPath: () => "/tmp/proj" } as never);
+      const lwcComponent = {
+        fullName: "myLwc",
+        name: "myLwc",
+        type: { name: "LightningComponentBundle" },
+      };
+      const failedComponent = {
+        fullName: "failedCmp",
+        name: "failedCmp",
+        type: { name: "LightningComponentBundle" },
+      };
+      vi.mocked(ComponentSetBuilder.build).mockResolvedValue({
+        getSourceComponents: () => ({
+          toArray: () => [lwcComponent, failedComponent],
+        }),
+      } as never);
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it("exec summary lists enriched components and failed components with message", async () => {
+      const stub = new StubServices();
+      const servicesWithConnection = {
+        ...stub,
+        getOrgService: () => ({
+          getConnection: () => Promise.resolve(mockConnection),
+        }),
+      } as unknown as Services;
+      vi.spyOn(ComponentProcessor, "getComponentsToSkip").mockReturnValue(new Set());
+      vi.spyOn(EnrichmentHandler, "enrich").mockResolvedValue([
+        {
+          componentName: "myLwc",
+          componentType: { name: "LightningComponentBundle" },
+          requestBody: { contentBundles: [], metadataType: "Generic", maxTokens: 50 },
+          response: {},
+          message: null,
+          status: EnrichmentStatus.SUCCESS,
+        },
+        {
+          componentName: "failedCmp",
+          componentType: { name: "LightningComponentBundle" },
+          requestBody: { contentBundles: [], metadataType: "Generic", maxTokens: 50 },
+          response: null,
+          message: "Enrichment API error",
+          status: EnrichmentStatus.FAIL,
+        },
+      ] as unknown as EnrichmentRequestRecord[]);
+      vi.spyOn(FileProcessor, "updateMetadataFiles").mockResolvedValue(
+        [] as unknown as Awaited<ReturnType<typeof FileProcessor.updateMetadataFiles>>
+      );
+
+      const tool = new EnrichMetadataMcpTool(servicesWithConnection);
+      const result = await tool.exec({
+        usernameOrAlias: "user@example.com",
+        directory: "/tmp/proj",
+        metadataEntries: ["LightningComponentBundle:myLwc", "LightningComponentBundle:failedCmp"],
+      });
+
+      expect(result.isError).toBe(false);
+      const text = result.content[0].type === "text" ? result.content[0].text : "";
+      expect(text).toContain("Metadata enrichment completed. Components enriched:");
+      expect(text).toContain("  • myLwc");
+      expect(text).toContain("Failed:");
+      expect(text).toContain("  • failedCmp: Enrichment API error");
+    });
+
+    it("exec sets isError to true when there are only failed records", async () => {
+      const stub = new StubServices();
+      const servicesWithConnection = {
+        ...stub,
+        getOrgService: () => ({
+          getConnection: () => Promise.resolve(mockConnection),
+        }),
+      } as unknown as Services;
+      vi.spyOn(ComponentProcessor, "getComponentsToSkip").mockReturnValue(new Set());
+      vi.spyOn(EnrichmentHandler, "enrich").mockResolvedValue([
+        {
+          componentName: "failedCmp",
+          componentType: { name: "LightningComponentBundle" },
+          requestBody: { contentBundles: [], metadataType: "Generic", maxTokens: 50 },
+          response: null,
+          message: null,
+          status: EnrichmentStatus.FAIL,
+        },
+      ] as unknown as EnrichmentRequestRecord[]);
+      vi.spyOn(FileProcessor, "updateMetadataFiles").mockResolvedValue(
+        [] as unknown as Awaited<ReturnType<typeof FileProcessor.updateMetadataFiles>>
+      );
+
+      const tool = new EnrichMetadataMcpTool(servicesWithConnection);
+      const result = await tool.exec({
+        usernameOrAlias: "user@example.com",
+        directory: "/tmp/proj",
+        metadataEntries: ["LightningComponentBundle:failedCmp"],
+      });
+
+      expect(result.isError).toBe(true);
+      const text = result.content[0].type === "text" ? result.content[0].text : "";
+      expect(text).toContain("No components were enriched.");
+      expect(text).toContain("Failed:");
+      expect(text).toContain("  • failedCmp: Failed");
     });
   });
 });
