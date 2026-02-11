@@ -11,22 +11,22 @@ import { EnginePluginsFactoryImpl } from "../factories/EnginePluginsFactory.js";
 
 const MAX_ALLOWABLE_TARGET_COUNT = 10;
 
-const DESCRIPTION: string = `A tool for performing static analysis against code.\n` +
-    `This tool can validate that code conforms to best practices, check for security vulnerabilities, and identify possible\n` +
-    `performance issues. It returns a JSON containing the absolute path to a results file if such a file was created,\n` +
-    `and a string indicating the overall success or failure of the operation.\n` +
-    `\n` +
-    `When to use this tool:\n` +
-    `- When the user asks you to generate files, use this tool to scan those files.\n` +
-    `- When the user asks you to check code for problems, use this tool to do that.\n` +
-    `\n` +
-    `Optional: Provide a "selector" (same semantics as "list_code_analyzer_rules") to choose which rules to run.\n` +
-    `Examples:\n` +
-    `- "Security:pmd" → run Security-tagged PMD rules\n` +
-    `- "Critical" → run all Critical-severity rules\n` +
-    `- "(Security,Performance):eslint" → ESLint rules tagged Security or Performance\n` +
-    `\n` +
-    `After completion: Use the "query_code_analyzer_results" tool to filter and explain results, e.g., top-N most severe violations or violations by category/tag.`;
+const DESCRIPTION: string = `A tool for performing static analysis against code.
+This tool can validate that code conforms to best practices, check for security vulnerabilities, and identify possible
+performance issues. It returns a JSON containing the absolute path to a results file if such a file was created,
+and a string indicating the overall success or failure of the operation.
+
+When to use this tool:
+- When the user asks you to generate files, use this tool to scan those files.
+- When the user asks you to check code for problems, use this tool to do that.
+
+Optional: Provide a "selector" (same semantics as "list_code_analyzer_rules") to choose which rules to run.
+Examples:
+- "Security:pmd" → run Security-tagged PMD rules
+- "Critical" → run all Critical-severity rules
+- "(Security,Performance):eslint" → ESLint rules tagged Security or Performance
+
+After completion: Use the "query_code_analyzer_results" tool to filter and explain results, e.g., top-N most severe violations or violations by category/tag.`;
 
 export const inputSchema = z.object({
     target: z.array(z.string()).describe(`A JSON-formatted array of between 1 and ${MAX_ALLOWABLE_TARGET_COUNT} files on the users machine that should be scanned. These paths MUST be ABSOLUTE paths, and not relative paths.`),

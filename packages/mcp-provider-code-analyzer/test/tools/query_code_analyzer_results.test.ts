@@ -73,6 +73,37 @@ describe("CodeAnalyzerQueryResultsMcpTool", () => {
     expect(tool.getName()).toBe("query_code_analyzer_results");
   });
 
+  it("caps to top 10 and warns when topN > 10 unless allowLargeResultSet is true", async () => {
+    const stubAction = new StubQueryResultsAction();
+    const telemetry = new SpyTelemetryService();
+    const tool = new CodeAnalyzerQueryResultsMcpTool(stubAction, telemetry);
+    const absResultsFile = path.join(os.tmpdir(), "dummy-results.json");
+    const res = await tool.exec({ resultsFile: absResultsFile, selector: "Security", topN: 50 });
+    expect(res.isError).not.toBe(true);
+    // Action received capped topN
+    expect(stubAction.lastInput?.topN).toBe(10);
+    // Telemetry uses effective topN
+    const events: SendTelemetryEvent[] = telemetry.sendEventCallHistory;
+    expect(events.length).toBe(1);
+    expect(events[0].event.topN).toBe(10);
+    // Warning present in content
+    const note = (res.content ?? []).find((c: any) => typeof c.text === 'string' && c.text.includes('Showing only the first 10'));
+    expect(note).toBeDefined();
+  });
+
+  it("allows topN > 10 when allowLargeResultSet is true", async () => {
+    const stubAction = new StubQueryResultsAction();
+    const telemetry = new SpyTelemetryService();
+    const tool = new CodeAnalyzerQueryResultsMcpTool(stubAction, telemetry);
+    const absResultsFile = path.join(os.tmpdir(), "dummy-results.json");
+    const res = await tool.exec({ resultsFile: absResultsFile, selector: "Security", topN: 50, allowLargeResultSet: true } as any);
+    expect(res.isError).not.toBe(true);
+    expect(stubAction.lastInput?.topN).toBe(50);
+    const events: SendTelemetryEvent[] = telemetry.sendEventCallHistory;
+    expect(events.length).toBeGreaterThan(0);
+    expect(events[0].event.topN).toBe(50);
+  });
+
   it("returns isError with message for invalid selector", async () => {
     const stubAction = new StubQueryResultsAction();
     const tool = new CodeAnalyzerQueryResultsMcpTool(stubAction);
@@ -102,7 +133,7 @@ describe("CodeAnalyzerQueryResultsMcpTool", () => {
     expect(events[0].event.totalMatches).toBe(0);
   });
 
-  it("falls back to default topN=5 when not provided (telemetry path)", async () => {
+  it("falls back to default topN=10 when not provided (telemetry path)", async () => {
     const stubAction = new StubQueryResultsAction({
       status: "success",
       totalViolations: undefined,
@@ -117,7 +148,7 @@ describe("CodeAnalyzerQueryResultsMcpTool", () => {
     expect(res.structuredContent?.status).toBe("success");
     const events: SendTelemetryEvent[] = telemetry.sendEventCallHistory;
     expect(events.length).toBe(1);
-    expect(events[0].event.topN).toBe(5);
+    expect(events[0].event.topN).toBe(10);
   });
 
   it("rejects relative resultsFile path", async () => {
