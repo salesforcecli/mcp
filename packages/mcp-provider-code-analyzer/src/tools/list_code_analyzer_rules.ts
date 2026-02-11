@@ -28,36 +28,36 @@ const ALLOWED_SELECTOR_TOKENS_LOWER: ReadonlySet<string> = new Set<string>([
 ]);
 
 
-const DESCRIPTION: string = `A tool for selecting Code Analyzer rules based on a number of criteria.\n` +
-    `This tool returns a JSON array describing Code Analyzer rules that match a "selector".\n` +
-    `A selector is a colon-separated (:) string of tokens; tags and severity names are case-insensitive.\n` +
-    `You can OR multiple tokens of the same type by grouping them in parentheses and separating with commas, e.g. "(Performance,Security)".\n` +
-    `\n` +
-    `Policy: To prevent overly broad results, the full unfiltered list of rules is not returned unless you explicitly set allowFullList=true.\n` +
-    `This flag defaults to false and its use is not recommended.\n` +
-    `Note: Listing large rule sets can significantly increase token consumption.\n` +
-    `\n` +
-    `Examples:\n` +
-    `- "Recommended" → all rules tagged as Recommended.\n` +
-    `- "Performance:pmd:Critical" → rules in the PMD engine with the Performance tag and Critical severity.\n` +
-    `- "pmd:(Performance,Security):2" → PMD rules with Performance OR Security tags and severity 2.\n` +
-    `- "(Apex,JavaScript):Recommended" → rules for Apex OR JavaScript languages that are Recommended.\n` +
-    `- "Security:High" → rules tagged Security with High severity.\n` +
-    `- "Apex:Recommended" → rules for the Apex language that are Recommended.\n` +
-    `- "DevPreview" → rules marked as DevPreview.\n` +
-    `- Prompt: "tell me about all performance rules" → selector: "Performance".\n` +
-    `\n` +
-    `Supported selector tokens:\n` +
-    `- Engines: eslint, regex, retire-js, flow, pmd, cpd, sfge\n` +
-    `- Severities (names): Critical, High, Moderate, Low, Info\n` +
-    `- Severities (numbers): 1, 2, 3, 4, 5\n` +
-    `- General tags: Recommended, Custom, All\n` +
-    `- Categories: BestPractices, CodeStyle, Design, Documentation, ErrorProne, Security, Performance\n` +
-    `- Languages: Apex, CSS, HTML, JavaScript, TypeScript, Visualforce, XML\n` +
-    `- Engine-specific tags: DevPreview, LWC\n` +
-    `\n` +
-    `Tip: Use the "describe_code_analyzer_rule" tool to get details for any listed rule.
-    `;
+const DESCRIPTION: string = `A tool for selecting Code Analyzer rules based on a number of criteria.
+This tool returns a JSON array describing Code Analyzer rules that match a "selector".
+A selector is a colon-separated (:) string of tokens; tags and severity names are case-insensitive.
+You can OR multiple tokens of the same type by grouping them in parentheses and separating with commas, e.g. "(Performance,Security)".
+
+Policy: To prevent overly broad results, the full unfiltered list of rules is not returned unless you explicitly set allowFullList=true.
+This flag defaults to false and its use is not recommended.
+Note: Listing large rule sets can significantly increase token consumption.
+
+Examples:
+- "Recommended" → all rules tagged as Recommended.
+- "Performance:pmd:Critical" → rules in the PMD engine with the Performance tag and Critical severity.
+- "pmd:(Performance,Security):2" → PMD rules with Performance OR Security tags and severity 2.
+- "(Apex,JavaScript):Recommended" → rules for Apex OR JavaScript languages that are Recommended.
+- "Security:High" → rules tagged Security with High severity.
+- "Apex:Recommended" → rules for the Apex language that are Recommended.
+- "DevPreview" → rules marked as DevPreview.
+- Prompt: "tell me about all performance rules" → selector: "Performance".
+
+Supported selector tokens:
+- Engines: eslint, regex, retire-js, flow, pmd, cpd, sfge
+- Severities (names): Critical, High, Moderate, Low, Info
+- Severities (numbers): 1, 2, 3, 4, 5
+- General tags: Recommended, Custom, All
+- Categories: BestPractices, CodeStyle, Design, Documentation, ErrorProne, Security, Performance
+- Languages: Apex, CSS, HTML, JavaScript, TypeScript, Visualforce, XML
+- Engine-specific tags: DevPreview, LWC
+
+Tip: Use the "describe_code_analyzer_rule" tool to get details for any listed rule.
+`;
 
 export const inputSchema = z.object({
     selector: z.string().describe("A selector for Code Analyzer rules. Must meet the criteria outlined in the tool-level description."),

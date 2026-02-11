@@ -66,7 +66,7 @@ export function computeEffectiveTopN(
   allowLargeResultSet: boolean | undefined,
   limit: number = DEFAULT_TOPN_POLICY_LIMIT
 ): { effectiveTopN: number; truncated: boolean } {
-  const requested = topN ?? 5;
+  const requested = topN ?? DEFAULT_TOPN_POLICY_LIMIT;
   if (requested > limit && !allowLargeResultSet) {
     return { effectiveTopN: limit, truncated: true };
   }
