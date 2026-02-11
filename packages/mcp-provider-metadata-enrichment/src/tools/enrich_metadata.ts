@@ -106,6 +106,9 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       These other tools should be used instead if the user is intending to retrieve or deploy metadata rather than enrich.
       If it is unclear what the user intends to do, ask them to clarify.
 
+      Enrichment updates the metadata files in the local project, but does not deploy them to the org.
+      The user will need to deploy metadata to the org in order to save it.
+
       EXAMPLE USAGE:
       - Enrich this component in my org
       - Enrich X in my org
