@@ -172,6 +172,11 @@ Task:
 - Prefer minimal, stable XPath that avoids overfitting.
 - Return only the XPath expression.
 
+Requirements:
+- Review availableNodes (${nodeSummaries.length} nodes) to identify needed nodes.
+- Build XPath using node details and standard XPath 3.1 functions (ends-with, starts-with, contains, matches, not, and, or, etc.).
+- Use ONLY node names from availableNodes.
+
 Next step:
 - Call the tool 'create_custom_rule' with the generated XPath to create the custom rule.`;
 }
