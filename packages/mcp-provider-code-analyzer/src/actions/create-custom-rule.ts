@@ -1,6 +1,6 @@
 import path from "node:path";
 import fs from "node:fs/promises";
-import { escapeXml } from "../utils.js";
+import { escapeXml, toSafeFilenameSlug } from "../utils.js";
 
 // TODO: Work in progress. This action is a placeholder to wire the tool end-to-end.
 
@@ -104,9 +104,10 @@ async function buildRuleXml(input: NormalizedInput): Promise<string> {
 
 function buildPaths(input: NormalizedInput): { customRulesDir: string; rulesetPath: string; configPath: string } {
   const customRulesDir = path.join(input.workingDirectory, CUSTOM_RULES_DIR_NAME);
+  const safeRuleName = toSafeFilenameSlug(input.ruleName);
   return {
     customRulesDir,
-    rulesetPath: path.join(customRulesDir, `${input.ruleName}-pmd-rules.xml`),
+    rulesetPath: path.join(customRulesDir, `${safeRuleName}-pmd-rules.xml`),
     configPath: path.join(input.workingDirectory, "code-analyzer.yml")
   };
 }
@@ -114,6 +115,7 @@ function buildPaths(input: NormalizedInput): { customRulesDir: string; rulesetPa
 function applyTemplate(template: string, values: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, key: string) => values[key] ?? "");
 }
+
 
 async function upsertCodeAnalyzerConfig(configPath: string, rulesetPath: string): Promise<void> {
   try {
