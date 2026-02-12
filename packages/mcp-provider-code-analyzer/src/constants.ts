@@ -4,7 +4,8 @@ export const TelemetrySource = "MCP"
 export const McpTelemetryEvents = {
     ENGINE_SELECTION: 'engine_selection',
     ENGINE_EXECUTION: 'engine_execution',
-    RESULTS_QUERY: 'results_query'
+    RESULTS_QUERY: 'results_query',
+    CUSTOM_RULE_CREATED: 'custom_rule_created'
 }
 
 export const ENGINE_NAMES = [

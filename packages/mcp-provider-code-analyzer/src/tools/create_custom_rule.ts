@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
+import * as Constants from "../constants.js";
 import {
   CreateCustomRuleAction,
   CreateCustomRuleActionImpl,
@@ -95,6 +96,17 @@ export class CreateCustomRuleMcpTool extends McpTool<InputArgsShape, OutputArgsS
     const message = output.rulesetPath && output.configPath
       ? `Custom rule created. Ruleset: ${output.rulesetPath}. Code Analyzer config: ${output.configPath}.`
       : output.status;
+    if (this.telemetryService) {
+      this.telemetryService.sendEvent(Constants.TelemetryEventName, {
+        source: Constants.TelemetrySource,
+        sfcaEvent: Constants.McpTelemetryEvents.CUSTOM_RULE_CREATED,
+        engine: input.engine,
+        language: input.language,
+        ruleName: input.ruleName,
+        rulesetPath: output.rulesetPath,
+        configPath: output.configPath
+      });
+    }
     return {
       content: [{ type: "text", text: message }],
       structuredContent: output
@@ -125,7 +137,7 @@ function validateInput(input: z.infer<typeof inputSchema>): CallToolResult | und
 
   const xpath = input.xpath?.trim();
   if (engine.toLowerCase() === "pmd" && !xpath) {
-    return buildError("xpath is required for engine 'pmd'. Provide a valid XPath expression, use tool 'generate_xpath_prompt' to generate the XPath.");
+    return buildError("xpath is required for engine 'pmd'. Provide a valid XPath expression, use tool 'get_ast_nodes_to_generate_xpath' to generate the XPath.");
   }
 
   if (input.priority === undefined || input.priority === null) {
