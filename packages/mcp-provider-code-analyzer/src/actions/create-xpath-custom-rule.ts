@@ -4,7 +4,7 @@ import { escapeXml, toSafeFilenameSlug } from "../utils.js";
 
 // TODO: Work in progress. This action is a placeholder to wire the tool end-to-end.
 
-export type CreateCustomRuleInput = {
+export type CreateXpathCustomRuleInput = {
   xpath: string;
   ruleName?: string;
   description?: string;
@@ -14,19 +14,19 @@ export type CreateCustomRuleInput = {
   workingDirectory?: string;
 };
 
-export type CreateCustomRuleOutput = {
+export type CreateXpathCustomRuleOutput = {
   status: string;
   ruleXml?: string;
   rulesetPath?: string;
   configPath?: string;
 };
 
-export interface CreateCustomRuleAction {
-  exec(input: CreateCustomRuleInput): Promise<CreateCustomRuleOutput>;
+export interface CreateXpathCustomRuleAction {
+  exec(input: CreateXpathCustomRuleInput): Promise<CreateXpathCustomRuleOutput>;
 }
 
-export class CreateCustomRuleActionImpl implements CreateCustomRuleAction {
-  public async exec(input: CreateCustomRuleInput): Promise<CreateCustomRuleOutput> {
+export class CreateXpathCustomRuleActionImpl implements CreateXpathCustomRuleAction {
+  public async exec(input: CreateXpathCustomRuleInput): Promise<CreateXpathCustomRuleOutput> {
     const normalized = normalizeInput(input);
     if ("error" in normalized) {
       return { status: normalized.error };
@@ -37,7 +37,7 @@ export class CreateCustomRuleActionImpl implements CreateCustomRuleAction {
 
     await fs.mkdir(customRulesDir, { recursive: true });
     await fs.writeFile(rulesetPath, ruleXml, "utf8");
-    await upsertCodeAnalyzerConfig(configPath, rulesetPath);
+    await upsertCodeAnalyzerConfig(configPath, rulesetPath, normalized.engine);
 
     return { status: "success", ruleXml, rulesetPath, configPath };
   }
@@ -59,7 +59,7 @@ const DEFAULT_LANGUAGE = "apex";
 const DEFAULT_PRIORITY = 3;
 const CUSTOM_RULES_DIR_NAME = "custom-rules";
 
-function normalizeInput(input: CreateCustomRuleInput): NormalizedInput | { error: string } {
+function normalizeInput(input: CreateXpathCustomRuleInput): NormalizedInput | { error: string } {
   const xpath = (input.xpath ?? "").trim();
   if (!xpath) {
     return { error: "xpath is required" };
@@ -107,7 +107,7 @@ function buildPaths(input: NormalizedInput): { customRulesDir: string; rulesetPa
   const safeRuleName = toSafeFilenameSlug(input.ruleName);
   return {
     customRulesDir,
-    rulesetPath: path.join(customRulesDir, `${safeRuleName}-pmd-rules.xml`),
+    rulesetPath: path.join(customRulesDir, `${safeRuleName}-${input.engine}-rules.xml`),
     configPath: path.join(input.workingDirectory, "code-analyzer.yml")
   };
 }
@@ -116,14 +116,13 @@ function applyTemplate(template: string, values: Record<string, string>): string
   return template.replace(/\{\{(\w+)\}\}/g, (_, key: string) => values[key] ?? "");
 }
 
-
-async function upsertCodeAnalyzerConfig(configPath: string, rulesetPath: string): Promise<void> {
+async function upsertCodeAnalyzerConfig(configPath: string, rulesetPath: string, engine: string): Promise<void> {
   try {
     const existing = await fs.readFile(configPath, "utf8");
     if (existing.includes(rulesetPath)) {
       return;
     }
-    const updated = addRulesetPath(existing, rulesetPath);
+    const updated = addRulesetPath(existing, rulesetPath, engine);
     await fs.writeFile(configPath, updated, "utf8");
   } catch (error) {
     const code = (error as NodeJS.ErrnoException).code;
@@ -132,25 +131,49 @@ async function upsertCodeAnalyzerConfig(configPath: string, rulesetPath: string)
     }
     const templatePath = new URL("../templates/code-analyzer.yml", import.meta.url);
     const template = await fs.readFile(templatePath, "utf8");
-    const content = applyTemplate(template, { rulesetPath });
+    const content = applyTemplate(template, { rulesetPath, engine });
     await fs.writeFile(configPath, content, "utf8");
   }
 }
 
-function addRulesetPath(configContent: string, rulesetPath: string): string {
+function addRulesetPath(configContent: string, rulesetPath: string, engine: string): string {
   const lines = configContent.split(/\r?\n/);
+  let enginesLineIndex = -1;
+  let engineLineIndex = -1;
+  let customRulesetsLineIndex = -1;
+
   for (let i = 0; i < lines.length; i++) {
-    if (lines[i].trim() === "rulesets:") {
-      lines.splice(i + 1, 0, `      - "${rulesetPath}"`);
-      return lines.join("\n");
+    const trimmed = lines[i].trim();
+    if (trimmed === "engines:") {
+      enginesLineIndex = i;
+      continue;
+    }
+    if (trimmed === `${engine}:` && enginesLineIndex !== -1) {
+      engineLineIndex = i;
+      continue;
+    }
+    if (trimmed === "custom_rulesets:" && engineLineIndex !== -1) {
+      customRulesetsLineIndex = i;
+      break;
     }
   }
+
+  if (customRulesetsLineIndex !== -1) {
+    lines.splice(customRulesetsLineIndex + 1, 0, `      - "${rulesetPath}"`);
+    return lines.join("\n");
+  }
+
+  if (engineLineIndex !== -1) {
+    lines.splice(engineLineIndex + 1, 0, "    custom_rulesets:", `      - "${rulesetPath}"`);
+    return lines.join("\n");
+  }
+
   return [
     configContent.trimEnd(),
     "",
     "engines:",
-    "  pmd:",
-    "    rulesets:",
+    `  ${engine}:`,
+    "    custom_rulesets:",
     `      - "${rulesetPath}"`
   ].join("\n");
 }

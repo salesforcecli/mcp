@@ -3,11 +3,11 @@ import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
 import * as Constants from "../constants.js";
 import {
-  CreateCustomRuleAction,
-  CreateCustomRuleActionImpl,
-  CreateCustomRuleInput,
-  CreateCustomRuleOutput
-} from "../actions/create-custom-rule.js";
+  CreateXpathCustomRuleAction,
+  CreateXpathCustomRuleActionImpl,
+  CreateXpathCustomRuleInput,
+  CreateXpathCustomRuleOutput
+} from "../actions/create-xpath-custom-rule.js";
 
 const DESCRIPTION: string =
   `Purpose: Create a custom rule using a provided XPath expression.
@@ -51,11 +51,11 @@ type OutputArgsShape = typeof outputSchema.shape;
 
 export class CreateCustomRuleMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
   public static readonly NAME: string = "create_custom_rule";
-  private readonly action: CreateCustomRuleAction;
+  private readonly action: CreateXpathCustomRuleAction;
   private readonly telemetryService?: TelemetryService;
 
   public constructor(
-    action: CreateCustomRuleAction = new CreateCustomRuleActionImpl(),
+    action: CreateXpathCustomRuleAction = new CreateXpathCustomRuleActionImpl(),
     telemetryService?: TelemetryService
   ) {
     super();
@@ -92,7 +92,7 @@ export class CreateCustomRuleMcpTool extends McpTool<InputArgsShape, OutputArgsS
     if (validationError) {
       return validationError;
     }
-    const output: CreateCustomRuleOutput = await this.action.exec(input as CreateCustomRuleInput);
+    const output: CreateXpathCustomRuleOutput = await this.action.exec(input as CreateXpathCustomRuleInput);
     const message = output.rulesetPath && output.configPath
       ? `Custom rule created. Ruleset: ${output.rulesetPath}. Code Analyzer config: ${output.configPath}.`
       : output.status;
