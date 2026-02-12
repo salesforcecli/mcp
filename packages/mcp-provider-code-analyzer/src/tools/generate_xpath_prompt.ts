@@ -157,28 +157,48 @@ function buildXpathPrompt(input: BuildPromptInput): string {
   });
 
   return `You are generating a PMD XPath query.
-Goal: Generate an XPath expression that matches the violation described by the sample code.
+Goal: Generate an XPath expression that matches the violation described earlier.
 
 Context:
-- Engine: ${input.engine}
-- Language: ${input.language}
+
+Engine: ${input.engine}
+
+Language: ${input.language}
 
 AST nodes (from ast-dump) with extracted metadata:
 ${JSON.stringify(nodeSummaries, null, 2)}
 
 Task:
-- Use the AST nodes and metadata above to write a precise XPath for the violation.
-- Create the XPath for the scenario described by the user request.
-- Prefer minimal, stable XPath that avoids overfitting.
-- Return only the XPath expression.
+
+Use the AST nodes and metadata above to write a precise XPath for the violation.
+
+Create the XPath for the scenario described by the user request.
+
+Prefer minimal, stable XPath that avoids overfitting.
+
+Return only the XPath expression.
 
 Requirements:
-- Review availableNodes (${nodeSummaries.length} nodes) to identify needed nodes.
-- Build XPath using node details and standard XPath 3.1 functions (ends-with, starts-with, contains, matches, not, and, or, etc.).
-- Use ONLY node names from availableNodes.
+
+Review availableNodes (${nodeSummaries.length} nodes) to identify needed nodes.
+
+Use ONLY node names from availableNodes.
+
+Use only attributes present in the AST metadata.
+
+Treat attribute values exactly as shown in metadata (e.g., if @Image includes quotes, do not strip them).
+
+Do not invent attributes or assume normalization.
+
+Prefer structural matching over string manipulation.
+
+Avoid complex XPath functions unless clearly required.
+
+Ensure compatibility with PMD ${input.engine} XPath support.
 
 Next step:
-- Call the tool 'create_custom_rule' with the generated XPath to create the custom rule.`;
+
+Call the tool 'create_custom_rule' with the generated XPath to create the custom rule.`;
 }
 
 function validateInput(input: z.infer<typeof inputSchema>): CallToolResult | undefined {
