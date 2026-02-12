@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, TelemetryService, Toolset } from "@salesforce/mcp-provider-api";
+import * as Constants from "../constants.js";
 import { GetAstNodesActionImpl, type GetAstNodesAction, type GetAstNodesInput, type GetAstNodesOutput } from "../actions/get-ast-nodes.js";
 
 const DESCRIPTION: string =
@@ -117,6 +118,14 @@ export class GenerateXpathPromptMcpTool extends McpTool<InputArgsShape, OutputAr
         astMetadata: astResult.metadata
       })
     };
+    if (this.telemetryService) {
+      this.telemetryService.sendEvent(Constants.TelemetryEventName, {
+        source: Constants.TelemetrySource,
+        sfcaEvent: "xpath_prompt_generated",
+        engine: input.engine,
+        language: input.language
+      });
+    }
     return {
       content: [{ type: "text", text: JSON.stringify(output) }],
       structuredContent: output
@@ -154,14 +163,12 @@ Context:
 - Engine: ${input.engine}
 - Language: ${input.language}
 
-Sample code (violates the rule):
-${input.sampleCode}
-
 AST nodes (from ast-dump) with extracted metadata:
 ${JSON.stringify(nodeSummaries, null, 2)}
 
 Task:
 - Use the AST nodes and metadata above to write a precise XPath for the violation.
+- Create the XPath for the scenario described by the user request.
 - Prefer minimal, stable XPath that avoids overfitting.
 - Return only the XPath expression.
 
