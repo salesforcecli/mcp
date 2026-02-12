@@ -91,6 +91,16 @@ export type Language = typeof LANGUAGES[number];
 
 export const LANGUAGE_SET: ReadonlySet<Language> = new Set(LANGUAGES);
 
+export const LANGUAGE_NAMES = {
+    Apex: 'apex',
+    CSS: 'css',
+    HTML: 'html',
+    JavaScript: 'javascript',
+    TypeScript: 'typescript',
+    Visualforce: 'visualforce',
+    XML: 'xml'
+} as const;
+
 export const ENGINE_SPECIFIC_TAGS = [
     'DevPreview',
     'LWC'

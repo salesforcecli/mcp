@@ -125,7 +125,7 @@ function validateInput(input: z.infer<typeof inputSchema>): CallToolResult | und
 
   const xpath = input.xpath?.trim();
   if (engine.toLowerCase() === "pmd" && !xpath) {
-    return buildError("xpath is required for engine 'pmd'. Provide a valid XPath expression.");
+    return buildError("xpath is required for engine 'pmd'. Provide a valid XPath expression, use tool 'generate_xpath_prompt' to generate the XPath.");
   }
 
   if (input.priority === undefined || input.priority === null) {
