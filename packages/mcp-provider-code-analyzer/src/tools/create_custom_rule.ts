@@ -9,6 +9,7 @@ import {
   CreateXpathCustomRuleOutput
 } from "../actions/create-xpath-custom-rule.js";
 
+// MCP tool wrapper that validates input and delegates rule creation.
 const DESCRIPTION: string =
   `Purpose: Create a custom rule using a provided XPath expression.
 Use this tool after an XPath has been generated for a specific violation pattern.

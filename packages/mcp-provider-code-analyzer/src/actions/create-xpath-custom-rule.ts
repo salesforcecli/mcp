@@ -2,7 +2,7 @@ import path from "node:path";
 import fs from "node:fs/promises";
 import { escapeXml, toSafeFilenameSlug } from "../utils.js";
 
-// TODO: Work in progress. This action is a placeholder to wire the tool end-to-end.
+// Creates PMD XPath ruleset XML and updates code-analyzer.yml.
 
 export type CreateXpathCustomRuleInput = {
   xpath: string;
@@ -118,27 +118,59 @@ function applyTemplate(template: string, values: Record<string, string>): string
 }
 
 async function upsertCodeAnalyzerConfig(configPath: string, rulesetPath: string, engine: string): Promise<void> {
-  try {
-    const existing = await fs.readFile(configPath, "utf8");
-    if (existing.includes(rulesetPath)) {
-      return;
-    }
-    const updated = addRulesetPath(existing, rulesetPath, engine);
-    await fs.writeFile(configPath, updated, "utf8");
-  } catch (error) {
-    const code = (error as NodeJS.ErrnoException).code;
-    if (code !== "ENOENT") {
-      throw error;
-    }
-    const templatePath = new URL("../templates/code-analyzer.yml", import.meta.url);
-    const template = await fs.readFile(templatePath, "utf8");
-    const content = applyTemplate(template, { rulesetPath, engine });
-    await fs.writeFile(configPath, content, "utf8");
+  const existing = await readConfigIfExists(configPath);
+  if (!existing) {
+    await writeNewCodeAnalyzerConfig(configPath, rulesetPath, engine);
+    return;
   }
+  if (existing.includes(rulesetPath)) {
+    return;
+  }
+  const updated = addRulesetPath(existing, rulesetPath, engine);
+  await fs.writeFile(configPath, updated, "utf8");
 }
 
 function addRulesetPath(configContent: string, rulesetPath: string, engine: string): string {
   const lines = configContent.split(/\r?\n/);
+  const indices = findRulesetBlockIndices(lines, engine);
+  if (indices.customRulesetsLineIndex !== -1) {
+    lines.splice(indices.customRulesetsLineIndex + 1, 0, `      - "${rulesetPath}"`);
+    return lines.join("\n");
+  }
+  if (indices.engineLineIndex !== -1) {
+    lines.splice(indices.engineLineIndex + 1, 0, "    custom_rulesets:", `      - "${rulesetPath}"`);
+    return lines.join("\n");
+  }
+  return appendEngineRulesetBlock(configContent, rulesetPath, engine);
+}
+
+async function readConfigIfExists(configPath: string): Promise<string | null> {
+  try {
+    return await fs.readFile(configPath, "utf8");
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    if (code === "ENOENT") {
+      return null;
+    }
+    throw error;
+  }
+}
+
+async function writeNewCodeAnalyzerConfig(
+  configPath: string,
+  rulesetPath: string,
+  engine: string
+): Promise<void> {
+  const templatePath = new URL("../templates/code-analyzer.yml", import.meta.url);
+  const template = await fs.readFile(templatePath, "utf8");
+  const content = applyTemplate(template, { rulesetPath, engine });
+  await fs.writeFile(configPath, content, "utf8");
+}
+
+function findRulesetBlockIndices(
+  lines: string[],
+  engine: string
+): { enginesLineIndex: number; engineLineIndex: number; customRulesetsLineIndex: number } {
   let enginesLineIndex = -1;
   let engineLineIndex = -1;
   let customRulesetsLineIndex = -1;
@@ -159,16 +191,10 @@ function addRulesetPath(configContent: string, rulesetPath: string, engine: stri
     }
   }
 
-  if (customRulesetsLineIndex !== -1) {
-    lines.splice(customRulesetsLineIndex + 1, 0, `      - "${rulesetPath}"`);
-    return lines.join("\n");
-  }
+  return { enginesLineIndex, engineLineIndex, customRulesetsLineIndex };
+}
 
-  if (engineLineIndex !== -1) {
-    lines.splice(engineLineIndex + 1, 0, "    custom_rulesets:", `      - "${rulesetPath}"`);
-    return lines.join("\n");
-  }
-
+function appendEngineRulesetBlock(configContent: string, rulesetPath: string, engine: string): string {
   return [
     configContent.trimEnd(),
     "",

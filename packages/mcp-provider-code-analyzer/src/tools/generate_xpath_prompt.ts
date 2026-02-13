@@ -4,6 +4,7 @@ import { McpTool, McpToolConfig, ReleaseState, TelemetryService, Toolset } from 
 import * as Constants from "../constants.js";
 import { GetAstNodesActionImpl, type GetAstNodesAction, type GetAstNodesInput, type GetAstNodesOutput } from "../actions/get-ast-nodes.js";
 
+// Builds the prompt that guides XPath authoring from AST context.
 const DESCRIPTION: string =
   `Purpose: First step for creating a PMD XPath-based custom rule.
   Use this tool when the user asks to create a custom rule (especially PMD/XPath).
@@ -93,19 +94,9 @@ export class GenerateXpathPromptMcpTool extends McpTool<InputArgsShape, OutputAr
       return validationError;
     }
 
-    const astResult = await this.action.exec({
-      code: input.sampleCode,
-      language: input.language
-    });
+    const astResult = await this.action.exec(buildAstInput(input));
     if (astResult.status !== "success") {
-      const output = {
-        status: astResult.status,
-        prompt: ""
-      };
-      return {
-        content: [{ type: "text", text: JSON.stringify(output) }],
-        structuredContent: output
-      };
+      return buildToolResult({ status: astResult.status, prompt: "" });
     }
 
     const output = {
@@ -126,10 +117,7 @@ export class GenerateXpathPromptMcpTool extends McpTool<InputArgsShape, OutputAr
         language: input.language
       });
     }
-    return {
-      content: [{ type: "text", text: JSON.stringify(output) }],
-      structuredContent: output
-    };
+    return buildToolResult(output);
   }
 }
 
@@ -142,19 +130,7 @@ type BuildPromptInput = {
 };
 
 function buildXpathPrompt(input: BuildPromptInput): string {
-  const metadataByName = new Map(
-    input.astMetadata.map((node) => [node.name.toLowerCase(), node])
-  );
-  const nodeSummaries = input.astNodes.map((node) => {
-    const metadata = metadataByName.get(node.nodeName.toLowerCase());
-    return {
-      nodeName: node.nodeName,
-      parent: node.parent ?? null,
-      ancestors: node.ancestors,
-      attributes: node.attributes,
-      metadata: metadata ?? null
-    };
-  });
+  const nodeSummaries = buildNodeSummaries(input.astNodes, input.astMetadata);
 
   return `You are generating a PMD XPath query.
 Goal: Generate an XPath expression that matches the violation described earlier.
@@ -201,53 +177,68 @@ Next step:
 Call the tool 'create_custom_rule' with the generated XPath to create the custom rule.`;
 }
 
+function buildNodeSummaries(
+  nodes: GetAstNodesOutput["nodes"],
+  metadata: GetAstNodesOutput["metadata"]
+): Array<{
+  nodeName: string;
+  parent: string | null;
+  ancestors: string[];
+  attributes: Record<string, string>;
+  metadata: GetAstNodesOutput["metadata"][number] | null;
+}> {
+  const metadataByName = new Map(
+    metadata.map((node) => [node.name.toLowerCase(), node])
+  );
+  return nodes.map((node) => {
+    const nodeMetadata = metadataByName.get(node.nodeName.toLowerCase());
+    return {
+      nodeName: node.nodeName,
+      parent: node.parent ?? null,
+      ancestors: node.ancestors,
+      attributes: node.attributes,
+      metadata: nodeMetadata ?? null
+    };
+  });
+}
+
 function validateInput(input: z.infer<typeof inputSchema>): CallToolResult | undefined {
   const language = input.language?.trim();
   if (!language) {
-    const output = {
-      status: "language is required",
-      prompt: ""
-    };
-    return {
-      content: [{ type: "text", text: JSON.stringify(output) }],
-      structuredContent: output
-    };
+    return buildErrorResult("language is required");
   }
 
   const engine = input.engine?.trim().toLowerCase();
   if (!engine) {
-    const output = {
-      status: "engine is required",
-      prompt: ""
-    };
-    return {
-      content: [{ type: "text", text: JSON.stringify(output) }],
-      structuredContent: output
-    };
+    return buildErrorResult("engine is required");
   }
   if (engine !== "pmd") {
-    const output = {
-      status: `engine '${engine}' is not supported yet`,
-      prompt: ""
-    };
-    return {
-      content: [{ type: "text", text: JSON.stringify(output) }],
-      structuredContent: output
-    };
+    return buildErrorResult(`engine '${engine}' is not supported yet`);
   }
 
   const sampleCode = input.sampleCode?.trim();
   if (!sampleCode) {
-    const output = {
-      status: `code in ${language} is required`,
-      prompt: ""
-    };
-    return {
-      content: [{ type: "text", text: JSON.stringify(output) }],
-      structuredContent: output
-    };
+    return buildErrorResult(`code in ${language} is required`);
   }
 
   return undefined;
+}
+
+function buildAstInput(input: z.infer<typeof inputSchema>): GetAstNodesInput {
+  return {
+    code: input.sampleCode,
+    language: input.language
+  };
+}
+
+function buildErrorResult(status: string): CallToolResult {
+  return buildToolResult({ status, prompt: "" });
+}
+
+function buildToolResult(output: { status: string; prompt: string }): CallToolResult {
+  return {
+    content: [{ type: "text", text: JSON.stringify(output) }],
+    structuredContent: output
+  };
 }
 
