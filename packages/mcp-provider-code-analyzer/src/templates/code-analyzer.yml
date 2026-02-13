@@ -1,4 +1,4 @@
 engines:
   pmd:
-    rulesets:
+    custom_rulesets:
       - "{{rulesetPath}}"

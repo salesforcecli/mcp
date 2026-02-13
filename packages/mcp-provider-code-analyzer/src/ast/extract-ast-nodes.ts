@@ -11,6 +11,7 @@ export interface AstNode {
 const parser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: "@_",
+  ignoreDeclaration: true,
 });
 
 /**
@@ -62,7 +63,7 @@ function traverse(
 function parseAstXml(xml: string): AstNode[] {
   const parsed = parser.parse(xml);
 
-  const rootName = Object.keys(parsed)[0];
+  const rootName = Object.keys(parsed).find((key) => key !== "?xml") ?? Object.keys(parsed)[0];
   const rootNode = parsed[rootName];
 
   return traverse(rootNode, rootName, []);

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, TelemetryService, Toolset } from "@salesforce/mcp-provider-api";
+import * as Constants from "../constants.js";
 import { GetAstNodesActionImpl, type GetAstNodesAction, type GetAstNodesInput, type GetAstNodesOutput } from "../actions/get-ast-nodes.js";
 
 const DESCRIPTION: string =
@@ -117,6 +118,14 @@ export class GenerateXpathPromptMcpTool extends McpTool<InputArgsShape, OutputAr
         astMetadata: astResult.metadata
       })
     };
+    if (this.telemetryService) {
+      this.telemetryService.sendEvent(Constants.TelemetryEventName, {
+        source: Constants.TelemetrySource,
+        sfcaEvent: "xpath_prompt_generated",
+        engine: input.engine,
+        language: input.language
+      });
+    }
     return {
       content: [{ type: "text", text: JSON.stringify(output) }],
       structuredContent: output
@@ -147,28 +156,49 @@ function buildXpathPrompt(input: BuildPromptInput): string {
     };
   });
 
-  return [
-    "You are generating a PMD XPath query.",
-    "Goal: Generate an XPath expression that matches the violation described by the sample code.",
-    "",
-    "Context:",
-    `- Engine: ${input.engine}`,
-    `- Language: ${input.language}`,
-    "",
-    "Sample code (violates the rule):",
-    input.sampleCode,
-    "",
-    "AST nodes (from ast-dump) with extracted metadata:",
-    JSON.stringify(nodeSummaries, null, 2),
-    "",
-    "Task:",
-    "- Use the AST nodes and metadata above to write a precise XPath for the violation.",
-    "- Prefer minimal, stable XPath that avoids overfitting.",
-    "- Return only the XPath expression.",
-    "",
-    "Next step:",
-    "- Call the tool 'create_custom_rule' with the generated XPath to create the custom rule."
-  ].join("\n");
+  return `You are generating a PMD XPath query.
+Goal: Generate an XPath expression that matches the violation described earlier.
+
+Context:
+
+Engine: ${input.engine}
+
+Language: ${input.language}
+
+AST nodes (from ast-dump) with extracted metadata:
+${JSON.stringify(nodeSummaries, null, 2)}
+
+Task:
+
+Use the AST nodes and metadata above to write a precise XPath for the violation.
+
+Create the XPath for the scenario described by the user request.
+
+Prefer minimal, stable XPath that avoids overfitting.
+
+Return only the XPath expression.
+
+Requirements:
+
+Review availableNodes (${nodeSummaries.length} nodes) to identify needed nodes.
+
+Use ONLY node names from availableNodes.
+
+Use only attributes present in the AST metadata.
+
+Treat attribute values exactly as shown in metadata (e.g., if @Image includes quotes, do not strip them).
+
+Do not invent attributes or assume normalization.
+
+Prefer structural matching over string manipulation.
+
+Avoid complex XPath functions unless clearly required.
+
+Ensure compatibility with PMD ${input.engine} XPath support.
+
+Next step:
+
+Call the tool 'create_custom_rule' with the generated XPath to create the custom rule.`;
 }
 
 function validateInput(input: z.infer<typeof inputSchema>): CallToolResult | undefined {
@@ -176,6 +206,28 @@ function validateInput(input: z.infer<typeof inputSchema>): CallToolResult | und
   if (!language) {
     const output = {
       status: "language is required",
+      prompt: ""
+    };
+    return {
+      content: [{ type: "text", text: JSON.stringify(output) }],
+      structuredContent: output
+    };
+  }
+
+  const engine = input.engine?.trim().toLowerCase();
+  if (!engine) {
+    const output = {
+      status: "engine is required",
+      prompt: ""
+    };
+    return {
+      content: [{ type: "text", text: JSON.stringify(output) }],
+      structuredContent: output
+    };
+  }
+  if (engine !== "pmd") {
+    const output = {
+      status: `engine '${engine}' is not supported yet`,
       prompt: ""
     };
     return {

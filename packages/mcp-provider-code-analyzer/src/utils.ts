@@ -17,3 +17,18 @@ export function escapeXml(value: string): string {
         .replaceAll("\"", "&quot;")
         .replaceAll("'", "&apos;");
 }
+
+/**
+ * Convert a user-provided name into a safe, filesystem-friendly slug.
+ * - Removes path separators and invalid filename characters
+ * - Normalizes whitespace and repeated dashes
+ */
+export function toSafeFilenameSlug(value: string): string {
+    return value
+        .trim()
+        .replace(/[\\/:"*?<>|]+/g, "-")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .toLowerCase() || "custom-rule";
+}
