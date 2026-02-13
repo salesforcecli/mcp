@@ -3,6 +3,7 @@ import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, TelemetryService, Toolset } from "@salesforce/mcp-provider-api";
 import * as Constants from "../constants.js";
 import { GetAstNodesActionImpl, type GetAstNodesAction, type GetAstNodesInput, type GetAstNodesOutput } from "../actions/get-ast-nodes.js";
+import { getEngineStrategy } from "../engines/engine-strategies.js";
 
 // Builds the prompt that guides XPath authoring from AST context.
 const DESCRIPTION: string =
@@ -99,10 +100,10 @@ export class GenerateXpathPromptMcpTool extends McpTool<InputArgsShape, OutputAr
       return buildToolResult({ status: astResult.status, prompt: "" });
     }
 
+    const strategy = getEngineStrategy(input.engine);
     const output = {
       status: "success",
-      prompt: buildXpathPrompt({
-        sampleCode: input.sampleCode,
+      prompt: strategy.promptBuilder.buildPrompt({
         language: input.language,
         engine: input.engine,
         astNodes: astResult.nodes,
@@ -119,87 +120,6 @@ export class GenerateXpathPromptMcpTool extends McpTool<InputArgsShape, OutputAr
     }
     return buildToolResult(output);
   }
-}
-
-type BuildPromptInput = {
-  sampleCode: string;
-  language: string;
-  engine: string;
-  astNodes: GetAstNodesOutput["nodes"];
-  astMetadata: GetAstNodesOutput["metadata"];
-};
-
-function buildXpathPrompt(input: BuildPromptInput): string {
-  const nodeSummaries = buildNodeSummaries(input.astNodes, input.astMetadata);
-
-  return `You are generating a PMD XPath query.
-Goal: Generate an XPath expression that matches the violation described earlier.
-
-Context:
-
-Engine: ${input.engine}
-
-Language: ${input.language}
-
-AST nodes (from ast-dump) with extracted metadata:
-${JSON.stringify(nodeSummaries, null, 2)}
-
-Task:
-
-Use the AST nodes and metadata above to write a precise XPath for the violation.
-
-Create the XPath for the scenario described by the user request.
-
-Prefer minimal, stable XPath that avoids overfitting.
-
-Return only the XPath expression.
-
-Requirements:
-
-Review availableNodes (${nodeSummaries.length} nodes) to identify needed nodes.
-
-Use ONLY node names from availableNodes.
-
-Use only attributes present in the AST metadata.
-
-Treat attribute values exactly as shown in metadata (e.g., if @Image includes quotes, do not strip them).
-
-Do not invent attributes or assume normalization.
-
-Prefer structural matching over string manipulation.
-
-Avoid complex XPath functions unless clearly required.
-
-Ensure compatibility with PMD ${input.engine} XPath support.
-
-Next step:
-
-Call the tool 'create_custom_rule' with the generated XPath to create the custom rule.`;
-}
-
-function buildNodeSummaries(
-  nodes: GetAstNodesOutput["nodes"],
-  metadata: GetAstNodesOutput["metadata"]
-): Array<{
-  nodeName: string;
-  parent: string | null;
-  ancestors: string[];
-  attributes: Record<string, string>;
-  metadata: GetAstNodesOutput["metadata"][number] | null;
-}> {
-  const metadataByName = new Map(
-    metadata.map((node) => [node.name.toLowerCase(), node])
-  );
-  return nodes.map((node) => {
-    const nodeMetadata = metadataByName.get(node.nodeName.toLowerCase());
-    return {
-      nodeName: node.nodeName,
-      parent: node.parent ?? null,
-      ancestors: node.ancestors,
-      attributes: node.attributes,
-      metadata: nodeMetadata ?? null
-    };
-  });
 }
 
 function validateInput(input: z.infer<typeof inputSchema>): CallToolResult | undefined {
