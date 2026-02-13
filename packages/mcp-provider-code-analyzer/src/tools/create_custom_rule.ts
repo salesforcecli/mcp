@@ -96,7 +96,7 @@ export class CreateCustomRuleMcpTool extends McpTool<InputArgsShape, OutputArgsS
     const message = output.rulesetPath && output.configPath
       ? `Custom rule created. Ruleset: ${output.rulesetPath}. Code Analyzer config: ${output.configPath}.`
       : output.status;
-    if (this.telemetryService) {
+    if (this.telemetryService && output.status === "success") {
       this.telemetryService.sendEvent(Constants.TelemetryEventName, {
         source: Constants.TelemetrySource,
         sfcaEvent: Constants.McpTelemetryEvents.CUSTOM_RULE_CREATED,
