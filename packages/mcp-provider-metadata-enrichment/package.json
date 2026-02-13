@@ -16,14 +16,14 @@
     "@modelcontextprotocol/sdk": "^1.18.0",
     "@salesforce/mcp-provider-api": "^0.5.0",
     "@salesforce/mcp-provider-dx-core": "^0.7.0",
-    "@salesforce/metadata-enrichment": "^0.0.1",
+    "@salesforce/metadata-enrichment": "file:../../../metadata-enrichment/package.tgz",
     "@salesforce/source-deploy-retrieve": "^12.31.10",
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@eslint/js": "^9.35.0",
     "@salesforce/cli-plugins-testkit": "^5.3.39",
     "@salesforce/mcp-test-client": "0.0.1",
-    "@eslint/js": "^9.35.0",
     "@types/node": "^22.16.5",
     "@vitest/coverage-istanbul": "^3.2.4",
     "eslint": "^9.35.0",
