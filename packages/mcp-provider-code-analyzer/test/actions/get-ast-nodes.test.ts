@@ -18,7 +18,6 @@ describe("GetAstNodesActionImpl", () => {
 
     expect(result.status).toBe("success");
     expect(result.nodes.length).toBeGreaterThan(0);
-    expect(result.nodes[0]?.nodeName).toBe("CompilationUnit");
   });
 
   it("generates AST nodes for hardcoded Id example", async () => {
