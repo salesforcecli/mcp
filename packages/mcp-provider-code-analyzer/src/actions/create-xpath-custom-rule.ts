@@ -34,10 +34,11 @@ export class CreateXpathCustomRuleActionImpl implements CreateXpathCustomRuleAct
 
     const ruleXml = await buildRuleXml(normalized);
     const { customRulesDir, rulesetPath, configPath } = buildPaths(normalized);
+    const rulesetPathForConfig = toRelativeRulesetPath(normalized.workingDirectory, rulesetPath);
 
     await fs.mkdir(customRulesDir, { recursive: true });
     await fs.writeFile(rulesetPath, ruleXml, "utf8");
-    await upsertCodeAnalyzerConfig(configPath, rulesetPath, normalized.engine);
+    await upsertCodeAnalyzerConfig(configPath, rulesetPathForConfig, normalized.engine);
 
     return { status: "success", ruleXml, rulesetPath, configPath };
   }
@@ -111,6 +112,11 @@ function buildPaths(input: NormalizedInput): { customRulesDir: string; rulesetPa
     rulesetPath: path.join(customRulesDir, `${safeRuleName}-${input.engine}-rules.xml`),
     configPath: path.join(input.workingDirectory, "code-analyzer.yml")
   };
+}
+
+function toRelativeRulesetPath(workingDirectory: string, rulesetPath: string): string {
+  const relativePath = path.relative(workingDirectory, rulesetPath);
+  return relativePath.split(path.sep).join("/");
 }
 
 function applyTemplate(template: string, values: Record<string, string>): string {
