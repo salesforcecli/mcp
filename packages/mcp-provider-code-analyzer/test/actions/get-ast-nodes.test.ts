@@ -1,4 +1,51 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+const nestedIfXml = `
+<CompilationUnit>
+  <ClassDeclaration Name="NestedIfExample">
+    <MethodDeclaration Name="checkDepth">
+      <IfStatement>
+        <IfStatement>
+          <IfStatement>
+            <IfStatement>
+              <MethodCall Name="System.debug" />
+            </IfStatement>
+          </IfStatement>
+        </IfStatement>
+      </IfStatement>
+    </MethodDeclaration>
+  </ClassDeclaration>
+</CompilationUnit>
+`.trim();
+
+const hardcodedIdXml = `
+<CompilationUnit>
+  <ClassDeclaration Name="HardcodedIdLengthExample">
+    <MethodDeclaration Name="doWork">
+      <VariableDeclaration Name="contactId">
+        <LiteralExpression Image="0035g00000ABCDEFXYZ" />
+      </VariableDeclaration>
+      <VariableDeclaration Name="cId">
+        <LiteralExpression Image="0039A00000ZZZZZQAA" />
+      </VariableDeclaration>
+      <IfStatement>
+        <MethodCall Name="startsWith" />
+      </IfStatement>
+      <VariableDeclaration Name="soql">
+        <LiteralExpression Image="SELECT Id FROM Contact WHERE Id = '0038X00001ABCDEFGH'" />
+      </VariableDeclaration>
+    </MethodDeclaration>
+  </ClassDeclaration>
+</CompilationUnit>
+`.trim();
+
+const generateAstXmlFromSourceMock = vi.fn()
+  .mockResolvedValueOnce(nestedIfXml)
+  .mockResolvedValueOnce(hardcodedIdXml);
+
+vi.mock("../../src/ast/generate-ast-xml.js", () => ({
+  generateAstXmlFromSource: generateAstXmlFromSourceMock
+}));
 
 describe("GetAstNodesActionImpl", () => {
   it("generates AST nodes from sample Apex code", async () => {
@@ -16,6 +63,7 @@ describe("GetAstNodesActionImpl", () => {
       language: input.language
     });
 
+    expect(generateAstXmlFromSourceMock).toHaveBeenCalledTimes(1);
     expect(result.status).toBe("success");
     expect(result.nodes.length).toBeGreaterThan(0);
   });
