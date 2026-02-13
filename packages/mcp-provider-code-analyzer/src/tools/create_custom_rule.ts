@@ -9,6 +9,7 @@ import {
   CreateXpathCustomRuleOutput
 } from "../actions/create-xpath-custom-rule.js";
 
+// MCP tool wrapper that validates input and delegates rule creation.
 const DESCRIPTION: string =
   `Purpose: Create a custom rule using a provided XPath expression.
 Use this tool after an XPath has been generated for a specific violation pattern.
@@ -31,7 +32,7 @@ Output:
 - configPath: Path to the updated code-analyzer.yml that references the custom ruleset.`;
 
 export const inputSchema = z.object({
-  xpath: z.string().describe("XPath expression that should match the violation."),
+  xpath: z.string().optional().describe("XPath expression that should match the violation (required for PMD)."),
   ruleName: z.string().describe("Name for the custom rule."),
   description: z.string().describe("Short description or message for the rule."),
   language: z.string().describe("Language for the rule (e.g., 'apex')."),
@@ -96,7 +97,7 @@ export class CreateCustomRuleMcpTool extends McpTool<InputArgsShape, OutputArgsS
     const message = output.rulesetPath && output.configPath
       ? `Custom rule created. Ruleset: ${output.rulesetPath}. Code Analyzer config: ${output.configPath}.`
       : output.status;
-    if (this.telemetryService) {
+    if (this.telemetryService && output.status === "success") {
       this.telemetryService.sendEvent(Constants.TelemetryEventName, {
         source: Constants.TelemetrySource,
         sfcaEvent: Constants.McpTelemetryEvents.CUSTOM_RULE_CREATED,

@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
   <description>{{rulesetDescription}}</description>
   <rule name="{{ruleName}}"
-        language="apex"
+        language="{{language}}"
         message="{{ruleMessage}}"
         class="net.sourceforge.pmd.lang.rule.xpath.XPathRule"
         externalInfoUrl="{{documentationUrl}}">

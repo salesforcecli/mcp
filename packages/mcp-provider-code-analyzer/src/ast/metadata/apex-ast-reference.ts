@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 
+// Loads cached Apex AST node metadata from bundled JSON.
 export type ApexAstAttribute = {
   name: string;
   type: string;

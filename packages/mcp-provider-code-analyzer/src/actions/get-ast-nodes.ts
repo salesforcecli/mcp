@@ -3,6 +3,7 @@ import { type AstNode, extractAstNodesFromXml } from "../ast/extract-ast-nodes.j
 import { getApexAstNodeMetadataByNames, type ApexAstNodeMetadata } from "../ast/metadata/apex-ast-reference.js";
 import { LANGUAGE_NAMES } from "../constants.js";
 
+// Action that returns AST nodes plus cached metadata.
 export type GetAstNodesInput = {
   code: string;
   language: string;

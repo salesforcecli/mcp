@@ -1,6 +1,7 @@
 import { XMLParser } from "fast-xml-parser";
 import * as fs from "node:fs";
 
+// Parses PMD AST XML into a flat node list with ancestry info.
 export interface AstNode {
   nodeName: string;
   attributes: Record<string, string>;
@@ -26,13 +27,7 @@ function traverse(
 ) {
   if (typeof node !== "object" || node === null) return result;
 
-  // Extract attributes
-  const attributes: Record<string, string> = {};
-  for (const key of Object.keys(node)) {
-    if (key.startsWith("@_")) {
-      attributes[key.substring(2)] = String(node[key]);
-    }
-  }
+  const attributes = collectAttributes(node);
 
   // Store current node
   result.push({
@@ -42,22 +37,41 @@ function traverse(
     ancestors,
   });
 
-  // Traverse children
+  traverseChildren(node, nodeName, ancestors, result);
+
+  return result;
+}
+
+function collectAttributes(node: Record<string, unknown>): Record<string, string> {
+  const attributes: Record<string, string> = {};
+  for (const key of Object.keys(node)) {
+    if (key.startsWith("@_")) {
+      attributes[key.substring(2)] = String(node[key]);
+    }
+  }
+  return attributes;
+}
+
+function traverseChildren(
+  node: Record<string, unknown>,
+  nodeName: string,
+  ancestors: string[],
+  result: AstNode[]
+): void {
   for (const key of Object.keys(node)) {
     if (key.startsWith("@_") || key === "#text") continue;
 
     const child = node[key];
+    const nextAncestors = [...ancestors, nodeName];
 
     if (Array.isArray(child)) {
       for (const c of child) {
-        traverse(c, key, [...ancestors, nodeName], nodeName, result);
+        traverse(c, key, nextAncestors, nodeName, result);
       }
     } else {
-      traverse(child, key, [...ancestors, nodeName], nodeName, result);
+      traverse(child, key, nextAncestors, nodeName, result);
     }
   }
-
-  return result;
 }
 
 function parseAstXml(xml: string): AstNode[] {
