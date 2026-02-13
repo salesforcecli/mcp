@@ -31,7 +31,7 @@ Output:
 - configPath: Path to the updated code-analyzer.yml that references the custom ruleset.`;
 
 export const inputSchema = z.object({
-  xpath: z.string().describe("XPath expression that should match the violation."),
+  xpath: z.string().optional().describe("XPath expression that should match the violation (required for PMD)."),
   ruleName: z.string().describe("Name for the custom rule."),
   description: z.string().describe("Short description or message for the rule."),
   language: z.string().describe("Language for the rule (e.g., 'apex')."),
