@@ -93,6 +93,7 @@ async function buildRuleXml(input: NormalizedInput): Promise<string> {
     rulesetName: escapeXml(input.ruleName),
     rulesetDescription: escapeXml(input.description),
     ruleName: escapeXml(input.ruleName),
+    language: escapeXml(input.language),
     ruleMessage: escapeXml(input.description),
     ruleDescription: escapeXml(input.description),
     documentationUrl: "",
