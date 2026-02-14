@@ -7,13 +7,13 @@ import { EnginePluginsFactoryImpl } from "../factories/EnginePluginsFactory.js";
 import { getErrorMessage } from "../utils.js";
 import {CodeAnalyzerRunMcpTool} from "./run_code_analyzer.js";
 
-const DESCRIPTION: string = `A tool for getting the description of a Code Analyzer rule.\n` +
-    `This tool can return a JSON that describes the properties of a Code Analyzer rule, which may include information about\n` +
-    `how it can be fixed.\n` +
-    `\n` +
-    `When to use this tool:\n` +
-    `- When the results file from the ${CodeAnalyzerRunMcpTool.NAME} tool does not provide enough information to fix a violation yourself.\n` +
-    `- When the user asks for information about a specific rule or violation.`;
+const DESCRIPTION: string = `A tool for getting the description of a Code Analyzer rule.
+This tool can return a JSON that describes the properties of a Code Analyzer rule, which may include information about
+how it can be fixed.
+
+When to use this tool:
+- When the results file from the ${CodeAnalyzerRunMcpTool.NAME} tool does not provide enough information to fix a violation yourself.
+- When the user asks for information about a specific rule or violation.`;
 
 export const inputSchema = z.object({
     ruleName: z.string().describe('The name of a rule about which more information is required'),
