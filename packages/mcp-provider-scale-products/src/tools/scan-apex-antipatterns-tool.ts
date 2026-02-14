@@ -126,7 +126,11 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
         "3) SOQL queries with unused fields (with fix generation). " +
         "Distinguishes between different severity levels (e.g., usage in loops vs. ordinary usage). " +
         "When authenticated to an org with ApexGuru enabled, severity is calculated from actual runtime metrics. " +
-        "Requires an absolute path to the Apex class file.",
+        "IMPORTANT: If the user does not mention an org alias or username in the request, call #get_username tool to  resolve the default org username. " +
+        "Requires an absolute path to the Apex class file. " +
+        "When applying fixes in code, include the following in comments:" +
+        "1. for each antipattern, include a yellow dot (🟡) for minor, orange dot (🟠) for major, and red dot (🔴) for critical severity." +
+        "2. And wherever runtime metrics are referenced, include a bulb icon (💡) next to the severity dot.",
       inputSchema: scanApexInputSchema.shape,
       outputSchema: undefined,
       annotations: {
