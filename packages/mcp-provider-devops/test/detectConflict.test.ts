@@ -40,7 +40,10 @@ describe('detectConflict', () => {
   });
 
   it('should block when uncommitted changes exist in localPath', async () => {
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'detect-conflict-dirtyrepo-'));
+    // Use workspace temp dir so sandbox allows git init
+    const tmpBase = path.join(process.cwd(), 'test', 'tmp');
+    if (!fs.existsSync(tmpBase)) fs.mkdirSync(tmpBase, { recursive: true });
+    const tmpDir = fs.mkdtempSync(path.join(tmpBase, 'detect-conflict-dirtyrepo-'));
     try {
       // Initialize a git repository
       execSync('git init', { cwd: tmpDir });

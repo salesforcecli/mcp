@@ -18,7 +18,7 @@ describe("Tests for DevOpsMcpProvider", () => {
 
   it("When provideTools is called, then the returned array contains DevOps tools", async () => {
     const tools: McpTool[] = await provider.provideTools(services);
-    expect(tools).toHaveLength(9);
+    expect(tools).toHaveLength(11);
     expect(tools[0]).toBeInstanceOf(SfDevopsListProjects);
   });
 });
