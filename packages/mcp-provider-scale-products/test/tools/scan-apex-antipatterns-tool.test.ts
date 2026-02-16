@@ -257,7 +257,7 @@ public class TestClass {
     const result = await tool.exec(input);
     const text = (result.content[0] as any).text;
     
-    expect(text).toContain("Instructions for LLM");
+    expect(text).toContain("Instructions for Code Fixes");
     expect(text).toContain("fixInstruction");
     expect(text).toContain("codeBefore");
     expect(text).toContain("severity");
