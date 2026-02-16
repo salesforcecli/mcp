@@ -44,6 +44,7 @@ export class SfDevopsCreateWorkItem extends McpTool<InputArgsShape, OutputArgsSh
 - This tool must be used for the DevOps Center org only. If the org is not provided, use 'list_all_orgs' to select the DevOps Center org.
 - A DevOps Center project must be selected first from the same org. If the projectId is not known, call 'list_devops_center_projects' for that org and ask the user to select a project. Use that project's Id here.
 - Ensure the org used to select the project is the same org passed to this tool.
+- (**Mandatory) Always ask the user to give the work item subject. Don't proceed until the user has provided the subject.(**Mandatory**)**
 
 **API:** POST /services/data/v65.0/connect/devops/projects/<ProjectID>/workitem
 **Body:** { "subject": string, "description": string }
