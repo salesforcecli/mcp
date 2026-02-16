@@ -72,6 +72,59 @@ Prefer minimal, stable XPath that avoids overfitting.
 
 Return only the XPath expression.
 
+Guidelines (PMD/Apex XPath):
+
+- Target the smallest stable ancestor that owns the behavior (e.g., MethodCallExpression).
+- Avoid cross-node joins (no current(), no sibling/parent chains, no @Image equality to correlate identifiers).
+- Prefer structural signals over string matching (e.g., BinaryExpression[@Op='+'], MethodCallExpression[@FullMethodName='X.Y']).
+- Use pragmatic string checks only when needed (LiteralExpression guards for edge cases).
+- Use only node names/attributes present in the AST dump and metadata.
+
+Prompt boilerplate:
+- Use only node names and attributes seen in the following PMD Apex AST dump. Do not invent attributes. Treat attribute values exactly as they appear.
+- Select the top-most behavior node (e.g., MethodCallExpression for Database.query/.countQuery) and match evidence of violation anywhere in its subtree using descendant axes.
+- Avoid using current() and identifier equality comparisons (@Image) to correlate nodes. Do not rely on sibling or parent chains that may vary.
+- Prefer simple, robust patterns over deep, brittle paths. Allow inline and variable-initialized forms.
+- Return only the XPath expression, PMD-compatible, no CDATA or extra text.
+
+Verification checklist:
+- Ensure the XPath matches:
+  - Inline violation: Database.query('...' + var)
+  - Variable-based violation: String q = '...' + var; Database.query(q)
+  - Multi-part concatenation chains: 'a' + b + 'c' + d
+  - String literal containing '+' that contributes to the query
+  - Both Database.query and Database.countQuery
+- Ensure the XPath does not depend on variable names or declaration order.
+- Prefer descendant:: over absolute paths; avoid hard-coding depths.
+- If matching an API, gate on @FullMethodName='Namespace.method' not @Image.
+
+Pattern templates (adapt as needed):
+- Method call with subtree evidence:
+  //MethodCallExpression[ @FullMethodName='Database.query' or @FullMethodName='Database.countQuery' ][ .//BinaryExpression[@Op='+'] or .//LiteralExpression[@LiteralType='STRING' and contains(@Image, '+')] ]
+- Ban System.debug in non-test code:
+  //MethodCallExpression[ @FullMethodName='System.debug' ]
+- Detect DML in loops:
+  //ForStatement | //WhileStatement | //ForEachStatement [.//MethodCallExpression[ @FullMethodName='Database.insert' or @FullMethodName='Database.update' or @FullMethodName='Database.delete' ]]
+- Detect hardcoded IDs:
+  //LiteralExpression[ @LiteralType='STRING' and matches(@Image, '^[a-zA-Z0-9]{15,18}$') ]
+
+AST-first workflow:
+1. Generate a minimal, compiling violating Apex snippet for the scenario.
+2. Dump the PMD AST for that snippet.
+3. Identify the smallest stable ancestor node to select.
+4. Write XPath that:
+   - Filters by the ancestor’s discriminant attributes (e.g., @FullMethodName)
+   - Uses .// to search for evidence nodes under it (BinaryExpression, LiteralExpression, etc.)
+   - Avoids current() and identifier joins
+5. Validate the XPath against multiple variants of the snippet.
+
+Acceptance test (must pass):
+- Database.query('SELECT Id FROM A WHERE Name = ' + name)
+- String q = 'SELECT Id FROM A WHERE Name = ' + name; Database.query(q);
+- Database.countQuery('SELECT COUNT() FROM A ' + 'WHERE Type = ' + t);
+- String q = 'SELECT ' + 'Id' + ' FROM A'; Database.query(q);
+- Must not rely on variable names, current(), or fixed ancestor depths.
+
 Requirements:
 
 Review availableNodes (${nodeSummaries.length} nodes) to identify needed nodes.
