@@ -1,4 +1,5 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
+import path from "node:path";
 import { PmdCliAstXmlAdapter } from "../../src/ast/pmd-cli-adapter.js";
 
 const mkdtempMock = vi.fn();
@@ -64,7 +65,15 @@ describe("PmdCliAstXmlAdapter", () => {
 
     const execArgs = execFileMock.mock.calls[0];
     expect(execArgs[0]).toBe("pmd");
-    expect(execArgs[1]).toEqual(["ast-dump", "--language", "apex", "--format", "xml", "--file", "/tmp/pmd-ast-123/source.apex"]);
+    expect(execArgs[1]).toEqual([
+      "ast-dump",
+      "--language",
+      "apex",
+      "--format",
+      "xml",
+      "--file",
+      path.join("/tmp/pmd-ast-123", "source.apex")
+    ]);
   });
 
   it("throws a helpful error when PMD CLI is missing", async () => {
