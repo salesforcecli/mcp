@@ -99,4 +99,25 @@ describe("PmdCliAstXmlAdapter", () => {
     await expect(adapter.generateAstXml("class X {}", "apex"))
       .rejects.toThrow("Failed to generate AST XML via PMD: bad stuff");
   });
+
+  it("falls back to .txt when language is empty", async () => {
+    mkdtempMock.mockResolvedValueOnce("/tmp/pmd-ast-123");
+    writeFileMock.mockResolvedValueOnce(undefined);
+    rmMock.mockResolvedValueOnce(undefined);
+    execFileMock.mockImplementationOnce((_cmd, _args, _options, cb) => cb(null, "<xml/>", ""));
+
+    const adapter = new PmdCliAstXmlAdapter();
+    await adapter.generateAstXml("class X {}", "");
+
+    const execArgs = execFileMock.mock.calls[0];
+    expect(execArgs[1]).toEqual([
+      "ast-dump",
+      "--language",
+      "",
+      "--format",
+      "xml",
+      "--file",
+      path.join("/tmp/pmd-ast-123", "source.txt")
+    ]);
+  });
 });
