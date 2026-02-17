@@ -1,3 +1,12 @@
+# [0.7.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.6.0...mcp-provider-dx-core@0.7.0) (2026-02-09)
+
+
+### Features
+
+* add ignoreConflicts param for deploy/retrieve W-20002028 ([#321](https://github.com/salesforcecli/mcp/issues/321)) ([63c764b](https://github.com/salesforcecli/mcp/commit/63c764b0b5908d6a6cdfd25a2c65b2ec617b64e9)), closes [#320](https://github.com/salesforcecli/mcp/issues/320)
+
+
+
 # [0.6.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.5.1...mcp-provider-dx-core@0.6.0) (2026-01-12)
 
 

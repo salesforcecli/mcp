@@ -8,6 +8,11 @@ describe("ScaleProductsMcpProvider", () => {
     expect(provider).toBeDefined();
   });
 
+  it("should return correct provider name", () => {
+    const provider = new ScaleProductsMcpProvider();
+    expect(provider.getName()).toBe("ScaleProductsMcpProvider");
+  });
+
   it("should provide tools with telemetry service", async () => {
     const provider = new ScaleProductsMcpProvider();
     const services = new StubServices();

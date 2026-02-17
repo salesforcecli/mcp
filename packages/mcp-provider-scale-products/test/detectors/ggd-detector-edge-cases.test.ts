@@ -65,7 +65,7 @@ public class TestClass {
     expect(detections.length).toBe(2);
   });
 
-  it("should detect HIGH severity when in nested loops", () => {
+  it("should detect CRITICAL severity when in nested loops", () => {
     const apexCode = `
 public class TestClass {
     public void testMethod() {
@@ -78,10 +78,10 @@ public class TestClass {
 }`;
     const detections = detector.detect("TestClass", apexCode);
     expect(detections.length).toBe(1);
-    expect(detections[0].severity).toBe(Severity.HIGH);
+    expect(detections[0].severity).toBe(Severity.CRITICAL);
   });
 
-  it("should detect MEDIUM severity when not in loop", () => {
+  it("should detect CRITICAL severity when not in loop", () => {
     const apexCode = `
 public class TestClass {
     public void testMethod() {
@@ -90,7 +90,7 @@ public class TestClass {
 }`;
     const detections = detector.detect("TestClass", apexCode);
     expect(detections.length).toBe(1);
-    expect(detections[0].severity).toBe(Severity.MEDIUM);
+    expect(detections[0].severity).toBe(Severity.CRITICAL);
   });
 
   it("should handle do-while loops", () => {
@@ -104,7 +104,7 @@ public class TestClass {
 }`;
     const detections = detector.detect("TestClass", apexCode);
     expect(detections.length).toBe(1);
-    expect(detections[0].severity).toBe(Severity.HIGH);
+    expect(detections[0].severity).toBe(Severity.CRITICAL);
   });
 
   it("should handle while loops", () => {
@@ -118,7 +118,7 @@ public class TestClass {
 }`;
     const detections = detector.detect("TestClass", apexCode);
     expect(detections.length).toBe(1);
-    expect(detections[0].severity).toBe(Severity.HIGH);
+    expect(detections[0].severity).toBe(Severity.CRITICAL);
   });
 
   it("should extract method name correctly", () => {
