@@ -86,4 +86,50 @@ describe("GetAstNodesActionImpl", () => {
     expect(result.status).toBe("success");
     expect(result.nodes.length).toBeGreaterThan(0);
   });
+
+  it("returns an error status when the pipeline throws", async () => {
+    vi.resetModules();
+    vi.doMock("../../src/ast/ast-node-pipeline.js", () => ({
+      PmdAstNodePipeline: class {
+        public async run(): Promise<never> {
+          throw new Error("boom");
+        }
+      }
+    }));
+
+    const { GetAstNodesActionImpl } = await import("../../src/actions/get-ast-nodes.js");
+    const action = new GetAstNodesActionImpl();
+
+    const result = await action.exec({
+      code: "class X {}",
+      language: "apex"
+    });
+
+    expect(result.status).toBe("boom");
+    expect(result.nodes).toEqual([]);
+    expect(result.metadata).toEqual([]);
+  });
+
+  it("falls back to string error when non-Error is thrown", async () => {
+    vi.resetModules();
+    vi.doMock("../../src/ast/ast-node-pipeline.js", () => ({
+      PmdAstNodePipeline: class {
+        public async run(): Promise<never> {
+          throw "boom-string";
+        }
+      }
+    }));
+
+    const { GetAstNodesActionImpl } = await import("../../src/actions/get-ast-nodes.js");
+    const action = new GetAstNodesActionImpl();
+
+    const result = await action.exec({
+      code: "class X {}",
+      language: "apex"
+    });
+
+    expect(result.status).toBe("boom-string");
+    expect(result.nodes).toEqual([]);
+    expect(result.metadata).toEqual([]);
+  });
 });
