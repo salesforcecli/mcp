@@ -120,4 +120,12 @@ describe("PmdCliAstXmlAdapter", () => {
       path.join("/tmp/pmd-ast-123", "source.txt")
     ]);
   });
+
+  it("rejects source larger than the limit", async () => {
+    const adapter = new PmdCliAstXmlAdapter();
+    const largeSource = "a".repeat(1_000_001);
+
+    await expect(adapter.generateAstXml(largeSource, "apex"))
+      .rejects.toThrow("Source exceeds 1000000 bytes");
+  });
 });
