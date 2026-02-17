@@ -14,6 +14,7 @@ export interface AstXmlAdapter {
 
 export class PmdCliAstXmlAdapter implements AstXmlAdapter {
   public async generateAstXml(code: string, language: string): Promise<string> {
+    enforceMaxSourceSize(code);
     const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "pmd-ast-"));
     const sourceFile = path.join(tempDir, `source.${sanitizeExtension(language)}`);
 
@@ -30,6 +31,15 @@ export class PmdCliAstXmlAdapter implements AstXmlAdapter {
     } finally {
       await fs.rm(tempDir, { recursive: true, force: true });
     }
+  }
+}
+
+const MAX_SOURCE_BYTES = 1_000_000;
+
+function enforceMaxSourceSize(code: string): void {
+  const size = Buffer.byteLength(code ?? "", "utf8");
+  if (size > MAX_SOURCE_BYTES) {
+    throw new Error(`Source exceeds ${MAX_SOURCE_BYTES} bytes. Provide a smaller snippet.`);
   }
 }
 

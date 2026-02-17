@@ -18,6 +18,11 @@ describe("utils", () => {
       expect(toSafeFilenameSlug("foo/bar\\baz---qux")).toBe("foo-bar-baz-qux");
     });
 
+    it("strips dots to prevent path traversal", () => {
+      expect(toSafeFilenameSlug("../etc/passwd")).toBe("etc-passwd");
+      expect(toSafeFilenameSlug("..")).toBe("custom-rule");
+    });
+
     it("falls back to a default when empty", () => {
       expect(toSafeFilenameSlug("   ")).toBe("custom-rule");
     });

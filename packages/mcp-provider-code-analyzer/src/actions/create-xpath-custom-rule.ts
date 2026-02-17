@@ -116,6 +116,9 @@ function buildPaths(input: NormalizedInput): { customRulesDir: string; rulesetPa
 
 function toRelativeRulesetPath(workingDirectory: string, rulesetPath: string): string {
   const relativePath = path.relative(workingDirectory, rulesetPath);
+  if (path.isAbsolute(relativePath) || relativePath.startsWith("..")) {
+    throw new Error("Ruleset path must remain within the workingDirectory.");
+  }
   return relativePath.split(path.sep).join("/");
 }
 
