@@ -6,7 +6,8 @@ This npm package is currently for internal use only. Its contents may change at 
 
 ## Overview
 
-This package provides MCP tools that scan Apex code for performance antipatterns and deliver actionable fix recommendations. When connected to a Salesforce org with ApexGuru enabled, detections are enriched with production runtime metrics so severity reflects real-world impact rather than static heuristics alone.
+This package provides MCP tools for the Salesforce Scale Products suite — [ApexGuru](https://help.salesforce.com/s/articleView?id=xcloud.apexguru_overview.htm&type=5), [Scale Test](https://www.salesforce.com/in/platform/application-scaling-performance-testing/) and [Scale Center](https://help.salesforce.com/s/articleView?id=xcloud.scale_center_overview.htm&type=5). The tools help developers and architects identify performance bottlenecks, optimize Apex code, and ensure applications scale reliably under peak loads.
+
 
 ## Tools
 
