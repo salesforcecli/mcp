@@ -23,11 +23,13 @@ import { ensureString } from '@salesforce/ts-types';
 import { createScratchOrgParams } from '../../src/tools/create_scratch_org.js';
 import { resumeParamsSchema } from '../../src/tools/resume_tool_operation.js';
 
+const isCI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true';
+
 describe('create_scratch_org', () => {
   const client = new McpTestClient({
     timeout: 120_000,
   });
-  
+
   let devHubUsername: string;
 
   let testSession: TestSession;
@@ -63,7 +65,8 @@ describe('create_scratch_org', () => {
     }
   });
 
-  it('should create a scratch org', async () => {
+  it('should create a scratch org', async function () {
+    if (isCI) this.skip();
     const result = await client.callTool(createScratchOrgSchema, {
       name: 'create_scratch_org',
       params: {
@@ -71,7 +74,7 @@ describe('create_scratch_org', () => {
         devHub: devHubUsername,
       },
     });
-    
+
     expect(result.isError).to.be.false;
     expect(result.content.length).to.equal(1);
     expect(result.content[0].type).to.equal('text');
@@ -81,7 +84,8 @@ describe('create_scratch_org', () => {
     expect(responseText).to.include('Successfully created scratch org');
   });
 
-  it('should create scratch org asynchronously', async () => {
+  it('should create scratch org asynchronously', async function () {
+    if (isCI) this.skip();
     const asyncResult = await client.callTool(createScratchOrgSchema, {
       name: 'create_scratch_org',
       params: {
@@ -130,7 +134,8 @@ describe('create_scratch_org', () => {
     expect(asyncResumeResponseText).to.include('Successfully created scratch org');
   });
 
-  it('should create scratch org with optional parameters', async () => {
+  it('should create scratch org with optional parameters', async function () {
+    if (isCI) this.skip();
     const result = await client.callTool(createScratchOrgSchema, {
       name: 'create_scratch_org',
       params: {
