@@ -29,9 +29,7 @@ import {
   Toolset,
 } from "@salesforce/mcp-provider-api";
 import { ComponentSetBuilder } from "@salesforce/source-deploy-retrieve";
-import { EnrichmentRecords } from "../shared/enrichmentRecords.js";
-import { ComponentProcessor } from "../shared/componentProcessor.js";
-import { EnrichmentHandler, EnrichmentStatus, FileProcessor } from "@salesforce/metadata-enrichment";
+import { ComponentProcessor, EnrichmentHandler, EnrichmentRecords, EnrichmentStatus, FileProcessor } from "@salesforce/metadata-enrichment";
 
 /*
  * Enrich metadata in a Salesforce org.
