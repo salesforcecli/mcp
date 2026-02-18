@@ -67,8 +67,8 @@ describe("ScanApexAntipatternsTool", () => {
     expect(tool.getName()).toBe("scan_apex_class_for_antipatterns");
   });
 
-  it("should return NON_GA release state", () => {
-    expect(tool.getReleaseState()).toBe(ReleaseState.NON_GA);
+  it("should return GA release state", () => {
+    expect(tool.getReleaseState()).toBe(ReleaseState.GA);
   });
 
   it("should be in SCALE_PRODUCTS toolset", () => {
