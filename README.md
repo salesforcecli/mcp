@@ -29,7 +29,7 @@ The Salesforce DX MCP Server is a specialized Model Context Protocol (MCP) imple
 
 ## Configure the DX MCP Server
 
-Configure the Salesforce DX MCP Server for your MCP client by updating its associated MCP JSON file; each client is slightly different, so check your MCP client documentation for details. See [MCP Client Configurations](./README.md#mcp-client-configurations) for more examples.
+Configure the Salesforce DX MCP Server for your MCP client by updating its associated MCP JSON file; each client is slightly different, so check your MCP client documentation for details. See [MCP Client Configurations](#mcp-client-configurations) for more examples.
 
 Here's an example for VS Code with Copilot in which you create and update a `.vscode/mcp.json` file in your project:
 
