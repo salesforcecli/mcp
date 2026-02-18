@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026, Salesforce, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
@@ -44,7 +60,7 @@ export class SfDevopsCreateWorkItem extends McpTool<InputArgsShape, OutputArgsSh
 - This tool must be used for the DevOps Center org only. If the org is not provided, use 'list_all_orgs' to select the DevOps Center org.
 - A DevOps Center project must be selected first from the same org. If the projectId is not known, call 'list_devops_center_projects' for that org and ask the user to select a project. Use that project's Id here.
 - Ensure the org used to select the project is the same org passed to this tool.
-- (**Mandatory) Always ask the user to give the work item subject. Don't proceed until the user has provided the subject.(**Mandatory**)**
+- **(Mandatory)** Always ask the user to give the work item subject. Don't proceed until the user has provided the subject. **(Mandatory)**
 
 **API:** POST /services/data/v65.0/connect/devops/projects/<ProjectID>/workitem
 **Body:** { "subject": string, "description": string }
@@ -61,6 +77,11 @@ export class SfDevopsCreateWorkItem extends McpTool<InputArgsShape, OutputArgsSh
 - error: Error message if the create failed.`,
       inputSchema: inputSchema.shape,
       outputSchema: undefined,
+      annotations: {
+        readOnlyHint: false, // Creates a work item (modifies state)
+        destructiveHint: false, // Does not delete anything
+        openWorldHint: true, // Calls Salesforce DevOps Center API
+      },
     };
   }
 
