@@ -19,10 +19,9 @@ import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { Connection, SfProject } from "@salesforce/core";
 import { ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
 import { EnrichmentStatus } from "@salesforce/metadata-enrichment";
-import { EnrichmentHandler, FileProcessor } from "@salesforce/metadata-enrichment";
+import { ComponentProcessor, EnrichmentHandler, FileProcessor } from "@salesforce/metadata-enrichment";
 import type { EnrichmentRequestRecord } from "@salesforce/metadata-enrichment";
 import { ComponentSetBuilder } from "@salesforce/source-deploy-retrieve";
-import { ComponentProcessor } from "../../src/shared/componentProcessor.js";
 import { EnrichMetadataMcpTool } from "../../src/tools/enrich_metadata.js";
 import { StubServices } from "../test-doubles.js";
 
