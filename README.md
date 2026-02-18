@@ -166,19 +166,19 @@ These are the available toolsets.
 
 | Toolset| Description|
 | ----- | ----- |
-| `all` | Enables all available tools from all toolsets. Use caution, this will load over 60 tools. |
-| `aura-experts` | [Tools which provides Aura component analysis, blueprinting, and migration expertise.](README.md#aura-experts-toolset)|
-| `code-analysis` | [Tools for static analysis of your code using Salesforce Code Analyzer](README.md#code-analysis-toolset)|
-| `data` | [Tools to manage the data in your org, such as listing all accounts.](README.md#data-toolset)|
-| `devops` | [Tools to securely and autonomously read, manage, and operate DevOps Center resources.](README.md#devops-center-toolset)|
-| `lwc-experts`  | [Tools to assist with LWC development, testing, optimization, and best practices.](README.md#lwc-experts-toolset)|
-| `metadata` | [Tools to deploy and retrieve metadata to and from your org and your DX project.](README.md#metadata-toolset)|
-| `mobile` | [Tools for mobile development and capabilities.](README.md#mobile-toolset)|
-| `mobile-core` | [A subset of mobile tools focused on essential mobile capabilities.](README.md#mobile-core-toolset)|
+| `all` | Enables all available tools from all toolsets. Use caution—applying this  will load over 60 tools. |
+| `aura-experts` | [Tools which provides Aura component analysis, blueprinting, and migration expertise.](#aura-experts-toolset)|
+| `code-analysis` | [Tools for static analysis of your code using Salesforce Code Analyzer](#code-analysis-toolset)|
+| `data` | [Tools to manage the data in your org, such as listing all accounts.](#data-toolset)|
+| `devops` | [Tools to securely and autonomously read, manage, and operate DevOps Center resources.](#devops-center-toolset)|
+| `lwc-experts`  | [Tools to assist with LWC development, testing, optimization, and best practices.](#lwc-experts-toolset)|
+| `metadata` | [Tools to deploy and retrieve metadata to and from your org and your DX project.](#metadata-toolset)|
+| `mobile` | [Tools for mobile development and capabilities.](#mobile-toolset)|
+| `mobile-core` | [A subset of mobile tools focused on essential mobile capabilities.](#mobile-core-toolset)|
 | `orgs` | [Tools to manage your authorized orgs.](README.md#orgs-toolset)|
-| `scale-products` | [Tools for detecting and fixing Apex performance antipatterns.](README.md#scale-products-toolset)|
-| `testing` | [Tools to test your code and features](README.md#testing-toolset)|
-| `users` | [Tools to manage org users, such as assigning a permission set.](README.md#users-toolset)|
+| `scale-products` | [Tools for detecting and fixing Apex performance antipatterns.](#scale-products-toolset)|
+| `testing` | [Tools to test your code and features](#testing-toolset)|
+| `users` | [Tools to manage org users, such as assigning a permission set.](#users-toolset)|
 
 ## Configure Tools
 
@@ -322,4 +322,4 @@ For complete documentation, see [Use the mobile-core Toolset](https://developer.
 
 #### Scale Products Toolset
 For complete documentation, see the [README](./packages/mcp-provider-scale-products/README.md) in the `mcp-provider-scale-products` subdirectory.
-- `scan_apex_class_for_antipatterns` - (NON-GA) Analyzes Apex class files for performance antipatterns and provides recommendations for fixing them. Currently detects: (1) Schema.getGlobalDescribe() usage with optimized alternatives, (2) SOQL queries without WHERE or LIMIT clauses, (3) SOQL queries with unused fields (with fix generation). Distinguishes between different severity levels (e.g., usage in loops vs. ordinary usage). Requires an absolute path to the Apex class file.
+- `scan_apex_class_for_antipatterns` - (NON-GA) Analyzes Apex class files for performance antipatterns and provides recommendations for fixing them.
