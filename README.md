@@ -192,7 +192,8 @@ The following sections list all the tools that are included in a specific toolse
 > _The tools marked NON-GA are not yet generally available. Specify the `--allow-non-ga-tools` flag to use them._ 
 
 ### Core Salesforce DX MCP Toolsets
-Use the core Salesforce DX MCP toolsets to run classic DX tasks, such as work with orgs, retrieve and deploy metadata, run Apex tests, and more.
+Use the core Salesforce DX MCP toolsets to run classic DX tasks, such as work with orgs, retrieve and deploy metadata, run Apex tests, and more. 
+For example prompts, see [Use the Core Salesforce DX MCP Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) in the _Salesforce DX Developer Guide_.
 
 #### Core Toolset (always enabled)
 
@@ -228,18 +229,21 @@ Use the core Salesforce DX MCP toolsets to run classic DX tasks, such as work wi
 ### Other Toolsets
 
 #### Aura Experts Toolset
+For complete documentation, see [Use the Aura-to-LWC Migration Tools](https://developer.salesforce.com/docs/platform/lwc/guide/mcp-aura.html) in the _Lightning Web Components Developer Guide_.
  - `create_aura_blueprint_draft` (GA) - Creates a comprehensive Product Requirements Document (PRD) blueprint for Aura component migration. Analyzes Aura component files and generates framework-agnostic specifications suitable for LWC migration, including business requirements, technical patterns, and migration guidelines.
  - `enhance_aura_blueprint_draft` (GA) - Enhances an existing draft PRD with expert analysis and unknown resolution. Takes a draft blueprint and applies specialized Aura expert knowledge to resolve dependencies, add technical insights, and improve the migration specifications for better LWC implementation guidance.
  - `orchestrate_aura_migration` (GA) - Orchestrates the complete Aura to LWC migration workflow. Provides end-to-end guidance for the entire migration process, from initial analysis through final implementation, including best practices, tooling recommendations, and quality assurance steps.
  - `transition_prd_to_lwc` (GA) - Provides migration bridge guidance for creating LWC components from Aura specifications. Takes the enhanced PRD and generates specific implementation guidance, platform service mappings, and step-by-step instructions for building the equivalent LWC component.
 
 #### Code Analysis Toolset
+For complete documentation, see [Use MCP Tools to Analyze Your Code ](https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/mcp.html) in the _Salesforce Code Analyzer Developer Guide_.
 - `describe_code_analyzer_rule` (GA) - A tool for getting the description of a Code Analyzer rule.
 - `list_code_analyzer_rules` (GA) - A tool for selecting Code Analyzer rules based on a number of criteria. 
 - `query_code_analyzer_results` (GA) - Query a Code Analyzer results JSON file and return filtered violations. Supports filters like severity, category/tag, engine, rule, and file name, plus top-N and sorting. Use this after running "run_code_analyzer" to read the generated results file. After completion, this tool will summarize and explain the filtered results to the user.
-- run_code_analyzer (GA) - A tool for performing static analysis against code. This tool can validate that code conforms to best practices, check for security vulnerabilities, and identify possible performance issues. It returns a JSON containing the absolute path to a results file if such a file was created and a string indicating the overall success or failure of the operation.
+- `run_code_analyzer` (GA) - A tool for performing static analysis against code. This tool can validate that code conforms to best practices, check for security vulnerabilities, and identify possible performance issues. It returns a JSON containing the absolute path to a results file if such a file was created and a string indicating the overall success or failure of the operation.
 
 #### DevOps Center Toolset
+For complete documentation, [Merge Conflict Resolution with DevOps Center MCP Tools (Managed Package)](https://help.salesforce.com/s/articleView?id=platform.devops_center_mcp_intro.htm&type=5) in Salesforce Help.
 - `check_devops_center_commit_status` (NON-GA) - Check the current status of a work item committed to DevOps Center.
 - `checkout_devops_center_work_item` (NON-GA) - Checks out the branch associated with a selected work item by name.
 - `commit_devops_center_work_item` (NON-GA) - Commit SFDX project changes and register the commit SHA in DevOps Center.
@@ -251,6 +255,7 @@ Use the core Salesforce DX MCP toolsets to run classic DX tasks, such as work wi
 - `resolve_devops_center_merge_conflict` (GA) - Apply a selected resolution method to a merge conflict.
 
 #### Lightning Web Components (LWC) Experts Toolset
+For complete documentation, see [Use DX MCP Tools for LWC](https://developer.salesforce.com/docs/platform/lwc/guide/mcp-intro.html) in the _Lightning Web Components Developer Guide_.
 
 ##### Component Development
  - `create_lwc_component_from_prd` (GA) - Creates complete LWC components from PRD specifications with proper structure and best practices
@@ -291,6 +296,7 @@ Use the core Salesforce DX MCP toolsets to run classic DX tasks, such as work wi
  - `orchestrate_lwc_slds2_uplift` (NON-GA) - Provides migration guidance for upgrading to SLDS2 design system.
 
 #### Mobile Toolset
+For complete documentation, see [Use the mobile Toolset](https://developer.salesforce.com/docs/atlas.en-us.mobile_offline.meta/mobile_offline/dx_mobile_mcp_toolset_mobile.htm) in the _Mobile and Offline Developer Guide_.
 - `create_mobile_lwc_app_review` (GA) - Provides TypeScript API documentation for Salesforce LWC App Review Service, offering expert guidance for implementing app review features in Lightning Web Components.
 - `create_mobile_lwc_ar_space_capture` (GA) - Provides TypeScript API documentation for Salesforce LWC AR Space Capture, offering expert guidance for implementing AR space capture features in Lightning Web Components.
 - `create_mobile_lwc_barcode_scanner` (GA) - Provides TypeScript API documentation for Salesforce LWC Barcode Scanner, offering expert guidance for implementing barcode scanning features in Lightning Web Components.
@@ -305,8 +311,8 @@ Use the core Salesforce DX MCP toolsets to run classic DX tasks, such as work wi
 - `get_mobile_lwc_offline_analysis` (GA) - Analyzes Lightning Web Components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
 - `get_mobile_lwc_offline_guidance` (GA) - Provides structured review instructions to detect and remediate mobile offline code violations in Lightning Web Components for Salesforce Mobile Apps.
 
-### Mobile-core Toolset
-
+#### Mobile-core Toolset
+For complete documentation, see [Use the mobile-core Toolset](https://developer.salesforce.com/docs/atlas.en-us.mobile_offline.meta/mobile_offline/dx_mobile_mcp_toolset_core.htm) in the _Mobile and Offline Developer Guide_.
 - `create_mobile_lwc_barcode_scanner` (GA) - Provides TypeScript API documentation for Salesforce LWC Barcode Scanner, offering expert guidance for implementing barcode scanning features in Lightning Web Components.
 - `create_mobile_lwc_biometrics` (GA)  - Provides TypeScript API documentation for Salesforce LWC Biometrics Service, offering expert guidance for implementing biometric authentication features in Lightning Web Components.
 - `create_mobile_lwc_location` (GA) - Provides TypeScript API documentation for Salesforce LWC Location Service, offering expert guidance for implementing location services in Lightning Web Components.
@@ -315,5 +321,5 @@ Use the core Salesforce DX MCP toolsets to run classic DX tasks, such as work wi
 
 
 #### Scale Products Toolset
-
+For complete documentation, see the [README](./packages/mcp-provider-scale-products/README.md) in the `mcp-provider-scale-products` subdirectory.
 - `scan_apex_class_for_antipatterns` - (NON-GA) Analyzes Apex class files for performance antipatterns and provides recommendations for fixing them. Currently detects: (1) Schema.getGlobalDescribe() usage with optimized alternatives, (2) SOQL queries without WHERE or LIMIT clauses, (3) SOQL queries with unused fields (with fix generation). Distinguishes between different severity levels (e.g., usage in loops vs. ordinary usage). Requires an absolute path to the Apex class file.
