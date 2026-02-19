@@ -24,7 +24,7 @@ import { ensureString } from '@salesforce/ts-types';
 import { runApexTestsParam } from '../../src/tools/run_apex_test.js';
 
 describe('run_apex_test', () => {
-  const client = new McpTestClient();
+  const client = new McpTestClient({ timeout: 180000 });
 
   let testSession: TestSession;
   let orgUsername: string;

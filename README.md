@@ -187,6 +187,7 @@ These are the available toolsets.
 | `core`           | Core set of DX MCP tools. This toolset is always enabled. <br>See the [Core Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) documentation.                                                               | [Link](#core-toolset-always-enabled)                  |
 | `data`           | Tools to manage the data in your org, such as listing all accounts. <br>See the [Core Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) documentation.                                                     | [Link](#data-toolset)                                 |
 | `devops`         | Tools to securely and autonomously read, manage, and operate DevOps Center resources. <br>See the [DevOps MCP Tools](https://help.salesforce.com/s/articleView?id=platform.devops_center_mcp_intro.htm&type=5) documentation.                                                           | [Link](#devops-center-toolset)                        |
+| `enrich_metadata`| Tools to Enrich metadata components in your DX project.                                                                                                                                                                                                                                 | [Link](#enrichment-toolset)                        |
 | `lwc-experts`    | Tools to assist with Lightning Web Component (LWC) development, testing, optimization, and best practices.<br> See the [LWC MCP Tools](https://developer.salesforce.com/docs/platform/lwc/guide/mcp-intro.html) documentation.                                                          | [Link](#lightning-web-components-lwc-experts-toolset) |
 | `metadata`       | Tools to deploy and retrieve metadata to and from your org and your DX project.<br>See the [Core Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) documentation.                                          | [Link](#metadata-toolset)                             |
 | `mobile`         | Tools for mobile development and capabilities.<br>See the [Mobile MCP Tools](https://developer.salesforce.com/docs/atlas.en-us.mobile_offline.meta/mobile_offline/dx_mobile_mcp_toolset_mobile.htm) documentation.                                                                      | [Link](#mobile-toolset)                               |
@@ -251,6 +252,10 @@ For complete documentation, see [Merge Conflict Resolution with DevOps Center MC
 - `list_devops_center_work_items` (NON-GA) - List all the work items for a specific DevOps Center project.
 - `promote_devops_center_work_item` (NON-GA) - Promote an approved work item to the next stage in the DevOps Center pipeline.
 - `resolve_devops_center_merge_conflict` (GA) - Apply a selected resolution method to a merge conflict.
+
+### Enrichment Toolset
+
+- `enrich_metadata` (NON-GA) - Enrich metadata from your org in your DX project.
 
 ### Lightning Web Components (LWC) Experts Toolset
 
