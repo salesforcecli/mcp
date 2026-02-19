@@ -95,13 +95,11 @@ To configure [Cline](https://docs.cline.bot/mcp/mcp-overview) to work with Sales
       "command": "npx",
       "args": [
         "-y",
-        "@salesforce/mcp@latest",
+        "@saled sforce/mcp@latest",
         "--orgs",
         "DEFAULT_TARGET_ORG",
-        "--toolsets",
-        "orgs,metadata,data,users",
-        "--tools",
-        "run_apex_test",
+        "--toolsets", "orgs,metadata,data,users",
+        "--tools", "run_apex_test",
         "--allow-non-ga-tools"
       ]
     }
@@ -121,12 +119,9 @@ To configure [Cursor](https://cursor.com/docs/context/mcp) to work with Salesfor
       "args": [
         "-y",
         "@salesforce/mcp@latest",
-        "--orgs",
-        "DEFAULT_TARGET_ORG",
-        "--toolsets",
-        "orgs,metadata,data,users",
-        "--tools",
-        "run_apex_test",
+        "--orgs", "DEFAULT_TARGET_ORG",
+        "--toolsets", "orgs,metadata,data,users",
+        "--tools", "run_apex_test",
         "--allow-non-ga-tools"
       ]
     }
@@ -182,20 +177,20 @@ These are the available toolsets.
 | Toolset          | Description                                                                                                                                                                                                                                                                             | See Tool List                                         |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | `all`            | Enables all available tools from all toolsets. <br>We recommend that you configure only the toolsets you’re going to use, rather than all of them with this value. The DX MCP Server includes over 60 MCP tools, so enabling them all in your MCP client can overwhelm the LLM context. | N/A                                                   |
-| `aura-experts`   | Tools that provide Aura component analysis, blueprinting, and migration expertise.<br>See the [Aura-to-LWC Migration Tools](https://developer.salesforce.com/docs/platform/lwc/guide/mcp-aura.html) documentation.                                                                      | [Link](#aura-experts-toolset)                         |
-| `code-analysis`  | Tools for static analysis of your code using Salesforce Code Analyzer.<br>See the [Code Analyzer MCP Tools](https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/mcp.html) documentation.                                                                      | [Link](#code-analysis-toolset)                        |
-| `core`           | Core set of DX MCP tools. This toolset is always enabled. <br>See the [Core Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) documentation.                                                               | [Link](#core-toolset-always-enabled)                  |
-| `data`           | Tools to manage the data in your org, such as listing all accounts. <br>See the [Core Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) documentation.                                                     | [Link](#data-toolset)                                 |
-| `devops`         | Tools to securely and autonomously read, manage, and operate DevOps Center resources. <br>See the [DevOps MCP Tools](https://help.salesforce.com/s/articleView?id=platform.devops_center_mcp_intro.htm&type=5) documentation.                                                           | [Link](#devops-center-toolset)                        |
+| `aura-experts`   | Tools that provide Aura component analysis, blueprinting, and migration expertise..                                                                      | [Link](#aura-experts-toolset)                         |
+| `code-analysis`  | Tools for static analysis of your code using Salesforce Code Analyzer.                                                                      | [Link](#code-analysis-toolset)                        |
+| `core`           | Core set of DX MCP tools. This toolset is always enabled.                                                               | [Link](#core-toolset-always-enabled)                  |
+| `data`           | Tools to manage the data in your org, such as listing all accounts.                                                     | [Link](#data-toolset)                                 |
+| `devops`         | Tools to securely and autonomously read, manage, and operate DevOps Center resources.                                                           | [Link](#devops-center-toolset)                        |
 | `enrich_metadata`| Tools to Enrich metadata components in your DX project.                                                                                                                                                                                                                                 | [Link](#enrichment-toolset)                        |
-| `lwc-experts`    | Tools to assist with Lightning Web Component (LWC) development, testing, optimization, and best practices.<br> See the [LWC MCP Tools](https://developer.salesforce.com/docs/platform/lwc/guide/mcp-intro.html) documentation.                                                          | [Link](#lightning-web-components-lwc-experts-toolset) |
-| `metadata`       | Tools to deploy and retrieve metadata to and from your org and your DX project.<br>See the [Core Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) documentation.                                          | [Link](#metadata-toolset)                             |
-| `mobile`         | Tools for mobile development and capabilities.<br>See the [Mobile MCP Tools](https://developer.salesforce.com/docs/atlas.en-us.mobile_offline.meta/mobile_offline/dx_mobile_mcp_toolset_mobile.htm) documentation.                                                                      | [Link](#mobile-toolset)                               |
-| `mobile-core`    | A subset of tools from the `mobile` toolset focused on essential mobile capabilities. <br>See the [Mobile Core MCP Tools](https://developer.salesforce.com/docs/atlas.en-us.mobile_offline.meta/mobile_offline/dx_mobile_mcp_toolset_core.htm) documentation.                           | [Link](#mobile-core-toolset)                          |
-| `orgs`           | Tools to manage your authorized orgs. <br>See the [Core Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) documentation.                                                                                   | [Link](#orgs-toolset)                                 |
-| `scale-products` | Tools for detecting and fixing Apex performance.<br>See the [README](./packages/mcp-provider-scale-products/README.md) in the `mcp-provider-scale-products` subdirectory.                                                                                                               | [Link](#scale-products-toolset)                       |
-| `testing`        | Tools to test your code and features. <br>See the [Core Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) documentation.                                                                                   | [Link](#testing-toolset)                              |
-| `users`          | Tools to manage org users, such as assigning a permission set. <br>See the [Core Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) documentation.                                                          | [Link](#users-toolset)                                |
+| `lwc-experts`    | Tools to assist with Lightning Web Component (LWC) development, testing, optimization, and best practices.                                                          | [Link](#lightning-web-components-lwc-experts-toolset) |
+| `metadata`       | Tools to deploy and retrieve metadata to and from your org and your DX project.                                          | [Link](#metadata-toolset)                             |
+| `mobile`         | Tools for mobile development and capabilities.                                                                      | [Link](#mobile-toolset)                               |
+| `mobile-core`    | A subset of tools from the `mobile` toolset focused on essential mobile capabilities.                           | [Link](#mobile-core-toolset)                          |
+| `orgs`           | Tools to manage your authorized orgs.                                                                                   | [Link](#orgs-toolset)                                 |
+| `scale-products` | Tools for detecting and fixing Apex performance.                                                                                                               | [Link](#scale-products-toolset)                       |
+| `testing`        | Tools to test your code and features.                                                                                   | [Link](#testing-toolset)                              |
+| `users`          | Tools to manage org users, such as assigning a permission set.                                                          | [Link](#users-toolset)                                |
 
 ## Configure Tools
 
