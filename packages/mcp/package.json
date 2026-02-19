@@ -12,6 +12,7 @@
     "build": "wireit",
     "build:watch": "yarn build --watch",
     "clean": "tsc --build --clean",
+    "clean-all": "yarn clean && rimraf node_modules",
     "fix-license": "eslint src test --fix --rule \"header/header: [2]\"",
     "format": "wireit",
     "link-check": "wireit",

@@ -4,7 +4,8 @@ export const TelemetrySource = "MCP"
 export const McpTelemetryEvents = {
     ENGINE_SELECTION: 'engine_selection',
     ENGINE_EXECUTION: 'engine_execution',
-    RESULTS_QUERY: 'results_query'
+    RESULTS_QUERY: 'results_query',
+    CUSTOM_RULE_CREATED: 'custom_rule_created'
 }
 
 export const ENGINE_NAMES = [
@@ -90,6 +91,16 @@ export const LANGUAGES = [
 export type Language = typeof LANGUAGES[number];
 
 export const LANGUAGE_SET: ReadonlySet<Language> = new Set(LANGUAGES);
+
+export const LANGUAGE_NAMES = {
+    Apex: 'apex',
+    CSS: 'css',
+    HTML: 'html',
+    JavaScript: 'javascript',
+    TypeScript: 'typescript',
+    Visualforce: 'visualforce',
+    XML: 'xml'
+} as const;
 
 export const ENGINE_SPECIFIC_TAGS = [
     'DevPreview',
