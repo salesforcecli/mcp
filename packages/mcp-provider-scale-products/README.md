@@ -78,9 +78,9 @@ To unlock **runtime-aware severity** powered by ApexGuru, the tool needs access 
 
 | Level | Meaning |
 |---|---|
-| **Minor** | Low-impact issue; fix when convenient |
-| **Major** | Moderate performance risk; should be addressed |
-| **Critical** | High-impact hotspot; fix with priority |
+| **Minor** | Deviates from quality standards; fix when convenient |
+| **Major** | Reduces usability or causes a crucial part of your software to fail |
+| **Critical** | Highest priority; issues with run time, count, and other factors that result in software failure |
 
 When runtime metrics are available (org connected + ApexGuru enabled), severity is calculated from actual production execution data rather than static heuristics.
 
