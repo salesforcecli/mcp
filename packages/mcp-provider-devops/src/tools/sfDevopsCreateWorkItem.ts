@@ -25,7 +25,7 @@ const inputSchema = z.object({
   usernameOrAlias: usernameOrAliasParam,
   projectId: z.string().min(1).describe("DevOps Center Project ID selected from list_devops_center_projects for the same org."),
   subject: z.string().min(1).describe("Work item subject."),
-  description: z.string().describe("Work item description."),
+  description: z.string().optional().describe("Work item description."),
 });
 type InputArgs = z.infer<typeof inputSchema>;
 type InputArgsShape = typeof inputSchema.shape;
@@ -69,7 +69,7 @@ export class SfDevopsCreateWorkItem extends McpTool<InputArgsShape, OutputArgsSh
 - usernameOrAlias: DevOps Center org username or alias. If missing, use 'list_all_orgs' and ask user to select the DevOps Center org.
 - projectId: DevOps Center Project ID from list_devops_center_projects for the same org.
 - subject: Work item subject.
-- description: Work item description.
+- description: Work item description (optional).
 
 **Output:**
 - success: Whether the create succeeded.
@@ -93,7 +93,7 @@ export class SfDevopsCreateWorkItem extends McpTool<InputArgsShape, OutputArgsSh
         usernameOrAlias: input.usernameOrAlias,
         projectId: input.projectId,
         subject: input.subject,
-        description: input.description,
+        description: input.description ?? "",
       });
 
       const executionTime = Date.now() - startTime;
