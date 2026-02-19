@@ -353,7 +353,7 @@ For sample prompts that invoke the core DX MCP tools, see [Use the Core Salesfor
 
 For complete documentation, see the [README](./packages/mcp-provider-scale-products/README.md) in the `mcp-provider-scale-products` subdirectory.
 
-- `scan_apex_class_for_antipatterns` - (NON-GA) Analyzes Apex class files for performance antipatterns and provides recommendations for fixing them.
+- `scan_apex_class_for_antipatterns` - (GA) Analyzes Apex class files for performance antipatterns and provides recommendations for fixing them.
 
 ### Testing Toolset
 
