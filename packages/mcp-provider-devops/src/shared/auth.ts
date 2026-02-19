@@ -1,4 +1,4 @@
-import { AuthInfo, OrgAuthorization, Connection } from "@salesforce/core";
+import { AuthInfo, OrgAuthorization, Connection, StateAggregator } from "@salesforce/core";
 import { SanitizedOrgAuthorization } from "./types.js";
 
 /**
@@ -31,17 +31,33 @@ export async function getAllAllowedOrgs(): Promise<(SanitizedOrgAuthorization & 
     return sanitizedOrgs;
   }
 
-export async function getConnection(username: string): Promise<Connection> {
+export async function getConnection(usernameOrAlias: string): Promise<Connection> {
     const allOrgs = await getAllAllowedOrgs();
-    const foundOrg = findOrgByUsernameOrAlias(allOrgs, username);
-  
+    let foundOrg = findOrgByUsernameOrAlias(allOrgs, usernameOrAlias);
+
+    // If not found, try resolving alias via StateAggregator (CLI alias store).
+    // listAllAuthorizations() may not include aliases in org.aliases in all environments.
+    if (!foundOrg) {
+      try {
+        await StateAggregator.clearInstanceAsync();
+        const resolvedUsername = (await StateAggregator.getInstance()).aliases.resolveUsername(
+          usernameOrAlias
+        );
+        if (resolvedUsername && resolvedUsername.includes("@")) {
+          foundOrg = findOrgByUsernameOrAlias(allOrgs, resolvedUsername);
+        }
+      } catch {
+        // StateAggregator or resolveUsername failed; continue to reject with same error below
+      }
+    }
+
     if (!foundOrg)
       return Promise.reject(
         new Error(
           'No org found with the provided username/alias. Ask the user to specify valid username or alias or login with correct org first. use sf cli login command.'
         )
       );
-  
+
     const authInfo = await AuthInfo.create({ username: foundOrg.username });
     const connection = await Connection.create({ authInfo });
     return connection;

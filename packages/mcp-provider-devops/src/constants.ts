@@ -12,6 +12,8 @@ export const TelemetryEventNames = {
   CREATE_PULL_REQUEST: 'devops_create_pull_request',
   DETECT_CONFLICT: 'devops_detect_conflict',
   RESOLVE_CONFLICT: 'devops_resolve_conflict',
+  UPDATE_WORK_ITEM_STATUS: 'devops_update_work_item_status',
+  CREATE_WORK_ITEM: 'devops_create_work_item',
 } as const;
 
 export const TelemetrySource = 'MCP-DevOps';
