@@ -54,10 +54,10 @@ The `args` format shown in the preceding example is the same for all MCP clients
 
 - The `"-y", "@salesforce/mcp"` part tells `npx` to automatically install the `@salesforce/mcp` package instead of asking permission. Don't change this.
 - For possible flags that you can pass to the `args` option, and the possible values that you can pass to the `--orgs`, `--toolsets`, and `--tools` flags, see these sections:
-  - [Available Flags for the `args` Option](./README.md#available-flags-for-the-args-option)
-  - [Configure Orgs](./README.md#configure-orgs)
-  - [Configure Toolsets](./README.md#configure-toolsets)
-  - [Configure Tools](./README.md#configure-tools)
+  - [Available Flags for the `args` Option](#available-flags-for-the-args-option)
+  - [Configure Orgs](#configure-orgs)
+  - [Configure Toolsets](#configure-toolsets)
+  - [Configure Tools](#configure-tools)
 - When writing the `args` option, surround both the flag names and their values in double quotes, and separate all flags and values with commas. Some flags are Boolean and don't take a value.
 - The preceding example shows three flags that take a string value (`--orgs`, `--toolsets`, and `--tools`) and one Boolean flag (`--allow-non-ga-tools`). This configuration starts a DX MCP Server that enables all the MCP tools in the `orgs`, `metadata`, `data`, and `users` toolsets and a specific tool called `run_apex_tests`. It also enables tools in these configured toolsets that aren't yet generally available.
 
@@ -152,9 +152,9 @@ These are the flags that you can pass to the `args` option.
 | `--debug`              | Boolean flag that requests that the DX MCP Server print debug logs.                                                                                                                   | No        | Debug mode is disabled by default. <br/> <br/>**NOTE:** Not all MCP clients expose MCP logs, so this flag might not work for all IDEs.                                                                                                     |
 | `--dynamic-tools`      | (experimental) Boolean flag that enables dynamic tool discovery and loading. When specified, the DX MCP server starts with a minimal set of core tools and loads new tools as needed. | No        | This flag is useful for reducing the initial context size and improving LLM performance. Dynamic tool discovery is disabled by default.<br/> <br/>**NOTE:** This feature works in VSCode and Cline but may not work in other environments. |
 | `--no-telemetry`       | Boolean flag to disable telemetry, the automatic collection of data for monitoring and analysis.                                                                                      | No        | Telemetry is enabled by default, so specify this flag to disable it.                                                                                                                                                                       |
-| `--orgs`               | One or more orgs that you've locally authorized.                                                                                                                                      | Yes       | You must specify at least one org. <br/> <br/>See [Configure Orgs](./README.md#configure-orgs) for the values you can pass to this flag.                                                                                                   |
+| `--orgs`               | One or more orgs that you've locally authorized.                                                                                                                                      | Yes       | You must specify at least one org. <br/> <br/>See [Configure Orgs](#configure-orgs) for the values you can pass to this flag.                                                                                                   |
 | `--tools`              | Individual tool names that you want to enable.                                                                                                                                        | No        | You can use this flag in combination with the `--toolsets` flag. For example, you can enable all tools in one toolset, and just one tool in a different toolset.                                                                           |
-| `--toolsets`           | Sets of tools, based on functionality, that you want to enable.                                                                                                                       | No        | Set to "all" to enable every tool in every toolset. <br/> <br/>See [Configure Toolsets](./README.md#configure-toolsets) for the values you can pass to this flag.                                                                          |
+| `--toolsets`           | Sets of tools, based on functionality, that you want to enable.                                                                                                                       | No        | Set to "all" to enable every tool in every toolset. <br/> <br/>See [Configure Toolsets](#configure-toolsets) for the values you can pass to this flag.                                                                          |
 
 ## Configure Orgs
 
@@ -173,7 +173,7 @@ These are the available values for the `--orgs` flag:
 
 ## Configure Toolsets
 
-The Salesforce DX MCP Server supports **toolsets** - a way to selectively enable different groups of MCP tools based on your needs. This allows you to run the MCP server with only the tools you require, which in turn reduces the context.
+The Salesforce DX MCP Server supports **toolsets**—a way to selectively enable different groups of MCP tools based on your needs. This allows you to run the MCP server with only the tools you require, which in turn reduces the LLM context.
 
 Use the `--toolsets` flag to specify the toolsets when you configure the Salesforce DX MCP Server. Separate multiple toolsets with commas.
 
@@ -187,12 +187,12 @@ These are the available toolsets.
 | `core`           | Core set of DX MCP tools. This toolset is always enabled. <br>See the [Core Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) documentation.                                                               | [Link](#core-toolset-always-enabled) |
 | `data`           | Tools to manage the data in your org, such as listing all accounts. <br>See the [Core Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) documentation.                                                     | [Link](#data-toolset)                |
 | `devops`         | Tools to securely and autonomously read, manage, and operate DevOps Center resources. <br>See the [DevOps MCP Tools](https://help.salesforce.com/s/articleView?id=platform.devops_center_mcp_intro.htm&type=5) documentation.                                                           | [Link](#devops-center-toolset)       |
-| `lwc-experts`    | Tools to assist with Lightning Web Component (LWC) development, testing, optimization, and best practices.<br> See the [LWC MCP Tools](https://developer.salesforce.com/docs/platform/lwc/guide/mcp-intro.html) documentation.                                                          | [Link](#lwc-experts-toolset)         |
+| `lwc-experts`    | Tools to assist with Lightning Web Component (LWC) development, testing, optimization, and best practices.<br> See the [LWC MCP Tools](https://developer.salesforce.com/docs/platform/lwc/guide/mcp-intro.html) documentation.                                                          | [Link](#lightning-web-components-lwc-experts-toolset)         |
 | `metadata`       | Tools to deploy and retrieve metadata to and from your org and your DX project.<br>See the [Core Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) documentation.                                          | [Link](#metadata-toolset)            |
 | `mobile`         | Tools for mobile development and capabilities.<br>See the [Mobile MCP Tools](https://developer.salesforce.com/docs/atlas.en-us.mobile_offline.meta/mobile_offline/dx_mobile_mcp_toolset_mobile.htm) documentation.                                                                      | [Link](#mobile-toolset)              |
-| `mobile-core`    | A subset of mobile tools focused on essential mobile capabilities. <br>See the [Mobile Core MCP Tools](https://developer.salesforce.com/docs/atlas.en-us.mobile_offline.meta/mobile_offline/dx_mobile_mcp_toolset_core.htm) documentation.                                              | [Link](#mobile-core-toolset)         |
+| `mobile-core`    | A subset of tools from the `mobile` toolset focused on essential mobile capabilities. <br>See the [Mobile Core MCP Tools](https://developer.salesforce.com/docs/atlas.en-us.mobile_offline.meta/mobile_offline/dx_mobile_mcp_toolset_core.htm) documentation.                                              | [Link](#mobile-core-toolset)         |
 | `orgs`           | Tools to manage your authorized orgs. <br>See the [Core Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) documentation.                                                                                   | [Link](#orgs-toolset)                |
-| `scale-products` | Tools for detecting and fixing Apex performance.<br>See the [README](./packages/mcp-provider-scale-products/README.md) in the `mcp-provider-scale-products` subdirectory. antipatterns.                                                                                                                                                                                                                           | [Link](#scale-products-toolset)      |
+| `scale-products` | Tools for detecting and fixing Apex performance.<br>See the [README](./packages/mcp-provider-scale-products/README.md) in the `mcp-provider-scale-products` subdirectory.                                                                                                                                                                                                                           | [Link](#scale-products-toolset)      |
 | `testing`        | Tools to test your code and features. <br>See the [Core Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) documentation.                                                                                   | [Link](#testing-toolset)             |
 | `users`          | Tools to manage org users, such as assigning a permission set. <br>See the [Core Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) documentation.                                                          | [Link](#users-toolset)               |
 
@@ -205,7 +205,7 @@ Use the `--tools` flag to enable specific tools when you configure the Salesforc
 The following sections list all the tools that are included in a specific toolset.
 
 > [!NOTE]
-> _The tools marked NON-GA are not yet generally available. Specify the `--allow-non-ga-tools` flag to use them._
+> The tools marked NON-GA are not yet generally available. Specify the `--allow-non-ga-tools` flag to use them.
 
 ### Aura Experts Toolset
 
@@ -222,7 +222,7 @@ For complete documentation, see [Use MCP Tools to Analyze Your Code ](https://de
 
 - `describe_code_analyzer_rule` (GA) - A tool for getting the description of a Code Analyzer rule.
 - `list_code_analyzer_rules` (GA) - A tool for selecting Code Analyzer rules based on a number of criteria.
-- `query_code_analyzer_results` (GA) - Query a Code Analyzer results JSON file and return filtered violations. Supports filters like severity, category/tag, engine, rule, and file name, plus top-N and sorting. Use this after running "run_code_analyzer" to read the generated results file. After completion, this tool will summarize and explain the filtered results to the user.
+- `query_code_analyzer_results` (GA) - Queries a Code Analyzer results JSON file and returns filtered violations. Supports filters such as severity, category/tag, engine, rule, and file name, plus top-N and sorting. Use this after running `run_code_analyzer` to read the generated results file. After completion, this tool will summarize and explain the filtered results to the user.
 - `run_code_analyzer` (GA) - A tool for performing static analysis against code. This tool can validate that code conforms to best practices, check for security vulnerabilities, and identify possible performance issues. It returns a JSON containing the absolute path to a results file if such a file was created and a string indicating the overall success or failure of the operation.
 
 ### Core Toolset (always enabled)
@@ -257,32 +257,32 @@ For complete documentation, see [Use DX MCP Tools for LWC](https://developer.sal
 
 #### Component Development
 
-- `create_lwc_component_from_prd` (GA) - Creates complete LWC components from PRD specifications with proper structure and best practices
-- `create_lwc_jest_tests` (GA) - Generates comprehensive Jest test suites for LWC components with coverage and mocking
-- `review_lwc_jest_tests` (GA) - Reviews and validates Jest test implementations for LWC components
+- `create_lwc_component_from_prd` (GA) - Creates complete LWC components from PRD specifications with proper structure. and best practices
+- `create_lwc_jest_tests` (GA) - Generates Jest test suites for LWC components with coverage and mocking.
+- `review_lwc_jest_tests` (GA) - Reviews and validates Jest test implementations for LWC components.
 
 #### Development Guidelines
 
 - `create_lightning_type` (GA) - Provides guidance for creating Custom Lightning Types (CLT) for Salesforce applications, agent actions, Lightning web components, and Lightning Platform integrations.
-- `guide_lwc_accessibility` (GA) - Provides accessibility guidelines and testing instructions for LWC components
-- `guide_lwc_best_practices` (GA) - Offers LWC development best practices and coding standards guidance
-- `guide_lwc_development` (GA) - Comprehensive LWC development workflow and implementation guidelines
-- `guide_lwc_rtl_support` (GA) - Right-to-Left internationalization support and RTL development guidance
-- `guide_lwc_slds2_uplift_linter_fixes` (NON-GA) - Analyzes the given LWC code along with the slds-linter output to fix issues using the SLDS2 knowledge
-- `guide_lwc_security` (GA) - Comprehensive security analysis in accordance with product security Guidelines and Lightning Web Security guidelines
-- `guide_design_general` (GA) - Comprehensive SLDS guidelines and best practices for Lightning Web Components with accessibility, responsive design, and component usage patterns
-- `guide_utam_generation` (NON-GA) - Provides UTAM Page Object generation guidelines and best practices.
+- `guide_lwc_accessibility` (GA) - Provides accessibility guidelines and testing instructions for LWC components.
+- `guide_lwc_best_practices` (GA) - Offers LWC development best practices and coding standards guidance.
+- `guide_lwc_development` (GA) - Provides LWC development workflow and implementation guidelines.
+- `guide_lwc_rtl_support` (GA) - Provides Right-to-Left (RTL) internationalization support and RTL development guidance.
+- `guide_lwc_slds2_uplift_linter_fixes` (NON-GA) - Analyzes the given LWC code along with the slds-linter output to fix issues using Salesforce Lightning Design System 2 (SLDS 2) guidelines.
+- `guide_lwc_security` (GA) - Provides security analysis in accordance with product security guidelines and Lightning Web Security guidelines.
+- `guide_design_general` (GA) - Provides SLDS guidelines and best practices for Lightning Web Components with accessibility, responsive design, and component usage patterns.
+- `guide_utam_generation` (NON-GA) - Provides UI Test Automation Model (UTAM) Page Object generation guidelines and best practices.
 
 #### Lightning Data Service (LDS) Tools
 
-- `create_lds_graphql_mutation_query` (GA) - Provides comprehensive guidance text for creating GraphQL mutation queries.
+- `create_lds_graphql_mutation_query` (GA) - Provides guidance for creating GraphQL mutation queries.
 - `create_lds_graphql_read_query` (GA) - Create GraphQL read queries for LDS.
-- `explore_lds_graphql_schema` (GA) - Explore GraphQL schema structure for Salesforce LDS.
-- `explore_lds_uiapi` (GA) - Explores and documents Lightning Data Service UI API capabilities.
+- `explore_lds_graphql_schema` (GA) - Explore GraphQL schema structure for LDS.
+- `explore_lds_uiapi` (GA) - Explores and documents Lightning Design System UI API capabilities.
 - `guide_lds_data_consistency` (GA) - Provides data consistency patterns and best practices for LDS components.
 - `guide_lds_development` (GA) - Provides LDS development guidelines and component integration.
 - `guide_lds_graphql` (GA) - Provides LDS GraphQL usage patterns and guidelines.
-- `guide_lds_referential_integrity` (GA) - Provides Referential integrity patterns for LDS data management.
+- `guide_lds_referential_integrity` (GA) - Provides referential integrity patterns for LDS data management.
 - `orchestrate_lds_data_requirements` (GA) - Provides step-by-step guidance for analyzing and clarifying LDS data requirements to produce PRD-ready specifications.
 
 #### Migration & Integration Tools
@@ -293,10 +293,10 @@ For complete documentation, see [Use DX MCP Tools for LWC](https://developer.sal
 
 #### Workflow Tools
 
-- `orchestrate_lwc_component_creation` (GA) - Provides step-by-step component creation workflow guidance.
-- `orchestrate_lwc_component_optimization` (GA) - Provides Performance optimization and best practices for LWC components.
+- `orchestrate_lwc_component_creation` (GA) - Provides guidance for the entire Aura-to-LWC migration process.
+- `orchestrate_lwc_component_optimization` (GA) - Provides performance optimization and best practices for LWC components.
 - `orchestrate_lwc_component_testing` (GA) - Provides comprehensive testing workflow and test generation guidance.
-- `orchestrate_lwc_slds2_uplift` (NON-GA) - Provides migration guidance for upgrading to SLDS2 design system.
+- `orchestrate_lwc_slds2_uplift` (NON-GA) - Provides migration guidance for upgrading to SLDS 2.
 
 ### Metadata Toolset
 For sample prompts that invoke the core DX MCP tools, see [Use the Core Salesforce DX MCP Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) in the _Salesforce DX Developer Guide_.
@@ -308,29 +308,29 @@ For sample prompts that invoke the core DX MCP tools, see [Use the Core Salesfor
 
 For complete documentation, see [Use the mobile Toolset](https://developer.salesforce.com/docs/atlas.en-us.mobile_offline.meta/mobile_offline/dx_mobile_mcp_toolset_mobile.htm) in the _Mobile and Offline Developer Guide_.
 
-- `create_mobile_lwc_app_review` (GA) - Provides TypeScript API documentation for Salesforce LWC App Review Service, offering expert guidance for implementing app review features in Lightning Web Components.
-- `create_mobile_lwc_ar_space_capture` (GA) - Provides TypeScript API documentation for Salesforce LWC AR Space Capture, offering expert guidance for implementing AR space capture features in Lightning Web Components.
-- `create_mobile_lwc_barcode_scanner` (GA) - Provides TypeScript API documentation for Salesforce LWC Barcode Scanner, offering expert guidance for implementing barcode scanning features in Lightning Web Components.
-- `create_mobile_lwc_biometrics` (GA) - Provides TypeScript API documentation for Salesforce LWC Biometrics Service, offering expert guidance for implementing biometric authentication features in Lightning Web Components.
-- `create_mobile_lwc_calendar` (GA) - Provides TypeScript API documentation for Salesforce LWC Calendar Service, offering expert guidance for implementing calendar integration features in Lightning Web Components.
-- `create_mobile_lwc_contacts` (GA) - Provides TypeScript API documentation for Salesforce LWC Contacts Service, offering expert guidance for implementing contacts management features in Lightning Web Components.
-- `create_mobile_lwc_document_scanner` (GA) - Provides TypeScript API documentation for Salesforce LWC Document Scanner, offering expert guidance for implementing document scanning features in Lightning Web Components.
-- `create_mobile_lwc_geofencing` (GA) - Provides TypeScript API documentation for Salesforce LWC Geofencing Service, offering expert guidance for implementing geofencing features in Lightning Web Components.
-- `create_mobile_lwc_location` (GA) - Provides TypeScript API documentation for Salesforce LWC Location Service, offering expert guidance for implementing location services in Lightning Web Components.
-- `create_mobile_lwc_nfc` (GA) - Provides TypeScript API documentation for Salesforce LWC NFC Service, offering expert guidance for implementing NFC features in Lightning Web Components.
-- `create_mobile_lwc_payments` - Provides TypeScript API documentation for Salesforce LWC Payments Service, offering expert guidance for implementing payment processing features in Lightning Web Components.
-- `get_mobile_lwc_offline_analysis` (GA) - Analyzes Lightning Web Components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
-- `get_mobile_lwc_offline_guidance` (GA) - Provides structured review instructions to detect and remediate mobile offline code violations in Lightning Web Components for Salesforce Mobile Apps.
+- `create_mobile_lwc_app_review` (GA) - Provides TypeScript API documentation for Salesforce LWC App Review Service, offering expert guidance for implementing app review features in LWC components.
+- `create_mobile_lwc_ar_space_capture` (GA) - Provides TypeScript API documentation for Salesforce LWC AR Space Capture, offering expert guidance for implementing AR space capture features in LWC components.
+- `create_mobile_lwc_barcode_scanner` (GA) - Provides TypeScript API documentation for Salesforce LWC Barcode Scanner, offering expert guidance for implementing barcode scanning features in LWC components.
+- `create_mobile_lwc_biometrics` (GA) - Provides TypeScript API documentation for Salesforce LWC Biometrics Service, offering expert guidance for implementing biometric authentication features in LWC components.
+- `create_mobile_lwc_calendar` (GA) - Provides TypeScript API documentation for Salesforce LWC Calendar Service, offering expert guidance for implementing calendar integration features in LWC components.
+- `create_mobile_lwc_contacts` (GA) - Provides TypeScript API documentation for Salesforce LWC Contacts Service, offering expert guidance for implementing contacts management features in LWC components.
+- `create_mobile_lwc_document_scanner` (GA) - Provides TypeScript API documentation for Salesforce LWC Document Scanner, offering expert guidance for implementing document scanning features in LWC components.
+- `create_mobile_lwc_geofencing` (GA) - Provides TypeScript API documentation for Salesforce LWC Geofencing Service, offering expert guidance for implementing geofencing features in LWC components.
+- `create_mobile_lwc_location` (GA) - Provides TypeScript API documentation for Salesforce LWC Location Service, offering expert guidance for implementing location services in LWC components.
+- `create_mobile_lwc_nfc` (GA) - Provides TypeScript API documentation for Salesforce LWC NFC Service, offering expert guidance for implementing NFC features in LWC components.
+- `create_mobile_lwc_payments` - Provides TypeScript API documentation for Salesforce LWC Payments Service, offering expert guidance for implementing payment processing features in LWC components.
+- `get_mobile_lwc_offline_analysis` (GA) - Analyzes LWC components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
+- `get_mobile_lwc_offline_guidance` (GA) - Provides structured review instructions to detect and remediate mobile offline code violations in LWC components for Salesforce mobile apps.
 
 ### Mobile-core Toolset
 
 For complete documentation, see [Use the mobile-core Toolset](https://developer.salesforce.com/docs/atlas.en-us.mobile_offline.meta/mobile_offline/dx_mobile_mcp_toolset_core.htm) in the _Mobile and Offline Developer Guide_.
 
-- `create_mobile_lwc_barcode_scanner` (GA) - Provides TypeScript API documentation for Salesforce LWC Barcode Scanner, offering expert guidance for implementing barcode scanning features in Lightning Web Components.
-- `create_mobile_lwc_biometrics` (GA) - Provides TypeScript API documentation for Salesforce LWC Biometrics Service, offering expert guidance for implementing biometric authentication features in Lightning Web Components.
-- `create_mobile_lwc_location` (GA) - Provides TypeScript API documentation for Salesforce LWC Location Service, offering expert guidance for implementing location services in Lightning Web Components.
-- `get_mobile_lwc_offline_analysis` (GA) - Analyzes Lightning Web Components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
-- `get_mobile_lwc_offline_guidance` (GA) - Provides structured review instructions to detect and remediate mobile offline code violations in Lightning Web Components for Salesforce Mobile Apps.
+- `create_mobile_lwc_barcode_scanner` (GA) - Provides TypeScript API documentation for Salesforce LWC Barcode Scanner, offering expert guidance for implementing barcode scanning features in LWC components.
+- `create_mobile_lwc_biometrics` (GA) - Provides TypeScript API documentation for Salesforce LWC Biometrics Service, offering expert guidance for implementing biometric authentication features in LWC components.
+- `create_mobile_lwc_location` (GA) - Provides TypeScript API documentation for Salesforce LWC Location Service, offering expert guidance for implementing location services in LWC components.
+- `get_mobile_lwc_offline_analysis` (GA) - Analyzes LWC components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
+- `get_mobile_lwc_offline_guidance` (GA) - Provides structured review instructions to detect and remediate mobile offline code violations in LWC components for Salesforce mobile apps.
 
 ### Orgs Toolset
 For sample prompts that invoke the core DX MCP tools, see [Use the Core Salesforce DX MCP Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_use_core_tools.htm) in the _Salesforce DX Developer Guide_.
@@ -338,7 +338,7 @@ For sample prompts that invoke the core DX MCP tools, see [Use the Core Salesfor
 - `create_org_snapshot` (NON-GA) - Create a scratch org snapshot.
 - `create_scratch_org` (NON-GA) - Create a scratch org.
 - `delete_org` (NON-GA) - Delete a locally-authorized Salesforce scratch org or sandbox.
-- `list_all_orgs` (GA) - Lists all configured Salesforce orgs, with optional connection status checking.
+- `list_all_orgs` (GA) - List all configured Salesforce orgs, with optional connection status checking.
 - `open_org` (NON-GA) - Open an org in a browser.
 
 ### Scale Products Toolset
