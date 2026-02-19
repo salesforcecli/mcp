@@ -11,6 +11,7 @@ packages/EXAMPLE-MCP-PROVIDER/ @salesforcecli/dx-mcp-owners
 
 packages/mcp-provider-code-analyzer/ @salesforcecli/mcp-provider-code-analyzer
 packages/mcp-provider-devops/ @salesforcecli/mcp-provider-devops
+packages/mcp-provider-metadata-enrichment/ @salesforcecli/mcp-provider-metadata-enrichment
 packages/mcp-provider-mobile-web/ @salesforcecli/mcp-provider-mobile
 
 
