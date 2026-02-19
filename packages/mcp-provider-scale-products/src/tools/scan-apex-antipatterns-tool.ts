@@ -118,30 +118,16 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: "Scan Apex Class for Antipatterns",
-      description:
-        "Apex Code Scan Tool: Invoke (alongside other code scan tools if needed) whenever the user intends to scan or analyze an Apex class. " +
-        "Analyzes an Apex class file for performance antipatterns and provides " +
-        "recommendations for fixing them. Currently detects: " +
-        "1) Schema.getGlobalDescribe() usage with optimized alternatives " +
-        "2) SOQL queries without WHERE or LIMIT clauses " +
-        "3) SOQL queries with unused fields (with fix generation). " +
-        "Distinguishes between different severity levels (e.g., usage in loops vs. ordinary usage). " +
-        "When authenticated to an org with ApexGuru enabled, severity is calculated from actual runtime metrics. " +
-        "IMPORTANT: If the user does not mention an org alias or username in the request, call #get_username tool to  resolve the default org username. " +
-        "Requires an absolute path to the Apex class file. " +
-        "\n" +
-        "==== PRESENTATION INSTRUCTIONS ====" +
-        "\n1. ALWAYS start with a clear header indicating whether runtime analysis from production org was used:" +
-        "   - If runtime metrics were used: '🔬 LEVERAGING YOUR ORG'S RUNTIME INTELLIGENCE VIA APEXGURU: Analyzing with Production Metrics from [OrgId]'" +
-        "\n2. Display this LEGEND prominently at the beginning of your response:" +
-        "   ╔════════════════════════════════════════════════════════╗\n" +
-        "   ║                        SEVERITY LEGEND                ║\n" +
-        "   ╠════════════════════════════════════════════════════════╣\n" +
-        "   ║   🟡 = Minor Severity Antipattern                     ║\n" +
-        "   ║   🟠 = Major Severity Antipattern                     ║\n" +
-        "   ║   🔴 = Critical Severity Antipattern                  ║\n" +
-        "   ║   💡 = Severity from Production Metrics               ║\n" +
-        "   ╚════════════════════════════════════════════════════════╝\n",
+      description: `Apex Code Scan Tool: Invoke (alongside other code scan tools if needed) whenever the user intends to scan or analyze an Apex class.
+Analyzes an Apex class file for performance antipatterns and provides recommendations for fixing them. Currently detects:
+1) Schema.getGlobalDescribe() usage with optimized alternatives
+2) SOQL queries without WHERE or LIMIT clauses
+3) SOQL queries with unused fields (with fix generation).
+Distinguishes between different severity levels (e.g., usage in loops vs. ordinary usage).
+When authenticated to an org with ApexGuru enabled, severity is calculated from actual runtime metrics.
+IMPORTANT: If the user does not mention an org alias or username in the request, call #get_username tool to resolve the default org username.
+Requires an absolute path to the Apex class file.
+`,
       inputSchema: scanApexInputSchema.shape,
       outputSchema: undefined,
       annotations: {
@@ -449,51 +435,61 @@ export class ScanApexAntipatternsTool extends McpTool<InputArgsShape, OutputArgs
       0
     );
 
-    let response = "";
+    const runtimeHeader = runtimeDataStatus === RuntimeDataStatus.SUCCESS
+      ? `# 🔬 Maximizing Organizational Runtime Intelligence with ApexGuru\n\n`
+      : "";
 
-    // Add header based on runtime analysis status
-    if (runtimeDataStatus === RuntimeDataStatus.SUCCESS) {
-      response += `# 🔬 Leveraging Your Org's Runtime Intelligence via ApexGuru\n\n`;
-    } 
-    // Add severity legend
-    response += `╔════════════════════════════════════════════════════════╗\n`;
-    response += `║                        SEVERITY LEGEND                ║\n`;
-    response += `╠════════════════════════════════════════════════════════╣\n`;
-    response += `║   🟡 = Minor Severity Antipattern                     ║\n`;
-    response += `║   🟠 = Major Severity Antipattern                     ║\n`;
-    response += `║   🔴 = Critical Severity Antipattern                  ║\n`;
-    response += `║   💡 = Severity from Production Metrics               ║\n`;
-    response += `╚════════════════════════════════════════════════════════╝\n\n`;
-
-    response += `## Antipattern Scan Results for '${className}'\n\n`;
-    response += `Found ${totalIssues} issue(s) across ${scanResult.antipatternResults.length} antipattern type(s).\n`;
-
-    response += this.getRuntimeDataMessage(runtimeDataStatus);
-    response += `\n`;
-
-    response += `## Scan Results\n\n`;
-    response += "Results are grouped by antipattern type. Each type has:\n";
-    response += "- **fixInstruction**: How to fix this antipattern type (applies to all instances)\n";
-    response += "- **detectedInstances**: All detected instances of this type\n\n";
-
-    // Transform results to add bulb icon for runtime-derived severity
     const displayResult = this.addSeverityIcons(scanResult);
 
-    response += "```json\n";
-    response += JSON.stringify(displayResult, null, 2);
-    response += "\n```\n\n";
+    const response = `==== PRESENTATION INSTRUCTIONS ====
+1. ALWAYS start with a clear header indicating whether runtime analysis from production org was used:
+   - If runtime metrics were used: '🔬 Analyzing with Production Metrics from [OrgId]'
+   - Otherwise: do not use the runtime header.
+2. Display this LEGEND prominently at the beginning of your response:
+   - 🟡 Minor: Deviates from quality standards
+   - 🟠 Major: Reduces usability or causes failure
+   - 🔴 Critical: Highest priority, causes failure
+   - 💡 Severity from Production Metrics
 
-    response += `## Instructions for Code Fixes\n\n`;
-    response += `When applying fixes in code, include the following in comments:\n`;
-    response += `- For each antipattern, include the appropriate severity dot (🟡/🟠/🔴)\n`;
-    response += `- Add 💡 next to severity dot when runtime metrics were used to calculate severity\n\n`;
-    response += `The scan result contains multiple antipattern types. For each type:\n`;
-    response += `1. Read the \`fixInstruction\` - this explains how to fix this antipattern\n`;
-    response += `2. For each instance in \`detectedInstances\`:\n`;
-    response += `   - Examine \`codeBefore\` (the problematic code)\n`;
-    response += `   - Consider \`severity\` (critical/major/minor)\n`;
-    response += `   - Generate the fixed code following the instruction\n\n`;
-    response += `Generate fixes for all detected instances across all antipattern types.\n`;
+${runtimeHeader}\
+**SEVERITY LEGEND**
+- 🟡 Minor: Deviates from quality standards
+- 🟠 Major: Reduces usability or causes failure
+- 🔴 Critical: Highest priority, causes failure
+- 💡 Severity from Production Metrics
+
+**Presentation:** Be concise, conversational, direct, and positive. Address the reader as "you." Use a casual tone but avoid jargon and slang. Avoid "please" and "sorry"; use exclamation points sparingly. Design text for easy scanning.
+
+## Antipattern Scan Results for '${className}'
+
+Found ${totalIssues} issue(s) across ${scanResult.antipatternResults.length} antipattern type(s).
+${this.getRuntimeDataMessage(runtimeDataStatus)}
+
+## Scan Results
+
+Results are grouped by antipattern type. Each type has:
+- **fixInstruction**: How to fix this antipattern type (applies to all instances)
+- **detectedInstances**: All detected instances of this type
+
+\`\`\`json
+${JSON.stringify(displayResult, null, 2)}
+\`\`\`
+
+## Instructions for Code Fixes
+
+When applying fixes in code, include the following in comments:
+- For each antipattern, include the appropriate severity dot (🟡/🟠/🔴)
+- Add 💡 next to severity dot when runtime metrics were used to calculate severity
+
+The scan result contains multiple antipattern types. For each type:
+1. Read the \`fixInstruction\` - this explains how to fix this antipattern
+2. For each instance in \`detectedInstances\`:
+   - Examine \`codeBefore\` (the problematic code)
+   - Consider \`severity\` (critical/major/minor)
+   - Generate the fixed code following the instruction
+
+Generate fixes for all detected instances across all antipattern types.
+`;
 
     return response;
   }
