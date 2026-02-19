@@ -55,7 +55,7 @@
     "@salesforce/mcp-provider-metadata-enrichment": "0.0.4",
     "@salesforce/source-deploy-retrieve": "^12.31.7",
     "@salesforce/source-tracking": "^7.8.2",
-    "@salesforce/telemetry": "6.4.1",
+    "@salesforce/telemetry": "^6.6.4",
     "@salesforce/ts-types": "^2.0.11",
     "zod": "^3.25.76"
   },

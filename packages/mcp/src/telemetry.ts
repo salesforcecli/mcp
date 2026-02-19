@@ -18,7 +18,7 @@ import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import * as os from 'node:os';
-import { Attributes, TelemetryReporter } from '@salesforce/telemetry';
+import { Attributes, TelemetryReporter, PdpEvent } from '@salesforce/telemetry';
 import { warn } from '@oclif/core/ux';
 import { Config } from '@oclif/core';
 import { TelemetryService } from '@salesforce/mcp-provider-api/src/index.js';
@@ -135,7 +135,15 @@ export class Telemetry implements TelemetryService {
         ...(isInternalHost() ? getInternalProperties() : {}),
       });
     } catch {
-      /* empty */
+      /* intentionally empty */
+    }
+  }
+
+  public sendPdpEvent(event: PdpEvent): void {
+    try {
+      this.reporter?.sendPdpEvent(event);
+    } catch {
+      /* intentionally empty */
     }
   }
 
