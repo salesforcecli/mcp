@@ -67,8 +67,8 @@ describe("ScanApexAntipatternsTool", () => {
     expect(tool.getName()).toBe("scan_apex_class_for_antipatterns");
   });
 
-  it("should return NON_GA release state", () => {
-    expect(tool.getReleaseState()).toBe(ReleaseState.NON_GA);
+  it("should return GA release state", () => {
+    expect(tool.getReleaseState()).toBe(ReleaseState.GA);
   });
 
   it("should be in SCALE_PRODUCTS toolset", () => {
@@ -257,7 +257,7 @@ public class TestClass {
     const result = await tool.exec(input);
     const text = (result.content[0] as any).text;
     
-    expect(text).toContain("Instructions for LLM");
+    expect(text).toContain("Instructions for Code Fixes");
     expect(text).toContain("fixInstruction");
     expect(text).toContain("codeBefore");
     expect(text).toContain("severity");

@@ -1,3 +1,7 @@
+## [0.0.4](https://github.com/salesforcecli/mcp/compare/mcp-provider-scale-products@0.0.3...mcp-provider-scale-products@0.0.4) (2026-02-18)
+
+
+
 ## [0.0.3](https://github.com/salesforcecli/mcp/compare/mcp-provider-scale-products@0.0.2...mcp-provider-scale-products@0.0.3) (2026-02-06)
 
 

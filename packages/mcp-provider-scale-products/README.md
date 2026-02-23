@@ -6,245 +6,107 @@ This npm package is currently for internal use only. Its contents may change at 
 
 ## Overview
 
-This package provides MCP tools for detecting and fixing performance antipatterns in Apex code. It uses a SOLID architecture with clear separation of concerns:
+This package provides MCP tools for the Salesforce Scale Products suite — [ApexGuru](https://help.salesforce.com/s/articleView?id=xcloud.apexguru_overview.htm&type=5), [Scale Test](https://www.salesforce.com/in/platform/application-scaling-performance-testing/) and [Scale Center](https://help.salesforce.com/s/articleView?id=xcloud.scale_center_overview.htm&type=5). The tools help developers and architects identify performance bottlenecks, optimize Apex code, and ensure applications scale reliably under peak loads.
 
-- **Detectors**: Identify antipatterns using regex-based static analysis (detection only)
-- **Recommenders**: Convert detections to CodeFix format and provide LLM fix instructions
-- **Antipattern Modules**: Couple detectors and recommenders (recommender is optional)
-- **MCP Tool**: Returns detections with fix instructions for LLM to generate actual fixes
 
-## Features
+## Tools
 
-### Currently Supported Antipatterns
+### `scan_apex_class_for_antipatterns`
 
-#### GGD (Schema.getGlobalDescribe)
-Detects usage of the expensive `Schema.getGlobalDescribe()` method with different severity levels:
-- **MEDIUM**: Regular invocations
-- **HIGH**: Invocations inside loops (for, while, do-while)
+Scans an Apex class file (`.cls` or `.trigger`) and returns detected antipatterns grouped by type, each with severity and fix instructions.
 
-Provides recommendations to use `Type.forName()` or direct SObject references instead.
+**Detected Antipatterns:**
 
-## Architecture
+| Antipattern | What it detects | Example |
+|---|---|---|
+| **GGD** | `Schema.getGlobalDescribe()` calls (higher severity inside loops) | Replace with `Type.forName()` or direct SObject token |
+| **SOQL_NO_WHERE_LIMIT** | SOQL queries missing both `WHERE` and `LIMIT` clauses | Add filtering or row limits to prevent governor limit issues |
+| **SOQL_UNUSED_FIELDS** | SOQL queries selecting fields that are never referenced in code | Remove unused fields to reduce query cost |
 
-The package follows SOLID principles with a simplified, focused design:
+**Input Parameters:**
 
-- **Single Responsibility**: Each detector/recommender handles one antipattern
-- **Open/Closed**: Easy to add new antipatterns without modifying existing code
-- **Liskov Substitution**: All detectors/recommenders implement base interfaces
-- **Interface Segregation**: Clean, focused interfaces - one registry instead of three
-- **Dependency Inversion**: Depends on abstractions, not concrete implementations
-
-### Design Decisions
-
-**Single Registry Pattern**: Uses only `AntipatternRegistry` to manage modules. Removed separate `DetectorRegistry` and `RecommenderRegistry` as they were unused and added unnecessary complexity.
-
-**Separation of Concerns**:
-- **Detectors** find antipatterns and report them with metadata (line number, severity, problematic code)
-- **Recommenders** convert detections to CodeFix format and provide LLM fix instructions
-- **LLM** receives the detections + instructions and generates the actual fixes
-
-**Optional Recommenders**: Antipattern modules support detection-only workflows:
-- **Full workflow**: Detector + Recommender → Detections with detailed LLM fix instructions
-- **Detection-only**: Just detector → Detections with basic/default instructions
-
-This architecture ensures:
-- Detectors stay focused on detection
-- Recommenders provide guidance, not implementations
-- LLMs have full context to generate optimal fixes
-
-### Directory Structure
-
-```
-src/
-├── models/              # Data models (DetectionResult, Severity, etc.)
-├── detectors/           # Antipattern detection logic
-├── recommenders/        # Recommendation generation logic
-├── antipatterns/        # Modules coupling detectors + recommenders
-├── tools/               # MCP tool implementations
-├── provider.ts          # MCP provider registration
-└── index.ts            # Package exports
-```
-
-## Development Workflow
-
-### Prerequisites
-
-Ensure you're in the monorepo root or the package directory for these commands.
-
-### Essential Commands
-
-#### Install Dependencies
-```bash
-# From package directory
-yarn install
-
-# Or from monorepo root
-yarn workspace @salesforce/mcp-provider-scale-products install
-```
-
-#### Build
-```bash
-# From package directory
-node node_modules/typescript/lib/tsc.js --build tsconfig.build.json --verbose
-
-# Or from monorepo root  
-yarn workspace @salesforce/mcp-provider-scale-products build
-```
-
-#### Run Tests
-```bash
-# From package directory
-node node_modules/vitest/vitest.mjs run
-
-# With coverage
-node node_modules/vitest/vitest.mjs run --coverage
-
-# Or from monorepo root
-yarn workspace @salesforce/mcp-provider-scale-products test
-```
-
-#### Lint
-```bash
-# From package directory
-node node_modules/eslint/bin/eslint.js **/*.ts
-
-# Or from monorepo root
-yarn workspace @salesforce/mcp-provider-scale-products lint
-```
-
-#### Clean
-```bash
-# From package directory
-node node_modules/typescript/lib/tsc.js --build tsconfig.build.json --clean
-
-# Or from monorepo root
-yarn workspace @salesforce/mcp-provider-scale-products clean
-```
-
-### Adding a New Antipattern
-
-#### Option 1: Full Detection + Recommendation
-
-1. **Create Detector** (`src/detectors/your-detector.ts`):
-   ```typescript
-   export class YourDetector implements BaseDetector {
-     getAntipatternType(): AntipatternType {
-       return AntipatternType.YOUR_TYPE;
-     }
-     
-     detect(className: string, apexCode: string): Detection[] {
-       // Detection logic using regex or other static analysis
-     }
-   }
-   ```
-
-2. **Create Recommender** (`src/recommenders/your-recommender.ts`):
-   ```typescript
-   export class YourRecommender implements BaseRecommender {
-     getAntipatternType(): AntipatternType {
-       return AntipatternType.YOUR_TYPE;
-     }
-     
-     generateRecommendation(detection: Detection): CodeFix {
-       // Generate detailed code fix with before/after examples
-     }
-     
-     getPromptInstruction(): string {
-       // Return comprehensive LLM prompt with examples
-     }
-   }
-   ```
-
-3. **Register Module** (in `src/tools/scan-apex-antipatterns-tool.ts`):
-   ```typescript
-   const yourModule = new AntipatternModule(
-     new YourDetector(),
-     new YourRecommender()  // Include recommender
-   );
-   registry.register(yourModule);
-   ```
-
-#### Option 2: Detection-Only
-
-For simpler antipatterns that don't need detailed recommendations:
-
-1. **Create Detector** (same as above)
-
-2. **Register Module** (without recommender):
-   ```typescript
-   const yourModule = new AntipatternModule(
-     new YourDetector()
-     // No recommender - will use basic code fixes
-   );
-   registry.register(yourModule);
-   ```
-
-The module will automatically generate basic code fixes without LLM prompts.
-
-#### Testing & Building
-
-4. **Add Tests**:
-   - `test/detectors/your-detector.test.ts`
-   - `test/recommenders/your-recommender.test.ts` (if using recommender)
-   - `test/antipatterns/` (integration tests)
-
-5. **Run Tests and Build**:
-   ```bash
-   node node_modules/vitest/vitest.mjs run --coverage
-   node node_modules/typescript/lib/tsc.js --build tsconfig.build.json
-   ```
-
-## Usage
-
-### As an MCP Tool
-
-The tool `scan_apex_class_for_antipatterns` accepts:
-
-**Input:**
-- `className` (string): Name of the Apex class
-- `apexCode` (string): Full Apex class source code
-- `identifier` (string, optional): Unique identifier for this scan
+| Parameter | Required | Description |
+|---|---|---|
+| `className` | Yes | Name of the Apex class (e.g., `AccountController`) |
+| `apexFilePath` | Yes | Absolute path to the `.cls` or `.trigger` file |
+| `directory` | Yes | Absolute path to the working directory (your SFDX project root) |
+| `usernameOrAlias` | No | Salesforce org username or alias for runtime insights (see [Org Setup](#org-setup-for-runtime-insights)) |
+| `identifier` | No | Unique identifier for this scan (defaults to `className`) |
 
 **Output:**
-- JSON detection results with code fixes
-- LLM prompt instructions for generating recommendations
 
-**Example:**
+The tool returns detections grouped by antipattern type. Each group contains a `fixInstruction` (how to fix the antipattern) and an array of `detectedInstances`:
+
 ```json
 {
-  "_id": "org:MyClass:0:GGD",
-  "antipatternType": "GGD",
-  "detectedInstances": [{
-    "className": "MyClass",
-    "methodName": "myMethod",
-    "lineNumber": 5,
-    "codeBefore": "Schema.SObjectType t = Schema.getGlobalDescribe().get('Account');",
-    "severity": "medium",
-    "fixInstruction": "# Fix Schema.getGlobalDescribe() at line 5\n\n## Problem\n...\n\n## Fix Strategies\n..."
-  }]
+  "antipatternResults": [
+    {
+      "antipatternType": "GGD",
+      "fixInstruction": "## Fix Schema.getGlobalDescribe() ...",
+      "detectedInstances": [
+        {
+          "className": "MyClass",
+          "methodName": "myMethod",
+          "lineNumber": 5,
+          "codeBefore": "Schema.SObjectType t = Schema.getGlobalDescribe().get('Account');",
+          "severity": "major"
+        }
+      ]
+    }
+  ]
 }
 ```
 
-Each `detectedInstance` has its own context-aware `fixInstruction` that the LLM uses to generate the fix.
+Each instance includes `severity` (minor / major / critical). When runtime metrics are available, severity is derived from production data and marked with a bulb icon in the formatted output.
 
-## Test Coverage
+## Org Setup for Runtime Insights
 
-Current coverage: **94.26%** (36 tests passing)
+Without an org connection the tool runs **static analysis only** — it still detects all antipatterns but assigns severity based on code structure (e.g., inside a loop = higher severity).
 
-- All detectors: Comprehensive test cases
-- All recommenders: Recommendation generation tests
-- Antipattern modules: Integration tests (including detection-only)
-- MCP tool: End-to-end tests
+To unlock **runtime-aware severity** powered by ApexGuru, the tool needs access to a Salesforce org. You have two options:
 
-## Contributing
+1. **Set a default target org** so every invocation uses it automatically:
+   ```bash
+   sf config set target-org myOrg@example.com
+   ```
 
-When adding features:
+2. **Pass the org explicitly** by including the username or alias in your prompt when invoking the tool (the `usernameOrAlias` parameter).
 
-1. Follow existing patterns and SOLID principles
-2. Write tests first (TDD approach recommended)
-3. Ensure all tests pass: `node node_modules/vitest/vitest.mjs run --coverage`
-4. Maintain or improve code coverage (target: >85%)
-5. Update this README with new antipatterns
+> **Prerequisite:** The org must have ApexGuru / the Scale Center suite enabled. If runtime data returns an access-denied error, contact Salesforce Support to enable it.
+
+## Severity Levels
+
+| Level | Meaning |
+|---|---|
+| **Minor** | Low-impact issue; fix when convenient |
+| **Major** | Moderate performance risk; should be addressed |
+| **Critical** | High-impact hotspot; fix with priority |
+
+When runtime metrics are available (org connected + ApexGuru enabled), severity is calculated from actual production execution data rather than static heuristics.
+
+## Development
+
+Ensure you are in the monorepo root or the package directory.
+
+```bash
+# Install
+yarn install
+
+# Build
+yarn workspace @salesforce/mcp-provider-scale-products build
+
+# Test
+yarn workspace @salesforce/mcp-provider-scale-products test
+
+# Test with coverage
+node node_modules/vitest/vitest.mjs run --coverage
+
+# Lint
+yarn workspace @salesforce/mcp-provider-scale-products lint
+
+# Clean
+yarn workspace @salesforce/mcp-provider-scale-products clean
+```
 
 ## License
 
