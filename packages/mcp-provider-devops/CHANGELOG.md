@@ -1,3 +1,19 @@
+# [0.2.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.9...mcp-provider-devops@0.2.0) (2026-02-19)
+
+
+### Bug Fixes
+
+* Adding telemetry for core dev tools ([#330](https://github.com/salesforcecli/mcp/issues/330)) ([505a99a](https://github.com/salesforcecli/mcp/commit/505a99a799b83eb25d239d06aecf66c44dd5cfce))
+
+
+### Features
+
+* @W-21277913 - New tool to create work item and change work item status ([#391](https://github.com/salesforcecli/mcp/issues/391)) ([aa17777](https://github.com/salesforcecli/mcp/commit/aa177775d0723709d35e9ef10e1c04dd06a9e5c2))
+* add ignoreConflicts param for deploy/retrieve W-20002028 ([#321](https://github.com/salesforcecli/mcp/issues/321)) ([63c764b](https://github.com/salesforcecli/mcp/commit/63c764b0b5908d6a6cdfd25a2c65b2ec617b64e9)), closes [#320](https://github.com/salesforcecli/mcp/issues/320)
+* support login via alias for list_devops_projects tool ([#325](https://github.com/salesforcecli/mcp/issues/325)) ([f0cedf5](https://github.com/salesforcecli/mcp/commit/f0cedf5dd0dbefad62e923f2699608e2b70c7ca4))
+
+
+
 ## [0.1.9](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.8...mcp-provider-devops@0.1.9) (2025-11-06)
 
 

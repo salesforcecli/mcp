@@ -1,3 +1,12 @@
+# [0.8.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.7.0...mcp-provider-dx-core@0.8.0) (2026-02-19)
+
+
+### Features
+
+* @W-21277913 - New tool to create work item and change work item status ([#391](https://github.com/salesforcecli/mcp/issues/391)) ([aa17777](https://github.com/salesforcecli/mcp/commit/aa177775d0723709d35e9ef10e1c04dd06a9e5c2))
+
+
+
 # [0.7.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.6.0...mcp-provider-dx-core@0.7.0) (2026-02-09)
 
 
