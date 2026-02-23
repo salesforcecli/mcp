@@ -1,6 +1,5 @@
-import axios from "axios";
-import { getConnection } from "./shared/auth.js";
-import { fetchWorkItemByName } from "./getWorkItems.js";
+import { type Connection } from "@salesforce/core";
+import { fetchWorkItemByNameWithConnection } from "./getWorkItems.js";
 
 export type WorkItemStatus = "In Progress" | "Ready to Promote";
 
@@ -18,20 +17,29 @@ export interface UpdateWorkItemStatusResult {
   error?: string;
 }
 
+/** Minimal request interface for Connection.request() (auth/URL handled by Connection). */
+type ConnectionRequest = (options: {
+  method: string;
+  url: string;
+  body?: string;
+  headers?: Record<string, string>;
+}) => Promise<unknown>;
+
 const API_VERSION = "v65.0";
 
 /**
  * Updates the Status field of a DevOps Center Work Item via the devops REST API.
- * @param usernameOrAlias - DevOps Center org username or alias
+ * Uses the provided Connection (e.g. from getOrgService().getConnection()).
+ * @param connection - Salesforce connection from getOrgService().getConnection()
  * @param workItemName - Exact Work Item Name (e.g. WI-00000001)
  * @param status - New status: "In Progress" or "Ready to Promote"
  */
 export async function updateWorkItemStatus(
-  usernameOrAlias: string,
+  connection: Connection,
   workItemName: string,
   status: WorkItemStatus
 ): Promise<UpdateWorkItemStatusResult> {
-  const workItem = await fetchWorkItemByName(usernameOrAlias, workItemName);
+  const workItem = await fetchWorkItemByNameWithConnection(connection, workItemName);
   if (!workItem?.id) {
     return {
       success: false,
@@ -51,28 +59,17 @@ export async function updateWorkItemStatus(
     };
   }
 
-  const connection = await getConnection(usernameOrAlias);
-  const accessToken = connection.accessToken;
-  const instanceUrl = connection.instanceUrl;
-  if (!accessToken || !instanceUrl) {
-    return {
-      success: false,
-      workItemName,
-      status,
-      error: "Missing access token or instance URL.",
-    };
-  }
-
-  const url = `${instanceUrl}/services/data/${API_VERSION}/connect/devops/projects/${projectId}/workitem/${workItem.id}`;
-  const headers = {
-    Authorization: `Bearer ${accessToken}`,
-    "Content-Type": "application/json",
-  };
+  const path = `/services/data/${API_VERSION}/connect/devops/projects/${projectId}/workitem/${workItem.id}`;
   const statusApiValue = STATUS_TO_API_VALUE[status];
-  const body = { status: statusApiValue };
+  const body = JSON.stringify({ status: statusApiValue });
 
   try {
-    await axios.patch(url, body, { headers });
+    await (connection as unknown as { request: ConnectionRequest }).request({
+      method: "PATCH",
+      url: path,
+      body,
+      headers: { "Content-Type": "application/json" },
+    });
     return {
       success: true,
       workItemId: workItem.id,
@@ -80,7 +77,7 @@ export async function updateWorkItemStatus(
       status,
     };
   } catch (error: any) {
-    const data = error.response?.data;
+    const data = error.response?.data ?? error.body ?? error;
     const message =
       (typeof data === "object" && (data?.message ?? data?.error ?? data?.errorDescription)) ??
       error.message ??

@@ -1,8 +1,17 @@
-import axios from 'axios';
-import { getConnection, getRequiredOrgs } from './shared/auth.js';
+import { type Connection } from '@salesforce/core';
 import { execFileSync } from 'child_process';
 import { normalizeAndValidateRepoPath } from './shared/pathUtils.js';
 import path from 'path';
+
+/** Minimal request interface for Connection.request() (auth/URL handled by Connection). */
+type ConnectionRequest = (options: {
+  method: string;
+  url: string;
+  body?: string;
+  headers?: Record<string, string>;
+}) => Promise<unknown>;
+
+const API_VERSION = 'v65.0';
 
 interface Change {
     fullName: string;
@@ -10,12 +19,14 @@ interface Change {
     operation: string;
 }
 
-interface CommitWorkItemParams {
+export interface CommitWorkItemParams {
+    devHubConnection: Connection;
+    sandboxConnection: Connection;
+    /** Sandbox org username for CLI (e.g. sf project deploy report --target-org). */
+    sandboxUsername: string;
     workItem: { id: string };
     requestId: string;
     commitMessage: string;
-    doceHubUsername: string;
-    sandboxUsername: string;
     repoPath?: string;
 }
 
@@ -59,40 +70,26 @@ function isMatch(deployFile: string, gitPath: string): boolean {
 }
 
 export async function commitWorkItem({
+    devHubConnection,
+    sandboxConnection,
+    sandboxUsername,
     workItem,
     requestId,
     commitMessage,
-    doceHubUsername,
-    sandboxUsername,
     repoPath
 }: CommitWorkItemParams): Promise<any> {
-    const { doceHub, sandbox, error } = await getRequiredOrgs(doceHubUsername, sandboxUsername);
-
-    if (error || !doceHub || !sandbox || !doceHub.username || !sandbox.username) {
-        throw new Error(`Dual org detection failed: ${error || 'DevOps Center and Sandbox orgs required'}. Please ensure you are logged into both DevOps Center org (for authentication) and Sandbox org (for changes).`);
-    }
-
-    const doceHubConnection = await getConnection(doceHub.username);
-    if (!doceHubConnection.accessToken || !doceHubConnection.instanceUrl) {
-        throw new Error('Missing DevOps Center org access token or instance URL. Please check DevOps Center org authentication.');
-    }
-
-    const sandboxConnection = await getConnection(sandbox.username);
-    if (!sandboxConnection.accessToken || !sandboxConnection.instanceUrl) {
-        throw new Error('Missing Sandbox org access token or instance URL. Please check Sandbox org authentication.');
-    }
-
-    const authToken = doceHubConnection.accessToken;
-    const apiInstanceUrl = doceHubConnection.instanceUrl;
     const sandboxToken = sandboxConnection.accessToken;
     const sandboxInstanceUrl = sandboxConnection.instanceUrl;
+    if (!sandboxToken || !sandboxInstanceUrl) {
+        throw new Error('Missing Sandbox org access token or instance URL. Please check Sandbox org authentication.');
+    }
 
     const workingDir = normalizeAndValidateRepoPath(repoPath);
     let deployJson: any;
     try {
         const out = execFileSync(
             'sf',
-            ['project', 'deploy', 'report', '--use-most-recent', '--target-org', sandbox.username, '--json'],
+            ['project', 'deploy', 'report', '--use-most-recent', '--target-org', sandboxUsername, '--json'],
             { cwd: workingDir, encoding: 'utf8' }
         );
         deployJson = JSON.parse(out);
@@ -152,15 +149,7 @@ export async function commitWorkItem({
         throw new Error('No eligible changes to commit (only Unchanged components detected).');
     }
 
-    const url = `${apiInstanceUrl}/services/data/v65.0/connect/devops/workItems/${workItem.id}/commit`;
-
-    const headers = {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/json',
-        'token': sandboxToken,
-        'instance-url': sandboxInstanceUrl
-    };
-
+    const pathUrl = `/services/data/${API_VERSION}/connect/devops/workItems/${workItem.id}/commit`;
     const requestBody = {
         requestId,
         commitMessage,
@@ -168,14 +157,21 @@ export async function commitWorkItem({
     };
 
     try {
-        const response = await axios.post(url, requestBody, { headers });
-
+        const response = await (devHubConnection as unknown as { request: ConnectionRequest }).request({
+            method: 'POST',
+            url: pathUrl,
+            body: JSON.stringify(requestBody),
+            headers: {
+                'Content-Type': 'application/json',
+                'token': sandboxToken,
+                'instance-url': sandboxInstanceUrl
+            }
+        });
         return {
             success: true,
-            commitResult: response.data,
+            commitResult: response ?? {},
             message: 'Work item committed successfully',
             trace: {
-                doceHubOrg: doceHub.username,
                 workItemId: workItem.id,
                 requestId,
                 commitMessage,
@@ -183,7 +179,8 @@ export async function commitWorkItem({
             }
         };
     } catch (error: any) {
-        const errorMessage = error.response?.data?.message || error.message;
+        const data = error.response?.data ?? error.body ?? error;
+        const errorMessage = (typeof data === 'object' && data?.message) || error.message;
         throw new Error(`Failed to commit work item: ${errorMessage}`);
     }
 }

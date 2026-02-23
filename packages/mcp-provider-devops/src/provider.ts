@@ -33,8 +33,8 @@ export class DevOpsMcpProvider extends McpProvider {
       new SfDevopsCommitWorkItem(services),
       new SfDevopsUpdateWorkItemStatus(services),
 
-      new CheckCommitStatus(telemetryService),
-      new CreatePullRequest(telemetryService),
+      new CheckCommitStatus(services),
+      new CreatePullRequest(services),
     ]);
   }
 

@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
+import { McpTool, McpToolConfig, ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
 import { createPullRequest } from "../createPullRequest.js";
-import { fetchWorkItemByName } from "../getWorkItems.js";
+import { fetchWorkItemByNameWithConnection } from "../getWorkItems.js";
 
 const inputSchema = z.object({
   workItemName: z.string().min(1).describe("Exact Work Item Name to create pull request."),
@@ -13,11 +13,8 @@ type InputArgsShape = typeof inputSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class CreatePullRequest extends McpTool<InputArgsShape, OutputArgsShape> {
-  private readonly telemetryService: TelemetryService;
-
-  constructor(telemetryService: TelemetryService) {
+  constructor(private readonly services: Services) {
     super();
-    this.telemetryService = telemetryService;
   }
 
   public getReleaseState(): ReleaseState {
@@ -81,17 +78,6 @@ export class CreatePullRequest extends McpTool<InputArgsShape, OutputArgsShape> 
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
     try {
-      const workItem = await fetchWorkItemByName(input.username, input.workItemName);
-      
-      if (!workItem || !workItem.id) {
-        return {
-          content: [{
-            type: "text",
-            text: `Error: Work item Name is required. Please provide a valid work item Name. Or provide a valid DevOps Center org username.`
-          }]
-        };
-      }
-      
       if (!input.username || input.username.trim().length === 0) {
         return {
           content: [{
@@ -100,11 +86,19 @@ export class CreatePullRequest extends McpTool<InputArgsShape, OutputArgsShape> 
           }]
         };
       }
+      const connection = await this.services.getOrgService().getConnection(input.username);
+      const workItem = await fetchWorkItemByNameWithConnection(connection, input.workItemName);
 
-      const result = await createPullRequest({
-        workItemId: workItem.id,
-        username: input.username
-      });
+      if (!workItem || !workItem.id) {
+        return {
+          content: [{
+            type: "text",
+            text: `Error: Work item Name is required. Please provide a valid work item Name. Or provide a valid DevOps Center org username.`
+          }]
+        };
+      }
+
+      const result = await createPullRequest(connection, workItem.id);
 
       return {
         content: [{

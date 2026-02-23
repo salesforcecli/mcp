@@ -1,3 +1,4 @@
+import { type Connection } from "@salesforce/core";
 import { getConnection } from "./shared/auth.js";
 import { computeFirstStageId, fetchPipelineStages, getBranchNameFromStage, getPipelineIdForProject, findStageById, resolveTargetStageId } from "./shared/pipelineUtils.js";
 import type { WorkItem } from "./types/WorkItem.js";
@@ -117,6 +118,54 @@ export async function fetchWorkItems(username: string, projectId: string): Promi
             return workItems;
         }
         return [];
+    } catch (error) {
+        throw error;
+    }
+}
+
+/**
+ * Fetches a work item by name using an existing Connection (e.g. from getOrgService().getConnection()).
+ * Use this when the caller already has a connection to avoid resolving it twice.
+ */
+export async function fetchWorkItemByNameWithConnection(
+    connection: Connection,
+    workItemName: string
+): Promise<WorkItem | null | any> {
+    try {
+        const query = `
+            SELECT
+                Id,
+                Name,
+                Subject,
+                Description,
+                Status,
+                AssignedToId,
+                SourceCodeRepositoryBranchId,
+                SourceCodeRepositoryBranch.Name,
+                SourceCodeRepositoryBranch.SourceCodeRepositoryId,
+                SourceCodeRepositoryBranch.SourceCodeRepository.Name,
+                SourceCodeRepositoryBranch.SourceCodeRepository.RepositoryOwner,
+                SourceCodeRepositoryBranch.SourceCodeRepository.Provider,
+                DevopsPipelineStageId,
+                DevopsProjectId
+            FROM WorkItem
+            WHERE Name = '${workItemName}'
+            LIMIT 1
+        `;
+
+        const result: any = await connection.query(query);
+        const item = (result?.records || [])[0];
+        if (!item) {
+            return null;
+        }
+
+        const projectId: string = item?.DevopsProjectId;
+        const cache = new Map<string, ProjectStagesContext>();
+        const ctx = await ensureProjectStages(connection, cache, projectId);
+        if (!ctx) {
+            throw new Error(`Pipeline or stages not found for project: ${projectId}`);
+        }
+        return mapRawItemToWorkItem(item, ctx);
     } catch (error) {
         throw error;
     }

@@ -117,7 +117,8 @@ export class SfDevopsPromoteWorkItem extends McpTool<InputArgsShape, OutputArgsS
     }
 
     try {
-      const result = await promoteWorkItems(input.usernameOrAlias, { workitems: prepared });
+      const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
+      const result = await promoteWorkItems(connection, { workitems: prepared });
       
       const executionTime = Date.now() - startTime;
       

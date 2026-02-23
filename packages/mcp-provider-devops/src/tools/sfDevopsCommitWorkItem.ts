@@ -151,10 +151,11 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
 
       const requestId = randomUUID();
       
+      const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
       const result = await commitWorkItem({
-        username: input.usernameOrAlias,
-        workItem: workItem,
-        requestId: requestId,
+        connection,
+        workItem,
+        requestId,
         commitMessage: input.commitMessage,
         repoPath: localPath
       });
