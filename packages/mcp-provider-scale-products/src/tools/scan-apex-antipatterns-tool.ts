@@ -445,13 +445,9 @@ Requires an absolute path to the Apex class file.
 1. ALWAYS start with a clear header indicating whether runtime analysis from production org was used:
    - If runtime metrics were used: '🔬 Analyzing with Production Metrics from [OrgId]'
    - Otherwise: do not use the runtime header.
-2. Display this LEGEND prominently at the beginning of your response:
-   - 🟡 Minor: Deviates from quality standards
-   - 🟠 Major: Reduces usability or causes failure
-   - 🔴 Critical: Highest priority, causes failure
-   - 💡 Severity from Production Metrics
+2. Display the SEVERITY LEGEND prominently at the beginning of your response.
 
-${runtimeHeader}\
+${runtimeHeader}
 **SEVERITY LEGEND**
 - 🟡 Minor: Deviates from quality standards
 - 🟠 Major: Reduces usability or causes failure
