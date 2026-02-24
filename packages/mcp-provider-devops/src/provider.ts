@@ -8,6 +8,8 @@ import { CheckCommitStatus } from "./tools/checkCommitStatus.js";
 import { CreatePullRequest } from "./tools/createPullRequest.js";
 import { SfDevopsCheckoutWorkItem } from "./tools/sfDevopsCheckoutWorkItem.js";
 import { SfDevopsCommitWorkItem } from "./tools/sfDevopsCommitWorkItem.js";
+import { SfDevopsUpdateWorkItemStatus } from "./tools/sfDevopsUpdateWorkItemStatus.js";
+import { SfDevopsCreateWorkItem } from "./tools/sfDevopsCreateWorkItem.js";
 
 /**
  * DevOps MCPProvider for DevOps tools and operations
@@ -22,12 +24,14 @@ export class DevOpsMcpProvider extends McpProvider {
     return Promise.resolve([
       new SfDevopsListProjects(services),
       new SfDevopsListWorkItems(services),
+      new SfDevopsCreateWorkItem(services),
       new SfDevopsPromoteWorkItem(services),
       new SfDevopsDetectConflict(telemetryService),
       new SfDevopsResolveConflict(telemetryService),
 
       new SfDevopsCheckoutWorkItem(services),
       new SfDevopsCommitWorkItem(services),
+      new SfDevopsUpdateWorkItemStatus(services),
 
       new CheckCommitStatus(telemetryService),
       new CreatePullRequest(telemetryService),
