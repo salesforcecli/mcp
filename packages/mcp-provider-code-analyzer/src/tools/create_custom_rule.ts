@@ -81,10 +81,7 @@ export class CreateCustomRuleMcpTool extends McpTool<InputArgsShape, OutputArgsS
       title: "Create Custom Rule",
       description: DESCRIPTION,
       inputSchema: inputSchema.shape,
-      outputSchema: outputSchema.shape,
-      annotations: {
-        readOnlyHint: true
-      }
+      outputSchema: outputSchema.shape
     };
   }
 
