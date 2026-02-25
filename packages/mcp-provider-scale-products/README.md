@@ -84,6 +84,16 @@ To unlock **runtime-aware severity** powered by ApexGuru, the tool needs access 
 
 When runtime metrics are available (org connected + ApexGuru enabled), severity is calculated from actual production execution data rather than static heuristics.
 
+## Best Practices
+
+If your MCP client isn't calling the Scale tools you expect, try these tips:
+
+1. **Scope tool execution.** Use the `--toolsets scale-products` argument in your MCP config files to improve tool resolution. Too many registered tools make it difficult for your MCP host to resolve the correct one. Disable any tools you don't actively use.
+
+2. **Reference tools explicitly.** Reference the tool by name in your prompt so the LLM knows exactly which tool to invoke. For example:
+
+   > *Scan MyClass.cls for performance antipatterns using the `scan_apex_class_for_antipatterns` MCP tool.*
+
 ## Development
 
 Ensure you are in the monorepo root or the package directory.
