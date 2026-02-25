@@ -3022,7 +3022,7 @@
     ts-retry-promise "^0.8.1"
     zod "^4.1.12"
 
-"@salesforce/core@^8.26.0":
+"@salesforce/core@^8.26.2":
   version "8.26.2"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.26.2.tgz#1b82f7bc8e8598ba1ed8779759a5188b74841445"
   integrity sha512-P1otybl1d+sXg5FORl3PD82TzaOOP5aH1j0UVkpGf1p4BLw6VD0mJekS4mDc0pz6UKK2iIt0CFxXAEMKa/YtBA==
@@ -3202,10 +3202,10 @@
     "@salesforce/ts-types" "^2.0.11"
     fast-xml-parser "^5.3.4"
 
-"@salesforce/o11y-reporter@1.7.4":
-  version "1.7.4"
-  resolved "https://registry.yarnpkg.com/@salesforce/o11y-reporter/-/o11y-reporter-1.7.4.tgz#79f3e245edca813cce16045246b1f7d90a98c3a2"
-  integrity sha512-Shi5GYEpWtR/oyncMZ7Z5GiY8bDn10u4NEJEfXV+gac7p7193Au9zUp2mbTzRJgrsT3FDfQeSuB9eTBH0NxV3w==
+"@salesforce/o11y-reporter@1.8.1":
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/o11y-reporter/-/o11y-reporter-1.8.1.tgz#19470752359a1931f207ecea98511451cfa626d7"
+  integrity sha512-zXfFWoNBxkBDPq96X7wJuO2E6T+VsY9sWVfqVnqA2bMrw4ix8hWkXa6IdEytXMCe8mMsaXwGD4Iua0WNzrYhWA==
   dependencies:
     o11y "^258.7.0"
     o11y_schema "256.154.0"
@@ -3305,17 +3305,17 @@
     got "^11"
     proxy-agent "^6.3.1"
 
-"@salesforce/telemetry@^6.6.4":
-  version "6.6.4"
-  resolved "https://registry.yarnpkg.com/@salesforce/telemetry/-/telemetry-6.6.4.tgz#e311c23d8e8db369d9596ea071183af90aea0b5d"
-  integrity sha512-1KETxbGXmTbRVQZy4V8F6y+gusIKJ/1MaRhbh+bFMYlOOVZapda1p2N+TbHL/Z2socwkqRkfArQzHjbRMY9Gsg==
+"@salesforce/telemetry@^6.7.0":
+  version "6.7.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/telemetry/-/telemetry-6.7.0.tgz#1485c08ff90ff1d77e875e0f33ab1f1f5bd59176"
+  integrity sha512-kXORutBjNGzahq98qjDFaxW7kKRlb0ErcxjQhY/2yvuXmmv3zdtT1NTljVAQHfHl3Y7TDREDNbTFT+ZEFBk8sw==
   dependencies:
-    "@salesforce/core" "^8.26.0"
+    "@salesforce/core" "^8.26.2"
     "@salesforce/kit" "^3.2.4"
-    "@salesforce/o11y-reporter" "1.7.4"
+    "@salesforce/o11y-reporter" "1.8.1"
     applicationinsights "^2.9.8"
     got "^11"
-    o11y_schema "^260.44.0"
+    o11y_schema "^260.46.0"
     proxy-agent "^6.5.0"
 
 "@salesforce/ts-types@^2", "@salesforce/ts-types@^2.0.11", "@salesforce/ts-types@^2.0.12", "@salesforce/ts-types@^2.0.9":
@@ -9115,10 +9115,10 @@ o11y_schema@256.154.0:
   resolved "https://registry.yarnpkg.com/o11y_schema/-/o11y_schema-256.154.0.tgz#1f2f94f1e42d07e62a3e18e09b026345b057dc0c"
   integrity sha512-czvU/9cibyZptbr0gLJSM70U7zLlhWC2D2L5e9nOG84Wnqmn4F5YzVjrH1ZQzAzDbBbtbeU6WTS3F/SHqtMQ5g==
 
-o11y_schema@^260.44.0:
-  version "260.44.0"
-  resolved "https://registry.yarnpkg.com/o11y_schema/-/o11y_schema-260.44.0.tgz#f44612ae5587efc5c8c58662a2ff549bdf9bfeb9"
-  integrity sha512-JedjLmiTwPyHy/O7jPgQG/WXr4L9Mc717YN7TjsTZ3NAFynrnhV7ecjYvumXNK2IKN2KwcYn/Xqa1nYAHMjeWQ==
+o11y_schema@^260.46.0:
+  version "260.46.0"
+  resolved "https://registry.yarnpkg.com/o11y_schema/-/o11y_schema-260.46.0.tgz#e8cbbc8bdd02c719b9ba8cf6ab553e5cfd8bcf02"
+  integrity sha512-bTj57h7Pgww07IzdlPeIz2Ee5Zaf4VxcKa3hBxJkOetNTIFsXO2QyL1ZCB5xLhDguSqQIAvwt/A9IpuWndOZoQ==
 
 object-assign@^4:
   version "4.1.1"
