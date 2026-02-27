@@ -1,0 +1,33 @@
+on:
+  workflow_call:
+    inputs:
+      os:
+        required: false
+        description: "runs-on property, ex: ubuntu-latest, windows-latest"
+        type: string
+        default: "ubuntu-latest"
+
+jobs:
+  eval:
+    name: 'yarn:eval'
+    runs-on: ${{ input.os }}
+    steps:
+      - name: Configure git longpaths if on Windows
+        if: ${{ runner.os == 'Windows' }}
+        run: git config --system core.longpaths true
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: yarn
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - run: yarn
+      - run: yarn build
+      - name: Eval-based E2E tests
+        shell: bash
+        run: |
+          cd packages/mcp
+          yarn:eval
