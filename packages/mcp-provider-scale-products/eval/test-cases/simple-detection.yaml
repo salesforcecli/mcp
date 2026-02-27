@@ -1,0 +1,176 @@
+# Simple detection test cases
+# Single antipattern or no antipatterns
+# Prompts are intentionally vague/realistic — devs rarely hand-feed every param
+
+- id: "simple-ggd-001"
+  description: "Single GGD call - terse scan request with just the file path"
+  fixture: "simple/single-ggd.cls"
+  className: "SingleGGDClass"
+  prompt: "Scan {apexFilePath}"
+  expectedResults:
+    antipatternCount: 1
+    antipatterns:
+      - type: "GGD"
+        count: 1
+        severity: "critical"
+    falsePositiveTypes: []
+    noAntipatterns: false
+  scoring:
+    factualAccuracy:
+      weight: 0.30
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.30
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 3
+    responseQuality:
+      weight: 0.15
+
+- id: "simple-soql-no-where-001"
+  description: "Single SOQL without WHERE/LIMIT - casual 'check for issues' phrasing"
+  fixture: "simple/single-soql-no-where.cls"
+  className: "SingleSOQLNoWhereClass"
+  prompt: "Check {apexFilePath} for issues"
+  expectedResults:
+    antipatternCount: 1
+    antipatterns:
+      - type: "SOQL_NO_WHERE_LIMIT"
+        count: 1
+        severity: "major"
+    falsePositiveTypes: []
+    noAntipatterns: false
+  scoring:
+    factualAccuracy:
+      weight: 0.30
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.30
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 3
+    responseQuality:
+      weight: 0.15
+
+- id: "simple-clean-001"
+  description: "Clean class - generic 'anything wrong' question"
+  fixture: "simple/clean-class.cls"
+  className: "CleanClass"
+  prompt: "Is there anything wrong with {apexFilePath}?"
+  expectedResults:
+    antipatternCount: 0
+    antipatterns: []
+    falsePositiveTypes:
+      - "GGD"
+      - "SOQL_NO_WHERE_LIMIT"
+      - "SOQL_UNUSED_FIELDS"
+    noAntipatterns: true
+  scoring:
+    factualAccuracy:
+      weight: 0.30
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.30
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 3
+    responseQuality:
+      weight: 0.15
+
+- id: "simple-ggd-in-loop-001"
+  description: "GGD in loop - mentions slowness but doesn't name the tool"
+  fixture: "simple/ggd-in-loop.cls"
+  className: "GGDInLoopClass"
+  prompt: "This class is really slow in production. Can you take a look? {apexFilePath}"
+  expectedResults:
+    antipatternCount: 1
+    antipatterns:
+      - type: "GGD"
+        count: 1
+        severity: "critical"
+    falsePositiveTypes: []
+    noAntipatterns: false
+  scoring:
+    factualAccuracy:
+      weight: 0.25
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.35
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 4
+    responseQuality:
+      weight: 0.15
+
+- id: "simple-soql-no-where-in-loop-001"
+  description: "SOQL without WHERE/LIMIT in loop - mentions governor limits concern"
+  fixture: "simple/soql-no-where-in-loop.cls"
+  className: "SOQLNoWhereInLoopClass"
+  prompt: "We're hitting governor limits with SOQLNoWhereInLoopClass. Scan it. {apexFilePath}"
+  expectedResults:
+    antipatternCount: 1
+    antipatterns:
+      - type: "SOQL_NO_WHERE_LIMIT"
+        count: 1
+        severity: "critical"
+    falsePositiveTypes: []
+    noAntipatterns: false
+  scoring:
+    factualAccuracy:
+      weight: 0.30
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.30
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 3
+    responseQuality:
+      weight: 0.15
+
+- id: "simple-where-no-limit-clean-001"
+  description: "SOQL with WHERE but no LIMIT - dev asks about SOQL specifically"
+  fixture: "simple/soql-with-where-no-limit.cls"
+  className: "SOQLWithWhereNoLimitClass"
+  prompt: "Are the SOQL queries in {apexFilePath} okay?"
+  expectedResults:
+    antipatternCount: 0
+    antipatterns: []
+    falsePositiveTypes:
+      - "SOQL_NO_WHERE_LIMIT"
+    noAntipatterns: true
+  scoring:
+    factualAccuracy:
+      weight: 0.30
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.30
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 3
+    responseQuality:
+      weight: 0.15
+
+- id: "simple-ggd-only-classname-001"
+  description: "Only gives class name and file path, no mention of scanning or directory"
+  fixture: "simple/single-ggd.cls"
+  className: "SingleGGDClass"
+  prompt: "Review SingleGGDClass for perf problems. File is at {apexFilePath}"
+  expectedResults:
+    antipatternCount: 1
+    antipatterns:
+      - type: "GGD"
+        count: 1
+        severity: "critical"
+    falsePositiveTypes: []
+    noAntipatterns: false
+  scoring:
+    factualAccuracy:
+      weight: 0.25
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.35
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 4
+    responseQuality:
+      weight: 0.15

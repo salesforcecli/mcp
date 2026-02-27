@@ -1,0 +1,15 @@
+{
+  "name": "@salesforce/mcp-eval-framework",
+  "description": "Generic MCP agent evaluation framework — use with any MCP provider",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "dependencies": {
+    "chalk": "^5.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.16.5",
+    "typescript": "^5.9.2"
+  }
+}

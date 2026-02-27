@@ -1,0 +1,160 @@
+# Edge case test cases
+# Antipatterns in comments, empty classes, tricky prompts
+# Tests the hardest scenarios: false positives, very vague prompts, no technical jargon
+
+- id: "edge-comments-only-001"
+  description: "Antipatterns in comments only - dev asks to 'review' the file"
+  fixture: "edge-cases/comments-only.cls"
+  className: "CommentsOnlyClass"
+  prompt: "Review {apexFilePath} for me"
+  expectedResults:
+    antipatternCount: 0
+    antipatterns: []
+    falsePositiveTypes:
+      - "GGD"
+      - "SOQL_NO_WHERE_LIMIT"
+      - "SOQL_UNUSED_FIELDS"
+    noAntipatterns: true
+  scoring:
+    factualAccuracy:
+      weight: 0.30
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.30
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 4
+    responseQuality:
+      weight: 0.15
+
+- id: "edge-string-literals-001"
+  description: "Antipattern keywords in string literals - should be clean"
+  fixture: "edge-cases/string-literals.cls"
+  className: "StringLiteralsClass"
+  prompt: "Anything concerning in {apexFilePath}?"
+  expectedResults:
+    antipatternCount: 0
+    antipatterns: []
+    falsePositiveTypes:
+      - "GGD"
+      - "SOQL_NO_WHERE_LIMIT"
+    noAntipatterns: true
+  scoring:
+    factualAccuracy:
+      weight: 0.30
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.30
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 4
+    responseQuality:
+      weight: 0.15
+
+- id: "edge-indirect-governor-limits-001"
+  description: "Dev mentions governor limits but doesn't say scan or antipattern"
+  fixture: "medium/mixed-two-types.cls"
+  className: "MixedTwoTypesClass"
+  prompt: >-
+    I'm worried about governor limits. Can you look at {apexFilePath} and tell me
+    if there's anything that could cause problems at scale?
+  expectedResults:
+    antipatternCount: 2
+    antipatterns:
+      - type: "GGD"
+        count: 1
+        severity: "critical"
+      - type: "SOQL_NO_WHERE_LIMIT"
+        count: 1
+        severity: "major"
+    falsePositiveTypes: []
+    noAntipatterns: false
+  scoring:
+    factualAccuracy:
+      weight: 0.25
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.35
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 4
+    responseQuality:
+      weight: 0.15
+
+- id: "edge-clean-best-practices-001"
+  description: "Clean class - dev asks vaguely about best practices"
+  fixture: "simple/clean-class.cls"
+  className: "CleanClass"
+  prompt: "Does {apexFilePath} follow best practices?"
+  expectedResults:
+    antipatternCount: 0
+    antipatterns: []
+    falsePositiveTypes:
+      - "GGD"
+      - "SOQL_NO_WHERE_LIMIT"
+      - "SOQL_UNUSED_FIELDS"
+    noAntipatterns: true
+  scoring:
+    factualAccuracy:
+      weight: 0.25
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.35
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 4
+    responseQuality:
+      weight: 0.15
+
+- id: "edge-no-technical-jargon-001"
+  description: "Dev uses zero technical jargon - just says 'this class is broken'"
+  fixture: "medium/mixed-two-types.cls"
+  className: "MixedTwoTypesClass"
+  prompt: "Something's wrong with this class, can you figure out what? {apexFilePath}"
+  expectedResults:
+    antipatternCount: 2
+    antipatterns:
+      - type: "GGD"
+        count: 1
+        severity: "critical"
+      - type: "SOQL_NO_WHERE_LIMIT"
+        count: 1
+        severity: "major"
+    falsePositiveTypes: []
+    noAntipatterns: false
+  scoring:
+    factualAccuracy:
+      weight: 0.20
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.40
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 5
+    responseQuality:
+      weight: 0.15
+
+- id: "edge-just-filepath-001"
+  description: "Dev sends nothing but a file path - maximum vagueness"
+  fixture: "simple/single-ggd.cls"
+  className: "SingleGGDClass"
+  prompt: "{apexFilePath}"
+  expectedResults:
+    antipatternCount: 1
+    antipatterns:
+      - type: "GGD"
+        count: 1
+        severity: "critical"
+    falsePositiveTypes: []
+    noAntipatterns: false
+  scoring:
+    factualAccuracy:
+      weight: 0.20
+    completeness:
+      weight: 0.20
+    toolEfficiency:
+      weight: 0.45
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 5
+    responseQuality:
+      weight: 0.15

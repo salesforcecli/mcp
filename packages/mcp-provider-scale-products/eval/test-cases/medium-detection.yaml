@@ -1,0 +1,108 @@
+# Medium complexity detection test cases
+# Multiple instances or mixed types
+# Prompts mimic real dev behavior — abbreviations, partial info, varied phrasing
+
+- id: "medium-unused-fields-001"
+  description: "SOQL unused fields - dev asks about query efficiency"
+  fixture: "medium/soql-unused-fields.cls"
+  className: "SOQLUnusedFieldsClass"
+  prompt: "Are we querying too many fields in {apexFilePath}? Feels wasteful."
+  expectedResults:
+    antipatternCount: 1
+    antipatterns:
+      - type: "SOQL_UNUSED_FIELDS"
+        count: 1
+        severity: "minor"
+    falsePositiveTypes: []
+    noAntipatterns: false
+  scoring:
+    factualAccuracy:
+      weight: 0.25
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.35
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 4
+    responseQuality:
+      weight: 0.15
+
+- id: "medium-multiple-ggd-001"
+  description: "Three GGD calls - dev just says 'optimize this'"
+  fixture: "medium/multiple-ggd.cls"
+  className: "MultipleGGDClass"
+  prompt: "Optimize {apexFilePath}"
+  expectedResults:
+    antipatternCount: 3
+    antipatterns:
+      - type: "GGD"
+        count: 3
+        severity: "critical"
+    falsePositiveTypes: []
+    noAntipatterns: false
+  scoring:
+    factualAccuracy:
+      weight: 0.25
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.35
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 4
+    responseQuality:
+      weight: 0.15
+
+- id: "medium-multiple-soql-no-where-001"
+  description: "Three SOQL without WHERE/LIMIT - dev gives context about prod issue"
+  fixture: "medium/multiple-soql-no-where.cls"
+  className: "MultipleSOQLNoWhereClass"
+  prompt: >-
+    We're getting SOQL row limit errors in prod from MultipleSOQLNoWhereClass.
+    Can you check why? {apexFilePath}
+  expectedResults:
+    antipatternCount: 3
+    antipatterns:
+      - type: "SOQL_NO_WHERE_LIMIT"
+        count: 3
+        severity: "major"
+    falsePositiveTypes: []
+    noAntipatterns: false
+  scoring:
+    factualAccuracy:
+      weight: 0.25
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.35
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 4
+    responseQuality:
+      weight: 0.15
+
+- id: "medium-mixed-two-001"
+  description: "Two antipattern types - dev asks for code review"
+  fixture: "medium/mixed-two-types.cls"
+  className: "MixedTwoTypesClass"
+  prompt: "Code review {apexFilePath} — anything that could blow up at scale?"
+  expectedResults:
+    antipatternCount: 2
+    antipatterns:
+      - type: "GGD"
+        count: 1
+        severity: "critical"
+      - type: "SOQL_NO_WHERE_LIMIT"
+        count: 1
+        severity: "major"
+    falsePositiveTypes: []
+    noAntipatterns: false
+  scoring:
+    factualAccuracy:
+      weight: 0.25
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.35
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 4
+    responseQuality:
+      weight: 0.15

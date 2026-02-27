@@ -1,0 +1,131 @@
+# Complex detection test cases
+# All three antipattern types in one class
+# Prompts range from terse to conversational — none spell out every parameter
+
+- id: "complex-all-three-001"
+  description: "All three antipatterns - terse 'scan this' with just the path"
+  fixture: "complex/all-three-antipatterns.cls"
+  className: "AllThreeAntipatterns"
+  prompt: "Scan {apexFilePath} for bad practices. Use scan_apex_class_for_antipatterns tool."
+  expectedResults:
+    antipatternCount: 3
+    antipatterns:
+      - type: "GGD"
+        count: 1
+        severity: "critical"
+      - type: "SOQL_NO_WHERE_LIMIT"
+        count: 1
+        severity: "major"
+      - type: "SOQL_UNUSED_FIELDS"
+        count: 1
+        severity: "minor"
+    falsePositiveTypes: []
+    noAntipatterns: false
+  scoring:
+    factualAccuracy:
+      weight: 0.25
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.35
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 4
+    responseQuality:
+      weight: 0.15
+
+- id: "complex-large-class-001"
+  description: "Large class with many issues - dev describes perf regression context"
+  fixture: "complex/large-class-many-issues.cls"
+  className: "LargeClassManyIssues"
+  prompt: >-
+    Our deploy started timing out after we added LargeClassManyIssues.
+    What's wrong with it? {apexFilePath}
+  expectedResults:
+    antipatternCount: 5
+    antipatterns:
+      - type: "GGD"
+        count: 2
+        severity: "critical"
+      - type: "SOQL_NO_WHERE_LIMIT"
+        count: 2
+        severity: "major"
+      - type: "SOQL_UNUSED_FIELDS"
+        count: 1
+        severity: "minor"
+    falsePositiveTypes: []
+    noAntipatterns: false
+  scoring:
+    factualAccuracy:
+      weight: 0.25
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.35
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 4
+    responseQuality:
+      weight: 0.15
+
+- id: "complex-all-three-conversational-001"
+  description: "All three antipatterns - casual conversational tone, partial context"
+  fixture: "complex/all-three-antipatterns.cls"
+  className: "AllThreeAntipatterns"
+  prompt: >-
+    hey can you look at AllThreeAntipatterns for me? it's at {apexFilePath}.
+    we're seeing some perf issues in prod and I want to know what's going on
+  expectedResults:
+    antipatternCount: 3
+    antipatterns:
+      - type: "GGD"
+        count: 1
+        severity: "critical"
+      - type: "SOQL_NO_WHERE_LIMIT"
+        count: 1
+        severity: "major"
+      - type: "SOQL_UNUSED_FIELDS"
+        count: 1
+        severity: "minor"
+    falsePositiveTypes: []
+    noAntipatterns: false
+  scoring:
+    factualAccuracy:
+      weight: 0.25
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.35
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 4
+    responseQuality:
+      weight: 0.15
+
+- id: "complex-large-class-fix-request-001"
+  description: "Large class - dev asks to find AND fix issues (multi-intent)"
+  fixture: "complex/large-class-many-issues.cls"
+  className: "LargeClassManyIssues"
+  prompt: "Find and fix all the performance issues in {apexFilePath}"
+  expectedResults:
+    antipatternCount: 5
+    antipatterns:
+      - type: "GGD"
+        count: 2
+        severity: "critical"
+      - type: "SOQL_NO_WHERE_LIMIT"
+        count: 2
+        severity: "major"
+      - type: "SOQL_UNUSED_FIELDS"
+        count: 1
+        severity: "minor"
+    falsePositiveTypes: []
+    noAntipatterns: false
+  scoring:
+    factualAccuracy:
+      weight: 0.25
+    completeness:
+      weight: 0.25
+    toolEfficiency:
+      weight: 0.35
+      expectedToolName: "scan_apex_class_for_antipatterns"
+      maxToolCalls: 5
+    responseQuality:
+      weight: 0.15
