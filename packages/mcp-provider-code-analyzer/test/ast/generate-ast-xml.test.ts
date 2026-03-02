@@ -2,16 +2,23 @@ import { describe, expect, it, vi } from "vitest";
 
 const generateAstXmlMock = vi.fn();
 
-vi.mock("../../src/ast/pmd-cli-adapter.js", () => ({
-  PmdCliAstXmlAdapter: class {
+vi.mock("../../src/ast/pmd-engine-adapter.js", () => ({
+  PmdEngineAstXmlAdapter: class {
+    constructor(_pmdEngine: any) {}
     public generateAstXml(code: string, language: string): Promise<string> {
       return generateAstXmlMock(code, language);
     }
   }
 }));
 
+vi.mock("@salesforce/code-analyzer-pmd-engine", () => ({
+  PmdEngine: class {
+    constructor(_config: any) {}
+  }
+}));
+
 describe("generateAstXmlFromSource", () => {
-  it("delegates to the PMD CLI adapter", async () => {
+  it("delegates to the PMD Engine adapter", async () => {
     generateAstXmlMock.mockResolvedValueOnce("<xml/>");
     const { generateAstXmlFromSource } = await import("../../src/ast/generate-ast-xml.js");
 
