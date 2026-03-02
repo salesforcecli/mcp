@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/mcp-provider-scale-products",
   "description": "(For Internal Use Only) MCP Provider for Salesforce Scale Products - Apex antipattern detection and recommendations",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Salesforce",
   "license": "Apache-2.0",
   "type": "module",
