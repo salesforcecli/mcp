@@ -8,6 +8,115 @@ This npm package is currently for internal use only. Its contents may change at 
 
 This package provides MCP tools for the Salesforce Scale Products suite — [ApexGuru](https://help.salesforce.com/s/articleView?id=xcloud.apexguru_overview.htm&type=5), [Scale Test](https://www.salesforce.com/in/platform/application-scaling-performance-testing/) and [Scale Center](https://help.salesforce.com/s/articleView?id=xcloud.scale_center_overview.htm&type=5). The tools help developers and architects identify performance bottlenecks, optimize Apex code, and ensure applications scale reliably under peak loads.
 
+## How to Use This Toolset
+
+### Agentforce Vibes
+
+```json
+{
+    "servers": {
+        "salesforce-mcp": {
+            "type": "stdio",
+            "command": "npx",
+            "args": [
+                "@salesforce/mcp@latest",
+                "--toolsets",
+                "scale-products",
+                "--orgs",
+                "DEFAULT_TARGET_ORG"
+            ]
+        }
+    },
+    "inputs": []
+}
+```
+
+### VSCode
+
+```json
+{
+    "servers": {
+        "salesforce-mcp": {
+            "type": "stdio",
+            "command": "npx",
+            "args": [
+                "@salesforce/mcp@latest",
+                "--toolsets",
+                "scale-products",
+                "--orgs",
+                "DEFAULT_TARGET_ORG"
+            ]
+        }
+    },
+    "inputs": []
+}
+```
+
+### Cline
+
+```json
+{
+  "mcpServers": {
+    "Salesforce MCP": {
+      "command": "npx",
+      "args": [
+        "@salesforce/mcp@latest",
+        "--toolsets",
+        "scale-products",
+        "--orgs",
+        "DEFAULT_TARGET_ORG"
+      ]
+    }
+  }
+}
+```
+
+### Claude Code
+
+**1. User Scope (Global)**
+
+Recommended. This makes the Salesforce tools available across all your projects. It saves the configuration to your global `~/.claude.json` file.
+
+```bash
+claude mcp add --scope user salesforce npx -- @salesforce/mcp@latest --toolsets scale-products --orgs DEFAULT_TARGET_ORG
+```
+
+**2. Project Scope (Shared)**
+
+Use this if you want the configuration to be checked into Git so that other team members can use the same server. It creates or updates a `.mcp.json` file in your current directory.
+
+```bash
+claude mcp add --scope project salesforce npx -- @salesforce/mcp@latest --toolsets scale-products --orgs DEFAULT_TARGET_ORG
+```
+
+> **Note:** Claude Code will prompt you for approval when you first enter a project folder containing a project-scoped server.
+
+**3. Local Scope (Current Setup Only)**
+
+This is the default scope if you don't provide a flag. It is similar to project scope but is typically used for personal experimental configurations that you don't necessarily want to share with the whole team via version control.
+
+```bash
+claude mcp add --scope local salesforce npx -- @salesforce/mcp@latest --toolsets scale-products --orgs DEFAULT_TARGET_ORG
+```
+
+### Cursor
+
+```json
+{
+  "mcpServers": {
+    "Salesforce DX": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@salesforce/mcp@latest",
+        "--orgs", "DEFAULT_TARGET_ORG",
+        "--toolsets", "scale-products"
+      ]
+    }
+  }
+}
+```
+
 
 ## Tools
 
@@ -93,6 +202,7 @@ If your MCP client isn't calling the Scale tools you expect, try these tips:
 2. **Reference tools explicitly.** Reference the tool by name in your prompt so the LLM knows exactly which tool to invoke. For example:
 
    > *Scan MyClass.cls for performance antipatterns using the `scan_apex_class_for_antipatterns` MCP tool.*
+
 
 ## Development
 
