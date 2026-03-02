@@ -17,14 +17,6 @@ export interface UpdateWorkItemStatusResult {
   error?: string;
 }
 
-/** Minimal request interface for Connection.request() (auth/URL handled by Connection). */
-type ConnectionRequest = (options: {
-  method: string;
-  url: string;
-  body?: string;
-  headers?: Record<string, string>;
-}) => Promise<unknown>;
-
 const API_VERSION = "v65.0";
 
 /**
@@ -64,7 +56,7 @@ export async function updateWorkItemStatus(
   const body = JSON.stringify({ status: statusApiValue });
 
   try {
-    await (connection as unknown as { request: ConnectionRequest }).request({
+    await connection.request({
       method: "PATCH",
       url: path,
       body,

@@ -1,13 +1,5 @@
 import { type Connection } from '@salesforce/core';
 
-/** Minimal request interface for Connection.request() (auth/URL handled by Connection). */
-type ConnectionRequest = (options: {
-  method: string;
-  url: string;
-  body?: string;
-  headers?: Record<string, string>;
-}) => Promise<unknown>;
-
 const API_VERSION = 'v65.0';
 
 export interface PromoteWorkItemsRequest {
@@ -48,7 +40,7 @@ export async function promoteWorkItems(connection: Connection, request: PromoteW
     };
     const path = `/services/data/${API_VERSION}/connect/devops/pipelines/${pipelineId}/promote`;
     try {
-        const response = await (connection as unknown as { request: ConnectionRequest }).request({
+        const response = await connection.request({
             method: 'POST',
             url: path,
             body: JSON.stringify(body),

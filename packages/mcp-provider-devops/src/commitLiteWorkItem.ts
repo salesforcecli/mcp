@@ -7,14 +7,6 @@ import * as os from 'os';
 import { RegistryAccess } from '@salesforce/source-deploy-retrieve';
 import { convertToSourceComponents } from './shared/sfdxService.js';
 
-/** Minimal request interface for Connection.request() (auth/URL handled by Connection). */
-type ConnectionRequest = (options: {
-  method: string;
-  url: string;
-  body?: string;
-  headers?: Record<string, string>;
-}) => Promise<unknown>;
-
 const API_VERSION = 'v65.0';
 
 interface Change {
@@ -55,7 +47,7 @@ export async function commitWorkItem({
     };
 
     try {
-        await (connection as unknown as { request: ConnectionRequest }).request({
+        await connection.request({
             method: 'POST',
             url: pathUrl,
             body: JSON.stringify(requestBody),

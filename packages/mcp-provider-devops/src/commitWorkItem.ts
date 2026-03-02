@@ -3,14 +3,6 @@ import { execFileSync } from 'child_process';
 import { normalizeAndValidateRepoPath } from './shared/pathUtils.js';
 import path from 'path';
 
-/** Minimal request interface for Connection.request() (auth/URL handled by Connection). */
-type ConnectionRequest = (options: {
-  method: string;
-  url: string;
-  body?: string;
-  headers?: Record<string, string>;
-}) => Promise<unknown>;
-
 const API_VERSION = 'v65.0';
 
 interface Change {
@@ -157,7 +149,7 @@ export async function commitWorkItem({
     };
 
     try {
-        const response = await (devHubConnection as unknown as { request: ConnectionRequest }).request({
+        const response = await devHubConnection.request({
             method: 'POST',
             url: pathUrl,
             body: JSON.stringify(requestBody),

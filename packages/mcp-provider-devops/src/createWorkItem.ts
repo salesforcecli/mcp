@@ -2,14 +2,6 @@ import { type Connection } from "@salesforce/core";
 
 const API_VERSION = "v65.0";
 
-/** Minimal request interface for Connection.request() (auth/URL handled by Connection). */
-type ConnectionRequest = (options: {
-  method: string;
-  url: string;
-  body?: string;
-  headers?: Record<string, string>;
-}) => Promise<unknown>;
-
 export interface CreateWorkItemParams {
   connection: Connection;
   projectId: string;
@@ -38,7 +30,7 @@ export async function createWorkItem(params: CreateWorkItemParams): Promise<Crea
   const body = JSON.stringify({ subject, description: description ?? "" });
 
   try {
-    const response = await (connection as unknown as { request: ConnectionRequest }).request({
+    const response = await connection.request({
       method: "POST",
       url: path,
       body,

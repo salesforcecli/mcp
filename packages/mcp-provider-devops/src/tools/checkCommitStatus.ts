@@ -2,9 +2,10 @@ import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
 import { fetchCommitStatus } from "../getCommitStatus.js";
+import { usernameOrAliasParam } from "../shared/params.js";
 
 const inputSchema = z.object({
-  username: z.string().describe("Username of the DevOps Center org"),
+  usernameOrAlias: usernameOrAliasParam,
   requestId: z.string().describe("Request ID from the commit operation to check status for")
 });
 type InputArgs = z.infer<typeof inputSchema>;
@@ -39,7 +40,7 @@ export class CheckCommitStatus extends McpTool<InputArgsShape, OutputArgsShape> 
         - Ensure commits are ready for PR creation
 
         **Input Parameters:**
-        - username: The username of the DevOps Center org to authenticate with
+        - usernameOrAlias: The username or alias of the DevOps Center org to authenticate with
         - requestId: The specific request Id to check status for (REQUIRED)
 
         **Output:**
@@ -52,7 +53,7 @@ export class CheckCommitStatus extends McpTool<InputArgsShape, OutputArgsShape> 
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
     try {
-      const connection = await this.services.getOrgService().getConnection(input.username);
+      const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
       const status = await fetchCommitStatus(connection, input.requestId);
       return {
         content: [{

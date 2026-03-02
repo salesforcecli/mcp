@@ -6,10 +6,10 @@ import { fetchWorkItemByName } from "../getWorkItems.js";
 import { fetchWorkItemByNameMP } from "../getWorkItemsMP.js";
 import { isManagedPackageDevopsOrg } from "../shared/orgType.js";
 import { normalizeAndValidateRepoPath } from "../shared/pathUtils.js";
+import { usernameOrAliasParam } from "../shared/params.js";
 
 const inputSchema = z.object({
-  username: z.string().optional().describe("Username of the DevOps Center org"),
-  alias: z.string().optional().describe("alias of the DevOps Center org"),
+  usernameOrAlias: usernameOrAliasParam.optional(),
   workItemName: z.string().optional().describe("Exact Work Item Name"),
   sourcebranch: z.string().optional().describe("Source branch of the Work Item"),
   localPath: z.string().describe("Local path to the repository (defaults to current working directory)")
@@ -49,7 +49,7 @@ export class SfDevopsDetectConflict extends McpTool<InputArgsShape, OutputArgsSh
 
       **MANDATORY input:**
       - Either workitem name (example WI-0000000X) or source branch (example WI-0000000X) is provided.
-      - Either username (example devops-center-org) or alias (example devops-center-org) is provided.
+      - usernameOrAlias: DevOps Center org username or alias (example devops-center-org).
 
       **Behavior:**
       - The tool will look up the Work Item by Name in the DevOps Center org and compute target branch automatically.
@@ -73,7 +73,7 @@ export class SfDevopsDetectConflict extends McpTool<InputArgsShape, OutputArgsSh
   }
 
   private async validateAndPrepare(input: InputArgs): Promise<{ workItem: any; localPath: string } | { error: CallToolResult }> {
-    if (!input.username && !input.alias) {
+    if (!input.usernameOrAlias || input.usernameOrAlias.trim().length === 0) {
       return {
         error: {
           content: [{ type: "text", text: `Error: Username or alias of valid DevOps Center org is required` }],
@@ -93,20 +93,11 @@ export class SfDevopsDetectConflict extends McpTool<InputArgsShape, OutputArgsSh
 
     let workItem: any;
     try {
-      const isMP = await isManagedPackageDevopsOrg(input.username, input.alias);
+      const isMP = await isManagedPackageDevopsOrg(input.usernameOrAlias);
       const effectiveWorkItemName = input.workItemName || input.sourcebranch;
-      const usernameOrAlias = input.username ?? input.alias;
-      if (!usernameOrAlias) {
-        return {
-          error: {
-            content: [{ type: "text", text: `Error: Username or alias of valid DevOps Center org is required` }],
-            isError: true
-          }
-        };
-      }
       workItem = isMP
-        ? await fetchWorkItemByNameMP(usernameOrAlias, effectiveWorkItemName as string)
-        : await fetchWorkItemByName(usernameOrAlias, effectiveWorkItemName as string);
+        ? await fetchWorkItemByNameMP(input.usernameOrAlias, effectiveWorkItemName as string)
+        : await fetchWorkItemByName(input.usernameOrAlias, effectiveWorkItemName as string);
     } catch (e: any) {
       return {
         error: {
@@ -121,7 +112,7 @@ export class SfDevopsDetectConflict extends McpTool<InputArgsShape, OutputArgsSh
         error: {
           content: [{
             type: "text",
-            text: `Error: Work item not found. Please provide a valid work item name or valid DevOps Center org username.`
+            text: `Error: Work item not found. Please provide a valid work item name or valid DevOps Center org username or alias.`
           }]
         }
       };

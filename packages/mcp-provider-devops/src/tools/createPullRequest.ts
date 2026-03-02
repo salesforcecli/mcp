@@ -3,10 +3,11 @@ import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
 import { createPullRequest } from "../createPullRequest.js";
 import { fetchWorkItemByNameWithConnection } from "../getWorkItems.js";
+import { usernameOrAliasParam } from "../shared/params.js";
 
 const inputSchema = z.object({
   workItemName: z.string().min(1).describe("Exact Work Item Name to create pull request."),
-  username: z.string().describe("Username of the DevOps Center org to authenticate with")
+  usernameOrAlias: usernameOrAliasParam,
 });
 type InputArgs = z.infer<typeof inputSchema>;
 type InputArgsShape = typeof inputSchema.shape;
@@ -78,22 +79,22 @@ export class CreatePullRequest extends McpTool<InputArgsShape, OutputArgsShape> 
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
     try {
-      if (!input.username || input.username.trim().length === 0) {
+      if (!input.usernameOrAlias || input.usernameOrAlias.trim().length === 0) {
         return {
           content: [{
             type: "text",
-            text: `Error: Username is required. Please provide a valid DevOps Center org username.`
+            text: `Error: Username or alias is required. Please provide a valid DevOps Center org username or alias.`
           }]
         };
       }
-      const connection = await this.services.getOrgService().getConnection(input.username);
+      const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
       const workItem = await fetchWorkItemByNameWithConnection(connection, input.workItemName);
 
       if (!workItem || !workItem.id) {
         return {
           content: [{
             type: "text",
-            text: `Error: Work item Name is required. Please provide a valid work item Name. Or provide a valid DevOps Center org username.`
+            text: `Error: Work item Name is required. Please provide a valid work item Name. Or provide a valid DevOps Center org username or alias.`
           }]
         };
       }
@@ -105,7 +106,7 @@ export class CreatePullRequest extends McpTool<InputArgsShape, OutputArgsShape> 
           type: "text",
           text: JSON.stringify({
             workItemId: workItem.id,
-            username: input.username,
+            usernameOrAlias: input.usernameOrAlias,
             message: `Pull request created successfully for work item: ${workItem.id}`,
             pullRequestData: result.pullRequestResult
           }, null, 2)
