@@ -88,6 +88,22 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
     };
   }
 
+  /**
+   * Calculates the total character count from tool result content
+   * Used for token usage
+   * @param result - The CallToolResult from tool execution
+   * @returns Total character count across all text content items
+   */
+  private calculateResponseCharCount(result: CallToolResult): number {
+    if (!result.content || !Array.isArray(result.content)) {
+      return 0;
+    }
+
+    return result.content
+      .filter((item): item is { type: 'text'; text: string } => item.type === 'text')
+      .reduce((sum, item) => sum + item.text.length, 0);
+  }
+
   public registerTool<InputArgs extends ZodRawShape, OutputArgs extends ZodRawShape>(
     name: string,
     config: {
@@ -141,6 +157,9 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
       this.logger.debug(`Tool ${name} completed in ${runtimeMs}ms`);
       if (result.isError) this.logger.debug(`Tool ${name} errored`);
 
+      // Calculate response character count for token usage
+      const responseCharCount = this.calculateResponseCharCount(result);
+
       this.telemetry?.sendEvent('TOOL_CALLED', {
         name,
         runtimeMs,
@@ -151,6 +170,7 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
         //
         // https://modelcontextprotocol.io/specification/2025-06-18/schema#calltoolresult
         isError: result.isError ?? false,
+        responseCharCount: responseCharCount.toString(),
       });
 
       return result;
