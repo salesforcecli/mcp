@@ -16,7 +16,6 @@
     "format": "wireit",
     "link-check": "wireit",
     "lint": "wireit",
-    "start": "yarn build && npm link && mcp-inspector sf-mcp-server",
     "test": "wireit",
     "test:only": "wireit"
   },
