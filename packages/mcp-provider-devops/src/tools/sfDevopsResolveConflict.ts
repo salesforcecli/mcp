@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
+import { McpTool, McpToolConfig, ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
 import { resolveConflict } from "../resolveConflict.js";
 import { fetchWorkItemByName } from "../getWorkItems.js";
 import { fetchWorkItemByNameMP } from "../getWorkItemsMP.js";
@@ -18,11 +18,11 @@ type InputArgsShape = typeof inputSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class SfDevopsResolveConflict extends McpTool<InputArgsShape, OutputArgsShape> {
-  private readonly telemetryService: TelemetryService;
+  private readonly services: Services;
 
-  constructor(telemetryService: TelemetryService) {
+  constructor(services: Services) {
     super();
-    this.telemetryService = telemetryService;
+    this.services = services;
   }
 
   public getReleaseState(): ReleaseState {
@@ -69,12 +69,13 @@ export class SfDevopsResolveConflict extends McpTool<InputArgsShape, OutputArgsS
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
-    const isMP = await isManagedPackageDevopsOrg(input.usernameOrAlias);
+    const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
+    const isMP = await isManagedPackageDevopsOrg(connection);
     let workItem: any;
     try {
       workItem = isMP 
-        ? await fetchWorkItemByNameMP(input.usernameOrAlias, input.workItemName)
-        : await fetchWorkItemByName(input.usernameOrAlias, input.workItemName);
+        ? await fetchWorkItemByNameMP(connection, input.workItemName)
+        : await fetchWorkItemByName(connection, input.workItemName);
     } catch (e: any) {
       return {
         content: [{ type: "text", text: `Error fetching work item: ${e?.message || e}` }],

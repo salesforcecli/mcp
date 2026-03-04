@@ -83,7 +83,8 @@ export class SfDevopsPromoteWorkItem extends McpTool<InputArgsShape, OutputArgsS
     let items: any[] | any;
     
     try {
-      items = await fetchWorkItemsByNames(input.usernameOrAlias, input.workItemNames);
+      const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
+      items = await fetchWorkItemsByNames(connection, input.workItemNames);
     } catch (e: any) {
       const executionTime = Date.now() - startTime;
       

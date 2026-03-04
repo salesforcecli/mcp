@@ -1,13 +1,11 @@
-import { getConnection } from "./shared/auth.js";
+import type { Connection } from "@salesforce/core";
 import type { WorkItem } from "./types/WorkItem.js";
 import { getPipelineMP } from "./getPipelineMP.js";
 import { fetchPipelineStagesMP } from "./getPipelineStagesMP.js";
 
 
-export async function fetchWorkItemByNameMP(username: string, workItemName: string): Promise<WorkItem | null | any> {
+export async function fetchWorkItemByNameMP(connection: Connection, workItemName: string): Promise<WorkItem | null | any> {
     try {
-        const connection = await getConnection(username);
-
         const item = await queryWorkItemByName(connection, workItemName);
         if (!item) {
             return { error: { message: `Work Item '${workItemName}' not found. Please verify the Work Item Name/Number and try again.` } };
@@ -15,12 +13,12 @@ export async function fetchWorkItemByNameMP(username: string, workItemName: stri
         if (item?.sf_devops__Concluded__c && String(item.sf_devops__Concluded__c).trim().length > 0) {
             return { error: { message: `Work Item '${workItemName}' is concluded. No further actions required.` } };
         }
-        const pipeline = await ensurePipelineForProject(username, item?.sf_devops__Project__c, workItemName);
+        const pipeline = await ensurePipelineForProject(connection, item?.sf_devops__Project__c, workItemName);
         if ((pipeline as any)?.error) {
             return { error: { message: `Pipeline not found for project ${item?.sf_devops__Project__c}. Please verify the Project Name and try again.` } };
         }
 
-        const stages = await ensureStagesForPipeline(username, (pipeline as any).Id, (pipeline as any).Name);
+        const stages = await ensureStagesForPipeline(connection, (pipeline as any).Id, (pipeline as any).Name);
         if ((stages as any)?.error) {
             return { error: { message: `Stages not found for pipeline ${pipeline?.Name}. Please verify the Pipeline Name and try again.` } };
         }
@@ -65,16 +63,16 @@ async function queryWorkItemByName(connection: any, workItemName: string): Promi
     return (result?.records || [])[0] || null;
 }
 
-async function ensurePipelineForProject(username: string, projectId: string, workItemName: string): Promise<any> {
-    const pipeline = await getPipelineMP(username, projectId);
+async function ensurePipelineForProject(connection: Connection, projectId: string, workItemName: string): Promise<any> {
+    const pipeline = await getPipelineMP(connection, projectId);
     if (!pipeline) {
         return { error: { message: `Work item ${workItemName} is not mapped to a pipeline` } };
     }
     return pipeline;
 }
 
-async function ensureStagesForPipeline(username: string, pipelineId: string, pipelineName?: string): Promise<any[] | any> {
-    const stages = await fetchPipelineStagesMP(username, pipelineId);
+async function ensureStagesForPipeline(connection: Connection, pipelineId: string, pipelineName?: string): Promise<any[] | any> {
+    const stages = await fetchPipelineStagesMP(connection, pipelineId);
     if (!stages) {
         return { error: { message: `Stages not found for pipeline ${pipelineName || pipelineId}` } };
     }
