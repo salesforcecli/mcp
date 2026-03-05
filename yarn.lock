@@ -3166,10 +3166,10 @@
     zod "^3.24.2"
     zod-to-json-schema "^3.24.5"
 
-"@salesforce/metadata-enrichment@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@salesforce/metadata-enrichment/-/metadata-enrichment-0.0.4.tgz#542b2d49ef844c802942c252f602f3aed232c6ad"
-  integrity sha512-5NPGDd0vrzxiFvB/OfaGvYyZ+4aIDaiTa7wayTqAlQsvzTKWwf26TEtRGkLFV48uNqLt4/uGC5sDfuXRQlI+uQ==
+"@salesforce/metadata-enrichment@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@salesforce/metadata-enrichment/-/metadata-enrichment-0.0.6.tgz#c80932f67c65c36ba6eae14e666dea141efaf495"
+  integrity sha512-pFH6vpJoXPTLS7679g3GaKeNbkfwCtJVKWrTJUoLi8aYP9dec6LRsnBB7/RU1pU5jZ51/C3lLILALVt5S7rdfA==
   dependencies:
     "@salesforce/core" "^8.24.0"
     "@salesforce/kit" "^3.2.4"
@@ -4891,15 +4891,6 @@ available-typed-arrays@^1.0.7:
   integrity sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==
   dependencies:
     possible-typed-array-names "^1.0.0"
-
-axios@^1.10.0:
-  version "1.12.2"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.12.2.tgz#6c307390136cf7a2278d09cec63b136dfc6e6da7"
-  integrity sha512-vMJzPewAlRyOgxV2dU0Cuz2O8zzzx9VYtbJOaBgXFeLc4IV/Eg50n4LowmehOOR61S8ZMpc2K5Sa7g6A4jfkUw==
-  dependencies:
-    follow-redirects "^1.15.6"
-    form-data "^4.0.4"
-    proxy-from-env "^1.1.0"
 
 balanced-match@^1.0.0:
   version "1.0.2"
@@ -6938,11 +6929,6 @@ flatted@^3.2.9, flatted@^3.3.3:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.3.3.tgz#67c8fad95454a7c7abebf74bb78ee74a44023358"
   integrity sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==
-
-follow-redirects@^1.15.6:
-  version "1.15.11"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.11.tgz#777d73d72a92f8ec4d2e410eb47352a56b8e8340"
-  integrity sha512-deG2P0JfjrTxl50XGCDyfI97ZGVCxIpfKYmfyrQ54n5FO/0gfIES8C/Psl6kWVDolizcaaxZJnTS0QSMxvnsBQ==
 
 for-each@^0.3.3, for-each@^0.3.5:
   version "0.3.5"
