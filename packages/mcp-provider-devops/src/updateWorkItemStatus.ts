@@ -1,5 +1,5 @@
 import { type Connection } from "@salesforce/core";
-import { fetchWorkItemByNameWithConnection } from "./getWorkItems.js";
+import { fetchWorkItemByName } from "./getWorkItems.js";
 
 export type WorkItemStatus = "In Progress" | "Ready to Promote";
 
@@ -31,7 +31,7 @@ export async function updateWorkItemStatus(
   workItemName: string,
   status: WorkItemStatus
 ): Promise<UpdateWorkItemStatusResult> {
-  const workItem = await fetchWorkItemByNameWithConnection(connection, workItemName);
+  const workItem = await fetchWorkItemByName(connection, workItemName);
   if (!workItem?.id) {
     return {
       success: false,

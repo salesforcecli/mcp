@@ -2,7 +2,7 @@ import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
 import { createPullRequest } from "../createPullRequest.js";
-import { fetchWorkItemByNameWithConnection } from "../getWorkItems.js";
+import { fetchWorkItemByName } from "../getWorkItems.js";
 import { usernameOrAliasParam } from "../shared/params.js";
 
 const inputSchema = z.object({
@@ -88,7 +88,7 @@ export class CreatePullRequest extends McpTool<InputArgsShape, OutputArgsShape> 
         };
       }
       const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
-      const workItem = await fetchWorkItemByNameWithConnection(connection, input.workItemName);
+      const workItem = await fetchWorkItemByName(connection, input.workItemName);
 
       if (!workItem || !workItem.id) {
         return {
