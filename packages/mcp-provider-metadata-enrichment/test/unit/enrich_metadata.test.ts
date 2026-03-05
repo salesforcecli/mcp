@@ -19,7 +19,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { Connection, SfProject } from "@salesforce/core";
 import { ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
 import { EnrichmentStatus } from "@salesforce/metadata-enrichment";
-import { ComponentProcessor, EnrichmentHandler, FileProcessor } from "@salesforce/metadata-enrichment";
+import { SourceComponentProcessor, EnrichmentHandler, FileProcessor } from "@salesforce/metadata-enrichment";
 import type { EnrichmentRequestRecord } from "@salesforce/metadata-enrichment";
 import { ComponentSetBuilder } from "@salesforce/source-deploy-retrieve";
 import { EnrichMetadataMcpTool } from "../../src/tools/enrich_metadata.js";
@@ -117,7 +117,7 @@ describe("EnrichMetadataMcpTool", () => {
           getConnection: () => Promise.resolve(mockConnection),
         }),
       } as unknown as Services;
-      vi.spyOn(ComponentProcessor, "getComponentsToSkip").mockReturnValue(new Set());
+      vi.spyOn(SourceComponentProcessor, "getComponentsToSkip").mockReturnValue(new Set());
       vi.spyOn(EnrichmentHandler, "enrich").mockResolvedValue([
         {
           componentName: "myLwc",
@@ -128,8 +128,8 @@ describe("EnrichMetadataMcpTool", () => {
           status: EnrichmentStatus.SUCCESS,
         },
       ] as unknown as EnrichmentRequestRecord[]);
-      vi.spyOn(FileProcessor, "updateMetadataFiles").mockResolvedValue(
-        [] as unknown as Awaited<ReturnType<typeof FileProcessor.updateMetadataFiles>>
+      vi.spyOn(FileProcessor, "updateMetadata").mockResolvedValue(
+        [] as unknown as Awaited<ReturnType<typeof FileProcessor.updateMetadata>>
       );
     });
 
@@ -192,7 +192,7 @@ describe("EnrichMetadataMcpTool", () => {
           getConnection: () => Promise.resolve(mockConnection),
         }),
       } as unknown as Services;
-      vi.spyOn(ComponentProcessor, "getComponentsToSkip").mockReturnValue(
+      vi.spyOn(SourceComponentProcessor, "getComponentsToSkip").mockReturnValue(
         new Set([
           { typeName: "LightningComponentBundle", componentName: "otherCmp" },
         ])
@@ -207,8 +207,8 @@ describe("EnrichMetadataMcpTool", () => {
           status: EnrichmentStatus.SUCCESS,
         },
       ] as unknown as EnrichmentRequestRecord[]);
-      vi.spyOn(FileProcessor, "updateMetadataFiles").mockResolvedValue(
-        [] as unknown as Awaited<ReturnType<typeof FileProcessor.updateMetadataFiles>>
+      vi.spyOn(FileProcessor, "updateMetadata").mockResolvedValue(
+        [] as unknown as Awaited<ReturnType<typeof FileProcessor.updateMetadata>>
       );
 
       const tool = new EnrichMetadataMcpTool(servicesWithConnection);
@@ -220,7 +220,7 @@ describe("EnrichMetadataMcpTool", () => {
 
       expect(result.isError).toBe(false);
       const text = result.content[0].type === "text" ? result.content[0].text : "";
-      expect(text).toContain("Metadata enrichment completed. Components enriched:");
+      expect(text).toContain("Metadata enrichment completed");
       expect(text).toContain("  • myLwc");
       expect(text).toContain("Skipped:");
       expect(text).toContain("  • otherCmp: Skipped");
@@ -262,7 +262,7 @@ describe("EnrichMetadataMcpTool", () => {
           getConnection: () => Promise.resolve(mockConnection),
         }),
       } as unknown as Services;
-      vi.spyOn(ComponentProcessor, "getComponentsToSkip").mockReturnValue(new Set());
+      vi.spyOn(SourceComponentProcessor, "getComponentsToSkip").mockReturnValue(new Set());
       vi.spyOn(EnrichmentHandler, "enrich").mockResolvedValue([
         {
           componentName: "myLwc",
@@ -281,8 +281,8 @@ describe("EnrichMetadataMcpTool", () => {
           status: EnrichmentStatus.FAIL,
         },
       ] as unknown as EnrichmentRequestRecord[]);
-      vi.spyOn(FileProcessor, "updateMetadataFiles").mockResolvedValue(
-        [] as unknown as Awaited<ReturnType<typeof FileProcessor.updateMetadataFiles>>
+      vi.spyOn(FileProcessor, "updateMetadata").mockResolvedValue(
+        [] as unknown as Awaited<ReturnType<typeof FileProcessor.updateMetadata>>
       );
 
       const tool = new EnrichMetadataMcpTool(servicesWithConnection);
@@ -294,7 +294,7 @@ describe("EnrichMetadataMcpTool", () => {
 
       expect(result.isError).toBe(false);
       const text = result.content[0].type === "text" ? result.content[0].text : "";
-      expect(text).toContain("Metadata enrichment completed. Components enriched:");
+      expect(text).toContain("Metadata enrichment completed");
       expect(text).toContain("  • myLwc");
       expect(text).toContain("Failed:");
       expect(text).toContain("  • failedCmp: Enrichment API error");
@@ -308,7 +308,7 @@ describe("EnrichMetadataMcpTool", () => {
           getConnection: () => Promise.resolve(mockConnection),
         }),
       } as unknown as Services;
-      vi.spyOn(ComponentProcessor, "getComponentsToSkip").mockReturnValue(new Set());
+      vi.spyOn(SourceComponentProcessor, "getComponentsToSkip").mockReturnValue(new Set());
       vi.spyOn(EnrichmentHandler, "enrich").mockResolvedValue([
         {
           componentName: "failedCmp",
@@ -319,8 +319,8 @@ describe("EnrichMetadataMcpTool", () => {
           status: EnrichmentStatus.FAIL,
         },
       ] as unknown as EnrichmentRequestRecord[]);
-      vi.spyOn(FileProcessor, "updateMetadataFiles").mockResolvedValue(
-        [] as unknown as Awaited<ReturnType<typeof FileProcessor.updateMetadataFiles>>
+      vi.spyOn(FileProcessor, "updateMetadata").mockResolvedValue(
+        [] as unknown as Awaited<ReturnType<typeof FileProcessor.updateMetadata>>
       );
 
       const tool = new EnrichMetadataMcpTool(servicesWithConnection);
