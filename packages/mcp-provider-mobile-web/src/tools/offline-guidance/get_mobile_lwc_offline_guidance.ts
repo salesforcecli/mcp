@@ -29,11 +29,6 @@ import { zodToJsonSchema } from 'zod-to-json-schema';
 
 const EMPTY_INPUT_SCHEMA = z.object({}).describe('No input required');
 
-// Cast to avoid deep type instantiation when passing to zodToJsonSchema
-const EXPERT_ISSUES_JSON_SCHEMA = zodToJsonSchema(
-  ExpertCodeAnalysisIssuesSchema as z.ZodType,
-) as Record<string, unknown>;
-
 type InputArgsShape = typeof EMPTY_INPUT_SCHEMA.shape;
 type OutputArgsShape = typeof ExpertsReviewInstructionsSchema.shape;
 type InputArgs = z.infer<typeof EMPTY_INPUT_SCHEMA>;
