@@ -1,14 +1,15 @@
 import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
+import { McpTool, McpToolConfig, ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
 import { resolveConflict } from "../resolveConflict.js";
 import { fetchWorkItemByName } from "../getWorkItems.js";
 import { fetchWorkItemByNameMP } from "../getWorkItemsMP.js";
 import { isManagedPackageDevopsOrg } from "../shared/orgType.js";
 import { normalizeAndValidateRepoPath } from "../shared/pathUtils.js";
+import { usernameOrAliasParam } from "../shared/params.js";
 
 const inputSchema = z.object({
-  username: z.string().describe("Username of the DevOps Center org"),
+  usernameOrAlias: usernameOrAliasParam,
   workItemName: z.string().min(1).describe("Exact Work Item Name (mandatory)"),
   localPath: z.string().describe("Local path to the repository (defaults to current working directory)")
 });
@@ -17,11 +18,11 @@ type InputArgsShape = typeof inputSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 export class SfDevopsResolveConflict extends McpTool<InputArgsShape, OutputArgsShape> {
-  private readonly telemetryService: TelemetryService;
+  private readonly services: Services;
 
-  constructor(telemetryService: TelemetryService) {
+  constructor(services: Services) {
     super();
-    this.telemetryService = telemetryService;
+    this.services = services;
   }
 
   public getReleaseState(): ReleaseState {
@@ -45,7 +46,7 @@ export class SfDevopsResolveConflict extends McpTool<InputArgsShape, OutputArgsS
       - After running 'detect_devops_center_merge_conflict' and conflicts were found.
 
       **MANDATORY input:**
-      - workItemName (exact Name of the Work Item) and username of the DevOps Center org.
+      - workItemName (exact Name of the Work Item) and username or alias of the DevOps Center org.
 
       **Behavior:**
       - Looks up the Work Item by Name, validates required fields, and prepares per-file resolution commands.
@@ -68,12 +69,13 @@ export class SfDevopsResolveConflict extends McpTool<InputArgsShape, OutputArgsS
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
-    const isMP = await isManagedPackageDevopsOrg(input.username);
+    const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
+    const isMP = await isManagedPackageDevopsOrg(connection);
     let workItem: any;
     try {
       workItem = isMP 
-        ? await fetchWorkItemByNameMP(input.username, input.workItemName)
-        : await fetchWorkItemByName(input.username, input.workItemName);
+        ? await fetchWorkItemByNameMP(connection, input.workItemName)
+        : await fetchWorkItemByName(connection, input.workItemName);
     } catch (e: any) {
       return {
         content: [{ type: "text", text: `Error fetching work item: ${e?.message || e}` }],
@@ -85,7 +87,7 @@ export class SfDevopsResolveConflict extends McpTool<InputArgsShape, OutputArgsS
       return {
         content: [{
           type: "text",
-          text: `Error: Work item not found. Please provide a valid work item name or valid DevOps Center org username.`
+          text: `Error: Work item not found. Please provide a valid work item name or valid DevOps Center org username or alias.`
         }]
       };
     }

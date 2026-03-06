@@ -1,5 +1,6 @@
-import { getConnection } from './shared/auth.js';
-import axios from 'axios';
+import { type Connection } from '@salesforce/core';
+
+const API_VERSION = 'v65.0';
 
 export interface PromoteWorkItemsRequest {
     workitems: Array<{ id: string; PipelineStageId: string; TargetStageId: string, PipelineId: string }>;
@@ -18,54 +19,45 @@ export interface PromoteWorkItemsResponse {
     };
 }
 
-export async function promoteWorkItems(username: string, request: PromoteWorkItemsRequest): Promise<PromoteWorkItemsResponse> {
+/**
+ * Promotes work items to the next pipeline stage using the provided Connection.
+ */
+export async function promoteWorkItems(connection: Connection, request: PromoteWorkItemsRequest): Promise<PromoteWorkItemsResponse> {
     const { workitems } = request;
-
-    const connection = await getConnection(username);
-    const accessToken = connection.accessToken;
-    const instanceUrl = connection.instanceUrl;
-
-    if (!accessToken || !instanceUrl) {
-        throw new Error('Missing access token or instance URL.');
-    }
 
     const uniqueStageIds = Array.from(new Set(workitems.map(w => w.PipelineStageId).filter(Boolean)));
     const allWorkItemsInStage = uniqueStageIds.length === 1;
-    
-    if (false && !allWorkItemsInStage) {
-        throw new Error('All workitems must be in the same stage.');
-    }
 
     const pipelineId = workitems[0].PipelineId;
     const targetStageId = workitems[0].TargetStageId;
-    
-    const body: any = {
+
+    const body = {
         workitemIds: workitems.map(w => w.id),
-        targetStageId: targetStageId,
-        allWorkItemsInStage: allWorkItemsInStage,
+        targetStageId,
+        allWorkItemsInStage,
         isCheckDeploy: false,
         deployOptions: { testLevel: "NoTestRun", isFullDeploy: false }
     };
-    const url = `${instanceUrl}/services/data/v65.0/connect/devops/pipelines/${pipelineId}/promote`;
+    const path = `/services/data/${API_VERSION}/connect/devops/pipelines/${pipelineId}/promote`;
     try {
-        const response = await axios.post(url, body, {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json'
-            }
+        const response = await connection.request({
+            method: 'POST',
+            url: path,
+            body: JSON.stringify(body),
+            headers: { 'Content-Type': 'application/json' }
         });
-        
-        return response.data;
+        return (response as Record<string, unknown>) ?? {};
     } catch (error: any) {
+        const data = error.response?.data ?? error.body ?? error;
         return {
             error: {
-                message: error.message,
-                ...(error.response && error.response.data ? { details: error.response.data } : {}),
+                message: error.message ?? 'Unknown error',
+                ...(typeof data === 'object' && data ? { details: data } : {}),
                 status: error.response?.status,
                 statusText: error.response?.statusText,
-                url,
+                url: path,
                 requestBody: body
             }
         };
-    }   
+    }
 }

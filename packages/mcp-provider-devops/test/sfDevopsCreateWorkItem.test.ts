@@ -5,6 +5,8 @@ import { TelemetryEventNames } from '../src/constants.js';
 import { Services } from '@salesforce/mcp-provider-api';
 import * as createWorkItemModule from '../src/createWorkItem.js';
 
+const mockConnection = { query: vi.fn(), request: vi.fn() };
+
 describe('SfDevopsCreateWorkItem', () => {
   let tool: SfDevopsCreateWorkItem;
   let spyTelemetryService: SpyTelemetryService;
@@ -16,7 +18,7 @@ describe('SfDevopsCreateWorkItem', () => {
     mockServices = {
       getTelemetryService: () => spyTelemetryService,
       getOrgService: () => ({
-        getConnection: vi.fn(),
+        getConnection: vi.fn().mockResolvedValue(mockConnection),
         getAllowedOrgUsernames: vi.fn(),
         getAllowedOrgs: vi.fn(),
         getDefaultTargetOrg: vi.fn(),
@@ -145,7 +147,7 @@ describe('SfDevopsCreateWorkItem', () => {
     });
 
     expect(createSpy).toHaveBeenCalledWith({
-      usernameOrAlias: 'org@example.com',
+      connection: mockConnection,
       projectId: 'proj-123',
       subject: 'Subject',
       description: 'Description',
