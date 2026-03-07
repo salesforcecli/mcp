@@ -262,7 +262,8 @@ For complete documentation, see [Use DX MCP Tools for LWC](https://developer.sal
 - `guide_lwc_best_practices` (GA) - Offers LWC development best practices and coding standards guidance.
 - `guide_lwc_development` (GA) - Provides LWC development workflow and implementation guidelines.
 - `guide_lwc_rtl_support` (GA) - Provides Right-to-Left (RTL) internationalization support and RTL development guidance.
-- `guide_lwc_slds2_uplift_linter_fixes` (NON-GA) - Analyzes the given LWC code along with the slds-linter output to fix issues using Salesforce Lightning Design System 2 (SLDS 2) guidelines.
+- `guide_slds_blueprints` (NON-GA) - Retrieves comprehensive SLDS blueprints guidance, reference documentation, and a complete index of all 85 available blueprints by category.
+- `explore_slds_blueprints` (NON-GA) - Search and explore SLDS Blueprints by name, category, lightning component, SLDS class, or styling hook, returning full blueprint specs.
 - `guide_lwc_security` (GA) - Provides security analysis in accordance with product security guidelines and Lightning Web Security guidelines.
 - `guide_design_general` (GA) - Provides SLDS guidelines and best practices for Lightning Web Components with accessibility, responsive design, and component usage patterns.
 - `guide_utam_generation` (NON-GA) - Provides UI Test Automation Model (UTAM) Page Object generation guidelines and best practices.
@@ -271,19 +272,21 @@ For complete documentation, see [Use DX MCP Tools for LWC](https://developer.sal
 
 - `create_lds_graphql_mutation_query` (GA) - Provides guidance for creating GraphQL mutation queries.
 - `create_lds_graphql_read_query` (GA) - Create GraphQL read queries for LDS.
-- `explore_lds_graphql_schema` (GA) - Explore GraphQL schema structure for LDS.
+- `fetch_lds_graphql_schema` (NON-GA) - Fetch GraphQL schema structure for LDS.
 - `explore_lds_uiapi` (GA) - Explores and documents Lightning Design System UI API capabilities.
 - `guide_lds_data_consistency` (GA) - Provides data consistency patterns and best practices for LDS components.
 - `guide_lds_development` (GA) - Provides LDS development guidelines and component integration.
 - `guide_lds_graphql` (GA) - Provides LDS GraphQL usage patterns and guidelines.
 - `guide_lds_referential_integrity` (GA) - Provides referential integrity patterns for LDS data management.
 - `orchestrate_lds_data_requirements` (GA) - Provides step-by-step guidance for analyzing and clarifying LDS data requirements to produce PRD-ready specifications.
+- `test_lds_graphql_query` (NON-GA) - Tests a GraphQL query against a connected Salesforce org and returns the result (sub-tool of query creation workflows).
 
 #### Migration & Integration Tools
 
 - `guide_figma_to_lwc_conversion` (GA) - Converts Figma designs to LWC component specifications.
 - `run_lwc_accessibility_jest_tests` (GA) - Provides accessibility testing utilities and Jest integration for LWC components.
 - `verify_aura_migration_completeness` (GA) - Provides Aura to LWC migration completeness checklist and validation.
+- `guide_lo_migration` (Non-GA) - Migration recipe: converts a Lightning Out (beta) host page into a Lightning Out 2.0 page
 
 #### Workflow Tools
 
