@@ -81,42 +81,45 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
     return {
       title: "Enrich Metadata",
       description: 
-      `Enrich metadata components in your DX project by adding AI-generated descriptions.
+      `Enrich metadata components in your DX project by adding AI-generated descriptions via this #enrich_metadata tool.
 
       AGENT INSTRUCTIONS:
       The org must be eligible for metadata enrichment. The Salesforce admin can help enable it.
 
-      If the user doesn't specify what exactly to enrich ("enrich my metadata"), ask the user to provide specific component names from their local project.
+      If the user doesn't specify what exactly to enrich (such as "enrich metadata"), ask the user to provide specific component names from their local project.
       Wildcards are supported for component names and match to components in the local project.
 
-      This tool currently only supports enriching Lightning Web Components (LWC) which are represented by the LightningComponentBundle (case sensitive) metadata type.
-      LightningComponentBundle is the type used for the enrichment requests for LWC.
-      
-      If any non-LWC is specified by the user for enrichment, the tool will skip those components, but will proceed with enriching any other specified LWC.
-      
+      This tool currently supports enriching the below component types, wher ethe metadata type is what is used in the tool for the enrichment request.
+      [Header: Component Type] | [Header: Metadata Type]
+      Component Type | Metadata Type
+      Custom Object | CustomObject
+      FlexiPage | FlexiPage
+      Lightning Type | LightningType
+      Lightning Web Component (LWC) | LightningComponentBundle
+
+      If the user specifies any unsupported component type for enrichment, the tool will skip them but will proceed with enriching the supported components.
       If the user specifies multiple components, batch the enrichment requests together as the tool can handle enriching multiple at a time.
 
       Enrichment responses include components that were enriched successfully, failed, or were skipped.
-      Do not use previous conversation context or previous successful responses to determine enrichment status.
-      The sole source of truth is the enrichment response from each enrichment request.
+      Do not use previous conversation context or previous successful responses to determine the enrichment status.
+      The sole source of truth is the tool's enrichment response for each enrichment request.
 
       This is a different tool from retrieving metadata (#retrieve_metadata) or deploying metadata (#deploy_metadata).
       These other tools should be used instead if the user is intending to retrieve or deploy metadata.
       If it is unclear what the user intends to do, ask them to clarify before proceeding.
 
-      Enrichment updates the metadata files in the local project, but does not deploy them to the org.
-      The user will need to deploy metadata to the org in order to save any changes.
-
-      Keep track of the previous state of the local metadata files before and after enrichment.
-      This may or may not include pre-existing metadata descriptions.
-      If the user asks to revert the changes for enriched metadata, you can revert the changed files back to the previous state.
+      This tool updates metadata in the local project, but does not deploy them to the org.
+      The user will need to deploy the metadata to the org in order to save any changes.
 
       EXAMPLE USAGE:
-      - Enrich this component in my org
-      - Enrich X in my org
-      - Enrich X metadata in my org
-      - Enrich X, Y, Z in my org
-      - Enrich X, Y, Z metadata in my org`,
+      - "Enrich X"
+      - "Enrich X and Y"
+      - "Enrich X, Y, and Z"
+      - "Enrich X metadata" 
+      - "Enrich X, Y, and Z metadata"
+      - "Enrich this metadata"
+      - "Enrich this component"
+      - "Enrich this component metadata"`,
       inputSchema: enrichMetadataSchema.shape,
       outputSchema: undefined,
       annotations: {
@@ -145,7 +148,7 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
         content: [
           {
             type: 'text',
-            text: `User did not specify what to enrich. Please specify the specific file or component names for enrichment.`,
+            text: `User did not specify what to enrich. Please specify the component names to enrich.`,
           },
         ],
       };
@@ -169,8 +172,7 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       input.metadataEntries,
       project.getPath()
     );
-    enrichmentRecords.addSkippedComponents(componentsToSkip);
-    enrichmentRecords.updateWithStatus(componentsToSkip, EnrichmentStatus.SKIPPED);
+    enrichmentRecords.addRecords(componentsToSkip);
 
     const componentsEligibleToProcess = projectSourceComponents.filter((component) => {
       const componentName = component.fullName ?? component.name;
@@ -187,7 +189,7 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
         content: [
           {
             type: 'text',
-            text: `No eligible LWC was found for enrichment.`,
+            text: `No eligible component was found for metadata enrichment.`,
           },
         ],
       }
@@ -217,7 +219,7 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       summaryParts.push('No components were enriched.');
     } else {
       summaryParts.push('Metadata enrichment completed');
-      summaryParts.push('Components enriched:');
+      summaryParts.push('Enriched components:');
       summaryParts.push(...successfulRecords.map((r) => `  • ${r.componentName}\n      (Request ID: ${r.response?.metadata?.requestId ?? 'None'})`));
     }
     if (skippedRecords.length > 0) {
