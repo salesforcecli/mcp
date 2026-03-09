@@ -1,35 +1,30 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createPullRequest } from '../src/createPullRequest.js';
-import { getConnection } from '../src/shared/auth.js';
-import axios from 'axios';
-
-vi.mock('../src/shared/auth');
-vi.mock('axios');
 
 describe('createPullRequest', () => {
   it('should throw an error if workItemId is missing', async () => {
-    await expect(createPullRequest({ workItemId: '', username: 'test-user' })).rejects.toThrow('Work item ID is required to create pull request.');
-  });
-
-  it('should throw an error if username is missing', async () => {
-    await expect(createPullRequest({ workItemId: 'WI-0001', username: '' })).rejects.toThrow('Salesforce username is required to create pull request.');
+    const mockConnection = { request: vi.fn() };
+    await expect(createPullRequest(mockConnection as any, '')).rejects.toThrow('Work item ID is required to create pull request.');
   });
 
   it('should create a pull request successfully', async () => {
-    const mockConnection = { accessToken: 'fake-token', instanceUrl: 'https://example.com' };
-    (getConnection as vi.Mock).mockResolvedValue(mockConnection);
-    (axios.post as vi.Mock).mockResolvedValue({ data: { id: 'PR-001' } });
+    const mockConnection = {
+      request: vi.fn().mockResolvedValue({ id: 'PR-001' })
+    };
 
-    const result = await createPullRequest({ workItemId: 'WI-0001', username: 'test-user' });
+    const result = await createPullRequest(mockConnection as any, 'WI-0001');
     expect(result.success).toBe(true);
     expect(result.pullRequestResult.id).toBe('PR-001');
+    expect(mockConnection.request).toHaveBeenCalledWith(
+      expect.objectContaining({ method: 'POST', url: expect.stringContaining('review') })
+    );
   });
 
-  it('should handle axios errors gracefully', async () => {
-    const mockConnection = { accessToken: 'fake-token', instanceUrl: 'https://example.com' };
-    (getConnection as vi.Mock).mockResolvedValue(mockConnection);
-    (axios.post as vi.Mock).mockRejectedValue({ message: 'Network Error' });
+  it('should handle request errors gracefully', async () => {
+    const mockConnection = {
+      request: vi.fn().mockRejectedValue(new Error('Network Error'))
+    };
 
-    await expect(createPullRequest({ workItemId: 'WI-0001', username: 'test-user' })).rejects.toThrow('Failed to create pull request: Network Error');
+    await expect(createPullRequest(mockConnection as any, 'WI-0001')).rejects.toThrow('Failed to create pull request: Network Error');
   });
 });

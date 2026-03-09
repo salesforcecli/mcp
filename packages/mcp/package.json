@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/mcp",
-  "version": "0.26.9",
+  "version": "0.26.11-dev.0",
   "description": "MCP Server for interacting with Salesforce instances",
   "bin": {
     "sf-mcp-server": "bin/run.js"
@@ -17,7 +17,6 @@
     "format": "wireit",
     "link-check": "wireit",
     "lint": "wireit",
-    "start": "yarn build && npm link && mcp-inspector sf-mcp-server",
     "test": "wireit",
     "test:only": "wireit"
   },
@@ -51,12 +50,12 @@
     "@salesforce/mcp-provider-lwc-experts": "0.6.5",
     "@salesforce/mcp-provider-aura-experts": "0.3.6",
     "@salesforce/mcp-provider-mobile-web": "0.2.2",
-    "@salesforce/mcp-provider-devops": "0.2.0",
+    "@salesforce/mcp-provider-devops": "0.2.1",
     "@salesforce/mcp-provider-scale-products": "0.0.5",
     "@salesforce/mcp-provider-metadata-enrichment": "0.1.0",
     "@salesforce/source-deploy-retrieve": "^12.31.7",
     "@salesforce/source-tracking": "^7.8.2",
-    "@salesforce/telemetry": "6.4.1",
+    "@salesforce/telemetry": "^6.8.0",
     "@salesforce/ts-types": "^2.0.11",
     "zod": "^3.25.76"
   },

@@ -5,6 +5,8 @@ import { TelemetryEventNames } from '../src/constants.js';
 import { Services } from '@salesforce/mcp-provider-api';
 import * as updateWorkItemStatusModule from '../src/updateWorkItemStatus.js';
 
+const mockConnection = { query: vi.fn(), request: vi.fn() };
+
 describe('SfDevopsUpdateWorkItemStatus', () => {
   let tool: SfDevopsUpdateWorkItemStatus;
   let spyTelemetryService: SpyTelemetryService;
@@ -16,7 +18,7 @@ describe('SfDevopsUpdateWorkItemStatus', () => {
     mockServices = {
       getTelemetryService: () => spyTelemetryService,
       getOrgService: () => ({
-        getConnection: vi.fn(),
+        getConnection: vi.fn().mockResolvedValue(mockConnection),
         getAllowedOrgUsernames: vi.fn(),
         getAllowedOrgs: vi.fn(),
         getDefaultTargetOrg: vi.fn(),
@@ -166,6 +168,6 @@ describe('SfDevopsUpdateWorkItemStatus', () => {
       status: 'Ready to Promote',
     });
 
-    expect(updateSpy).toHaveBeenCalledWith('org@example.com', 'WI-00000001', 'Ready to Promote');
+    expect(updateSpy).toHaveBeenCalledWith(mockConnection, 'WI-00000001', 'Ready to Promote');
   });
 });
