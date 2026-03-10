@@ -286,7 +286,7 @@ For complete documentation, see [Use DX MCP Tools for LWC](https://developer.sal
 - `guide_figma_to_lwc_conversion` (GA) - Converts Figma designs to LWC component specifications.
 - `run_lwc_accessibility_jest_tests` (GA) - Provides accessibility testing utilities and Jest integration for LWC components.
 - `verify_aura_migration_completeness` (GA) - Provides Aura to LWC migration completeness checklist and validation.
-- `guide_lo_migration` (Non-GA) - Migration recipe: converts a Lightning Out (beta) host page into a Lightning Out 2.0 page
+- `guide_lo_migration` (GA) - Migration recipe: converts a Lightning Out (beta) host page into a Lightning Out 2.0 page
 
 #### Workflow Tools
 
