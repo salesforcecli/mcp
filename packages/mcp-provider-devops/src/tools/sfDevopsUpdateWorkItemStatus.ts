@@ -93,8 +93,9 @@ export class SfDevopsUpdateWorkItemStatus extends McpTool<InputArgsShape, Output
     const startTime = Date.now();
 
     try {
+      const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
       const result = await updateWorkItemStatus(
-        input.usernameOrAlias,
+        connection,
         input.workItemName,
         input.status as WorkItemStatus
       );

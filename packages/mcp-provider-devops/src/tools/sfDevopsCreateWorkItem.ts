@@ -89,8 +89,9 @@ export class SfDevopsCreateWorkItem extends McpTool<InputArgsShape, OutputArgsSh
     const startTime = Date.now();
 
     try {
+      const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
       const result = await createWorkItem({
-        usernameOrAlias: input.usernameOrAlias,
+        connection,
         projectId: input.projectId,
         subject: input.subject,
         description: input.description ?? "",
