@@ -9,8 +9,9 @@ const inputSchema = z.object({
   usernameOrAlias: usernameOrAliasParam,
   workItemName: z.string().min(1).describe("Work Item name (mandatory). Exact name of the work item that failed deployment."),
   sourceBranchName: z.string().min(1).describe("Source branch name (mandatory). The work item branch where the change lives."),
+  targetBranchName: z.string().min(1).optional().describe("Target branch name (optional). When provided with localPath, the tool compares source and target to determine if the missing dependency is in source but not in target, confirming full promotion will resolve the failure."),
   errorDetails: z.string().min(1).describe("Error details from the failed deployment (mandatory). Used to determine if full promotion can fix the failure."),
-  localPath: z.string().optional().describe("Local path to the repository (optional). Required only for dependency-type errors: used to check if the source branch contains the missing dependency. If provided and valid, the tool checks the branch; if dependency is present, full promotion can fix.")
+  localPath: z.string().optional().describe("Local path to the repository (defaults to current working directory)")
 });
 type InputArgs = z.infer<typeof inputSchema>;
 type InputArgsShape = typeof inputSchema.shape;
@@ -41,12 +42,12 @@ export class SfDevopsResolveDeploymentFailure extends McpTool<InputArgsShape, Ou
       title: "Resolve Deployment Failure",
       description: `Determine if **full promotion** can fix a deployment failure and guide the user.
 
-**Inputs:** workItemName (mandatory), sourceBranchName (mandatory), errorDetails (mandatory), localPath (optional).
+**Inputs:** workItemName (mandatory), sourceBranchName (mandatory), errorDetails (mandatory), localPath (optional; defaults to current working directory), targetBranchName (optional; when provided, source and target are compared to confirm if full promotion will resolve).
 
 **Behavior:**
 1. **If full promotion cannot fix** (e.g. merge conflict): Return instructions to use **resolve_devops_center_merge_conflict** or to add the missing dependency in a separate work item.
 2. **If full promotion can fix** (anything other than merge conflict):
-   - For dependency-type errors (e.g. "Variable does not exist"): If **localPath** is not provided, ask the user for the local path of the source branch. If provided, check whether the missing dependency exists in the source branch. If **present** → ask the user for confirmation (see below). If **not present** → instruct the user to create a new work item for the missing dependency, promote it first, then retry.
+   - For dependency-type errors (e.g. "Variable does not exist"): Use **localPath** to check whether the missing dependency exists in the source branch. If **targetBranchName** is provided, the tool compares source and target (dependency in source but not in target → full promotion will resolve). If **present in source** → ask the user for confirmation (see below). If **not present in source** → instruct the user to create a new work item for the missing dependency, promote it first, then retry.
    - For other errors: Ask the user for confirmation (see below).
 
 **MANDATORY – Ask for confirmation; do NOT run full promotion without it:**
@@ -59,20 +60,13 @@ export class SfDevopsResolveDeploymentFailure extends McpTool<InputArgsShape, Ou
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
-    let options: { localPath: string; sourceBranchName: string } | undefined;
-    let pathInvalid = false;
-    if (input.localPath?.trim()) {
-      try {
-        options = {
-          localPath: normalizeAndValidateRepoPath(input.localPath),
-          sourceBranchName: input.sourceBranchName,
-        };
-      } catch {
-        pathInvalid = true;
-      }
-    }
+    const options = {
+      localPath: normalizeAndValidateRepoPath(input.localPath?.trim() || undefined),
+      sourceBranchName: input.sourceBranchName,
+      ...(input.targetBranchName?.trim() && { targetBranchName: input.targetBranchName.trim() }),
+    };
 
-    const { canFix, reason, missingDependencyName } = canFullPromotionFixFailure(input.errorDetails, options);
+    const { canFix, reason, missingDependencyName, inTargetBranch } = canFullPromotionFixFailure(input.errorDetails, options);
 
     // Full promotion cannot fix: merge conflict → use merge conflict tool
     if (!canFix && reason === "merge_conflict") {
@@ -82,23 +76,6 @@ export class SfDevopsResolveDeploymentFailure extends McpTool<InputArgsShape, Ou
           text: `This failure is a **merge conflict**. Full promotion will not fix it.
 
 **Use resolve_devops_center_merge_conflict** with workItemName: "${input.workItemName}", then resolve the conflicted file(s), commit, push, and retry promotion.`
-        }],
-        isError: false
-      };
-    }
-
-    // Dependency-type error but no valid localPath: ask for path or suggest new work item
-    if (reason === "local_path_required" || (pathInvalid && !canFix)) {
-      return {
-        content: [{
-          type: "text",
-          text: `The error suggests a missing dependency${missingDependencyName ? ` (e.g. ${missingDependencyName})` : ""}. To see if full promotion can fix it, the tool must check whether that dependency exists in the source branch.
-
-**Please provide the local path** to your repo (**localPath**). The tool will check branch "${input.sourceBranchName}":
-- If the dependency is in the branch → full promotion can fix (you'll be asked to confirm).
-- If not → create a new work item for the missing dependency, promote it first, then retry "${input.workItemName}".
-
-If you cannot provide a path, create a new work item that adds the missing dependency, promote it, then retry.`
         }],
         isError: false
       };
@@ -129,10 +106,16 @@ If you cannot provide a path, create a new work item that adds the missing depen
     }
 
     // Full promotion can fix — ask for confirmation; do NOT call promote until user explicitly confirms
+    const comparisonNote =
+      reason === "dependency_in_source_branch" && missingDependencyName && input.targetBranchName?.trim()
+        ? inTargetBranch === false
+          ? ` The missing dependency "${missingDependencyName}" is in source branch "${input.sourceBranchName}" but not in target branch "${input.targetBranchName}"; full promotion will resolve this.`
+          : ` The dependency "${missingDependencyName}" is present in both source and target branches; full promotion will resolve.`
+        : "";
     return {
       content: [{
         type: "text",
-        text: `**Full promotion can resolve this failure** based on the error details.
+        text: `**Full promotion can resolve this failure** based on the error details.${comparisonNote}
 
 **Ask for confirmation:** Do not run full promotion until the user explicitly confirms. Present this to the user:
 
