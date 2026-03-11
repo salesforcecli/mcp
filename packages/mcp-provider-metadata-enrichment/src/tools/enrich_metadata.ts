@@ -29,7 +29,7 @@ import {
   Toolset,
 } from "@salesforce/mcp-provider-api";
 import { ComponentSetBuilder } from "@salesforce/source-deploy-retrieve";
-import { ComponentProcessor, EnrichmentHandler, EnrichmentRecords, EnrichmentStatus, FileProcessor } from "@salesforce/metadata-enrichment";
+import { SourceComponentProcessor, EnrichmentHandler, EnrichmentRecords, EnrichmentStatus, FileProcessor } from "@salesforce/metadata-enrichment";
 
 /*
  * Enrich metadata in a Salesforce org.
@@ -164,7 +164,7 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
     const projectSourceComponents = projectComponentSet.getSourceComponents().toArray();
     const enrichmentRecords = new EnrichmentRecords(projectSourceComponents);
 
-    const componentsToSkip = ComponentProcessor.getComponentsToSkip(
+    const componentsToSkip = SourceComponentProcessor.getComponentsToSkip(
       projectSourceComponents,
       input.metadataEntries,
       project.getPath()
@@ -193,10 +193,10 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       }
     }
 
-    const enrichmentResults = await EnrichmentHandler.enrich(connection, componentsEligibleToProcess);
-    enrichmentRecords.updateWithResults(enrichmentResults);
+    const enrichmentResponse = await EnrichmentHandler.enrich(connection, componentsEligibleToProcess);
+    enrichmentRecords.updateWithResults(enrichmentResponse);
 
-    const fileUpdatedRecords = await FileProcessor.updateMetadataFiles(
+    const fileUpdatedRecords = await FileProcessor.updateMetadata(
       componentsEligibleToProcess,
       enrichmentRecords.recordSet
     );
@@ -216,8 +216,9 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
     if (successfulRecords.length === 0) {
       summaryParts.push('No components were enriched.');
     } else {
-      summaryParts.push('Metadata enrichment completed. Components enriched:');
-      summaryParts.push(...successfulRecords.map((r) => `  • ${r.componentName}`));
+      summaryParts.push('Metadata enrichment completed');
+      summaryParts.push('Components enriched:');
+      summaryParts.push(...successfulRecords.map((r) => `  • ${r.componentName}\n      (Request ID: ${r.response?.metadata?.requestId ?? 'None'})`));
     }
     if (skippedRecords.length > 0) {
       summaryParts.push('Skipped:');
@@ -228,9 +229,10 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
     if (failedRecords.length > 0) {
       summaryParts.push('Failed:');
       summaryParts.push(
-        ...failedRecords.map((r) => `  • ${r.componentName}: ${r.message ?? 'Failed'}`)
+        ...failedRecords.map((r) => `  • ${r.componentName}: ${r.message ?? 'Failed'}\n      (Request ID: ${r.response?.metadata?.requestId ?? 'None'})`)
       );
     }
+
     const summary = summaryParts.join('\n');
 
     // Only return error response IFF there were only failed records

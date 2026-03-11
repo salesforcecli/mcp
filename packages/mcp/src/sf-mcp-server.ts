@@ -189,6 +189,12 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
         responseCharCount: responseCharCount.toString(),
       });
 
+      this.telemetry?.sendPdpEvent({
+        eventName: 'salesforceMcp.executed',
+        productFeatureId: 'aJCEE0000007Uiv4AE',  // DX MCP Server
+        componentId: name, // MCP tool name
+      });
+
       return result;
     };
 
