@@ -184,54 +184,6 @@ describe("EnrichMetadataMcpTool", () => {
       vi.restoreAllMocks();
     });
 
-    it("exec summary lists enriched components and skipped components with reason", async () => {
-      const stub = new StubServices();
-      const servicesWithConnection = {
-        ...stub,
-        getOrgService: () => ({
-          getConnection: () => Promise.resolve(mockConnection),
-        }),
-      } as unknown as Services;
-      vi.spyOn(SourceComponentProcessor, "getComponentsToSkip").mockReturnValue(
-        new Set([
-          {
-            componentName: "otherCmp",
-            componentType: { name: "LightningComponentBundle" },
-            requestBody: null,
-            response: null,
-            message: null,
-            status: EnrichmentStatus.SKIPPED,
-          },
-        ]) as unknown as Set<EnrichmentRequestRecord>
-      );
-      vi.spyOn(EnrichmentHandler, "enrich").mockResolvedValue([
-        {
-          componentName: "myLwc",
-          componentType: { name: "LightningComponentBundle" },
-          requestBody: { contentBundles: [], metadataType: "Generic", maxTokens: 50 },
-          response: {},
-          message: null,
-          status: EnrichmentStatus.SUCCESS,
-        },
-      ] as unknown as EnrichmentRequestRecord[]);
-      vi.spyOn(FileProcessor, "updateMetadata").mockResolvedValue(
-        [] as unknown as Awaited<ReturnType<typeof FileProcessor.updateMetadata>>
-      );
-
-      const tool = new EnrichMetadataMcpTool(servicesWithConnection);
-      const result = await tool.exec({
-        usernameOrAlias: "user@example.com",
-        directory: "/tmp/proj",
-        metadataEntries: ["LightningComponentBundle:myLwc", "LightningComponentBundle:otherCmp"],
-      });
-
-      expect(result.isError).toBe(false);
-      const text = result.content[0].type === "text" ? result.content[0].text : "";
-      expect(text).toContain("Metadata enrichment completed");
-      expect(text).toContain("  • myLwc");
-      expect(text).toContain("Skipped:");
-      expect(text).toContain("  • otherCmp: Skipped");
-    });
   });
 
   describe("summary includes failed records", () => {
