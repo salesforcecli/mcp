@@ -89,19 +89,35 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
   }
 
   /**
-   * Calculates the total character count from tool result content
-   * Used for token usage
+   * Calculates the total character count from tool result content and structured output.
+   * Used for token usage. Accounts for both:
+   * - content: text (and other) content items
+   * - structuredContent: structured tool output when the tool defines an outputSchema
+   * @see https://modelcontextprotocol.io/specification/2025-11-25/server/tools#output-schema
    * @param result - The CallToolResult from tool execution
-   * @returns Total character count across all text content items
+   * @returns Total character count across text content and structured content
    */
   private calculateResponseCharCount(result: CallToolResult): number {
-    if (!result.content || !Array.isArray(result.content)) {
-      return 0;
+    let total = 0;
+
+    // Plain text (and other) content items
+    if (result.content && Array.isArray(result.content)) {
+      total += result.content
+        .filter((item): item is { type: 'text'; text: string } => item.type === 'text')
+        .reduce((sum, item) => sum + item.text.length, 0);
     }
 
-    return result.content
-      .filter((item): item is { type: 'text'; text: string } => item.type === 'text')
-      .reduce((sum, item) => sum + item.text.length, 0);
+    // Structured content (JSON object per outputSchema)
+    const structured = (result as CallToolResult & { structuredContent?: unknown }).structuredContent;
+    if (structured !== undefined && structured !== null && typeof structured === 'object') {
+      try {
+        total += JSON.stringify(structured).length;
+      } catch {
+        // ignore serialization errors
+      }
+    }
+
+    return total;
   }
 
   public registerTool<InputArgs extends ZodRawShape, OutputArgs extends ZodRawShape>(
