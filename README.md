@@ -267,6 +267,7 @@ For complete documentation, see [Use DX MCP Tools for LWC](https://developer.sal
 - `guide_lwc_security` (GA) - Provides security analysis in accordance with product security guidelines and Lightning Web Security guidelines.
 - `guide_design_general` (GA) - Provides SLDS guidelines and best practices for Lightning Web Components with accessibility, responsive design, and component usage patterns.
 - `guide_utam_generation` (NON-GA) - Provides UI Test Automation Model (UTAM) Page Object generation guidelines and best practices.
+- `reference_lwc_compilation_error` (GA) - References LWC compilation errors by looking up error codes against a knowledge base of documented error patterns, causes, and fixes.
 
 #### Lightning Data Service (LDS) Tools
 
