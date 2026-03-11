@@ -71,14 +71,14 @@ export function getSourcePathsForDependency(type: string, name: string): string[
 }
 
 /**
- * Check whether at least one of the given paths exists in the given git branch.
- * Paths must use forward slashes (git convention).
+ * Try to run git show for a ref:path; try ref first, then origin/ref if ref is not a valid ref.
  */
-export function isDependencyPresentInBranch(repoPath: string, branch: string, relativePaths: string[]): boolean {
-  for (const p of relativePaths) {
-    const normalized = p.split(path.sep).join("/");
+function gitShowInBranch(repoPath: string, branch: string, relativePath: string): boolean {
+  const normalized = relativePath.split(path.sep).join("/");
+  const refsToTry = [branch, `origin/${branch}`];
+  for (const ref of refsToTry) {
     try {
-      execSync(`git show "${branch}:${normalized}"`, {
+      execSync(`git show "${ref}:${normalized}"`, {
         cwd: repoPath,
         stdio: ["ignore", "pipe", "pipe"],
         encoding: "utf8",
@@ -86,7 +86,21 @@ export function isDependencyPresentInBranch(repoPath: string, branch: string, re
       });
       return true;
     } catch {
-      // file not in branch or path invalid
+      // ref invalid or file not in branch
+    }
+  }
+  return false;
+}
+
+/**
+ * Check whether at least one of the given paths exists in the given git branch.
+ * Paths must use forward slashes (git convention).
+ * Tries branch name first, then origin/branch when branch is only available as a remote ref.
+ */
+export function isDependencyPresentInBranch(repoPath: string, branch: string, relativePaths: string[]): boolean {
+  for (const p of relativePaths) {
+    if (gitShowInBranch(repoPath, branch, p)) {
+      return true;
     }
   }
   return false;
