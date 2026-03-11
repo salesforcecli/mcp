@@ -194,8 +194,15 @@ describe("EnrichMetadataMcpTool", () => {
       } as unknown as Services;
       vi.spyOn(SourceComponentProcessor, "getComponentsToSkip").mockReturnValue(
         new Set([
-          { typeName: "LightningComponentBundle", componentName: "otherCmp" },
-        ])
+          {
+            componentName: "otherCmp",
+            componentType: { name: "LightningComponentBundle" },
+            requestBody: null,
+            response: null,
+            message: null,
+            status: EnrichmentStatus.SKIPPED,
+          },
+        ]) as unknown as Set<EnrichmentRequestRecord>
       );
       vi.spyOn(EnrichmentHandler, "enrich").mockResolvedValue([
         {
