@@ -1,8 +1,9 @@
+import { execSync } from "node:child_process";
 import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
 import { usernameOrAliasParam } from "../shared/params.js";
-import { normalizeAndValidateRepoPath } from "../shared/pathUtils.js";
+import { normalizeAndValidateRepoPath, isSalesforceOrDevOpsProject } from "../shared/pathUtils.js";
 import { canFullPromotionFixFailure } from "../resolveDeploymentFailure.js";
 
 const inputSchema = z.object({
@@ -45,10 +46,8 @@ export class SfDevopsResolveDeploymentFailure extends McpTool<InputArgsShape, Ou
 **Inputs:** workItemName (mandatory), sourceBranchName (mandatory), errorDetails (mandatory), localPath (optional; defaults to current working directory), targetBranchName (optional; when provided, source and target are compared to confirm if full promotion will resolve).
 
 **Behavior:**
-1. **If full promotion cannot fix** (e.g. merge conflict): Return instructions to use **resolve_devops_center_merge_conflict** or to add the missing dependency in a separate work item.
-2. **If full promotion can fix** (anything other than merge conflict):
-   - For dependency-type errors (e.g. "Variable does not exist"): Use **localPath** to check whether the missing dependency exists in the source branch. If **targetBranchName** is provided, the tool compares source and target (dependency in source but not in target → full promotion will resolve). If **present in source** → ask the user for confirmation (see below). If **not present in source** → instruct the user to create a new work item for the missing dependency, promote it first, then retry.
-   - For other errors: Ask the user for confirmation (see below).
+1. **Merge conflict**: Full promotion cannot fix → instruct to use **resolve_devops_center_merge_conflict**.
+2. **All other errors**: The tool **checks out the source branch** in the repo (at localPath), then parses the error for a missing dependency and checks if the **source branch** contains it. If **source contains the missing dependency** → full promotion can fix → ask for confirmation (see below), then proceed to full promotion after user confirms. If **source does not contain it** (or no dependency could be parsed) → return generic instructions to resolve the deployment failure.
 
 **MANDATORY – Ask for confirmation; do NOT run full promotion without it:**
 - When this tool returns that full promotion can fix the failure, you MUST present the confirmation request to the user and STOP.
@@ -60,8 +59,65 @@ export class SfDevopsResolveDeploymentFailure extends McpTool<InputArgsShape, Ou
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
+    const resolvedPath = normalizeAndValidateRepoPath(input.localPath?.trim() || undefined);
+    if (!isSalesforceOrDevOpsProject(resolvedPath)) {
+      return {
+        content: [{
+          type: "text",
+          text: `The path is not a Salesforce/DevOps project (expected a Git repository with Salesforce layout, e.g. \`sfdx-project.json\`, \`force-app/\`, or \`main/\`).
+
+**Please provide the local path** to your Salesforce/DevOps repository (**localPath**). Current path used: \`${resolvedPath}\`
+
+If your current working directory is not the repo root, pass the absolute path to the repository root so the tool can check the source branch for the missing dependency.`
+        }],
+        isError: false
+      };
+    }
+
+    // Checkout source branch before checking for dependency
+    try {
+      try {
+        execSync(`git checkout "${input.sourceBranchName}"`, {
+          cwd: resolvedPath,
+          stdio: ["ignore", "pipe", "pipe"],
+          encoding: "utf8",
+        });
+      } catch (checkoutErr: unknown) {
+        const stderr = (checkoutErr as { stderr?: string })?.stderr ?? String(checkoutErr);
+        const isUnknownBranch = /did not match any file|unknown revision|path.*does not exist/i.test(stderr) || /branch.*not found/i.test(stderr);
+        if (isUnknownBranch) {
+          execSync(`git fetch origin "${input.sourceBranchName}" --prune`, {
+            cwd: resolvedPath,
+            stdio: ["ignore", "pipe", "pipe"],
+            encoding: "utf8",
+          });
+          execSync(`git checkout -B "${input.sourceBranchName}" "origin/${input.sourceBranchName}"`, {
+            cwd: resolvedPath,
+            stdio: ["ignore", "pipe", "pipe"],
+            encoding: "utf8",
+          });
+        } else {
+          throw checkoutErr;
+        }
+      }
+    } catch (err: unknown) {
+      const stderr = (err as { stderr?: string })?.stderr ?? "";
+      const message = (err as { message?: string })?.message ?? String(err);
+      const out = [stderr, message].filter(Boolean).join("\n");
+      const hint = /uncommitted|would be overwritten|local changes/i.test(out)
+        ? " Stash or commit your changes, then re-run this tool."
+        : " Ensure the source branch exists (locally or on origin) and re-run.";
+      return {
+        content: [{
+          type: "text",
+          text: `Could not checkout source branch "${input.sourceBranchName}" in \`${resolvedPath}\`.${hint}\n\nDetails: ${out.trim() || message}`
+        }],
+        isError: true
+      };
+    }
+
     const options = {
-      localPath: normalizeAndValidateRepoPath(input.localPath?.trim() || undefined),
+      localPath: resolvedPath,
       sourceBranchName: input.sourceBranchName,
       ...(input.targetBranchName?.trim() && { targetBranchName: input.targetBranchName.trim() }),
     };
@@ -81,25 +137,24 @@ export class SfDevopsResolveDeploymentFailure extends McpTool<InputArgsShape, Ou
       };
     }
 
-    // Dependency missing in source branch
-    if (!canFix && reason === "dependency_not_in_source_branch") {
-      return {
-        content: [{
-          type: "text",
-          text: `Full promotion **cannot** fix this. The missing dependency${missingDependencyName ? ` (${missingDependencyName})` : ""} was not found in branch "${input.sourceBranchName}".
-
-**Next step:** Create a new work item that adds this dependency, promote it so it exists in the pipeline, then retry promoting "${input.workItemName}".`
-        }],
-        isError: false
-      };
-    }
-
-    // Any other "cannot fix" case
+    // Source branch does not contain the missing dependency, or dependency could not be parsed, or path required
     if (!canFix) {
+      const specificContext =
+        reason === "dependency_not_in_source_branch" && missingDependencyName
+          ? `The missing dependency "${missingDependencyName}" was not found in source branch "${input.sourceBranchName}". `
+          : reason === "local_path_required"
+            ? `To check whether the source branch contains the missing dependency, provide **localPath** (repository path). `
+            : "";
       return {
         content: [{
           type: "text",
-          text: `Full promotion cannot fix this failure. Create a new work item that adds the missing metadata, promote it first, then retry "${input.workItemName}".`
+          text: `Full promotion **cannot** fix this failure based on the check. ${specificContext}
+
+**Generic instructions to resolve the deployment failure:**
+- Review the deployment error details and identify any missing metadata or dependencies.
+- Add missing components in a separate work item, promote that work item first, then retry promoting "${input.workItemName}".
+- If there are merge conflicts, use **resolve_devops_center_merge_conflict** with workItemName: "${input.workItemName}", then commit, push, and retry.
+- If the error persists, check pipeline logs or contact your DevOps admin.`
         }],
         isError: false
       };
