@@ -9,6 +9,7 @@
     "build": "wireit",
     "build:watch": "yarn build --watch",
     "clean": "tsc --build --clean",
+    "clean-all": "yarn clean && rimraf node_modules",
     "format": "wireit",
     "lint": "wireit",
     "test": "wireit",
