@@ -160,6 +160,7 @@ function buildError(status: string): CallToolResult {
   const output = { status };
   return {
     content: [{ type: "text", text: JSON.stringify(output) }],
-    structuredContent: output
+    structuredContent: output,
+    isError: true
   };
 }
