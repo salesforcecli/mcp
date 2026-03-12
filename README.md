@@ -258,15 +258,16 @@ For complete documentation, see [Use DX MCP Tools for LWC](https://developer.sal
 #### Development Guidelines
 
 - `create_lightning_type` (GA) - Provides guidance for creating Custom Lightning Types (CLT) for Salesforce applications, agent actions, Lightning web components, and Lightning Platform integrations.
+- `explore_slds_blueprints` (GA) - Retrieves SLDS blueprint specifications by name, category, Lightning component, CSS class, or styling hook.
+- `guide_design_general` (GA) - Provides SLDS guidelines and best practices for Lightning Web Components with accessibility, responsive design, and component usage patterns.
 - `guide_lwc_accessibility` (GA) - Provides accessibility guidelines and testing instructions for LWC components.
 - `guide_lwc_best_practices` (GA) - Offers LWC development best practices and coding standards guidance.
 - `guide_lwc_development` (GA) - Provides LWC development workflow and implementation guidelines.
 - `guide_lwc_rtl_support` (GA) - Provides Right-to-Left (RTL) internationalization support and RTL development guidance.
-- `guide_slds_blueprints` (GA) - Retrieves comprehensive SLDS blueprints guidance, reference documentation, and a complete index of all 85 available blueprints by category.
-- `explore_slds_blueprints` (GA) - Search and explore SLDS Blueprints by name, category, lightning component, SLDS class, or styling hook, returning full blueprint specs.
 - `guide_lwc_security` (GA) - Provides security analysis in accordance with product security guidelines and Lightning Web Security guidelines.
-- `guide_design_general` (GA) - Provides SLDS guidelines and best practices for Lightning Web Components with accessibility, responsive design, and component usage patterns.
+- `guide_slds_blueprints` (GA) - Provides comprehensive SLDS blueprints guidelines, reference documentation, and a complete index of all available blueprints by category.
 - `guide_utam_generation` (NON-GA) - Provides UI Test Automation Model (UTAM) Page Object generation guidelines and best practices.
+- `lwc-doc-error`: Retrieves information about LWC error messages, including static guidance for resolving the issue based on the error code.
 - `reference_lwc_compilation_error` (GA) - References LWC compilation errors by looking up error codes against a knowledge base of documented error patterns, causes, and fixes.
 
 #### Lightning Data Service (LDS) Tools
@@ -280,14 +281,14 @@ For complete documentation, see [Use DX MCP Tools for LWC](https://developer.sal
 - `guide_lds_graphql` (GA) - Provides LDS GraphQL usage patterns and guidelines.
 - `guide_lds_referential_integrity` (GA) - Provides referential integrity patterns for LDS data management.
 - `orchestrate_lds_data_requirements` (GA) - Provides step-by-step guidance for analyzing and clarifying LDS data requirements to produce PRD-ready specifications.
-- `test_lds_graphql_query` (GA) - Tests a GraphQL query against a connected Salesforce org and returns the result (sub-tool of query creation workflows).
+- `test_lds_graphql_query` (GA) - Tests a GraphQL query against a connected Salesforce org and returns the result. This tool is a sub-tool of the GraphQL query creation tools and must only be called as part of their workflows.
 
 #### Migration & Integration Tools
 
 - `guide_figma_to_lwc_conversion` (GA) - Converts Figma designs to LWC component specifications.
+- `guide_lo_migration` (GA) - Provides guidance to convert a Lightning Out (beta) app into a Lightning Out 2.0 app.
 - `run_lwc_accessibility_jest_tests` (GA) - Provides accessibility testing utilities and Jest integration for LWC components.
 - `verify_aura_migration_completeness` (GA) - Provides Aura to LWC migration completeness checklist and validation.
-- `guide_lo_migration` (GA) - Migration recipe: converts a Lightning Out (beta) host page into a Lightning Out 2.0 page
 
 #### Workflow Tools
 
@@ -345,7 +346,7 @@ For sample prompts that invoke the core DX MCP tools, see [Use the Core Salesfor
 
 For complete documentation, see the [README](./packages/mcp-provider-scale-products/README.md) in the `mcp-provider-scale-products` subdirectory.
 
-- `scan_apex_class_for_antipatterns` - (GA) Analyzes Apex class files for performance antipatterns and provides recommendations for fixing them.
+- `scan_apex_class_for_antipatterns` (GA) - Analyzes Apex class files for performance antipatterns and provides recommendations for fixing them.
 
 ### Testing Toolset
 
