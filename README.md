@@ -267,15 +267,15 @@ For complete documentation, see [Use DX MCP Tools for LWC](https://developer.sal
 - `guide_lwc_security` (GA) - Provides security analysis in accordance with product security guidelines and Lightning Web Security guidelines.
 - `guide_slds_blueprints` (GA) - Provides comprehensive SLDS blueprints guidelines, reference documentation, and a complete index of all available blueprints by category.
 - `guide_utam_generation` (NON-GA) - Provides UI Test Automation Model (UTAM) Page Object generation guidelines and best practices.
-- `lwc-doc-error`: Retrieves information about LWC error messages, including static guidance for resolving the issue based on the error code.
+- `lwc-doc-error` (GA) - Retrieves information about LWC error messages, including static guidance for resolving the issue based on the error code.
 - `reference_lwc_compilation_error` (GA) - References LWC compilation errors by looking up error codes against a knowledge base of documented error patterns, causes, and fixes.
 
 #### Lightning Data Service (LDS) Tools
 
 - `create_lds_graphql_mutation_query` (GA) - Provides guidance for creating GraphQL mutation queries.
 - `create_lds_graphql_read_query` (GA) - Create GraphQL read queries for LDS.
-- `fetch_lds_graphql_schema` (GA) - Fetch GraphQL schema structure for LDS.
 - `explore_lds_uiapi` (GA) - Explores and documents Lightning Design System UI API capabilities.
+- `fetch_lds_graphql_schema` (GA) - Fetch GraphQL schema structure for LDS.
 - `guide_lds_data_consistency` (GA) - Provides data consistency patterns and best practices for LDS components.
 - `guide_lds_development` (GA) - Provides LDS development guidelines and component integration.
 - `guide_lds_graphql` (GA) - Provides LDS GraphQL usage patterns and guidelines.
