@@ -39,7 +39,7 @@ describe('run_code_analyzer', () => {
         {
             case: 'violations are present',
             target: path.join(__dirname, '..', 'fixtures', 'sample-targets', 'ApexTarget2.cls'),
-            expectedCount: 6
+            expectedCount: 7
         },
         {
             case: 'no violations are present',
