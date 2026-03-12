@@ -89,7 +89,7 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       If the user doesn't specify what exactly to enrich (such as "enrich metadata"), ask the user to provide specific component names from their local project.
       Wildcards are supported for component names and match to components in the local project.
 
-      This tool currently supports enriching the below component types, wher ethe metadata type is what is used in the tool for the enrichment request.
+      This tool currently supports enriching the following component types, where the metadata type is what is used in the tool for the enrichment request.
       [Header: Component Type] | [Header: Metadata Type]
       Component Type | Metadata Type
       Custom Object | CustomObject
