@@ -249,7 +249,7 @@ For complete documentation, see [Merge Conflict Resolution with DevOps Center MC
 
 For complete documentation, see [Use DX MCP Tools for LWC](https://developer.salesforce.com/docs/platform/lwc/guide/mcp-intro.html) in the _Lightning Web Components Developer Guide_.
 
-#### Component Development
+#### Component Development 
 
 - `create_lwc_component_from_prd` (GA) - Creates complete LWC components from PRD specifications with proper structure. and best practices
 - `create_lwc_jest_tests` (GA) - Generates Jest test suites for LWC components with coverage and mocking.
