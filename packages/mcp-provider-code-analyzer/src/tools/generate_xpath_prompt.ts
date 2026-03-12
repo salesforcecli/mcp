@@ -84,7 +84,9 @@ export class GenerateXpathPromptMcpTool extends McpTool<InputArgsShape, OutputAr
       inputSchema: inputSchema.shape,
       outputSchema: outputSchema.shape,
       annotations: {
-        readOnlyHint: true
+        readOnlyHint: false, // Creates temp files for AST generation (cleaned up after)
+        destructiveHint: false, // Temp files are cleaned up automatically
+        openWorldHint: false // Local filesystem operations only
       }
     };
   }

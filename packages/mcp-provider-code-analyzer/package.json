@@ -21,6 +21,7 @@
     "@salesforce/code-analyzer-regex-engine": "^0.33.0",
     "@salesforce/code-analyzer-retirejs-engine": "^0.32.0",
     "@salesforce/mcp-provider-api": "^0.4.1",
+    "fast-xml-parser": "^5.5.3",
     "zod": "^3.25.76"
   },
   "devDependencies": {

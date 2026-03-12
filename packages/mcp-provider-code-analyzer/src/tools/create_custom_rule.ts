@@ -81,7 +81,12 @@ export class CreateCustomRuleMcpTool extends McpTool<InputArgsShape, OutputArgsS
       title: "Create Custom Rule",
       description: DESCRIPTION,
       inputSchema: inputSchema.shape,
-      outputSchema: outputSchema.shape
+      outputSchema: outputSchema.shape,
+      annotations: {
+        readOnlyHint: false, // Writes ruleset XML and code-analyzer.yml
+        destructiveHint: false, // Does not delete anything
+        openWorldHint: false, // Local file operations only
+      },
     };
   }
 
@@ -107,7 +112,8 @@ export class CreateCustomRuleMcpTool extends McpTool<InputArgsShape, OutputArgsS
     }
     return {
       content: [{ type: "text", text: message }],
-      structuredContent: output
+      structuredContent: output,
+      isError: output.status !== "success"
     };
   }
 }

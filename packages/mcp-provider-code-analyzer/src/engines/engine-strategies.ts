@@ -3,7 +3,7 @@ import { type AstNode } from "../ast/extract-ast-nodes.js";
 import { getApexAstNodeMetadataByNames, type ApexAstNodeMetadata } from "../ast/metadata/apex-ast-reference.js";
 import { LANGUAGE_NAMES } from "../constants.js";
 
-export type EngineName = "pmd";
+type EngineName = "pmd";
 
 export type PromptInput = {
   language: string;
