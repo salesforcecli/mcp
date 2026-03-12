@@ -20,7 +20,7 @@
     "@salesforce/core": "^8.24.3"
   },
   "resolutions": {
-    "@salesforce/core": "^8.24.3"
+    "@salesforce/core": "8.24.3"
   },
   "scripts": {
     "build": "yarn workspaces run build",
