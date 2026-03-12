@@ -27,7 +27,7 @@ const PATH_TO_SAMPLE_TARGETS: string = path.resolve(__dirname, '..', 'fixtures',
 const PATH_TO_COMPARISON_FILES: string = path.resolve(__dirname, '..', 'fixtures', 'comparison-files');
 
 // TODO: FIGURE OUT A WAY TO MAKE THESE GOLD FILE TESTS MORE ROBUST AGAINST VERSION CHANGES. FOR NOW USING CONSTANT:
-const PMD_VERSION: string = '7.18.0';
+const PMD_VERSION: string = '7.21.0';
 
 describe('RunAnalyzerActionImpl', () => {
     it.each([
@@ -67,12 +67,12 @@ describe('RunAnalyzerActionImpl', () => {
                 'success'
             ],
             expectedSummary: {
-                total: 6,
+                total: 7,
                 sev1: 0,
                 sev2: 0,
                 sev3: 3,
                 sev4: 3,
-                sev5: 0
+                sev5: 1
             }
         },
         {
