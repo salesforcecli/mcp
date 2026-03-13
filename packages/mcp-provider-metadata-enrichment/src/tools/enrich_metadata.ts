@@ -40,7 +40,7 @@ import { SourceComponentProcessor, EnrichmentHandler, EnrichmentRecords, Enrichm
  * - metadataEntries: The metadata entries to enrich in format <componentType>:<componentName>
  *
  * Returns:
- * - Metadata enrichment result.
+ * - Metadata enrichment result
  */
 export const enrichMetadataSchema = z.object({
   usernameOrAlias: usernameOrAliasParam,
@@ -92,10 +92,10 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       This tool currently supports enriching the following component types, where the metadata type is what is used in the tool for the enrichment request.
       [Header: Component Type] | [Header: Metadata Type]
       Component Type | Metadata Type
-      Custom Object | CustomObject
       FlexiPage | FlexiPage
       Lightning Type | LightningType
       Lightning Web Component (LWC) | LightningComponentBundle
+      Salesforce Object | SalesforceObject
 
       If the user specifies any unsupported component type for enrichment, the tool will skip them but will proceed with enriching the supported components.
       If the user specifies multiple components, batch the enrichment requests together as the tool can handle enriching multiple at a time.
@@ -129,128 +129,139 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
-
-    if (!input.usernameOrAlias) {
-      return {
-        isError: true,
-        content: [
-          {
-            type: 'text',
-            text: `The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool`,
-          },
-        ],
-      };
-    }
-
-    if (!input.metadataEntries) {
-      return {
-        isError: true,
-        content: [
-          {
-            type: 'text',
-            text: `User did not specify what to enrich. Please specify the component names to enrich.`,
-          },
-        ],
-      };
-    }
-
-    process.chdir(input.directory);
-    const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
-    const project = await SfProject.resolve(input.directory);
-
-    const projectComponentSet = await ComponentSetBuilder.build({
-      metadata: {
-        metadataEntries: input.metadataEntries,
-        directoryPaths: [project.getPath()],
-      },
-    });
-    const projectSourceComponents = projectComponentSet.getSourceComponents().toArray();
-    const enrichmentRecords = new EnrichmentRecords(projectSourceComponents);
-
-    const componentsToSkip = SourceComponentProcessor.getComponentsToSkip(
-      projectSourceComponents,
-      input.metadataEntries,
-      project.getPath()
-    );
-    enrichmentRecords.addRecords(componentsToSkip);
-
-    const componentsEligibleToProcess = projectSourceComponents.filter((component) => {
-      const componentName = component.fullName ?? component.name;
-      if (!componentName) return false;
-      for (const skip of componentsToSkip) {
-        if (skip.componentName === componentName) return false;
+    try {
+      if (!input.usernameOrAlias) {
+        return {
+          isError: true,
+          content: [
+            {
+              type: 'text',
+              text: `The usernameOrAlias parameter is required, if the user did not specify one use the #get_username tool`,
+            },
+          ],
+        };
       }
-      return true;
-    });
-
-    if (componentsEligibleToProcess.length === 0) {
-      return {
-        isError: true,
-        content: [
-          {
-            type: 'text',
-            text: `No eligible component was found for metadata enrichment.`,
-          },
-        ],
+  
+      if (!input.metadataEntries) {
+        return {
+          isError: true,
+          content: [
+            {
+              type: 'text',
+              text: `User did not specify what to enrich. Please specify the component names to enrich.`,
+            },
+          ],
+        };
       }
-    }
-
-    const enrichmentResponse = await EnrichmentHandler.enrich(connection, componentsEligibleToProcess);
-    enrichmentRecords.updateWithResults(enrichmentResponse);
-
-    const fileUpdatedRecords = await FileProcessor.updateMetadata(
-      componentsEligibleToProcess,
-      enrichmentRecords.recordSet
-    );
-    enrichmentRecords.updateWithResults(Array.from(fileUpdatedRecords));
-
-    const successfulRecords = Array.from(enrichmentRecords.recordSet).filter(
-      (record) => record.status === EnrichmentStatus.SUCCESS
-    );
-    const skippedRecords = Array.from(enrichmentRecords.recordSet).filter(
-      (record) => record.status === EnrichmentStatus.SKIPPED
-    );
-    const failedRecords = Array.from(enrichmentRecords.recordSet).filter(
-      (record) => record.status === EnrichmentStatus.FAIL
-    );
-
-    const summaryParts: string[] = [];
-    if (successfulRecords.length === 0) {
-      summaryParts.push('No components were enriched.');
-    } else {
-      summaryParts.push('Metadata enrichment completed');
-      summaryParts.push('Enriched components:');
-      summaryParts.push(...successfulRecords.map((r) => `  • ${r.componentName}\n      (Request ID: ${r.response?.metadata?.requestId ?? 'None'})`));
-    }
-    if (skippedRecords.length > 0) {
-      summaryParts.push('Skipped:');
-      summaryParts.push(
-        ...skippedRecords.map((r) => `  • ${r.componentName}: ${r.message ?? 'Skipped'}`)
+  
+      process.chdir(input.directory);
+      const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
+      const project = await SfProject.resolve(input.directory);
+  
+      const projectComponentSet = await ComponentSetBuilder.build({
+        metadata: {
+          metadataEntries: input.metadataEntries,
+          directoryPaths: [project.getPath()],
+        },
+      });
+      const projectSourceComponents = projectComponentSet.getSourceComponents().toArray();
+      const enrichmentRecords = new EnrichmentRecords(projectSourceComponents);
+  
+      const componentsToSkip = SourceComponentProcessor.getComponentsToSkip(
+        projectSourceComponents,
+        input.metadataEntries,
+        project.getPath()
       );
-    }
-    if (failedRecords.length > 0) {
-      summaryParts.push('Failed:');
-      summaryParts.push(
-        ...failedRecords.map((r) => `  • ${r.componentName}: ${r.message ?? 'Failed'}\n      (Request ID: ${r.response?.metadata?.requestId ?? 'None'})`)
-      );
-    }
-
-    const summary = summaryParts.join('\n');
-
-    // Only return error response IFF there were only failed records
-    const isError =
-      successfulRecords.length === 0 &&
-      skippedRecords.length === 0 &&
-      failedRecords.length > 0;
-
-    return {
-      isError,
-      content: [
-        {
-          type: 'text',
-          text: summary
+      enrichmentRecords.addRecords(componentsToSkip);
+  
+      const componentsEligibleToProcess = projectSourceComponents.filter((component) => {
+        const componentName = component.fullName ?? component.name;
+        if (!componentName) return false;
+        for (const skip of componentsToSkip) {
+          if (skip.componentName === componentName) return false;
         }
-      ],
-    };
+        return true;
+      });
+  
+      if (componentsEligibleToProcess.length === 0) {
+        return {
+          isError: true,
+          content: [
+            {
+              type: 'text',
+              text: `No eligible component was found for metadata enrichment.`,
+            },
+          ],
+        }
+      }
+  
+      const enrichmentResponse = await EnrichmentHandler.enrich(connection, componentsEligibleToProcess);
+      enrichmentRecords.updateWithResults(enrichmentResponse);
+  
+      const fileUpdatedRecords = await FileProcessor.updateMetadata(
+        componentsEligibleToProcess,
+        enrichmentRecords.recordSet
+      );
+      enrichmentRecords.updateWithResults(Array.from(fileUpdatedRecords));
+  
+      const successfulRecords = Array.from(enrichmentRecords.recordSet).filter(
+        (record) => record.status === EnrichmentStatus.SUCCESS
+      );
+      const skippedRecords = Array.from(enrichmentRecords.recordSet).filter(
+        (record) => record.status === EnrichmentStatus.SKIPPED
+      );
+      const failedRecords = Array.from(enrichmentRecords.recordSet).filter(
+        (record) => record.status === EnrichmentStatus.FAIL
+      );
+  
+      const summaryParts: string[] = [];
+      if (successfulRecords.length === 0) {
+        summaryParts.push('No components were enriched.');
+      } else {
+        summaryParts.push('Metadata enrichment completed');
+        summaryParts.push('Enriched components:');
+        summaryParts.push(...successfulRecords.map((r) => `  • ${r.componentName}\n      (Request ID: ${r.response?.metadata?.requestId ?? 'None'})`));
+      }
+      if (skippedRecords.length > 0) {
+        summaryParts.push('Skipped:');
+        summaryParts.push(
+          ...skippedRecords.map((r) => `  • ${r.componentName}: ${r.message ?? 'Skipped'}`)
+        );
+      }
+      if (failedRecords.length > 0) {
+        summaryParts.push('Failed:');
+        summaryParts.push(
+          ...failedRecords.map((r) => `  • ${r.componentName}: ${r.message ?? 'Failed'}\n      (Request ID: ${r.response?.metadata?.requestId ?? 'None'})`)
+        );
+      }
+  
+      const summary = summaryParts.join('\n');
+  
+      // Only return error response IFF there are only failed records
+      const isError =
+        successfulRecords.length === 0 &&
+        skippedRecords.length === 0 &&
+        failedRecords.length > 0;
+  
+      return {
+        isError,
+        content: [
+          {
+            type: 'text',
+            text: summary
+          }
+        ],
+      };
+    } catch (error) {
+      return {
+        isError: true,
+        content: [
+          {
+            type: 'text',
+            text: `Unexpected error occurred while enriching metadata: ${error}`,
+          },
+        ],
+      };
+    }
   }
 }
