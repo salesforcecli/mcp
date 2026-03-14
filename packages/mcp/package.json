@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/mcp",
-  "version": "0.27.0",
+  "version": "0.27.1",
   "description": "MCP Server for interacting with Salesforce instances",
   "bin": {
     "sf-mcp-server": "bin/run.js"
@@ -51,7 +51,7 @@
     "@salesforce/mcp-provider-mobile-web": "0.2.2",
     "@salesforce/mcp-provider-devops": "0.2.1",
     "@salesforce/mcp-provider-scale-products": "0.0.5",
-    "@salesforce/mcp-provider-metadata-enrichment": "0.1.0",
+    "@salesforce/mcp-provider-metadata-enrichment": "0.1.1",
     "@salesforce/source-deploy-retrieve": "^12.31.7",
     "@salesforce/source-tracking": "^7.8.2",
     "@salesforce/telemetry": "^6.8.0",
