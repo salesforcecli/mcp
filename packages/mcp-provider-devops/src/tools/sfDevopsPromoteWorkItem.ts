@@ -8,7 +8,8 @@ import { usernameOrAliasParam } from "../shared/params.js";
 
 const inputSchema = z.object({
   usernameOrAlias: usernameOrAliasParam,
-  workItemNames: z.array(z.string().min(1)).nonempty().describe("Exact Work Item Names to promote")
+  workItemNames: z.array(z.string().min(1)).nonempty().describe("Exact Work Item Names to promote"),
+  isFullDeploy: z.boolean().optional().describe("Set to true to run a full deploy (e.g. when resolving deployment failures due to missing dependencies). Default false.")
 });
 type InputArgs = z.infer<typeof inputSchema>;
 type InputArgsShape = typeof inputSchema.shape;
@@ -118,7 +119,11 @@ export class SfDevopsPromoteWorkItem extends McpTool<InputArgsShape, OutputArgsS
     }
 
     try {
-      const result = await promoteWorkItems(connection, { workitems: prepared });
+      const deployOptions = input.isFullDeploy ? { testLevel: "NoTestRun" as const, isFullDeploy: true } : undefined;
+      const result = await promoteWorkItems(connection, {
+        workitems: prepared,
+        ...(deployOptions && { deployOptions })
+      });
       
       const executionTime = Date.now() - startTime;
       
