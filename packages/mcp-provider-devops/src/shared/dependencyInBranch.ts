@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import path from "node:path";
 
 /** Parsed missing dependency from a deployment error message. */
@@ -78,7 +78,7 @@ function gitShowInBranch(repoPath: string, branch: string, relativePath: string)
   const refsToTry = [branch, `origin/${branch}`];
   for (const ref of refsToTry) {
     try {
-      execSync(`git show "${ref}:${normalized}"`, {
+      execFileSync("git", ["show", `${ref}:${normalized}`], {
         cwd: repoPath,
         stdio: ["ignore", "pipe", "pipe"],
         encoding: "utf8",

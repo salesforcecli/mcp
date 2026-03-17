@@ -2,6 +2,30 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { execSync } from 'node:child_process';
 
+/** Allowlist for git branch/ref names to prevent command injection. Only safe characters. */
+const GIT_REF_SAFE_REGEX = /^[a-zA-Z0-9/_.-]{1,255}$/;
+
+/**
+ * Validates that a string is a safe git branch/ref name (no shell metacharacters or path traversal).
+ * Use before passing LLM or user input to git commands.
+ * @throws Error if the branch name is invalid or unsafe
+ */
+export function validateGitBranchName(branchName: string): string {
+  const trimmed = branchName.trim();
+  if (!trimmed) {
+    throw new Error("Branch name cannot be empty");
+  }
+  if (trimmed.includes("..")) {
+    throw new Error("Branch name must not contain '..'");
+  }
+  if (!GIT_REF_SAFE_REGEX.test(trimmed)) {
+    throw new Error(
+      "Branch name may only contain letters, numbers, slashes, underscores, periods, and hyphens"
+    );
+  }
+  return trimmed;
+}
+
 export function isGitRepository(candidatePath: string): boolean {
   const gitPath = path.join(candidatePath, '.git');
   if (!fs.existsSync(gitPath)) {

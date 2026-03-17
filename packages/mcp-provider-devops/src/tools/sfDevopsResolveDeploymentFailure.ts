@@ -1,9 +1,10 @@
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
 import { usernameOrAliasParam } from "../shared/params.js";
 import { normalizeAndValidateRepoPath, isSalesforceOrDevOpsProject } from "../shared/pathUtils.js";
+import { validateGitBranchName } from "../shared/gitUtils.js";
 import { canFullPromotionFixFailure } from "../resolveDeploymentFailure.js";
 
 const inputSchema = z.object({
@@ -27,7 +28,7 @@ export class SfDevopsResolveDeploymentFailure extends McpTool<InputArgsShape, Ou
   }
 
   public getReleaseState(): ReleaseState {
-    return ReleaseState.GA;
+    return ReleaseState.NON_GA;
   }
 
   public getToolsets(): Toolset[] {
@@ -59,6 +60,28 @@ export class SfDevopsResolveDeploymentFailure extends McpTool<InputArgsShape, Ou
   }
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
+    let sourceBranchName: string;
+    try {
+      sourceBranchName = validateGitBranchName(input.sourceBranchName);
+    } catch (err) {
+      return {
+        content: [{ type: "text", text: `Invalid sourceBranchName: ${(err as Error).message}` }],
+        isError: true,
+      };
+    }
+    let targetBranchName: string | undefined;
+    const rawTarget = input.targetBranchName?.trim();
+    if (rawTarget) {
+      try {
+        targetBranchName = validateGitBranchName(rawTarget);
+      } catch (err) {
+        return {
+          content: [{ type: "text", text: `Invalid targetBranchName: ${(err as Error).message}` }],
+          isError: true,
+        };
+      }
+    }
+
     const resolvedPath = normalizeAndValidateRepoPath(input.localPath?.trim() || undefined);
     if (!isSalesforceOrDevOpsProject(resolvedPath)) {
       return {
@@ -74,10 +97,10 @@ If your current working directory is not the repo root, pass the absolute path t
       };
     }
 
-    // Checkout source branch before checking for dependency
+    // Checkout source branch before checking for dependency (execSync array form = no shell, no injection)
     try {
       try {
-        execSync(`git checkout "${input.sourceBranchName}"`, {
+        execFileSync("git", ["checkout", sourceBranchName], {
           cwd: resolvedPath,
           stdio: ["ignore", "pipe", "pipe"],
           encoding: "utf8",
@@ -86,12 +109,12 @@ If your current working directory is not the repo root, pass the absolute path t
         const stderr = (checkoutErr as { stderr?: string })?.stderr ?? String(checkoutErr);
         const isUnknownBranch = /did not match any file|unknown revision|path.*does not exist/i.test(stderr) || /branch.*not found/i.test(stderr);
         if (isUnknownBranch) {
-          execSync(`git fetch origin "${input.sourceBranchName}" --prune`, {
+          execFileSync("git", ["fetch", "origin", sourceBranchName, "--prune"], {
             cwd: resolvedPath,
             stdio: ["ignore", "pipe", "pipe"],
             encoding: "utf8",
           });
-          execSync(`git checkout -B "${input.sourceBranchName}" "origin/${input.sourceBranchName}"`, {
+          execFileSync("git", ["checkout", "-B", sourceBranchName, `origin/${sourceBranchName}`], {
             cwd: resolvedPath,
             stdio: ["ignore", "pipe", "pipe"],
             encoding: "utf8",
@@ -110,7 +133,7 @@ If your current working directory is not the repo root, pass the absolute path t
       return {
         content: [{
           type: "text",
-          text: `Could not checkout source branch "${input.sourceBranchName}" in \`${resolvedPath}\`.${hint}\n\nDetails: ${out.trim() || message}`
+          text: `Could not checkout source branch "${sourceBranchName}" in \`${resolvedPath}\`.${hint}\n\nDetails: ${out.trim() || message}`
         }],
         isError: true
       };
@@ -118,8 +141,8 @@ If your current working directory is not the repo root, pass the absolute path t
 
     const options = {
       localPath: resolvedPath,
-      sourceBranchName: input.sourceBranchName,
-      ...(input.targetBranchName?.trim() && { targetBranchName: input.targetBranchName.trim() }),
+      sourceBranchName,
+      ...(targetBranchName !== undefined && { targetBranchName }),
     };
 
     const { canFix, reason, missingDependencyName, inTargetBranch } = canFullPromotionFixFailure(input.errorDetails, options);
@@ -141,7 +164,7 @@ If your current working directory is not the repo root, pass the absolute path t
     if (!canFix) {
       const specificContext =
         reason === "dependency_not_in_source_branch" && missingDependencyName
-          ? `The missing dependency "${missingDependencyName}" was not found in source branch "${input.sourceBranchName}". `
+          ? `The missing dependency "${missingDependencyName}" was not found in source branch "${sourceBranchName}". `
           : reason === "local_path_required"
             ? `To check whether the source branch contains the missing dependency, provide **localPath** (repository path). `
             : "";
@@ -162,9 +185,9 @@ If your current working directory is not the repo root, pass the absolute path t
 
     // Full promotion can fix — ask for confirmation; do NOT call promote until user explicitly confirms
     const comparisonNote =
-      reason === "dependency_in_source_branch" && missingDependencyName && input.targetBranchName?.trim()
+      reason === "dependency_in_source_branch" && missingDependencyName && targetBranchName
         ? inTargetBranch === false
-          ? ` The missing dependency "${missingDependencyName}" is in source branch "${input.sourceBranchName}" but not in target branch "${input.targetBranchName}"; full promotion will resolve this.`
+          ? ` The missing dependency "${missingDependencyName}" is in source branch "${sourceBranchName}" but not in target branch "${targetBranchName}"; full promotion will resolve this.`
           : ` The dependency "${missingDependencyName}" is present in both source and target branches; full promotion will resolve.`
         : "";
     return {
