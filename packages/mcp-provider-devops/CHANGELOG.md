@@ -1,3 +1,12 @@
+## [0.2.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.2.0...mcp-provider-devops@0.2.1) (2026-03-05)
+
+
+### Bug Fixes
+
+* Use getConnection instead of axios ([#398](https://github.com/salesforcecli/mcp/issues/398)) ([8894550](https://github.com/salesforcecli/mcp/commit/889455069660ccfe0e64672139d29239c4be0236))
+
+
+
 # [0.2.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.1.9...mcp-provider-devops@0.2.0) (2026-02-19)
 
 

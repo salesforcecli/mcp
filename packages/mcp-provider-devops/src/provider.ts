@@ -26,15 +26,15 @@ export class DevOpsMcpProvider extends McpProvider {
       new SfDevopsListWorkItems(services),
       new SfDevopsCreateWorkItem(services),
       new SfDevopsPromoteWorkItem(services),
-      new SfDevopsDetectConflict(telemetryService),
-      new SfDevopsResolveConflict(telemetryService),
+      new SfDevopsDetectConflict(services),
+      new SfDevopsResolveConflict(services),
 
       new SfDevopsCheckoutWorkItem(services),
       new SfDevopsCommitWorkItem(services),
       new SfDevopsUpdateWorkItemStatus(services),
 
-      new CheckCommitStatus(telemetryService),
-      new CreatePullRequest(telemetryService),
+      new CheckCommitStatus(services),
+      new CreatePullRequest(services),
     ]);
   }
 

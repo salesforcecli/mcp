@@ -1,9 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { fetchWorkItems, fetchWorkItemByName, fetchWorkItemsByNames } from '../src/getWorkItems.js';
-import { getConnection } from '../src/shared/auth.js';
 import { getPipelineIdForProject, fetchPipelineStages } from '../src/shared/pipelineUtils.js';
 
-vi.mock('../src/shared/auth');
 vi.mock('../src/shared/pipelineUtils');
 
 (getPipelineIdForProject as vi.Mock).mockResolvedValue('pipeline-001');
@@ -24,17 +22,15 @@ const mockConnection = {
   })
 };
 
-(getConnection as vi.Mock).mockResolvedValue(mockConnection);
-
 describe('fetchWorkItems', () => {
   it('should fetch work items successfully', async () => {
-    const workItems = await fetchWorkItems('test-user', 'project-001');
+    const workItems = await fetchWorkItems(mockConnection, 'project-001');
     expect(workItems).toHaveLength(1);
     expect(workItems[0].id).toBe('WI-0001');
   });
 
   it('should fetch a work item by name successfully', async () => {
-    const workItem = await fetchWorkItemByName('test-user', 'WI-0001');
+    const workItem = await fetchWorkItemByName(mockConnection, 'WI-0001');
     expect(workItem?.id).toBe('WI-0001');
   });
 

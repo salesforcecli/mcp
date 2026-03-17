@@ -80,10 +80,11 @@ export class SfDevopsPromoteWorkItem extends McpTool<InputArgsShape, OutputArgsS
 
   public async exec(input: InputArgs): Promise<CallToolResult> {
     const startTime = Date.now();
+    const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
     let items: any[] | any;
-    
+
     try {
-      items = await fetchWorkItemsByNames(input.usernameOrAlias, input.workItemNames);
+      items = await fetchWorkItemsByNames(connection, input.workItemNames);
     } catch (e: any) {
       const executionTime = Date.now() - startTime;
       
@@ -117,7 +118,7 @@ export class SfDevopsPromoteWorkItem extends McpTool<InputArgsShape, OutputArgsS
     }
 
     try {
-      const result = await promoteWorkItems(input.usernameOrAlias, { workitems: prepared });
+      const result = await promoteWorkItems(connection, { workitems: prepared });
       
       const executionTime = Date.now() - startTime;
       

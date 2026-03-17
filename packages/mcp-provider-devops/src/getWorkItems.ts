@@ -1,4 +1,4 @@
-import { getConnection } from "./shared/auth.js";
+import { type Connection } from "@salesforce/core";
 import { computeFirstStageId, fetchPipelineStages, getBranchNameFromStage, getPipelineIdForProject, findStageById, resolveTargetStageId } from "./shared/pipelineUtils.js";
 import type { WorkItem } from "./types/WorkItem.js";
 
@@ -74,9 +74,8 @@ function mapRawItemToWorkItem(item: any, ctx: ProjectStagesContext): WorkItem {
     return mapped;
 }
 
-export async function fetchWorkItems(username: string, projectId: string): Promise<WorkItem[] | any> {
+export async function fetchWorkItems(connection: Connection, projectId: string): Promise<WorkItem[] | any> {
     try {
-        const connection = await getConnection(username);
         const query = `
             SELECT
                 Id,
@@ -122,9 +121,11 @@ export async function fetchWorkItems(username: string, projectId: string): Promi
     }
 }
 
-export async function fetchWorkItemByName(username: string, workItemName: string): Promise<WorkItem | null | any> {
+/**
+ * Fetches a work item by name using the given Connection (e.g. from getOrgService().getConnection()).
+ */
+export async function fetchWorkItemByName(connection: Connection, workItemName: string): Promise<WorkItem | null | any> {
     try {
-        const connection = await getConnection(username);
         const query = `
             SELECT
                 Id,
@@ -164,17 +165,14 @@ export async function fetchWorkItemByName(username: string, workItemName: string
     }
 }
 
-export async function fetchWorkItemsByNames(username: string, workItemNames: string[]): Promise<WorkItem[] | any> {
+export async function fetchWorkItemsByNames(connection: Connection, workItemNames: string[]): Promise<WorkItem[] | any> {
     try {
         if (!Array.isArray(workItemNames) || workItemNames.length === 0) {
             return [];
         }
 
-        
         const escapeName = (name: string) => String(name).replace(/'/g, "\\'");
         const namesList = workItemNames.map(n => `'${escapeName(n)}'`).join(", ");
-
-        const connection = await getConnection(username);
         const query = `
             SELECT
                 Id,

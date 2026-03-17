@@ -26,7 +26,7 @@ import { deployMetadataParams } from '../../src/tools/deploy_metadata.js';
 
 describe('deploy_metadata', () => {
   const client = new McpTestClient({
-    timeout: 120_000,
+    timeout: 180_000,
   });
 
   let testSession: TestSession;
@@ -230,7 +230,7 @@ describe('deploy_metadata', () => {
     expect(deployResult.runTestsEnabled).to.be.true;
   });
 
-  it('should deploy remote edit when ignoreConflicts is set to true', async () => { 
+  it('should deploy remote edit when ignoreConflicts is set to true', async () => {
     // deploy the whole project to ensure the file exists
     const fullProjectDeploy = await client.callTool(deployMetadataSchema, {
       name: 'deploy_metadata',
@@ -263,8 +263,8 @@ describe('deploy_metadata', () => {
       authInfo: await AuthInfo.create({ username: orgUsername }),
     });
 
-    const customApp = await conn.singleRecordQuery<{ 
-      Id: string; 
+    const customApp = await conn.singleRecordQuery<{
+      Id: string;
       Metadata: {
         description: string | null;
       };
@@ -277,7 +277,7 @@ describe('deploy_metadata', () => {
 
     const updatedMetadata = {
       ...customApp.Metadata,
-      description: customApp.Metadata.description 
+      description: customApp.Metadata.description
         ? `${customApp.Metadata.description} - Remote edit via Tooling API`
         : 'Remote edit via Tooling API',
     };

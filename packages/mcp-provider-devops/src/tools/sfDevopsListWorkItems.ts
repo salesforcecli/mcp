@@ -67,7 +67,8 @@ export class SfDevopsListWorkItems extends McpTool<InputArgsShape, OutputArgsSha
     const startTime = Date.now();
     
     try {
-      const workItems = await fetchWorkItems(input.usernameOrAlias, input.project.Id);
+      const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
+      const workItems = await fetchWorkItems(connection, input.project.Id);
       
       const executionTime = Date.now() - startTime;
       const workItemCount = workItems.length;

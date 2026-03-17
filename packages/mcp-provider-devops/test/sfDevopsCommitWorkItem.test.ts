@@ -12,13 +12,15 @@ describe('SfDevopsCommitWorkItem', () => {
   let spyTelemetryService: SpyTelemetryService;
   let mockServices: Services;
 
+  const mockConnection = { request: vi.fn(), query: vi.fn() };
+
   beforeEach(() => {
     spyTelemetryService = new SpyTelemetryService();
-    
+
     mockServices = {
       getTelemetryService: () => spyTelemetryService,
       getOrgService: () => ({
-        getConnection: vi.fn(),
+        getConnection: vi.fn().mockResolvedValue(mockConnection),
         getAllowedOrgUsernames: vi.fn(),
         getAllowedOrgs: vi.fn(),
         getDefaultTargetOrg: vi.fn(),

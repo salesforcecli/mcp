@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { getConnection, getRequiredOrgs } from './shared/auth.js';
+import { type Connection } from '@salesforce/core';
 import { execFileSync } from 'child_process';
 import { normalizeAndValidateRepoPath } from './shared/pathUtils.js';
 import path from 'path';
@@ -8,68 +7,60 @@ import * as os from 'os';
 import { RegistryAccess } from '@salesforce/source-deploy-retrieve';
 import { convertToSourceComponents } from './shared/sfdxService.js';
 
+const API_VERSION = 'v65.0';
+
 interface Change {
     fullName: string;
     type: string;
     operation: string;
 }
 
-interface CommitWorkItemParams {
+export interface CommitWorkItemParams {
+    connection: Connection;
     workItem: { id: string };
     requestId: string;
     commitMessage: string;
-    username: string;
     repoPath?: string;
 }
 
-
+/**
+ * Commits work item changes (lite flow) using the provided Connection.
+ * API: POST /services/data/v65.0/connect/devops/workItems/<id>/commitlite
+ */
 export async function commitWorkItem({
+    connection,
     workItem,
     requestId,
     commitMessage,
-    username,
     repoPath
 }: CommitWorkItemParams): Promise<any> {
-    const connection = await getConnection(username);
-        const accessToken = connection.accessToken;
-        const instanceUrl = connection.instanceUrl;
-
-        if (!accessToken || !instanceUrl) {
-            throw new Error('Missing access token or instance URL. Please check if you are authenticated to the org.');
-        }
-
-
     const workingDir = normalizeAndValidateRepoPath(repoPath);
-
     const computedChanges = buildComputedChanges(workingDir);
-    
-    const { commitSha, branch } = AddAndCommitChanges(workingDir, commitMessage);
+    const { commitSha } = AddAndCommitChanges(workingDir, commitMessage);
 
-    const url = `${instanceUrl}/services/data/v65.0/connect/devops/workItems/${workItem.id}/commitlite`;
-
-    const headers = {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-    };
-
+    const pathUrl = `/services/data/${API_VERSION}/connect/devops/workItems/${workItem.id}/commitlite`;
     const requestBody = {
         requestId,
         commitMessage,
-        'commitId': commitSha,
+        commitId: commitSha,
         changes: computedChanges
     };
 
     try {
-        const response = await axios.post(url, requestBody, { headers });
-
-    return {
+        await connection.request({
+            method: 'POST',
+            url: pathUrl,
+            body: JSON.stringify(requestBody),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        return {
             content: [{
-              type: "text",
-              text: `Changes committed successfully.
+                type: "text",
+                text: `Changes committed successfully.
               Commit SHA: ${commitSha}
               Agent execution guide (perform these steps now)
               - Push the commit: 'git push'`,
-              actionRequired: true
+                actionRequired: true
             }],
             isError: false
         };

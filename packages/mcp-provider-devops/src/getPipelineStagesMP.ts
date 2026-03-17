@@ -1,4 +1,4 @@
-import { getConnection } from "./shared/auth.js";
+import type { Connection } from "@salesforce/core";
 
 export interface PipelineStageRecordMP {
     Id: string;
@@ -15,9 +15,8 @@ export interface PipelineStageRecordMP {
  * Fetch Pipeline Stages for a Managed Package pipeline (sf_devops__Pipeline_Stage__c).
  * Includes current stage's branch and the next stage's name/branch.
  */
-export async function fetchPipelineStagesMP(username: string, pipelineId: string): Promise<PipelineStageRecordMP[] | any> {
+export async function fetchPipelineStagesMP(connection: Connection, pipelineId: string): Promise<PipelineStageRecordMP[] | any> {
     try {
-        const connection = await getConnection(username);
         const query = `
             SELECT
                 Id,

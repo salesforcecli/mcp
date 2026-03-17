@@ -1,4 +1,4 @@
-import { getConnection } from "./shared/auth.js";
+import type { Connection } from "@salesforce/core";
 
 export interface DevopsPipelineRecordMP {
     Id: string;
@@ -11,9 +11,8 @@ export interface DevopsPipelineRecordMP {
  * Fetch the Managed Package DevOps pipeline for a given Project Id.
  * Returns the first matching pipeline or null if none found.
  */
-export async function getPipelineMP(username: string, projectId: string): Promise<DevopsPipelineRecordMP | null | any> {
+export async function getPipelineMP(connection: Connection, projectId: string): Promise<DevopsPipelineRecordMP | null | any> {
     try {
-        const connection = await getConnection(username);
         const query = `
             SELECT Id, Name, sf_devops__Activated__c, sf_devops__Project__c
             FROM sf_devops__Pipeline__c

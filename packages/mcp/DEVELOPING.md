@@ -78,7 +78,7 @@ Then follow the steps for the type of testing you want to do: from the browser o
 ### Browser
 
 1. Build the local server: `yarn build`.
-2. Start the MCP Inspector server: `mcp-inspector node lib/index.js --orgs DEFAULT_TARGET_ORG`.
+2. Start the MCP Inspector server: `mcp-inspector node bin/run.js --toolsets all --orgs DEFAULT_TARGET_ORG`.
 3. If successful, open the specified localhost URL in your browser. In this example it's `http://127.0.0.1:6274`:
 
    ```
@@ -101,7 +101,7 @@ Then follow the steps for the type of testing you want to do: from the browser o
 This example calls the `run_soql_query` tool from the context of a Salesforce DX project:
 
 ```shell
-mcp-inspector --cli node bin/run.js --orgs DEFAULT_TARGET_ORG \
+mcp-inspector --cli node bin/run.js --toolsets all --orgs DEFAULT_TARGET_ORG \
   --method tools/call \
   --tool-name run_soql_query \
   --tool-arg query="select id from account limit 5" \
@@ -123,7 +123,7 @@ ata/v63.0/sobjects/Account/001DK00001BFbHbYAL\"\n      },\n      \"Id\": \"001DK
 Learn more about each tool argument by looking at its definition in the code, the MCP Inspector browser UI, or by listing all tools using the MCP Inspector CLI. For example:
 
 ```shell
-mcp-inspector --cli node bin/run.js --orgs DEFAULT_TARGET_ORG --method tools/list
+mcp-inspector --cli node bin/run.js --toolsets all --orgs DEFAULT_TARGET_ORG --method tools/list
 ```
 
 ### Unit Tests
@@ -146,7 +146,7 @@ You can use the VS Code debugger with the MCP Inspector CLI to step through the 
 Here's an example of calling the `run_soql_query` tool:
 
 ```shell
-MCP_SERVER_REQUEST_TIMEOUT=120000 mcp-inspector --cli node --inspect-brk bin/run.js -o DEFAULT_TARGET_ORG --no-telemetry --method tools/call \
+MCP_SERVER_REQUEST_TIMEOUT=120000 mcp-inspector --cli node --inspect-brk bin/run.js --toolsets all -o DEFAULT_TARGET_ORG --no-telemetry --method tools/call \
   --tool-name run_soql_query \
   --tool-arg directory="/path/to/sfdx-project" \
   --tool-arg query="select name from Property__c order by name asc" \

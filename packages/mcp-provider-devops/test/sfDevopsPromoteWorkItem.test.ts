@@ -14,10 +14,11 @@ describe('SfDevopsPromoteWorkItem', () => {
   beforeEach(() => {
     spyTelemetryService = new SpyTelemetryService();
     
+    const mockConnection = { request: vi.fn(), query: vi.fn() };
     mockServices = {
       getTelemetryService: () => spyTelemetryService,
       getOrgService: () => ({
-        getConnection: vi.fn(),
+        getConnection: vi.fn().mockResolvedValue(mockConnection),
         getAllowedOrgUsernames: vi.fn(),
         getAllowedOrgs: vi.fn(),
         getDefaultTargetOrg: vi.fn(),

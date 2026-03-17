@@ -1,3 +1,32 @@
+## [0.27.1](https://github.com/salesforcecli/mcp/compare/0.27.0...0.27.1) (2026-03-13)
+
+
+
+# [0.27.0](https://github.com/salesforcecli/mcp/compare/0.26.11...0.27.0) (2026-03-12)
+
+
+### Features
+
+* Lwc update  @W-21372368@ ([#403](https://github.com/salesforcecli/mcp/issues/403)) ([1ea042e](https://github.com/salesforcecli/mcp/commit/1ea042e9a1cd7d7b1e7090cadf3d2af6c1895325))
+
+
+
+## [0.26.11](https://github.com/salesforcecli/mcp/compare/0.26.11-dev.0...0.26.11) (2026-03-09)
+
+
+
+## [0.26.11-dev.0](https://github.com/salesforcecli/mcp/compare/0.26.11-qa.0...0.26.11-dev.0) (2026-03-06)
+
+
+
+## [0.26.11-qa.0](https://github.com/salesforcecli/mcp/compare/0.26.10...0.26.11-qa.0) (2026-03-05)
+
+
+
+## [0.26.10](https://github.com/salesforcecli/mcp/compare/0.26.9...0.26.10) (2026-03-05)
+
+
+
 ## [0.26.9](https://github.com/salesforcecli/mcp/compare/0.26.8...0.26.9) (2026-02-25)
 
 

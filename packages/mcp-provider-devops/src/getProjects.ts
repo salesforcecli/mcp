@@ -1,4 +1,4 @@
-import { getConnection } from "./shared/auth.js";
+import type { Connection } from "@salesforce/core";
 
 export interface DevopsProjectRecord {
     Id: string;
@@ -6,8 +6,7 @@ export interface DevopsProjectRecord {
     Description?: string;
 }
 
-export async function fetchProjects(username: string): Promise<DevopsProjectRecord[]> {
-    const connection = await getConnection(username);
+export async function fetchProjects(connection: Connection): Promise<DevopsProjectRecord[]> {
     const query = "SELECT Id, Name, Description FROM DevopsProject";
     const result = await connection.query<DevopsProjectRecord>(query);
     return result.records ?? [];

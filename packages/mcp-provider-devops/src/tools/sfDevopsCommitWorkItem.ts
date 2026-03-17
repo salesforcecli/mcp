@@ -82,7 +82,8 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
 
     let workItem: any;
     try {
-      workItem = await fetchWorkItemByName(input.usernameOrAlias, input.workItemName);
+      const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
+      workItem = await fetchWorkItemByName(connection, input.workItemName);
     } catch (e: any) {
       return {
         error: {
@@ -151,10 +152,11 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
 
       const requestId = randomUUID();
       
+      const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
       const result = await commitWorkItem({
-        username: input.usernameOrAlias,
-        workItem: workItem,
-        requestId: requestId,
+        connection,
+        workItem,
+        requestId,
         commitMessage: input.commitMessage,
         repoPath: localPath
       });

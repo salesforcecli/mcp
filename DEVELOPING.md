@@ -165,24 +165,18 @@ Quick options; see `packages/mcp/DEVELOPING.md` for full details and troubleshoo
 yarn workspace @salesforce/mcp build
 ```
 
-- Option A: start via the server’s start script (spawns MCP Inspector against the CLI bin):
-
-```bash
-yarn workspace @salesforce/mcp start
-```
-
-- Option B: use MCP Inspector (browser) directly against the built server (run inside the server package):
+- Option A: use MCP Inspector (browser) directly against the built server (run inside the server package):
 
 ```bash
 cd packages/mcp
-mcp-inspector node lib/index.js --orgs DEFAULT_TARGET_ORG
+mcp-inspector node bin/run.js --toolsets all --orgs DEFAULT_TARGET_ORG
 ```
 
-- Option C: use MCP Inspector CLI mode against the server’s CLI entry (run inside the server package):
+- Option B: use MCP Inspector CLI mode against the server’s CLI entry (run inside the server package):
 
 ```bash
 cd packages/mcp
-mcp-inspector --cli node bin/run.js --orgs DEFAULT_TARGET_ORG --method tools/list
+mcp-inspector --cli node bin/run.js --toolsets all --orgs DEFAULT_TARGET_ORG --method tools/list
 ```
 
 Notes:

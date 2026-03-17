@@ -95,7 +95,8 @@ This tool takes the DevOps Center org username and the exact Work Item Name, loo
 
     let workItem: any;
     try {
-      workItem = await fetchWorkItemByName(input.usernameOrAlias, input.workItemName);
+      const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
+      workItem = await fetchWorkItemByName(connection, input.workItemName);
     } catch (e: any) {
       const executionTime = Date.now() - startTime;
       

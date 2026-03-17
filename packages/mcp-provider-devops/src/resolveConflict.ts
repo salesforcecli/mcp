@@ -53,11 +53,13 @@ Agent execution guide (perform these steps now):
    - Optionally, also run: 'git status --porcelain=v1' and show lines with 'U' or conflict indicators for context.
 
 3) Resolve each conflicted file (no re-explanation needed)
-   - For each file, ask the user to choose one option, then apply it:
-     - Keep current (${workItemBranch}): 'git checkout --ours -- "<file>"'
-     - Keep incoming (${targetBranch}): 'git checkout --theirs -- "<file>"'
+   - NEVER resolve any conflict automatically. You must always ask the user for each conflicted file.
+   - For each file: first list the file and ask the user: "For <file>, do you want to keep (1) current (${workItemBranch}) or (2) incoming (${targetBranch})?" Then wait for the user's explicit answer before running any git command.
+   - Only after the user has answered, apply their choice:
+     - If user chose current: 'git checkout --ours -- "<file>"'
+     - If user chose incoming: 'git checkout --theirs -- "<file>"'
    - After applying the user's choice, stage the file: 'git add -- "<file>"'
-   - Do not proceed without explicit user choice for each file.
+   - Do not run checkout --ours or --theirs for any file until the user has explicitly told you which option they want for that file.
 
 5) Finalize the resolution
    - Verify no conflicts remain: 'git --no-pager diff --name-only --diff-filter=U' (should be empty).
@@ -65,11 +67,12 @@ Agent execution guide (perform these steps now):
    - Push the changes to the remote branch: 'git push origin ${workItemBranch}'
 
 Important constraints:
+- NEVER resolve conflicts automatically. For every conflicted file, you MUST ask the user whether to keep current or incoming and wait for their answer before running git checkout --ours or --theirs.
 - Do NOT push changes. Keep all operations local.
 - Do NOT create new branches.
 - Do NOT attempt a 'keep both' manual merge in this tool; only the two options above are supported.
 - Use cross-platform commands (work on macOS and Windows). Avoid shell pipes and non-portable constructs.
-- Execute git commands yourself using available tools and present outputs and status updates here. Always get explicit user confirmation for each per-file resolution.`,
+- Execute git commands yourself using available tools and present outputs and status updates here.`,
         actionRequired: true
       }]
     };
