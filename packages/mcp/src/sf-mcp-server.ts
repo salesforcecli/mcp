@@ -173,8 +173,13 @@ export class SfMcpServer extends McpServer implements ToolMethodSignatures {
       this.logger.debug(`Tool ${name} completed in ${runtimeMs}ms`);
       if (result.isError) this.logger.debug(`Tool ${name} errored`);
 
-      // Calculate response character count for token usage
-      const responseCharCount = this.calculateResponseCharCount(result);
+      // Calculate response character count for token usage (never let telemetry instrumentation fail a tool call)
+      let responseCharCount = 0;
+      try {
+        responseCharCount = this.calculateResponseCharCount(result);
+      } catch (err) {
+        // never let telemetry instrumentation fail a tool call
+      }
 
       this.telemetry?.sendEvent('TOOL_CALLED', {
         name,
