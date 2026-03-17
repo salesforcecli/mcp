@@ -1,0 +1,4057 @@
+{
+  "description": "PMD Apex AST Nodes - Complete Reference",
+  "source": "Extracted from PMD source code",
+  "extraction_date": "2026-03-17",
+  "total_nodes": 99,
+  "version": "7.x",
+  "language": "apex",
+  "note": "Includes inherited attributes from parent classes (marked with inherited_from field)",
+  "nodes": [
+    {
+      "name": "Annotation",
+      "description": "Represents Annotation",
+      "category": "Modifiers",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetName",
+          "type": "string",
+          "description": "Valid annotations in the Apex language. <p>Includes all annotations from the <a href=\"https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation.htm\">official documentation</a>, plus <ul> <li>{ private static final NavigableSet<String> NORMALIZED_ANNOTATION_NAMES = ImmutableSortedSet.orderedBy(String.CASE_INSENSITIVE_ORDER).add( \"AllowCertifiedApex\", \"AuraEnabled\", \"Deprecated\", \"Future\", \"HiddenFromDoc\", \"HttpDelete\", \"HttpGet\", \"HttpPatch\", \"HttpPost\", \"HttpPut\", \"InvocableMethod\", \"InvocableVariable\", \"IsTest\", \"JsonAccess\", \"NamespaceAccessible\", \"NamespaceGuard\", \"PermGuard\", \"PrivateApi\", \"ReadOnly\", \"RemoteAction\", \"RestResource\", \"SfdcOnly\", \"SuppressWarnings\", \"TestSetup\", \"TestVisible\", \"UseConnectDeserializer\", \"UseConnectSerializer\", \"VisibleApiVersion\" ).build(); ASTAnnotation(AnnotationModifier annotationModifier) { super(annotationModifier); } @Override protected <P, R> R acceptApexVisitor(ApexVisitor<? super P, ? extends R> visitor, P data) { return visitor.visit(this, data); } / Returns the normalized annotation name for known, valid annotations. The normalized name is in PascalCase. If an unknown annotation is used, the raw name (as in the source code) is returned."
+        },
+        {
+          "name": "@GetRawName",
+          "type": "string",
+          "description": "Valid annotations in the Apex language. <p>Includes all annotations from the <a href=\"https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation.htm\">official documentation</a>, plus <ul> <li>{ private static final NavigableSet<String> NORMALIZED_ANNOTATION_NAMES = ImmutableSortedSet.orderedBy(String.CASE_INSENSITIVE_ORDER).add( \"AllowCertifiedApex\", \"AuraEnabled\", \"Deprecated\", \"Future\", \"HiddenFromDoc\", \"HttpDelete\", \"HttpGet\", \"HttpPatch\", \"HttpPost\", \"HttpPut\", \"InvocableMethod\", \"InvocableVariable\", \"IsTest\", \"JsonAccess\", \"NamespaceAccessible\", \"NamespaceGuard\", \"PermGuard\", \"PrivateApi\", \"ReadOnly\", \"RemoteAction\", \"RestResource\", \"SfdcOnly\", \"SuppressWarnings\", \"TestSetup\", \"TestVisible\", \"UseConnectDeserializer\", \"UseConnectSerializer\", \"VisibleApiVersion\" ).build(); ASTAnnotation(AnnotationModifier annotationModifier) { super(annotationModifier); } @Override protected <P, R> R acceptApexVisitor(ApexVisitor<? super P, ? extends R> visitor, P data) { return visitor.visit(this, data); } / Returns the normalized annotation name for known, valid annotations. The normalized name is in PascalCase. If an unknown annotation is used, the raw name (as in the source code) is returned. public String getName() { // If resolvable to a known name, return the case-normalized name. String rawName = getRawName(); if (NORMALIZED_ANNOTATION_NAMES.contains(rawName)) { return NORMALIZED_ANNOTATION_NAMES.floor(rawName); } return rawName; } / Returns the annotation name as it appears in the source code. This allows to verify the casing."
+        },
+        {
+          "name": "@GetImage",
+          "type": "string",
+          "description": "Returns getImage"
+        },
+        {
+          "name": "@IsResolved",
+          "type": "boolean",
+          "description": "Returns isResolved"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "AnnotationParameter",
+      "description": "Represents AnnotationParameter",
+      "category": "Modifiers",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetName",
+          "type": "string",
+          "description": "Returns getName"
+        },
+        {
+          "name": "@GetValue",
+          "type": "string",
+          "description": "Returns getValue"
+        },
+        {
+          "name": "@GetBooleanValue",
+          "type": "boolean",
+          "description": "Returns getBooleanValue"
+        },
+        {
+          "name": "@GetImage",
+          "type": "string",
+          "description": "Returns getImage"
+        },
+        {
+          "name": "@HasName",
+          "type": "boolean",
+          "description": "Checks whether this annotation parameter has the given name. The check is done case-insensitive.",
+          "parameters": [
+            "@NonNull String name"
+          ]
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "AnonymousClass",
+      "description": "Represents AnonymousClass",
+      "category": "Declarations",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetImage",
+          "type": "string",
+          "description": "Returns getImage"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "ApexFile",
+      "description": "Represents ApexFile",
+      "category": "Other",
+      "extends": "AbstractApexNode.Single",
+      "implements": [
+        "RootNode"
+      ],
+      "attributes": [
+        {
+          "name": "@GetAstInfo",
+          "type": "AstInfo",
+          "description": "Returns getAstInfo"
+        },
+        {
+          "name": "@GetMainNode",
+          "type": "ASTUserClassOrInterface",
+          "description": "Returns getMainNode"
+        },
+        {
+          "name": "@GetGlobalIssues",
+          "type": "array",
+          "description": "Returns getGlobalIssues"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "ArrayLoadExpression",
+      "description": "Represents ArrayLoadExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "ArrayStoreExpression",
+      "description": "Represents ArrayStoreExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "AssignmentExpression",
+      "description": "Represents AssignmentExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetOp",
+          "type": "AssignmentOperator",
+          "description": "Returns getOp"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "BinaryExpression",
+      "description": "Represents BinaryExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetOp",
+          "type": "BinaryOperator",
+          "description": "Returns getOp"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "BindExpressions",
+      "description": "Represents BindExpressions",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "BlockStatement",
+      "description": "Represents BlockStatement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasCurlyBrace",
+          "type": "boolean",
+          "description": "Returns hasCurlyBrace"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "BooleanExpression",
+      "description": "Represents BooleanExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetOp",
+          "type": "boolean",
+          "description": "Returns getOp"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "BreakStatement",
+      "description": "Represents BreakStatement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "CastExpression",
+      "description": "Represents CastExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetType",
+          "type": "string",
+          "description": "Returns the target type name of the cast expression."
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "CatchBlockStatement",
+      "description": "Represents CatchBlockStatement",
+      "category": "Statements",
+      "extends": "AbstractApexCommentContainerNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetExceptionType",
+          "type": "string",
+          "description": "Returns getExceptionType"
+        },
+        {
+          "name": "@GetVariableName",
+          "type": "string",
+          "description": "Returns getVariableName"
+        },
+        {
+          "name": "@GetBody",
+          "type": "ASTBlockStatement",
+          "description": "Returns getBody"
+        }
+      ]
+    },
+    {
+      "name": "ClassRefExpression",
+      "description": "Represents ClassRefExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "CommentContainer",
+      "description": "Represents CommentContainer",
+      "category": "Other",
+      "extends": "Object",
+      "implements": [],
+      "attributes": []
+    },
+    {
+      "name": "ConstructorPreamble",
+      "description": "Represents ConstructorPreamble",
+      "category": "Other",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "ConstructorPreambleStatement",
+      "description": "Represents ConstructorPreambleStatement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "ContinueStatement",
+      "description": "Represents ContinueStatement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "DmlDeleteStatement",
+      "description": "Represents DmlDeleteStatement",
+      "category": "Statements",
+      "extends": "AbstractDmlStatement",
+      "implements": [],
+      "attributes": []
+    },
+    {
+      "name": "DmlInsertStatement",
+      "description": "Represents DmlInsertStatement",
+      "category": "Statements",
+      "extends": "AbstractDmlStatement",
+      "implements": [],
+      "attributes": []
+    },
+    {
+      "name": "DmlMergeStatement",
+      "description": "Represents DmlMergeStatement",
+      "category": "Statements",
+      "extends": "AbstractDmlStatement",
+      "implements": [],
+      "attributes": []
+    },
+    {
+      "name": "DmlUndeleteStatement",
+      "description": "Represents DmlUndeleteStatement",
+      "category": "Statements",
+      "extends": "AbstractDmlStatement",
+      "implements": [],
+      "attributes": []
+    },
+    {
+      "name": "DmlUpdateStatement",
+      "description": "Represents DmlUpdateStatement",
+      "category": "Statements",
+      "extends": "AbstractDmlStatement",
+      "implements": [],
+      "attributes": []
+    },
+    {
+      "name": "DmlUpsertStatement",
+      "description": "Represents DmlUpsertStatement",
+      "category": "Statements",
+      "extends": "AbstractDmlStatement",
+      "implements": [],
+      "attributes": []
+    },
+    {
+      "name": "DoLoopStatement",
+      "description": "Represents DoLoopStatement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "ElseWhenBlock",
+      "description": "Represents ElseWhenBlock",
+      "category": "Other",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "EmptyReferenceExpression",
+      "description": "Represents EmptyReferenceExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Empty",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "Expression",
+      "description": "Represents Expression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "ExpressionStatement",
+      "description": "Represents ExpressionStatement",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "Field",
+      "description": "Represents Field",
+      "category": "Declarations",
+      "extends": "AbstractApexNode.Many",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetImage",
+          "type": "string",
+          "description": "Returns getImage"
+        },
+        {
+          "name": "@GetType",
+          "type": "string",
+          "description": "Returns the type name. <p>This includes any type arguments. (This is tested.) If the type is a primitive, its case will be normalized."
+        },
+        {
+          "name": "@GetModifiers",
+          "type": "ASTModifierNode",
+          "description": "Returns getModifiers"
+        },
+        {
+          "name": "@GetName",
+          "type": "string",
+          "description": "Returns getName"
+        },
+        {
+          "name": "@GetValue",
+          "type": "string",
+          "description": "Returns getValue"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "FieldDeclaration",
+      "description": "Represents FieldDeclaration",
+      "category": "Declarations",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetImage",
+          "type": "string",
+          "description": "Returns getImage"
+        },
+        {
+          "name": "@GetName",
+          "type": "string",
+          "description": "Returns getName"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "FieldDeclarationStatements",
+      "description": "Represents FieldDeclarationStatements",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetModifiers",
+          "type": "ASTModifierNode",
+          "description": "Returns getModifiers"
+        },
+        {
+          "name": "@GetTypeName",
+          "type": "string",
+          "description": "Returns the type name. <p>This includes any type arguments. If the type is a primitive, its case will be normalized."
+        },
+        {
+          "name": "@GetTypeArguments",
+          "type": "array",
+          "description": "Returns the type name. <p>This includes any type arguments. If the type is a primitive, its case will be normalized. / public String getTypeName() { return caseNormalizedTypeIfPrimitive(node.getType().asCodeString()); } / This returns the first level of the type arguments. If there are nested types (e.g. {"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "ForEachStatement",
+      "description": "Represents ForEachStatement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "ForLoopStatement",
+      "description": "Represents ForLoopStatement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "FormalComment",
+      "description": "Represents FormalComment",
+      "category": "Other",
+      "extends": "AbstractApexNode.Empty",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetImage",
+          "type": "string",
+          "description": "Returns getImage"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "IdentifierCase",
+      "description": "Represents IdentifierCase",
+      "category": "Other",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "IfBlockStatement",
+      "description": "Represents IfBlockStatement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "IfElseBlockStatement",
+      "description": "Represents IfElseBlockStatement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasElseStatement",
+          "type": "boolean",
+          "description": "Returns hasElseStatement"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "IllegalStoreExpression",
+      "description": "Represents IllegalStoreExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "InstanceOfExpression",
+      "description": "Represents InstanceOfExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "InvalidDependentCompilation",
+      "description": "Represents InvalidDependentCompilation",
+      "category": "Other",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetImage",
+          "type": "string",
+          "description": "Returns getImage"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "JavaMethodCallExpression",
+      "description": "Represents JavaMethodCallExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "JavaVariableExpression",
+      "description": "Represents JavaVariableExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "LiteralCase",
+      "description": "Represents LiteralCase",
+      "category": "Other",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "LiteralExpression",
+      "description": "Represents LiteralExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetLiteralType",
+          "type": "LiteralType",
+          "description": "Returns getLiteralType"
+        },
+        {
+          "name": "@IsString",
+          "type": "boolean",
+          "description": "Returns isString"
+        },
+        {
+          "name": "@IsBoolean",
+          "type": "boolean",
+          "description": "Returns isBoolean"
+        },
+        {
+          "name": "@IsInteger",
+          "type": "boolean",
+          "description": "Returns isInteger"
+        },
+        {
+          "name": "@IsDouble",
+          "type": "boolean",
+          "description": "Returns isDouble"
+        },
+        {
+          "name": "@IsLong",
+          "type": "boolean",
+          "description": "Returns isLong"
+        },
+        {
+          "name": "@IsDecimal",
+          "type": "boolean",
+          "description": "Returns isDecimal"
+        },
+        {
+          "name": "@IsNull",
+          "type": "boolean",
+          "description": "Returns isNull"
+        },
+        {
+          "name": "@GetImage",
+          "type": "string",
+          "description": "Returns getImage"
+        },
+        {
+          "name": "@GetName",
+          "type": "string",
+          "description": "Returns the name of this literal when it is labeled in an object initializer with named arguments ({"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "MapEntryNode",
+      "description": "Represents MapEntryNode",
+      "category": "Other",
+      "extends": "AbstractApexNode.Many",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetImage",
+          "type": "string",
+          "description": "Returns getImage"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "Method",
+      "description": "Represents Method",
+      "category": "Declarations",
+      "extends": "AbstractApexNode",
+      "implements": [
+        "ApexQualifiableNode"
+      ],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc"
+        },
+        {
+          "name": "@GetImage",
+          "type": "string",
+          "description": "Returns getImage"
+        },
+        {
+          "name": "@GetCanonicalName",
+          "type": "string",
+          "description": "Returns getCanonicalName"
+        },
+        {
+          "name": "@GetQualifiedName",
+          "type": "ApexQualifiedName",
+          "description": "Returns getQualifiedName"
+        },
+        {
+          "name": "@IsConstructor",
+          "type": "boolean",
+          "description": "Returns isConstructor"
+        },
+        {
+          "name": "@IsStaticInitializer",
+          "type": "boolean",
+          "description": "Returns isStaticInitializer"
+        },
+        {
+          "name": "@GetModifiers",
+          "type": "ASTModifierNode",
+          "description": "Returns getModifiers"
+        },
+        {
+          "name": "@GetReturnType",
+          "type": "string",
+          "description": "Internal name used by constructors. private static final String CONSTRUCTOR_ID = \"<init>\"; / Internal name used by static initialization blocks. private static final String STATIC_INIT_ID = \"<clinit>\"; / Internal name used by the synthetic trigger method. private static final String TRIGGER_INVOKE_ID = \"<invoke>\"; // Store the details instead of wrapping a com.google.summit.ast.Node. // This is to allow synthetic ASTMethod nodes. // An example is the trigger `invoke` method. private final String name; private final String internalName; private final List<String> parameterTypes; private final String returnType; private final SourceLocation sourceLocation; ASTMethod( String name, String internalName, List<String> parameterTypes, String returnType, SourceLocation sourceLocation) { this.name = name; this.internalName = internalName; this.parameterTypes = parameterTypes; this.returnType = returnType; this.sourceLocation = sourceLocation; } static ASTMethod fromNode(MethodDeclaration node) { String name = node.getId().getString(); String internalName = name; if (node.isAnonymousInitializationCode()) { internalName = STATIC_INIT_ID; } else if (node.isConstructor()) { internalName = CONSTRUCTOR_ID; } return new ASTMethod( name, internalName, node.getParameterDeclarations().stream() .map(p -> caseNormalizedTypeIfPrimitive(p.getType().asCodeString())) .collect(Collectors.toList()), caseNormalizedTypeIfPrimitive(node.getReturnType().asCodeString()), node.getSourceLocation()); } @Override protected <P, R> R acceptApexVisitor(ApexVisitor<? super P, ? extends R> visitor, P data) { return visitor.visit(this, data); } @Override void calculateTextRegion(TextDocument sourceCode) { if (sourceLocation.isUnknown()) { return; } // Column+1 because Summit columns are 0-based and PMD are 1-based setRegion(TextRegion.fromBothOffsets( sourceCode.offsetAtLineColumn( TextPos2d.pos2d(sourceLocation.getStartLine(), sourceLocation.getStartColumn() + 1)), sourceCode.offsetAtLineColumn( TextPos2d.pos2d(sourceLocation.getEndLine(), sourceLocation.getEndColumn() + 1)) )); } @Override public boolean hasRealLoc() { return !sourceLocation.isUnknown(); } @Override public String getImage() { if (isConstructor()) { BaseApexClass<?> baseClassNode = ancestors(BaseApexClass.class).first(); if (baseClassNode != null) { return baseClassNode.getSimpleName(); } } return getCanonicalName(); } public String getCanonicalName() { if (getParent() instanceof ASTProperty) { return ASTProperty.formatAccessorName((ASTProperty) getParent()); } if (isConstructor()) { return CONSTRUCTOR_ID; } else if (isStaticInitializer()) { return STATIC_INIT_ID; } return name; } @Override public ApexQualifiedName getQualifiedName() { return ApexQualifiedName.ofMethod(this); } public boolean isConstructor() { return CONSTRUCTOR_ID.equals(internalName); } public boolean isStaticInitializer() { return STATIC_INIT_ID.equals(internalName); } public ASTModifierNode getModifiers() { return firstChild(ASTModifierNode.class); } / Returns the method return type name. This includes any type arguments. If the type is a primitive, its case will be normalized."
+        },
+        {
+          "name": "@GetArity",
+          "type": "number",
+          "description": "Returns getArity"
+        },
+        {
+          "name": "@IsTriggerBlock",
+          "type": "boolean",
+          "description": "Returns isTriggerBlock"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "MethodBlockStatement",
+      "description": "Represents MethodBlockStatement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "MethodCallExpression",
+      "description": "Represents MethodCallExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetMethodName",
+          "type": "string",
+          "description": "Returns getMethodName"
+        },
+        {
+          "name": "@GetFullMethodName",
+          "type": "string",
+          "description": "Returns getFullMethodName"
+        },
+        {
+          "name": "@GetInputParametersSize",
+          "type": "number",
+          "description": "Returns getInputParametersSize"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "Modifier",
+      "description": "Represents Modifier",
+      "category": "Modifiers",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "ModifierNode",
+      "description": "Represents ModifierNode",
+      "category": "Modifiers",
+      "extends": "AbstractApexNode.Many",
+      "implements": [
+        "AccessNode"
+      ],
+      "attributes": [
+        {
+          "name": "@GetModifiers",
+          "type": "number",
+          "description": "Returns getModifiers"
+        },
+        {
+          "name": "@IsPublic",
+          "type": "boolean",
+          "description": "Returns isPublic"
+        },
+        {
+          "name": "@IsProtected",
+          "type": "boolean",
+          "description": "Returns isProtected"
+        },
+        {
+          "name": "@IsPrivate",
+          "type": "boolean",
+          "description": "Returns isPrivate"
+        },
+        {
+          "name": "@IsAbstract",
+          "type": "boolean",
+          "description": "Returns isAbstract"
+        },
+        {
+          "name": "@IsStatic",
+          "type": "boolean",
+          "description": "Returns isStatic"
+        },
+        {
+          "name": "@IsFinal",
+          "type": "boolean",
+          "description": "Returns isFinal"
+        },
+        {
+          "name": "@IsTransient",
+          "type": "boolean",
+          "description": "Returns isTransient"
+        },
+        {
+          "name": "@IsTest",
+          "type": "boolean",
+          "description": "Returns true if function has `"
+        },
+        {
+          "name": "@HasDeprecatedTestMethod",
+          "type": "boolean",
+          "description": "Returns true if function has ` public boolean isTest() { return hasAnnotation(\"isTest\") || hasKeyword(Keyword.TESTMETHOD); } / Returns true if function has `testmethod` modifier"
+        },
+        {
+          "name": "@IsTestOrTestSetup",
+          "type": "boolean",
+          "description": "Returns isTestOrTestSetup"
+        },
+        {
+          "name": "@IsWithSharing",
+          "type": "boolean",
+          "description": "Returns isWithSharing"
+        },
+        {
+          "name": "@IsWithoutSharing",
+          "type": "boolean",
+          "description": "Returns isWithoutSharing"
+        },
+        {
+          "name": "@IsInheritedSharing",
+          "type": "boolean",
+          "description": "Returns isInheritedSharing"
+        },
+        {
+          "name": "@IsWebService",
+          "type": "boolean",
+          "description": "Returns isWebService"
+        },
+        {
+          "name": "@IsGlobal",
+          "type": "boolean",
+          "description": "Returns isGlobal"
+        },
+        {
+          "name": "@IsOverride",
+          "type": "boolean",
+          "description": "Returns isOverride"
+        },
+        {
+          "name": "@IsVirtual",
+          "type": "boolean",
+          "description": "Returns isVirtual"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "ModifierOrAnnotation",
+      "description": "Represents ModifierOrAnnotation",
+      "category": "Modifiers",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "MultiStatement",
+      "description": "Represents MultiStatement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "NestedExpression",
+      "description": "Represents NestedExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "NestedStoreExpression",
+      "description": "Represents NestedStoreExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "NewKeyValueObjectExpression",
+      "description": "Represents NewKeyValueObjectExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetType",
+          "type": "string",
+          "description": "Returns the type name. This includes any type arguments. If the type is a primitive, its case will be normalized."
+        },
+        {
+          "name": "@GetParameterCount",
+          "type": "number",
+          "description": "Returns getParameterCount"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "NewListInitExpression",
+      "description": "Represents NewListInitExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "NewListLiteralExpression",
+      "description": "Represents NewListLiteralExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "NewMapInitExpression",
+      "description": "Represents NewMapInitExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "NewMapLiteralExpression",
+      "description": "Represents NewMapLiteralExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "NewObjectExpression",
+      "description": "Represents NewObjectExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetType",
+          "type": "string",
+          "description": "Returns the type name. This includes any type arguments. If the type is a primitive, its case will be normalized."
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "NewSetInitExpression",
+      "description": "Represents NewSetInitExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "NewSetLiteralExpression",
+      "description": "Represents NewSetLiteralExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "PackageVersionExpression",
+      "description": "Represents PackageVersionExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "Parameter",
+      "description": "Represents Parameter",
+      "category": "Other",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetImage",
+          "type": "string",
+          "description": "Returns getImage"
+        },
+        {
+          "name": "@GetModifiers",
+          "type": "ASTModifierNode",
+          "description": "Returns getModifiers"
+        },
+        {
+          "name": "@GetType",
+          "type": "string",
+          "description": "Returns the parameter's type name. <p>This includes any type arguments. If the type is a primitive, its case will be normalized."
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "PostfixExpression",
+      "description": "Represents PostfixExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetOp",
+          "type": "PostfixOperator",
+          "description": "Returns getOp"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "PrefixExpression",
+      "description": "Represents PrefixExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetOp",
+          "type": "PrefixOperator",
+          "description": "Returns getOp"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "Property",
+      "description": "Represents Property",
+      "category": "Other",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetType",
+          "type": "string",
+          "description": "Prefix added to the property name to create an internal accessor name. / private static final String ACCESSOR_PREFIX = \"__sfdc_\"; ASTProperty(PropertyDeclaration property) { super(property); } @Override protected <P, R> R acceptApexVisitor(ApexVisitor<? super P, ? extends R> visitor, P data) { return visitor.visit(this, data); } / Returns the property value's type name. This includes any type arguments. If the type is a primitive, its case will be normalized."
+        },
+        {
+          "name": "@GetModifiers",
+          "type": "ASTModifierNode",
+          "description": "Returns getModifiers"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "ReferenceExpression",
+      "description": "Represents ReferenceExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Many",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetReferenceType",
+          "type": "ReferenceType",
+          "description": "Returns getReferenceType"
+        },
+        {
+          "name": "@GetImage",
+          "type": "string",
+          "description": "Returns getImage"
+        },
+        {
+          "name": "@GetNames",
+          "type": "array",
+          "description": "Returns getNames"
+        },
+        {
+          "name": "@IsSafeNav",
+          "type": "boolean",
+          "description": "Returns isSafeNav"
+        },
+        {
+          "name": "@IsSObjectType",
+          "type": "boolean",
+          "description": "Returns isSObjectType"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "ReturnStatement",
+      "description": "Represents ReturnStatement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "RunAsBlockStatement",
+      "description": "Represents RunAsBlockStatement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "SoqlExpression",
+      "description": "Represents SoqlExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetQuery",
+          "type": "string",
+          "description": "Returns the raw query as it appears in the source code."
+        },
+        {
+          "name": "@GetCanonicalQuery",
+          "type": "string",
+          "description": "Returns the raw query as it appears in the source code. / public String getQuery() { return node.getQuery(); } / Returns the query with the SOQL keywords normalized as uppercase."
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "SoslExpression",
+      "description": "Represents SoslExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetQuery",
+          "type": "string",
+          "description": "Returns the raw query as it appears in the source code."
+        },
+        {
+          "name": "@GetCanonicalQuery",
+          "type": "string",
+          "description": "Returns the raw query as it appears in the source code. / public String getQuery() { return node.getQuery(); } / Returns the query with the SOSL keywords normalized as uppercase."
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "StandardCondition",
+      "description": "Represents StandardCondition",
+      "category": "Other",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "Statement",
+      "description": "Represents Statement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "StatementExecuted",
+      "description": "Represents StatementExecuted",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "SuperMethodCallExpression",
+      "description": "Represents SuperMethodCallExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "SuperVariableExpression",
+      "description": "Represents SuperVariableExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "SwitchStatement",
+      "description": "Represents SwitchStatement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "TernaryExpression",
+      "description": "Represents TernaryExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "ThisMethodCallExpression",
+      "description": "Represents ThisMethodCallExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "ThisVariableExpression",
+      "description": "Represents ThisVariableExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "ThrowStatement",
+      "description": "Represents ThrowStatement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "TriggerVariableExpression",
+      "description": "Represents TriggerVariableExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "TryCatchFinallyBlockStatement",
+      "description": "Represents TryCatchFinallyBlockStatement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTryBlock",
+          "type": "ASTBlockStatement",
+          "description": "Returns getTryBlock"
+        },
+        {
+          "name": "@GetCatchClauses",
+          "type": "array",
+          "description": "Returns getCatchClauses"
+        },
+        {
+          "name": "@GetFinallyBlock",
+          "type": "ASTBlockStatement",
+          "description": "Returns getFinallyBlock"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "TypeWhenBlock",
+      "description": "Represents TypeWhenBlock",
+      "category": "Types",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetType",
+          "type": "string",
+          "description": "Returns the when block's matching type name. This includes any type arguments. If the type is a primitive, its case will be normalized."
+        },
+        {
+          "name": "@GetName",
+          "type": "string",
+          "description": "Returns getName"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "UserClass",
+      "description": "Represents UserClass",
+      "category": "Declarations",
+      "extends": "BaseApexClass",
+      "implements": [
+        "ASTUserClassOrInterface"
+      ],
+      "attributes": [
+        {
+          "name": "@GetSuperClassName",
+          "type": "string",
+          "description": "Returns the name of the superclass of this class, or an empty string if there is none. The type name does NOT include type arguments."
+        },
+        {
+          "name": "@GetInterfaceNames",
+          "type": "array",
+          "description": "Returns the name of the superclass of this class, or an empty string if there is none. The type name does NOT include type arguments. / public String getSuperClassName() { TypeRef extendsType = node.getExtendsType(); if (extendsType != null) { return extendsType.asTypeErasedString(); } return \"\"; } / Returns a list of the names of the interfaces implemented by this class. The type names do NOT include type arguments. (This is tested.)"
+        }
+      ]
+    },
+    {
+      "name": "UserClassMethods",
+      "description": "Represents UserClassMethods",
+      "category": "Declarations",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "UserClassOrInterface",
+      "description": "Represents UserClassOrInterface",
+      "category": "Declarations",
+      "extends": "Object",
+      "implements": [],
+      "attributes": []
+    },
+    {
+      "name": "UserEnum",
+      "description": "Represents UserEnum",
+      "category": "Other",
+      "extends": "BaseApexClass",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetQualifiedName",
+          "type": "ApexQualifiedName",
+          "description": "Returns getQualifiedName"
+        }
+      ]
+    },
+    {
+      "name": "UserExceptionMethods",
+      "description": "Represents UserExceptionMethods",
+      "category": "Declarations",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "UserInterface",
+      "description": "Represents UserInterface",
+      "category": "Other",
+      "extends": "BaseApexClass",
+      "implements": [
+        "ASTUserClassOrInterface"
+      ],
+      "attributes": [
+        {
+          "name": "@GetSuperInterfaceName",
+          "type": "string",
+          "description": "Returns the name of the superclass of this class, or an empty string if there is none. The type name does NOT include type arguments."
+        }
+      ]
+    },
+    {
+      "name": "UserTrigger",
+      "description": "Represents UserTrigger",
+      "category": "Other",
+      "extends": "BaseApexClass",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTargetName",
+          "type": "string",
+          "description": "Returns getTargetName"
+        },
+        {
+          "name": "@GetUsages",
+          "type": "array",
+          "description": "Returns getUsages"
+        }
+      ]
+    },
+    {
+      "name": "ValueWhenBlock",
+      "description": "Represents ValueWhenBlock",
+      "category": "Other",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "VariableDeclaration",
+      "description": "Represents VariableDeclaration",
+      "category": "Declarations",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetImage",
+          "type": "string",
+          "description": "Returns getImage"
+        },
+        {
+          "name": "@GetType",
+          "type": "string",
+          "description": "Returns the variable's type name. <p>This includes any type arguments. If the type is a primitive, its case will be normalized."
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "VariableDeclarationStatements",
+      "description": "Represents VariableDeclarationStatements",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetModifiers",
+          "type": "ASTModifierNode",
+          "description": "Returns getModifiers"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "VariableExpression",
+      "description": "Represents VariableExpression",
+      "category": "Expressions",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetImage",
+          "type": "string",
+          "description": "Returns getImage"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    },
+    {
+      "name": "WhileLoopStatement",
+      "description": "Represents WhileLoopStatement",
+      "category": "Statements",
+      "extends": "AbstractApexNode.Single",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@HasRealLoc",
+          "type": "boolean",
+          "description": "Returns hasRealLoc",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractApexNode"
+        },
+        {
+          "name": "@GetDefiningType",
+          "type": "string",
+          "description": "Returns getDefiningType",
+          "inherited_from": "AbstractApexNode"
+        }
+      ]
+    }
+  ]
+}
