@@ -1,3 +1,7 @@
+## [0.1.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-metadata-enrichment@0.1.0...mcp-provider-metadata-enrichment@0.1.1) (2026-03-13)
+
+
+
 # [0.1.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-metadata-enrichment@0.0.4...mcp-provider-metadata-enrichment@0.1.0) (2026-03-05)
 
 

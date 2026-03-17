@@ -110,6 +110,12 @@ describe("EnrichMetadataMcpTool", () => {
 
     beforeEach(() => {
       mkdirSync("/tmp/proj", { recursive: true });
+      vi.mocked(SfProject.resolve).mockResolvedValue({ getPath: () => "/tmp/proj" } as never);
+      vi.mocked(ComponentSetBuilder.build).mockResolvedValue({
+        getSourceComponents: () => ({
+          toArray: () => [{ fullName: "myLwc", name: "myLwc", type: { name: "LightningComponentBundle" } }],
+        }),
+      } as never);
       const stub = new StubServices();
       servicesWithConnection = {
         ...stub,
@@ -155,6 +161,32 @@ describe("EnrichMetadataMcpTool", () => {
         expect(result.content[0].text).not.toContain("Failed:");
       }
     });
+
+    it("exec summary includes request ID from enrichment response", async () => {
+      vi.spyOn(EnrichmentHandler, "enrich").mockResolvedValue([
+        {
+          componentName: "myLwc",
+          componentType: { name: "LightningComponentBundle" },
+          requestBody: { contentBundles: [], metadataType: "Generic", maxTokens: 50 },
+          response: { metadata: { requestId: "abc-123" } },
+          message: null,
+          status: EnrichmentStatus.SUCCESS,
+        },
+      ] as unknown as EnrichmentRequestRecord[]);
+
+      const happyPathTool = new EnrichMetadataMcpTool(servicesWithConnection);
+      const result = await happyPathTool.exec({
+        usernameOrAlias: "user@example.com",
+        directory: "/tmp/proj",
+        metadataEntries: ["LightningComponentBundle:myLwc"],
+      });
+
+      expect(result.isError).toBe(false);
+      const text = result.content[0].type === "text" ? result.content[0].text : "";
+      expect(text).toContain("  • myLwc");
+      expect(text).toContain("(Request ID: abc-123)");
+    });
+
   });
 
   describe("summary includes skipped records", () => {
@@ -184,7 +216,7 @@ describe("EnrichMetadataMcpTool", () => {
       vi.restoreAllMocks();
     });
 
-    it("exec summary lists enriched components and skipped components with reason", async () => {
+    it("exec returns error when all components are skipped", async () => {
       const stub = new StubServices();
       const servicesWithConnection = {
         ...stub,
@@ -194,21 +226,23 @@ describe("EnrichMetadataMcpTool", () => {
       } as unknown as Services;
       vi.spyOn(SourceComponentProcessor, "getComponentsToSkip").mockReturnValue(
         new Set([
-          { typeName: "LightningComponentBundle", componentName: "otherCmp" },
-        ])
-      );
-      vi.spyOn(EnrichmentHandler, "enrich").mockResolvedValue([
-        {
-          componentName: "myLwc",
-          componentType: { name: "LightningComponentBundle" },
-          requestBody: { contentBundles: [], metadataType: "Generic", maxTokens: 50 },
-          response: {},
-          message: null,
-          status: EnrichmentStatus.SUCCESS,
-        },
-      ] as unknown as EnrichmentRequestRecord[]);
-      vi.spyOn(FileProcessor, "updateMetadata").mockResolvedValue(
-        [] as unknown as Awaited<ReturnType<typeof FileProcessor.updateMetadata>>
+          {
+            componentName: "myLwc",
+            componentType: { name: "LightningComponentBundle" },
+            requestBody: null,
+            response: null,
+            message: "Unsupported type",
+            status: EnrichmentStatus.SKIPPED,
+          },
+          {
+            componentName: "otherCmp",
+            componentType: { name: "LightningComponentBundle" },
+            requestBody: null,
+            response: null,
+            message: "Unsupported type",
+            status: EnrichmentStatus.SKIPPED,
+          },
+        ]) as unknown as Set<EnrichmentRequestRecord>
       );
 
       const tool = new EnrichMetadataMcpTool(servicesWithConnection);
@@ -218,13 +252,11 @@ describe("EnrichMetadataMcpTool", () => {
         metadataEntries: ["LightningComponentBundle:myLwc", "LightningComponentBundle:otherCmp"],
       });
 
-      expect(result.isError).toBe(false);
+      expect(result.isError).toBe(true);
       const text = result.content[0].type === "text" ? result.content[0].text : "";
-      expect(text).toContain("Metadata enrichment completed");
-      expect(text).toContain("  • myLwc");
-      expect(text).toContain("Skipped:");
-      expect(text).toContain("  • otherCmp: Skipped");
+      expect(text).toContain("No eligible component was found for metadata enrichment.");
     });
+    
   });
 
   describe("summary includes failed records", () => {
