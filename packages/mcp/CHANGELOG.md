@@ -1,3 +1,12 @@
+# [0.28.0](https://github.com/salesforcecli/mcp/compare/0.27.1...0.28.0) (2026-03-17)
+
+
+### Features
+
+* add MCP tool-level response token usage (responseCharCount) ([#400](https://github.com/salesforcecli/mcp/issues/400)) ([217e7ea](https://github.com/salesforcecli/mcp/commit/217e7ea2db1a0ecc4b787f15ed150d21d08a14ab))
+
+
+
 ## [0.27.1](https://github.com/salesforcecli/mcp/compare/0.27.0...0.27.1) (2026-03-13)
 
 
