@@ -43,7 +43,7 @@ async function ensureProjectStages(
     return ctx;
 }
 
-function mapRawItemToWorkItem(item: any, ctx: ProjectStagesContext): WorkItem {
+function mapRawItemToWorkItem(item: any, ctx: ProjectStagesContext | null): WorkItem {
     const { repoUrl, repoType } = buildRepositoryInfoFromItem(item);
 
     const mapped: WorkItem = {
@@ -59,17 +59,18 @@ function mapRawItemToWorkItem(item: any, ctx: ProjectStagesContext): WorkItem {
         WorkItemBranch: item?.SourceCodeRepositoryBranch?.Name || undefined,
         PipelineStageId: item?.DevopsPipelineStageId || undefined,
         DevopsProjectId: item?.DevopsProjectId,
-        PipelineId: ctx.pipelineId
+        PipelineId: ctx?.pipelineId
     };
 
-    let targetStageId = resolveTargetStageId((mapped as any)?.PipelineStageId, ctx.stages);
-    if (!targetStageId) {
-        targetStageId = ctx.firstStageId;
+    if (ctx) {
+        let targetStageId = resolveTargetStageId((mapped as any)?.PipelineStageId, ctx.stages);
+        if (!targetStageId) {
+            targetStageId = ctx.firstStageId;
+        }
+        const targetStage = findStageById(ctx.stages, targetStageId);
+        mapped.TargetBranch = getBranchNameFromStage(targetStage);
+        mapped.TargetStageId = targetStageId;
     }
-
-    const targetStage = findStageById(ctx.stages, targetStageId);
-    mapped.TargetBranch = getBranchNameFromStage(targetStage);
-    mapped.TargetStageId = targetStageId;
 
     return mapped;
 }
@@ -96,26 +97,25 @@ export async function fetchWorkItems(connection: Connection, projectId: string):
             WHERE DevopsProjectId = '${projectId}'
         `;
         
-        const pipelineId = await getPipelineIdForProject(connection, projectId);
-        
-        if (!pipelineId) {
-            throw new Error(`Pipeline ID not found for project: ${projectId}`);
-        }
-        const stages = await fetchPipelineStages(connection, pipelineId);
-        if (!stages) {
-            throw new Error(`Stages not found for pipeline: ${pipelineId}`);
-        }
-
-        let firstStageId = computeFirstStageId(stages);
-
         const result = await connection.query(query);
-        if (result && (result as any).records) {
-            const records: any[] = (result as any).records;
-            const ctx: ProjectStagesContext = { pipelineId, stages, firstStageId };
-            const workItems: WorkItem[] = records.map((item: any): WorkItem => mapRawItemToWorkItem(item, ctx));
-            return workItems;
+        if (!result || !(result as any).records) {
+            return [];
         }
-        return [];
+
+        const records: any[] = (result as any).records;
+        const pipelineId = await getPipelineIdForProject(connection, projectId);
+        let ctx: ProjectStagesContext | null = null;
+
+        if (pipelineId) {
+            const stages = await fetchPipelineStages(connection, pipelineId);
+            if (stages?.length) {
+                const firstStageId = computeFirstStageId(stages);
+                ctx = { pipelineId, stages, firstStageId };
+            }
+        }
+
+        const workItems: WorkItem[] = records.map((item: any): WorkItem => mapRawItemToWorkItem(item, ctx));
+        return workItems;
     } catch (error) {
         throw error;
     }

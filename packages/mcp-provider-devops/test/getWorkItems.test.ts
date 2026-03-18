@@ -29,6 +29,19 @@ describe('fetchWorkItems', () => {
     expect(workItems[0].id).toBe('WI-0001');
   });
 
+  it('should fetch work items when no pipeline is linked to the project', async () => {
+    (getPipelineIdForProject as vi.Mock).mockResolvedValueOnce(undefined);
+    const workItems = await fetchWorkItems(mockConnection, 'project-001');
+    expect(workItems).toHaveLength(1);
+    expect(workItems[0].id).toBe('WI-0001');
+    expect(workItems[0].name).toBe('Test Work Item');
+    expect(workItems[0].PipelineId).toBeUndefined();
+    expect(workItems[0].TargetBranch).toBeUndefined();
+    expect(workItems[0].TargetStageId).toBeUndefined();
+    // Restore mock for other tests
+    (getPipelineIdForProject as vi.Mock).mockResolvedValue('pipeline-001');
+  });
+
   it('should fetch a work item by name successfully', async () => {
     const workItem = await fetchWorkItemByName(mockConnection, 'WI-0001');
     expect(workItem?.id).toBe('WI-0001');
