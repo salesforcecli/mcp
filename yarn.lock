@@ -3373,6 +3373,18 @@
     semver "^7.7.2"
     zod "^3.25.76"
 
+"@salesforce/mcp-provider-api@0.5.0", "@salesforce/mcp-provider-api@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-api/-/mcp-provider-api-0.5.0.tgz#242a159090f09658518765ce7714483e6b4e5ad6"
+  integrity sha512-ctirfgdatDLcJGfIJOhcT3zNNvrMNDRzp2/FkaTiWiI7oWp5d7L2vQI7FDY/Nar8tho/QNesBmyMBvR//jEK2A==
+  dependencies:
+    "@modelcontextprotocol/sdk" "^1.18.0"
+    "@salesforce/core" "^8.24.3"
+    "@salesforce/ts-types" "^2"
+    "@types/semver" "^7.7.1"
+    semver "^7.7.2"
+    zod "^3.25.76"
+
 "@salesforce/mcp-provider-api@^0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-api/-/mcp-provider-api-0.4.1.tgz#26214403cee6c4a2631c6ed04846e3a4fa1b3c70"
@@ -3435,10 +3447,10 @@
     zod "^3.24.2"
     zod-to-json-schema "^3.24.5"
 
-"@salesforce/metadata-enrichment@^0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@salesforce/metadata-enrichment/-/metadata-enrichment-0.0.9.tgz#4be59a48bedb06a1c4bb6d918b58cafdfbb0e2d4"
-  integrity sha512-fSwGSS2vG6pRdTrzOS8c+T5LeAJBb3HrPIiHPRCiSCB923vZXT118dtx8sP5iA0dzKsZV1+y6ypx9zJuUn+8QA==
+"@salesforce/metadata-enrichment@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@salesforce/metadata-enrichment/-/metadata-enrichment-0.0.10.tgz#9c71bcd79beaa51ab58ddd504fc8b4196710d128"
+  integrity sha512-NAimhj+KPBBY83EZ1Cyf6eebDnMFQ9nL38RVbSfah78UwqCUZ23Ep+sAoLWHyACHnk7oMUKzzily5Yf83pN8qQ==
   dependencies:
     "@salesforce/core" "^8.24.3"
     "@salesforce/kit" "^3.2.4"

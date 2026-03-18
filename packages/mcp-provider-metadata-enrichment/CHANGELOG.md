@@ -1,3 +1,12 @@
+## [0.1.2](https://github.com/salesforcecli/mcp/compare/mcp-provider-metadata-enrichment@0.1.1...mcp-provider-metadata-enrichment@0.1.2) (2026-03-17)
+
+
+### Bug Fixes
+
+* stopgap enrichment fix with default max tokens ([#412](https://github.com/salesforcecli/mcp/issues/412)) ([da6fd33](https://github.com/salesforcecli/mcp/commit/da6fd33d57782d81624027ea22ea005008a404aa))
+
+
+
 ## [0.1.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-metadata-enrichment@0.1.0...mcp-provider-metadata-enrichment@0.1.1) (2026-03-13)
 
 
