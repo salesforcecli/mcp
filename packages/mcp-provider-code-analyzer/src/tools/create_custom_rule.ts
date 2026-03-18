@@ -14,8 +14,16 @@ const DESCRIPTION: string =
   `Purpose: Create a custom rule using a provided XPath expression.
 Use this tool after an XPath has been generated for a specific violation pattern.
 
+Workflow for Apex and Visualforce:
+- For Apex and Visualforce languages, first call "get_ast_nodes_to_generate_xpath" to get AST nodes and generate the XPath.
+- Then call this tool with the generated XPath.
+
+Workflow for other languages:
+- Generate the XPath expression manually for your scenario.
+- Then call this tool with the XPath.
+
 If xpath is not provided and engine is "pmd":
-- First call the tool "get_ast_nodes_to_generate_xpath" to generate the XPath.
+- Call the tool "get_ast_nodes_to_generate_xpath" (for Apex/Visualforce) to generate the XPath.
 - Then call this tool again with the generated XPath.
 
 Inputs (required):
@@ -141,7 +149,11 @@ function validateInput(input: z.infer<typeof inputSchema>): CallToolResult | und
 
   const xpath = input.xpath?.trim();
   if (engine.toLowerCase() === "pmd" && !xpath) {
-    return buildError("xpath is required for engine 'pmd'. Provide a valid XPath expression, use tool 'get_ast_nodes_to_generate_xpath' to generate the XPath.");
+    const langLower = language.toLowerCase();
+    if (langLower === "apex" || langLower === "visualforce") {
+      return buildError("xpath is required for engine 'pmd'. For Apex and Visualforce, use tool 'get_ast_nodes_to_generate_xpath' to generate the XPath.");
+    }
+    return buildError("xpath is required for engine 'pmd'. Provide a valid XPath expression for your scenario.");
   }
 
   if (input.priority === undefined || input.priority === null) {

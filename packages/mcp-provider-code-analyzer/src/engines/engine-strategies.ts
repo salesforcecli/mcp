@@ -1,7 +1,6 @@
 import { generateAstXmlFromSource } from "../ast/generate-ast-xml.js";
 import { type AstNode } from "../ast/extract-ast-nodes.js";
-import { getApexAstNodeMetadataByNames, type ApexAstNodeMetadata } from "../ast/metadata/apex-ast-reference.js";
-import { LANGUAGE_NAMES } from "../constants.js";
+import { getAstNodeMetadataByNames, type AstNodeMetadata } from "../ast/metadata/pmd-ast-reference.js";
 
 type EngineName = "pmd";
 
@@ -9,7 +8,7 @@ export type PromptInput = {
   language: string;
   engine: string;
   astNodes: AstNode[];
-  astMetadata: ApexAstNodeMetadata[];
+  astMetadata: AstNodeMetadata[];
 };
 
 export interface AstGenerator {
@@ -17,7 +16,7 @@ export interface AstGenerator {
 }
 
 export interface AstMetadataProvider {
-  getMetadata(language: string, nodeNames: string[]): Promise<ApexAstNodeMetadata[]>;
+  getMetadata(language: string, nodeNames: string[]): Promise<AstNodeMetadata[]>;
 }
 
 export interface PromptBuilder {
@@ -38,12 +37,15 @@ class PmdAstGenerator implements AstGenerator {
 }
 
 class PmdAstMetadataProvider implements AstMetadataProvider {
-  public async getMetadata(language: string, nodeNames: string[]): Promise<ApexAstNodeMetadata[]> {
+  public async getMetadata(language: string, nodeNames: string[]): Promise<AstNodeMetadata[]> {
     const normalized = (language ?? "").toLowerCase().trim();
-    if (normalized === LANGUAGE_NAMES.Apex) {
-      return getApexAstNodeMetadataByNames(nodeNames);
+    try {
+      return await getAstNodeMetadataByNames(normalized, nodeNames);
+    } catch (error) {
+      // If language reference file doesn't exist, return empty array
+      console.warn(`No AST reference found for language: ${normalized}`, error);
+      return [];
     }
-    return [];
   }
 }
 
@@ -166,13 +168,13 @@ export function getEngineStrategy(engine: string): EngineStrategy {
 
 function buildNodeSummaries(
   nodes: AstNode[],
-  metadata: ApexAstNodeMetadata[]
+  metadata: AstNodeMetadata[]
 ): Array<{
   nodeName: string;
   parent: string | null;
   ancestors: string[];
   attributes: Record<string, string>;
-  metadata: ApexAstNodeMetadata | null;
+  metadata: AstNodeMetadata | null;
 }> {
   const metadataByName = new Map(
     metadata.map((node) => [node.name.toLowerCase(), node])
