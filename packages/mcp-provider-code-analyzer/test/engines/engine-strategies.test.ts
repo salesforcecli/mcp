@@ -1,14 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 
 const generateAstXmlFromSourceMock = vi.fn();
-const getApexAstNodeMetadataByNamesMock = vi.fn();
 
 vi.mock("../../src/ast/generate-ast-xml.js", () => ({
   generateAstXmlFromSource: generateAstXmlFromSourceMock
-}));
-
-vi.mock("../../src/ast/metadata/apex-ast-reference.js", () => ({
-  getApexAstNodeMetadataByNames: getApexAstNodeMetadataByNamesMock
 }));
 
 describe("engine strategies", () => {
@@ -24,14 +19,22 @@ describe("engine strategies", () => {
   });
 
   it("returns metadata only for Apex language", async () => {
-    getApexAstNodeMetadataByNamesMock.mockResolvedValueOnce([{ name: "UserClass" }]);
     const { getEngineStrategy } = await import("../../src/engines/engine-strategies.js");
     const strategy = getEngineStrategy("pmd");
 
     const apexMeta = await strategy.metadataProvider.getMetadata("apex", ["UserClass"]);
     const jsMeta = await strategy.metadataProvider.getMetadata("javascript", ["Foo"]);
 
-    expect(apexMeta).toEqual([{ name: "UserClass" }]);
+    // Apex should return metadata with full details
+    expect(apexMeta).toHaveLength(1);
+    expect(apexMeta[0]).toMatchObject({
+      name: "UserClass",
+      category: "Declarations",
+      description: expect.any(String)
+    });
+    expect(apexMeta[0].attributes).toBeDefined();
+
+    // JavaScript should return empty array (no metadata found for "Foo")
     expect(jsMeta).toEqual([]);
   });
 
