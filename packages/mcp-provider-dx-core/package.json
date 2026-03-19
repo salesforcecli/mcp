@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/mcp-provider-dx-core",
-  "version": "0.8.0",
+  "version": "0.9.1",
   "description": "MCP provider for core Salesforce DX functionality",
   "types": "lib/index.d.ts",
   "license": "Apache-2.0",
@@ -9,6 +9,7 @@
     "build": "wireit",
     "build:watch": "yarn build --watch",
     "clean": "tsc --build --clean",
+    "clean-all": "yarn clean && rimraf node_modules",
     "format": "wireit",
     "lint": "wireit",
     "test": "wireit",

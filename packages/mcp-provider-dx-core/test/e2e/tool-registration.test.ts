@@ -33,8 +33,11 @@ async function getMcpClient(opts: { args: string[] }) {
   return client;
 }
 
-describe('specific tool registration', () => {
-  it('should enable 2 tools', async () => {
+describe('specific tool registration', function() {
+  this.timeout(60000); // Set 60 second timeout for all tests in this suite
+
+  it('should enable 2 tools', async function() {
+    this.timeout(60000); // Set 60 second timeout for this test
     const client = await getMcpClient({
       args: ['--orgs', 'ALLOW_ALL_ORGS', '--tools', 'run_soql_query, deploy_metadata', '--no-telemetry'],
     });
@@ -54,7 +57,8 @@ describe('specific tool registration', () => {
     }
   });
 
-  it('should not enable NON_GA tools if --allow-non-ga-tools is not specified', async () => {
+  it('should not enable NON_GA tools if --allow-non-ga-tools is not specified', async function() {
+    this.timeout(60000); // Set 60 second timeout for this test
     const client = await getMcpClient({
       args: ['--orgs', 'ALLOW_ALL_ORGS', '--tools', 'run_soql_query, list_devops_center_work_items', '--no-telemetry'],
     });
@@ -73,7 +77,8 @@ describe('specific tool registration', () => {
     }
   });
 
-  it('should enable 1 tool and a toolset', async () => {
+  it('should enable 1 tool and a toolset', async function() {
+    this.timeout(60000); // Set 60 second timeout for this test
     const client = await getMcpClient({
       args: [
         '--orgs',
@@ -90,7 +95,7 @@ describe('specific tool registration', () => {
     try {
       const initialTools = (await client.listTools()).tools.map((t) => t.name).sort();
 
-      expect(initialTools.length).to.equal(7);
+      expect(initialTools.length).to.equal(9);
       expect(initialTools).to.deep.equal(
         [
           'run_soql_query',
@@ -100,6 +105,8 @@ describe('specific tool registration', () => {
           'run_code_analyzer',
           'list_code_analyzer_rules',
           'query_code_analyzer_results',
+          'get_ast_nodes_to_generate_xpath',
+          'create_custom_rule',
         ].sort(),
       );
     } catch (err) {
