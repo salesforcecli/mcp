@@ -66,6 +66,77 @@ describe("GenerateXpathPromptMcpTool", () => {
     expect(actionExecMock).not.toHaveBeenCalled();
   });
 
+  it("accepts visualforce language", async () => {
+    actionExecMock.mockResolvedValueOnce({
+      status: "success",
+      nodes: [{ nodeName: "ApexPage", attributes: {}, ancestors: [] }],
+      metadata: []
+    });
+    buildPromptMock.mockReturnValueOnce("VISUALFORCE PROMPT");
+
+    const tool = await buildTool();
+    const result = await tool.exec({
+      sampleCode: "<apex:page>Content</apex:page>",
+      language: "visualforce",
+      engine: "pmd"
+    });
+
+    expect(result.structuredContent?.status).toBe("success");
+    expect(result.structuredContent?.prompt).toBe("VISUALFORCE PROMPT");
+    expect(actionExecMock).toHaveBeenCalledWith({
+      code: "<apex:page>Content</apex:page>",
+      language: "visualforce"
+    });
+  });
+
+  it("rejects html language with helpful message", async () => {
+    const tool = await buildTool();
+    const result = await tool.exec({
+      sampleCode: "<html><body>Test</body></html>",
+      language: "html",
+      engine: "pmd"
+    });
+
+    expect(result.structuredContent?.status).toContain(
+      "This tool returns AST nodes for Apex and Visualforce only"
+    );
+    expect(result.structuredContent?.status).toContain(
+      "For html, please generate the XPath expression for your scenario"
+    );
+    expect(actionExecMock).not.toHaveBeenCalled();
+  });
+
+  it("rejects javascript language with helpful message", async () => {
+    const tool = await buildTool();
+    const result = await tool.exec({
+      sampleCode: "function test() { return true; }",
+      language: "javascript",
+      engine: "pmd"
+    });
+
+    expect(result.structuredContent?.status).toContain(
+      "This tool returns AST nodes for Apex and Visualforce only"
+    );
+    expect(result.structuredContent?.status).toContain(
+      "For javascript, please generate the XPath expression for your scenario"
+    );
+    expect(actionExecMock).not.toHaveBeenCalled();
+  });
+
+  it("rejects unsupported language with case-insensitive check", async () => {
+    const tool = await buildTool();
+    const result = await tool.exec({
+      sampleCode: "class Test {}",
+      language: "Java",
+      engine: "pmd"
+    });
+
+    expect(result.structuredContent?.status).toContain(
+      "This tool returns AST nodes for Apex and Visualforce only"
+    );
+    expect(actionExecMock).not.toHaveBeenCalled();
+  });
+
   it("returns validation error when sample code is missing", async () => {
     const tool = await buildTool();
     const result = await tool.exec({

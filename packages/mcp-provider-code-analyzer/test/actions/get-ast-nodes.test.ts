@@ -87,6 +87,42 @@ describe("GetAstNodesActionImpl", () => {
     expect(result.nodes.length).toBeGreaterThan(0);
   });
 
+  it("generates AST nodes for Visualforce code", async () => {
+    const visualforceXml = `
+<ApexPage>
+  <OutputText value="Hello World" />
+  <PageBlock title="Test">
+    <PageBlockSection>
+      <InputField value="{!account.Name}" />
+    </PageBlockSection>
+  </PageBlock>
+</ApexPage>
+    `.trim();
+
+    generateAstXmlFromSourceMock.mockResolvedValueOnce(visualforceXml);
+
+    const { GetAstNodesActionImpl } = await import("../../src/actions/get-ast-nodes.js");
+    const action = new GetAstNodesActionImpl();
+
+    const input = {
+      sampleCode: "<apex:page>\n  <apex:outputText value=\"Hello World\" />\n</apex:page>",
+      language: "visualforce",
+      engine: "pmd"
+    };
+
+    const result = await action.exec({
+      code: input.sampleCode,
+      language: input.language
+    });
+
+    expect(generateAstXmlFromSourceMock).toHaveBeenCalledWith(
+      input.sampleCode,
+      input.language
+    );
+    expect(result.status).toBe("success");
+    expect(result.nodes.length).toBeGreaterThan(0);
+  });
+
   it("returns an error status when the pipeline throws", async () => {
     vi.resetModules();
     vi.doMock("../../src/ast/ast-node-pipeline.js", () => ({
