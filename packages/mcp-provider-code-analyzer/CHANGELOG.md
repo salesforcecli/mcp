@@ -1,3 +1,12 @@
+# [0.6.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-code-analyzer@0.5.2...mcp-provider-code-analyzer@0.6.0) (2026-03-18)
+
+
+### Features
+
+* @W-21102094 - Add PMD XPath custom rule creation tool with AST prompt generation ([#381](https://github.com/salesforcecli/mcp/issues/381)) ([d3bb83f](https://github.com/salesforcecli/mcp/commit/d3bb83fa0c4058988da92111a76b4bff817474d3)), closes [#369](https://github.com/salesforcecli/mcp/issues/369) [#370](https://github.com/salesforcecli/mcp/issues/370) [#371](https://github.com/salesforcecli/mcp/issues/371) [#372](https://github.com/salesforcecli/mcp/issues/372) [#376](https://github.com/salesforcecli/mcp/issues/376) [#377](https://github.com/salesforcecli/mcp/issues/377) [#378](https://github.com/salesforcecli/mcp/issues/378) [#380](https://github.com/salesforcecli/mcp/issues/380) [#383](https://github.com/salesforcecli/mcp/issues/383) [#384](https://github.com/salesforcecli/mcp/issues/384) [#386](https://github.com/salesforcecli/mcp/issues/386) [#387](https://github.com/salesforcecli/mcp/issues/387) [#388](https://github.com/salesforcecli/mcp/issues/388) [#392](https://github.com/salesforcecli/mcp/issues/392) [#393](https://github.com/salesforcecli/mcp/issues/393) [#394](https://github.com/salesforcecli/mcp/issues/394) [#407](https://github.com/salesforcecli/mcp/issues/407)
+
+
+
 ## [0.5.2](https://github.com/salesforcecli/mcp/compare/mcp-provider-code-analyzer@0.5.1...mcp-provider-code-analyzer@0.5.2) (2026-02-11)
 
 
