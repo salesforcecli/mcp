@@ -1,3 +1,12 @@
+# [0.6.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-api@0.5.0...mcp-provider-api@0.6.0) (2026-03-17)
+
+
+### Features
+
+* add validation toolset @W-21564584 ([#411](https://github.com/salesforcecli/mcp/issues/411)) ([d1d06c7](https://github.com/salesforcecli/mcp/commit/d1d06c75bf7b40efb099b684b1ce6bcdff985491))
+
+
+
 # [0.5.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-api@0.4.1...mcp-provider-api@0.5.0) (2026-02-09)
 
 
