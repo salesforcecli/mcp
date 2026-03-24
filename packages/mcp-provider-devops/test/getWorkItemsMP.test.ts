@@ -33,6 +33,25 @@ describe('fetchWorkItemByNameMP', () => {
     expect(workItem.name).toBe('Test Work Item');
   });
 
+  it('infers bitbucket repoType from managed package repository URL', async () => {
+    const workItemRecord = {
+      Id: 'WI-0001',
+      Name: 'Test Work Item',
+      sf_devops__Project__c: 'P-001',
+      sf_devops__Branch__r: {
+        sf_devops__Repository__r: {
+          sf_devops__Url__c: 'https://bitbucket.org/acme/project-repo.git'
+        }
+      }
+    };
+    const pipelineRecord = { Id: 'PL-001', Name: 'Pipeline 1', sf_devops__Project__c: 'P-001' };
+    const stagesRecords = [{ Id: 'PS-001', Name: 'Stage 1', sf_devops__Next_Stage__c: null }];
+    const mockConnection = createMockConnection(workItemRecord, pipelineRecord, stagesRecords);
+
+    const workItem = await fetchWorkItemByNameMP(mockConnection as any, 'WI-0001');
+    expect(workItem.SourceCodeRepository.repoType).toBe('bitbucket');
+  });
+
   it('should return an error if work item is concluded', async () => {
     const workItemRecord = { Id: 'WI-0001', Name: 'Test Work Item', sf_devops__Concluded__c: 'true', sf_devops__Project__c: 'P-001' };
     const pipelineRecord = { Id: 'PL-001', Name: 'Pipeline 1', sf_devops__Project__c: 'P-001' };

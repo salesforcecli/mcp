@@ -13,9 +13,15 @@ function buildRepositoryInfoFromItem(item: any): { repoUrl?: string; repoType?: 
     let repoType: string | undefined;
     if (provider && repoOwner && repoName) {
         const normalizedProvider = String(provider).toLowerCase();
-        repoType = normalizedProvider;
         if (normalizedProvider === "github") {
+            repoType = "github";
             repoUrl = `https://github.com/${repoOwner}/${repoName}`;
+        } else if (normalizedProvider === "bitbucket" || normalizedProvider === "bitbucketcloud") {
+            // Canonicalize both provider variants to "bitbucket" for downstream consistency.
+            repoType = "bitbucket";
+            repoUrl = `https://bitbucket.org/${repoOwner}/${repoName}`;
+        } else {
+            repoType = normalizedProvider;
         }
     }
     return { repoUrl, repoType };

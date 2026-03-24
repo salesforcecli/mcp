@@ -4,6 +4,17 @@ import { getPipelineMP } from "./getPipelineMP.js";
 import { fetchPipelineStagesMP } from "./getPipelineStagesMP.js";
 
 
+function inferRepoTypeFromUrl(repoUrl: string): string {
+    const normalized = repoUrl.toLowerCase();
+    if (normalized.includes("github.com")) {
+        return "github";
+    }
+    if (normalized.includes("bitbucket.org")) {
+        return "bitbucket";
+    }
+    return "git";
+}
+
 export async function fetchWorkItemByNameMP(connection: Connection, workItemName: string): Promise<WorkItem | null | any> {
     try {
         const item = await queryWorkItemByName(connection, workItemName);
@@ -150,6 +161,7 @@ function computeTargetBranchMP(targetStageId: string | undefined, idToStage: Map
 function mapWorkItemCoreMP(item: any): WorkItem {
     const ownerName: string | undefined = item?.sf_devops__Assigned_To__r?.Name;
     const ownerId: string | undefined = item?.sf_devops__Assigned_To__c;
+    const repoUrl = item?.sf_devops__Branch__r?.sf_devops__Repository__r?.sf_devops__Url__c as string | undefined;
     return {
         id: item?.Id,
         name: item?.Name || "",
@@ -158,9 +170,9 @@ function mapWorkItemCoreMP(item: any): WorkItem {
         owner: ownerName || ownerId || "",
         WorkItemBranch: item?.sf_devops__Branch__r?.Name || undefined,
         DevopsProjectId: item?.sf_devops__Project__c,
-        SourceCodeRepository: item?.sf_devops__Branch__r?.sf_devops__Repository__r?.sf_devops__Url__c ? {
-            repoUrl: item.sf_devops__Branch__r.sf_devops__Repository__r.sf_devops__Url__c,
-            repoType: "github"
+        SourceCodeRepository: repoUrl ? {
+            repoUrl,
+            repoType: inferRepoTypeFromUrl(repoUrl)
         } : undefined,
     } as WorkItem;
 }
