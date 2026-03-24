@@ -92,7 +92,7 @@ export class EnrichMetadataMcpTool extends McpTool<InputArgsShape, OutputArgsSha
       This tool currently supports enriching the following component types, where the metadata type is what is used in the tool for the enrichment request.
       [Header: Component Type] | [Header: Metadata Type]
       FlexiPage | FlexiPage
-      Lightning Type | LightningBundleType
+      Lightning Type | LightningTypeBundle
       Lightning Web Component (LWC) | LightningComponentBundle
       Custom Object | CustomObject
 
