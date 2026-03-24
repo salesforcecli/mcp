@@ -43,7 +43,6 @@ class PmdAstMetadataProvider implements AstMetadataProvider {
       return await getAstNodeMetadataByNames(normalized, nodeNames);
     } catch (error) {
       // If language reference file doesn't exist, return empty array
-      console.warn(`No AST reference found for language: ${normalized}`, error);
       return [];
     }
   }
