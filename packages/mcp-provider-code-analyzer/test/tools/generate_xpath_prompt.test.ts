@@ -38,6 +38,7 @@ describe("GenerateXpathPromptMcpTool", () => {
       engine: "pmd"
     });
 
+    expect(result.isError).toBe(true);
     expect(result.structuredContent?.status).toBe("language is required");
     expect(actionExecMock).not.toHaveBeenCalled();
   });
@@ -50,6 +51,7 @@ describe("GenerateXpathPromptMcpTool", () => {
       engine: "  "
     });
 
+    expect(result.isError).toBe(true);
     expect(result.structuredContent?.status).toBe("engine is required");
     expect(actionExecMock).not.toHaveBeenCalled();
   });
@@ -62,6 +64,7 @@ describe("GenerateXpathPromptMcpTool", () => {
       engine: "eslint"
     });
 
+    expect(result.isError).toBe(true);
     expect(result.structuredContent?.status).toBe("engine 'eslint' is not supported yet");
     expect(actionExecMock).not.toHaveBeenCalled();
   });
@@ -81,6 +84,7 @@ describe("GenerateXpathPromptMcpTool", () => {
       engine: "pmd"
     });
 
+    expect(result.isError).toBeUndefined();
     expect(result.structuredContent?.status).toBe("success");
     expect(result.structuredContent?.prompt).toBe("VISUALFORCE PROMPT");
     expect(actionExecMock).toHaveBeenCalledWith({
@@ -97,6 +101,7 @@ describe("GenerateXpathPromptMcpTool", () => {
       engine: "pmd"
     });
 
+    expect(result.isError).toBe(true);
     expect(result.structuredContent?.status).toContain(
       "This tool returns AST nodes for Apex and Visualforce only"
     );
@@ -114,6 +119,7 @@ describe("GenerateXpathPromptMcpTool", () => {
       engine: "pmd"
     });
 
+    expect(result.isError).toBe(true);
     expect(result.structuredContent?.status).toContain(
       "This tool returns AST nodes for Apex and Visualforce only"
     );
@@ -131,6 +137,7 @@ describe("GenerateXpathPromptMcpTool", () => {
       engine: "pmd"
     });
 
+    expect(result.isError).toBe(true);
     expect(result.structuredContent?.status).toContain(
       "This tool returns AST nodes for Apex and Visualforce only"
     );
@@ -145,6 +152,7 @@ describe("GenerateXpathPromptMcpTool", () => {
       engine: "pmd"
     });
 
+    expect(result.isError).toBe(true);
     expect(result.structuredContent?.status).toBe("code in apex is required");
     expect(actionExecMock).not.toHaveBeenCalled();
   });
@@ -163,6 +171,7 @@ describe("GenerateXpathPromptMcpTool", () => {
       engine: "pmd"
     });
 
+    expect(result.isError).toBe(true);
     expect(result.structuredContent?.status).toBe("failure");
     expect(result.structuredContent?.prompt).toBe("");
   });
@@ -182,6 +191,7 @@ describe("GenerateXpathPromptMcpTool", () => {
       engine: "pmd"
     });
 
+    expect(result.isError).toBeUndefined();
     expect(buildPromptMock).toHaveBeenCalledTimes(1);
     expect(result.structuredContent?.prompt).toBe("PROMPT");
     expect(telemetrySendMock).toHaveBeenCalledTimes(1);

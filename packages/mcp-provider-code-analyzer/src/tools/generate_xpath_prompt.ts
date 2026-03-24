@@ -99,7 +99,7 @@ export class GenerateXpathPromptMcpTool extends McpTool<InputArgsShape, OutputAr
 
     const astResult = await this.action.exec(buildAstInput(input));
     if (astResult.status !== "success") {
-      return buildToolResult({ status: astResult.status, prompt: "" });
+      return buildErrorResult(astResult.status);
     }
 
     const strategy = getEngineStrategy(input.engine);
@@ -162,7 +162,10 @@ function buildAstInput(input: z.infer<typeof inputSchema>): GetAstNodesInput {
 }
 
 function buildErrorResult(status: string): CallToolResult {
-  return buildToolResult({ status, prompt: "" });
+  return {
+    ...buildToolResult({ status, prompt: "" }),
+    isError: true
+  };
 }
 
 function buildToolResult(output: { status: string; prompt: string }): CallToolResult {
