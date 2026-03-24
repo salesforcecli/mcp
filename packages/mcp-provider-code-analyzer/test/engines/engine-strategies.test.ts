@@ -106,4 +106,91 @@ describe("engine strategies", () => {
     const { getEngineStrategy } = await import("../../src/engines/engine-strategies.js");
     expect(() => getEngineStrategy("")).toThrow("engine '' is not supported yet");
   });
+
+  it("includes Apex-specific examples for apex language", async () => {
+    const { getEngineStrategy } = await import("../../src/engines/engine-strategies.js");
+    const strategy = getEngineStrategy("pmd");
+
+    const prompt = strategy.promptBuilder.buildPrompt({
+      language: "apex",
+      engine: "pmd",
+      astNodes: [
+        { nodeName: "MethodCallExpression", attributes: {}, ancestors: [] }
+      ],
+      astMetadata: []
+    });
+
+    expect(prompt).toContain("Language: apex");
+    expect(prompt).toContain("Apex-Specific Guidance");
+    expect(prompt).toContain("Database.query");
+    expect(prompt).toContain("System.debug");
+    expect(prompt).toContain("@FullMethodName");
+    expect(prompt).toContain("//MethodCallExpression");
+    expect(prompt).not.toContain("Visualforce-Specific Guidance");
+  });
+
+  it("includes Visualforce-specific examples for visualforce language", async () => {
+    const { getEngineStrategy } = await import("../../src/engines/engine-strategies.js");
+    const strategy = getEngineStrategy("pmd");
+
+    const prompt = strategy.promptBuilder.buildPrompt({
+      language: "visualforce",
+      engine: "pmd",
+      astNodes: [
+        { nodeName: "ApexPage", attributes: {}, ancestors: [] }
+      ],
+      astMetadata: []
+    });
+
+    expect(prompt).toContain("Language: visualforce");
+    expect(prompt).toContain("Visualforce-Specific Guidance");
+    expect(prompt).toContain("apex:outputText");
+    expect(prompt).toContain("apex:page");
+    expect(prompt).toContain("apex:commandButton");
+    expect(prompt).not.toContain("Apex-Specific Guidance");
+    expect(prompt).not.toContain("Database.query");
+  });
+
+  it("includes generic guidance for unknown language", async () => {
+    const { getEngineStrategy } = await import("../../src/engines/engine-strategies.js");
+    const strategy = getEngineStrategy("pmd");
+
+    const prompt = strategy.promptBuilder.buildPrompt({
+      language: "ruby",
+      engine: "pmd",
+      astNodes: [
+        { nodeName: "SomeNode", attributes: {}, ancestors: [] }
+      ],
+      astMetadata: []
+    });
+
+    expect(prompt).toContain("Language: ruby");
+    expect(prompt).toContain("General Guidance");
+    expect(prompt).toContain("AST-first workflow");
+    expect(prompt).not.toContain("Apex-Specific Guidance");
+    expect(prompt).not.toContain("Visualforce-Specific Guidance");
+    expect(prompt).not.toContain("Database.query");
+  });
+
+  it("normalizes language to lowercase when selecting examples", async () => {
+    const { getEngineStrategy } = await import("../../src/engines/engine-strategies.js");
+    const strategy = getEngineStrategy("pmd");
+
+    const apexPrompt = strategy.promptBuilder.buildPrompt({
+      language: "APEX",
+      engine: "pmd",
+      astNodes: [],
+      astMetadata: []
+    });
+
+    const vfPrompt = strategy.promptBuilder.buildPrompt({
+      language: "VisualForce",
+      engine: "pmd",
+      astNodes: [],
+      astMetadata: []
+    });
+
+    expect(apexPrompt).toContain("Apex-Specific Guidance");
+    expect(vfPrompt).toContain("Visualforce-Specific Guidance");
+  });
 });
