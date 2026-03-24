@@ -1,12 +1,12 @@
 {
   "runDir": "{{RUNDIR}}{{SEP}}",
   "violationCounts": {
-    "total": 6,
+    "total": 7,
     "sev1": 0,
     "sev2": 0,
     "sev3": 3,
     "sev4": 3,
-    "sev5": 0
+    "sev5": 1
   },
   "versions": {
     "code-analyzer": "{{CODE_ANALYZER_VERSION}}",
@@ -157,6 +157,28 @@
       "resources": [
         "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#operationwithlimitsinloop"
       ]
+    },
+    {
+      "rule": "NoTrailingWhitespace",
+      "engine": "regex",
+      "severity": 5,
+      "tags": [
+        "Recommended",
+        "CodeStyle",
+        "Apex"
+      ],
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "test{{SEP}}fixtures{{SEP}}sample-targets{{SEP}}ApexTarget2.cls",
+          "startLine": 3,
+          "startColumn": 1,
+          "endLine": 4,
+          "endColumn": 1
+        }
+      ],
+      "message": "Found trailing whitespace at the end of a line of code.",
+      "resources": []
     }
   ]
 }

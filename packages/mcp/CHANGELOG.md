@@ -1,3 +1,37 @@
+## [0.29.1](https://github.com/salesforcecli/mcp/compare/0.29.0...0.29.1) (2026-03-19)
+
+
+
+# [0.29.0](https://github.com/salesforcecli/mcp/compare/0.28.2...0.29.0) (2026-03-18)
+
+
+### Features
+
+* @W-21102094 - Add PMD XPath custom rule creation tool with AST prompt generation ([#381](https://github.com/salesforcecli/mcp/issues/381)) ([d3bb83f](https://github.com/salesforcecli/mcp/commit/d3bb83fa0c4058988da92111a76b4bff817474d3)), closes [#369](https://github.com/salesforcecli/mcp/issues/369) [#370](https://github.com/salesforcecli/mcp/issues/370) [#371](https://github.com/salesforcecli/mcp/issues/371) [#372](https://github.com/salesforcecli/mcp/issues/372) [#376](https://github.com/salesforcecli/mcp/issues/376) [#377](https://github.com/salesforcecli/mcp/issues/377) [#378](https://github.com/salesforcecli/mcp/issues/378) [#380](https://github.com/salesforcecli/mcp/issues/380) [#383](https://github.com/salesforcecli/mcp/issues/383) [#384](https://github.com/salesforcecli/mcp/issues/384) [#386](https://github.com/salesforcecli/mcp/issues/386) [#387](https://github.com/salesforcecli/mcp/issues/387) [#388](https://github.com/salesforcecli/mcp/issues/388) [#392](https://github.com/salesforcecli/mcp/issues/392) [#393](https://github.com/salesforcecli/mcp/issues/393) [#394](https://github.com/salesforcecli/mcp/issues/394) [#407](https://github.com/salesforcecli/mcp/issues/407)
+
+
+
+## [0.28.2](https://github.com/salesforcecli/mcp/compare/0.28.1...0.28.2) (2026-03-18)
+
+
+
+## [0.28.1](https://github.com/salesforcecli/mcp/compare/0.28.0...0.28.1) (2026-03-17)
+
+
+
+# [0.28.0](https://github.com/salesforcecli/mcp/compare/0.27.1...0.28.0) (2026-03-17)
+
+
+### Features
+
+* add MCP tool-level response token usage (responseCharCount) ([#400](https://github.com/salesforcecli/mcp/issues/400)) ([217e7ea](https://github.com/salesforcecli/mcp/commit/217e7ea2db1a0ecc4b787f15ed150d21d08a14ab))
+
+
+
+## [0.27.1](https://github.com/salesforcecli/mcp/compare/0.27.0...0.27.1) (2026-03-13)
+
+
+
 # [0.27.0](https://github.com/salesforcecli/mcp/compare/0.26.11...0.27.0) (2026-03-12)
 
 

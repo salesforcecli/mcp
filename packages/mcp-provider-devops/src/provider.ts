@@ -4,6 +4,7 @@ import { SfDevopsListWorkItems } from "./tools/sfDevopsListWorkItems.js";
 import { SfDevopsPromoteWorkItem } from "./tools/sfDevopsPromoteWorkItem.js";
 import { SfDevopsDetectConflict } from "./tools/sfDevopsDetectConflict.js";
 import { SfDevopsResolveConflict } from "./tools/sfDevopsResolveConflict.js";
+import { SfDevopsResolveDeploymentFailure } from "./tools/sfDevopsResolveDeploymentFailure.js";
 import { CheckCommitStatus } from "./tools/checkCommitStatus.js";
 import { CreatePullRequest } from "./tools/createPullRequest.js";
 import { SfDevopsCheckoutWorkItem } from "./tools/sfDevopsCheckoutWorkItem.js";
@@ -28,6 +29,7 @@ export class DevOpsMcpProvider extends McpProvider {
       new SfDevopsPromoteWorkItem(services),
       new SfDevopsDetectConflict(services),
       new SfDevopsResolveConflict(services),
+      new SfDevopsResolveDeploymentFailure(services),
 
       new SfDevopsCheckoutWorkItem(services),
       new SfDevopsCommitWorkItem(services),
