@@ -82,14 +82,16 @@ This tool takes the DevOps Center org username and the exact Work Item Name, loo
           content: [{
             type: "text",
             text: `Error: Repository path is required. Please provide the absolute path to the git repository root.`
-          }]
+          }],
+          isError: true
         };
       }
 
       safeLocalPath = input.localPath ? normalizeAndValidateRepoPath(input.localPath) : undefined;
     } catch (e: any) {
       return {
-        content: [{ type: "text", text: `Invalid localPath: ${e?.message || e}` }]
+        content: [{ type: "text", text: `Invalid localPath: ${e?.message || e}` }],
+        isError: true
       };
     }
 
@@ -117,7 +119,8 @@ This tool takes the DevOps Center org username and the exact Work Item Name, loo
         content: [{
           type: "text",
           text: `Error: Work item not found. Please provide a valid work item name or valid DevOps Center org username.`
-        }]
+        }],
+        isError: true
       };
     }
 

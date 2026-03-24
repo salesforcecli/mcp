@@ -9,7 +9,7 @@ export interface ResolveConflictParams {
 export async function resolveConflict({
   workItem,
   localPath
-}: ResolveConflictParams): Promise<{ content: ({ type: "text"; text: string; [x: string]: unknown })[] }> {
+}: ResolveConflictParams): Promise<{ content: ({ type: "text"; text: string; [x: string]: unknown })[]; isError?: boolean }> {
   
   // If no workItem is provided, we need to fetch work items and ask user to select one
   if (!workItem) {
@@ -17,7 +17,8 @@ export async function resolveConflict({
       content: [{
         type: "text",
         text: "Error: Please provide a workItem to check for conflicts. Use the list_devops_center_work_items tool to fetch work items first."
-      }]
+      }],
+      isError: true
     };
   }
 
@@ -27,7 +28,8 @@ export async function resolveConflict({
       content: [{
         type: "text",
         text: "Error: Work item is missing required properties (WorkItemBranch, TargetBranch, or SourceCodeRepository.repoUrl)."
-      }]
+      }],
+      isError: true
     };
   }
 
@@ -81,7 +83,8 @@ Important constraints:
       content: [{
         type: "text",
         text: `Error: ${error}`
-      }]
+      }],
+      isError: true
     };
   }
 }

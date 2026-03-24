@@ -99,7 +99,8 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
           content: [{
             type: "text",
             text: `Error: Work item not found. Please provide a valid work item name or valid DevOps Center org username.`
-          }]
+          }],
+          isError: true
         }
       };
     }
@@ -110,7 +111,8 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
           content: [{
             type: "text",
             text: `Error: Repository path is required. Please provide the absolute path to the git repository root.`
-          }]
+          }],
+          isError: true
         }
       };
     }
@@ -135,7 +137,8 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
           content: [{
             type: "text",
             text: `Error: Repository path is required. Please provide the absolute path to the git repository root.`
-          }]
+          }],
+          isError: true
         };
       }
       
@@ -145,7 +148,8 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
           content: [{
             type: "text",
             text: `Error: Commit message is required. Please provide a meaningful commit message describing your changes.`
-          }]
+          }],
+          isError: true
         };
       }
 
@@ -207,7 +211,8 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
         content: [{
           type: "text",
           text: `Error committing work item: ${error.message}`
-        }]
+        }],
+        isError: true
       };
     }
   }

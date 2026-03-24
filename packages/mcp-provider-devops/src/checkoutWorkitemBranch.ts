@@ -46,7 +46,8 @@ export async function checkoutWorkitemBranch(
       content: [{
         type: "text",
         text: `Error: '${localPath}' has uncommitted changes. Please commit or stash your changes before checking out the work item branch.`
-      }]
+      }],
+      isError: true
     };
   }
 

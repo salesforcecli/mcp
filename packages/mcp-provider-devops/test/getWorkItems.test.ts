@@ -4,8 +4,8 @@ import { getPipelineIdForProject, fetchPipelineStages } from '../src/shared/pipe
 
 vi.mock('../src/shared/pipelineUtils');
 
-(getPipelineIdForProject as vi.Mock).mockResolvedValue('pipeline-001');
-(fetchPipelineStages as vi.Mock).mockResolvedValue([{ Id: 'stage-001', Name: 'Stage 1' }]);
+(getPipelineIdForProject as any).mockResolvedValue('pipeline-001');
+(fetchPipelineStages as any).mockResolvedValue([{ Id: 'stage-001', Name: 'Stage 1' }]);
 
 const mockConnection = {
   query: vi.fn().mockImplementation((query: string) => {
@@ -30,8 +30,8 @@ describe('fetchWorkItems', () => {
   });
 
   it('should fetch work items when no pipeline is linked to the project', async () => {
-    (getPipelineIdForProject as vi.Mock).mockResolvedValueOnce(undefined);
-    const workItems = await fetchWorkItems(mockConnection, 'project-001');
+    (getPipelineIdForProject as any).mockResolvedValueOnce(undefined);
+    const workItems = await fetchWorkItems(mockConnection as any, 'project-001');
     expect(workItems).toHaveLength(1);
     expect(workItems[0].id).toBe('WI-0001');
     expect(workItems[0].name).toBe('Test Work Item');
@@ -39,12 +39,31 @@ describe('fetchWorkItems', () => {
     expect(workItems[0].TargetBranch).toBeUndefined();
     expect(workItems[0].TargetStageId).toBeUndefined();
     // Restore mock for other tests
-    (getPipelineIdForProject as vi.Mock).mockResolvedValue('pipeline-001');
+    (getPipelineIdForProject as any).mockResolvedValue('pipeline-001');
   });
 
   it('should fetch a work item by name successfully', async () => {
     const workItem = await fetchWorkItemByName(mockConnection as any, 'WI-0001');
     expect(workItem?.id).toBe('WI-0001');
+  });
+
+  it('should fetch a work item by name when no pipeline is linked', async () => {
+    (getPipelineIdForProject as any).mockResolvedValueOnce(undefined);
+    const workItem = await fetchWorkItemByName(mockConnection as any, 'WI-0001');
+    expect(workItem?.id).toBe('WI-0001');
+    expect(workItem?.PipelineId).toBeUndefined();
+    expect(workItem?.TargetBranch).toBeUndefined();
+    expect(workItem?.TargetStageId).toBeUndefined();
+  });
+
+  it('should fetch work items by names even when no pipeline is linked', async () => {
+    (getPipelineIdForProject as any).mockResolvedValueOnce(undefined);
+    const workItems = await fetchWorkItemsByNames(mockConnection as any, ['WI-0001', 'WI-0002']);
+    expect(workItems).toHaveLength(2);
+    expect(workItems[0].id).toBe('WI-0001');
+    expect(workItems[0].PipelineId).toBeUndefined();
+    expect(workItems[1].id).toBe('WI-0002');
+    expect(workItems[1].TargetBranch).toBeUndefined();
   });
 
   it('maps Bitbucket repository metadata from work items', async () => {

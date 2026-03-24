@@ -29,18 +29,23 @@ function buildRepositoryInfoFromItem(item: any): { repoUrl?: string; repoType?: 
 
 async function ensureProjectStages(
     connection: any,
-    cache: Map<string, ProjectStagesContext>,
-    projectId: string
+    cache: Map<string, ProjectStagesContext | null>,
+    projectId?: string
 ): Promise<ProjectStagesContext | null> {
+    if (!projectId) {
+        return null;
+    }
     if (cache.has(projectId)) {
-        return cache.get(projectId)!;
+        return cache.get(projectId) ?? null;
     }
     const pipelineId = await getPipelineIdForProject(connection, projectId);
     if (!pipelineId) {
+        cache.set(projectId, null);
         return null;
     }
     const stages = await fetchPipelineStages(connection, pipelineId);
-    if (!stages) {
+    if (!stages?.length) {
+        cache.set(projectId, null);
         return null;
     }
     const firstStageId = computeFirstStageId(stages);
@@ -109,16 +114,8 @@ export async function fetchWorkItems(connection: Connection, projectId: string):
         }
 
         const records: any[] = (result as any).records;
-        const pipelineId = await getPipelineIdForProject(connection, projectId);
-        let ctx: ProjectStagesContext | null = null;
-
-        if (pipelineId) {
-            const stages = await fetchPipelineStages(connection, pipelineId);
-            if (stages?.length) {
-                const firstStageId = computeFirstStageId(stages);
-                ctx = { pipelineId, stages, firstStageId };
-            }
-        }
+        const projectStagesCache = new Map<string, ProjectStagesContext | null>();
+        const ctx = await ensureProjectStages(connection, projectStagesCache, projectId);
 
         const workItems: WorkItem[] = records.map((item: any): WorkItem => mapRawItemToWorkItem(item, ctx));
         return workItems;
@@ -160,11 +157,8 @@ export async function fetchWorkItemByName(connection: Connection, workItemName: 
         }
 
         const projectId: string = item?.DevopsProjectId;
-        const cache = new Map<string, ProjectStagesContext>();
+        const cache = new Map<string, ProjectStagesContext | null>();
         const ctx = await ensureProjectStages(connection, cache, projectId);
-        if (!ctx) {
-            throw new Error(`Pipeline or stages not found for project: ${projectId}`);
-        }
         return mapRawItemToWorkItem(item, ctx);
     } catch (error) {
         throw error;
@@ -201,23 +195,15 @@ export async function fetchWorkItemsByNames(connection: Connection, workItemName
         const result: any = await connection.query(query);
         const records: any[] = result?.records || [];
 
-        const projectStagesCache = new Map<string, ProjectStagesContext>();
+        const projectStagesCache = new Map<string, ProjectStagesContext | null>();
 
         const workItems: WorkItem[] = [];
 
         for (const item of records) {
             const projectId: string = item?.DevopsProjectId;
-            if (!projectId) {
-                continue;
-            }
-
-            let ctx = projectStagesCache.get(projectId);
-            if (!ctx) {
-                const ensured = await ensureProjectStages(connection, projectStagesCache, projectId);
-                if (!ensured) {
-                    continue;
-                }
-                ctx = ensured;
+            let ctx: ProjectStagesContext | null = null;
+            if (projectId) {
+                ctx = await ensureProjectStages(connection, projectStagesCache, projectId);
             }
 
             const mapped = mapRawItemToWorkItem(item, ctx);

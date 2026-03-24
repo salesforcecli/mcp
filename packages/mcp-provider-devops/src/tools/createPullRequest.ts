@@ -84,7 +84,8 @@ export class CreatePullRequest extends McpTool<InputArgsShape, OutputArgsShape> 
           content: [{
             type: "text",
             text: `Error: Username or alias is required. Please provide a valid DevOps Center org username or alias.`
-          }]
+          }],
+          isError: true
         };
       }
       const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
@@ -95,7 +96,8 @@ export class CreatePullRequest extends McpTool<InputArgsShape, OutputArgsShape> 
           content: [{
             type: "text",
             text: `Error: Work item Name is required. Please provide a valid work item Name. Or provide a valid DevOps Center org username or alias.`
-          }]
+          }],
+          isError: true
         };
       }
 
@@ -117,14 +119,15 @@ export class CreatePullRequest extends McpTool<InputArgsShape, OutputArgsShape> 
             pullRequestData: pr
           }, null, 2)
         }],
-        ...(isError && { isError: true })
+        isError
       };
     } catch (error: any) {
       return {
         content: [{
           type: "text",
           text: `Error creating pull request: ${error.message}`
-        }]
+        }],
+        isError: true
       };
     }
   }

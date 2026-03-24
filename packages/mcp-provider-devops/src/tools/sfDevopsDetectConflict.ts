@@ -114,7 +114,8 @@ export class SfDevopsDetectConflict extends McpTool<InputArgsShape, OutputArgsSh
           content: [{
             type: "text",
             text: `Error: Work item not found. Please provide a valid work item name or valid DevOps Center org username or alias.`
-          }]
+          }],
+          isError: true
         }
       };
     }
@@ -125,7 +126,8 @@ export class SfDevopsDetectConflict extends McpTool<InputArgsShape, OutputArgsSh
           content: [{
             type: "text",
             text: `Error: Repository path is required. Please provide the absolute path to the git repository root.`
-          }]
+          }],
+          isError: true
         }
       };
     }
