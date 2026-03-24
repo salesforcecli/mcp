@@ -1,4 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
+import path from "node:path";
 import type { PmdEngine, PmdAstDumpResults } from "@salesforce/code-analyzer-pmd-engine";
 
 // Mock node:fs/promises
@@ -21,17 +22,22 @@ vi.mock("node:os", () => ({
   }
 }));
 
+// Platform-independent paths
+const TEMP_DIR = path.sep === "\\" ? "C:\\temp" : "/tmp";
+const PMD_TEMP_DIR = path.join(TEMP_DIR, "pmd-ast-abc123");
+const SOURCE_FILE_APEX = path.join(PMD_TEMP_DIR, "source.apex");
+
 const successAstResult: PmdAstDumpResults = {
-  file: "/tmp/pmd-ast-abc123/source.apex",
+  file: SOURCE_FILE_APEX,
   ast: "<CompilationUnit>\n  <ClassDeclaration Name=\"Test\" />\n</CompilationUnit>",
   error: null
 };
 
 const errorResult: PmdAstDumpResults = {
-  file: "/tmp/pmd-ast-abc123/source.apex",
+  file: SOURCE_FILE_APEX,
   ast: null,
   error: {
-    file: "/tmp/pmd-ast-abc123/source.apex",
+    file: SOURCE_FILE_APEX,
     message: "Syntax error at line 1",
     detail: "Unexpected token"
   }
@@ -39,8 +45,8 @@ const errorResult: PmdAstDumpResults = {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mockTmpdir.mockReturnValue("/tmp");
-  mockMkdtemp.mockResolvedValue("/tmp/pmd-ast-abc123");
+  mockTmpdir.mockReturnValue(TEMP_DIR);
+  mockMkdtemp.mockResolvedValue(PMD_TEMP_DIR);
   mockWriteFile.mockResolvedValue(undefined);
   mockRm.mockResolvedValue(undefined);
 });
@@ -57,22 +63,22 @@ describe("PmdEngineAstXmlAdapter", () => {
 
       const result = await adapter.generateAstXml("public class Test {}", "apex");
 
-      expect(mockMkdtemp).toHaveBeenCalledWith("/tmp/pmd-ast-");
+      expect(mockMkdtemp).toHaveBeenCalledWith(path.join(TEMP_DIR, "pmd-ast-"));
       expect(mockWriteFile).toHaveBeenCalledWith(
-        "/tmp/pmd-ast-abc123/source.apex",
+        SOURCE_FILE_APEX,
         "public class Test {}",
         "utf8"
       );
       expect(mockPmdEngine.generateAst).toHaveBeenCalledWith(
         "apex",
-        "/tmp/pmd-ast-abc123/source.apex",
+        SOURCE_FILE_APEX,
         {
           encoding: "UTF-8",
-          workingFolder: "/tmp/pmd-ast-abc123"
+          workingFolder: PMD_TEMP_DIR
         }
       );
       expect(result).toBe("<CompilationUnit>\n  <ClassDeclaration Name=\"Test\" />\n</CompilationUnit>");
-      expect(mockRm).toHaveBeenCalledWith("/tmp/pmd-ast-abc123", { recursive: true, force: true });
+      expect(mockRm).toHaveBeenCalledWith(PMD_TEMP_DIR, { recursive: true, force: true });
     });
 
     it("throws error when PMD Engine returns error", async () => {
@@ -88,13 +94,13 @@ describe("PmdEngineAstXmlAdapter", () => {
       ).rejects.toThrow("PMD Engine error: Syntax error at line 1");
 
       // Cleanup still happens
-      expect(mockRm).toHaveBeenCalledWith("/tmp/pmd-ast-abc123", { recursive: true, force: true });
+      expect(mockRm).toHaveBeenCalledWith(PMD_TEMP_DIR, { recursive: true, force: true });
     });
 
     it("throws error when PMD Engine returns no AST and no error", async () => {
       const mockPmdEngine = {
         generateAst: vi.fn().mockResolvedValue({
-          file: "/tmp/pmd-ast-abc123/source.apex",
+          file: SOURCE_FILE_APEX,
           ast: null,
           error: null
         })
@@ -107,7 +113,7 @@ describe("PmdEngineAstXmlAdapter", () => {
         adapter.generateAstXml("class Test {}", "apex")
       ).rejects.toThrow("PMD Engine returned no AST and no error");
 
-      expect(mockRm).toHaveBeenCalledWith("/tmp/pmd-ast-abc123", { recursive: true, force: true });
+      expect(mockRm).toHaveBeenCalledWith(PMD_TEMP_DIR, { recursive: true, force: true });
     });
 
     it("cleans up temp directory even when exception occurs", async () => {
@@ -125,7 +131,7 @@ describe("PmdEngineAstXmlAdapter", () => {
       ).rejects.toThrow("Failed to generate AST XML via PMD Engine: Disk full");
 
       // Verify cleanup still happened despite error
-      expect(mockRm).toHaveBeenCalledWith("/tmp/pmd-ast-abc123", { recursive: true, force: true });
+      expect(mockRm).toHaveBeenCalledWith(PMD_TEMP_DIR, { recursive: true, force: true });
     });
 
     it("handles non-Error exceptions", async () => {
@@ -147,7 +153,7 @@ describe("PmdEngineAstXmlAdapter", () => {
 
     it("trims AST output", async () => {
       const astWithWhitespace: PmdAstDumpResults = {
-        file: "/tmp/pmd-ast-abc123/source.apex",
+        file: SOURCE_FILE_APEX,
         ast: "\n\n  <CompilationUnit />  \n\n",
         error: null
       };
