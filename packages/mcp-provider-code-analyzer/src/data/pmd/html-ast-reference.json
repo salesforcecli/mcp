@@ -1,0 +1,274 @@
+{
+  "description": "PMD HTML AST Nodes - Complete Reference",
+  "source": "Extracted from PMD source code",
+  "extraction_date": "2026-03-17",
+  "total_nodes": 7,
+  "version": "7.x",
+  "language": "html",
+  "note": "Includes inherited attributes from parent classes (marked with inherited_from field)",
+  "nodes": [
+    {
+      "name": "HtmlCDataNode",
+      "description": "Represents HtmlCDataNode",
+      "category": "Content",
+      "extends": "AbstractHtmlNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetText",
+          "type": "string",
+          "description": "Returns getText"
+        },
+        {
+          "name": "@GetNodeName",
+          "type": "string",
+          "description": "Returns getNodeName",
+          "inherited_from": "AbstractHtmlNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractHtmlNode"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractHtmlNode"
+        }
+      ]
+    },
+    {
+      "name": "HtmlComment",
+      "description": "Represents HtmlComment",
+      "category": "Content",
+      "extends": "AbstractHtmlNode",
+      "implements": [
+        "CommentNode"
+      ],
+      "attributes": [
+        {
+          "name": "@GetData",
+          "type": "string",
+          "description": "Returns getData"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName"
+        },
+        {
+          "name": "@GetNodeName",
+          "type": "string",
+          "description": "Returns getNodeName",
+          "inherited_from": "AbstractHtmlNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractHtmlNode"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractHtmlNode"
+        }
+      ]
+    },
+    {
+      "name": "HtmlDocument",
+      "description": "Represents HtmlDocument",
+      "category": "Structure",
+      "extends": "ASTHtmlElement",
+      "implements": [
+        "RootNode"
+      ],
+      "attributes": [
+        {
+          "name": "@GetAstInfo",
+          "type": "AstInfo",
+          "description": "Returns getAstInfo"
+        }
+      ]
+    },
+    {
+      "name": "HtmlDocumentType",
+      "description": "Represents HtmlDocumentType",
+      "category": "Structure",
+      "extends": "AbstractHtmlNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetName",
+          "type": "string",
+          "description": "Returns getName"
+        },
+        {
+          "name": "@GetPublicId",
+          "type": "string",
+          "description": "Returns getPublicId"
+        },
+        {
+          "name": "@GetSystemId",
+          "type": "string",
+          "description": "Returns getSystemId"
+        },
+        {
+          "name": "@GetNodeName",
+          "type": "string",
+          "description": "Returns getNodeName",
+          "inherited_from": "AbstractHtmlNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractHtmlNode"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractHtmlNode"
+        }
+      ]
+    },
+    {
+      "name": "HtmlElement",
+      "description": "Represents HtmlElement",
+      "category": "Elements",
+      "extends": "AbstractHtmlNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetAttributes",
+          "type": "array",
+          "description": "Returns getAttributes"
+        },
+        {
+          "name": "@HasAttribute",
+          "type": "boolean",
+          "description": "Returns hasAttribute",
+          "parameters": [
+            "String name"
+          ]
+        },
+        {
+          "name": "@GetAttribute",
+          "type": "string",
+          "description": "Returns getAttribute",
+          "parameters": [
+            "String rel"
+          ]
+        },
+        {
+          "name": "@GetXPathAttributesIterator",
+          "type": "Iterator",
+          "description": "Returns getXPathAttributesIterator"
+        },
+        {
+          "name": "@HasNext",
+          "type": "boolean",
+          "description": "Returns hasNext"
+        },
+        {
+          "name": "@GetNodeName",
+          "type": "string",
+          "description": "Returns getNodeName",
+          "inherited_from": "AbstractHtmlNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractHtmlNode"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractHtmlNode"
+        }
+      ]
+    },
+    {
+      "name": "HtmlTextNode",
+      "description": "Represents HtmlTextNode",
+      "category": "Content",
+      "extends": "AbstractHtmlNode",
+      "implements": [
+        "net.sourceforge.pmd.lang.rule.xpath.TextNode"
+      ],
+      "attributes": [
+        {
+          "name": "@GetWholeText",
+          "type": "string",
+          "description": "Returns getWholeText"
+        },
+        {
+          "name": "@GetText",
+          "type": "string",
+          "description": "Returns getText"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName"
+        },
+        {
+          "name": "@GetNodeName",
+          "type": "string",
+          "description": "Returns getNodeName",
+          "inherited_from": "AbstractHtmlNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractHtmlNode"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractHtmlNode"
+        }
+      ]
+    },
+    {
+      "name": "HtmlXmlDeclaration",
+      "description": "Represents HtmlXmlDeclaration",
+      "category": "Other",
+      "extends": "AbstractHtmlNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetName",
+          "type": "string",
+          "description": "Returns getName"
+        },
+        {
+          "name": "@GetNodeName",
+          "type": "string",
+          "description": "Returns getNodeName",
+          "inherited_from": "AbstractHtmlNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractHtmlNode"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractHtmlNode"
+        }
+      ]
+    }
+  ]
+}

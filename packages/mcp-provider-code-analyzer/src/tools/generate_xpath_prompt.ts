@@ -99,7 +99,7 @@ export class GenerateXpathPromptMcpTool extends McpTool<InputArgsShape, OutputAr
 
     const astResult = await this.action.exec(buildAstInput(input));
     if (astResult.status !== "success") {
-      return buildToolResult({ status: astResult.status, prompt: "" });
+      return buildErrorResult(astResult.status);
     }
 
     const strategy = getEngineStrategy(input.engine);
@@ -125,7 +125,7 @@ export class GenerateXpathPromptMcpTool extends McpTool<InputArgsShape, OutputAr
 }
 
 function validateInput(input: z.infer<typeof inputSchema>): CallToolResult | undefined {
-  const language = input.language?.trim();
+  const language = input.language?.trim().toLowerCase();
   if (!language) {
     return buildErrorResult("language is required");
   }
@@ -136,6 +136,14 @@ function validateInput(input: z.infer<typeof inputSchema>): CallToolResult | und
   }
   if (engine !== "pmd") {
     return buildErrorResult(`engine '${engine}' is not supported yet`);
+  }
+
+  // This tool returns AST nodes only for Apex and Visualforce
+  if (language !== "apex" && language !== "visualforce") {
+    return buildErrorResult(
+      `This tool returns AST nodes for Apex and Visualforce only. ` +
+      `For ${language}, please generate the XPath expression for your scenario and call create_custom_rule tool directly.`
+    );
   }
 
   const sampleCode = input.sampleCode?.trim();
@@ -154,7 +162,10 @@ function buildAstInput(input: z.infer<typeof inputSchema>): GetAstNodesInput {
 }
 
 function buildErrorResult(status: string): CallToolResult {
-  return buildToolResult({ status, prompt: "" });
+  return {
+    ...buildToolResult({ status, prompt: "" }),
+    isError: true
+  };
 }
 
 function buildToolResult(output: { status: string; prompt: string }): CallToolResult {

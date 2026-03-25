@@ -1,3 +1,12 @@
+# [0.7.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-code-analyzer@0.6.0...mcp-provider-code-analyzer@0.7.0) (2026-03-25)
+
+
+### Features
+
+* @W-21364810 - Add multi-language AST support with Apex/Visualforce validation     ([#416](https://github.com/salesforcecli/mcp/issues/416)) ([f849d9a](https://github.com/salesforcecli/mcp/commit/f849d9abcd8e9d505362b29d71c20a86628052b5)), closes [#369](https://github.com/salesforcecli/mcp/issues/369) [#370](https://github.com/salesforcecli/mcp/issues/370) [#371](https://github.com/salesforcecli/mcp/issues/371) [#372](https://github.com/salesforcecli/mcp/issues/372) [#376](https://github.com/salesforcecli/mcp/issues/376) [#377](https://github.com/salesforcecli/mcp/issues/377) [#378](https://github.com/salesforcecli/mcp/issues/378) [#380](https://github.com/salesforcecli/mcp/issues/380) [#383](https://github.com/salesforcecli/mcp/issues/383) [#384](https://github.com/salesforcecli/mcp/issues/384) [#386](https://github.com/salesforcecli/mcp/issues/386) [#387](https://github.com/salesforcecli/mcp/issues/387) [#388](https://github.com/salesforcecli/mcp/issues/388) [#392](https://github.com/salesforcecli/mcp/issues/392) [#393](https://github.com/salesforcecli/mcp/issues/393) [#394](https://github.com/salesforcecli/mcp/issues/394) [#407](https://github.com/salesforcecli/mcp/issues/407)
+
+
+
 # [0.6.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-code-analyzer@0.5.2...mcp-provider-code-analyzer@0.6.0) (2026-03-18)
 
 

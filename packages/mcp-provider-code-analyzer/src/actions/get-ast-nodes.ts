@@ -1,5 +1,5 @@
 import { type AstNode } from "../ast/extract-ast-nodes.js";
-import { type ApexAstNodeMetadata } from "../ast/metadata/apex-ast-reference.js";
+import { type AstNodeMetadata } from "../ast/metadata/pmd-ast-reference.js";
 import { PmdAstNodePipeline } from "../ast/ast-node-pipeline.js";
 
 // Action that returns AST nodes plus cached metadata.
@@ -11,7 +11,7 @@ export type GetAstNodesInput = {
 export type GetAstNodesOutput = {
   status: string;
   nodes: AstNode[];
-  metadata: ApexAstNodeMetadata[];
+  metadata: AstNodeMetadata[];
 };
 
 export interface GetAstNodesAction {

@@ -1,5 +1,5 @@
 import { extractAstNodesFromXml, type AstNode } from "./extract-ast-nodes.js";
-import { type ApexAstNodeMetadata } from "./metadata/apex-ast-reference.js";
+import { type AstNodeMetadata } from "./metadata/pmd-ast-reference.js";
 import { getEngineStrategy } from "../engines/engine-strategies.js";
 
 // Template Method pipeline for AST XML -> nodes -> metadata.
@@ -10,7 +10,7 @@ export type AstPipelineInput = {
 
 export type AstPipelineOutput = {
   nodes: AstNode[];
-  metadata: ApexAstNodeMetadata[];
+  metadata: AstNodeMetadata[];
 };
 
 export abstract class AstNodePipeline {
@@ -30,7 +30,7 @@ export abstract class AstNodePipeline {
   protected async enrichMetadata(
     _input: AstPipelineInput,
     _nodes: AstNode[]
-  ): Promise<ApexAstNodeMetadata[]> {
+  ): Promise<AstNodeMetadata[]> {
     return [];
   }
 }
@@ -45,7 +45,7 @@ export class PmdAstNodePipeline extends AstNodePipeline {
   protected async enrichMetadata(
     input: AstPipelineInput,
     nodes: AstNode[]
-  ): Promise<ApexAstNodeMetadata[]> {
+  ): Promise<AstNodeMetadata[]> {
     const nodeNames = Array.from(new Set(nodes.map((node) => node.nodeName)));
     return this.strategy.metadataProvider.getMetadata(input.language, nodeNames);
   }

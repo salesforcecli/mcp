@@ -38,6 +38,7 @@ describe("GenerateXpathPromptMcpTool", () => {
       engine: "pmd"
     });
 
+    expect(result.isError).toBe(true);
     expect(result.structuredContent?.status).toBe("language is required");
     expect(actionExecMock).not.toHaveBeenCalled();
   });
@@ -50,6 +51,7 @@ describe("GenerateXpathPromptMcpTool", () => {
       engine: "  "
     });
 
+    expect(result.isError).toBe(true);
     expect(result.structuredContent?.status).toBe("engine is required");
     expect(actionExecMock).not.toHaveBeenCalled();
   });
@@ -62,7 +64,83 @@ describe("GenerateXpathPromptMcpTool", () => {
       engine: "eslint"
     });
 
+    expect(result.isError).toBe(true);
     expect(result.structuredContent?.status).toBe("engine 'eslint' is not supported yet");
+    expect(actionExecMock).not.toHaveBeenCalled();
+  });
+
+  it("accepts visualforce language", async () => {
+    actionExecMock.mockResolvedValueOnce({
+      status: "success",
+      nodes: [{ nodeName: "ApexPage", attributes: {}, ancestors: [] }],
+      metadata: []
+    });
+    buildPromptMock.mockReturnValueOnce("VISUALFORCE PROMPT");
+
+    const tool = await buildTool();
+    const result = await tool.exec({
+      sampleCode: "<apex:page>Content</apex:page>",
+      language: "visualforce",
+      engine: "pmd"
+    });
+
+    expect(result.isError).toBeUndefined();
+    expect(result.structuredContent?.status).toBe("success");
+    expect(result.structuredContent?.prompt).toBe("VISUALFORCE PROMPT");
+    expect(actionExecMock).toHaveBeenCalledWith({
+      code: "<apex:page>Content</apex:page>",
+      language: "visualforce"
+    });
+  });
+
+  it("rejects html language with helpful message", async () => {
+    const tool = await buildTool();
+    const result = await tool.exec({
+      sampleCode: "<html><body>Test</body></html>",
+      language: "html",
+      engine: "pmd"
+    });
+
+    expect(result.isError).toBe(true);
+    expect(result.structuredContent?.status).toContain(
+      "This tool returns AST nodes for Apex and Visualforce only"
+    );
+    expect(result.structuredContent?.status).toContain(
+      "For html, please generate the XPath expression for your scenario"
+    );
+    expect(actionExecMock).not.toHaveBeenCalled();
+  });
+
+  it("rejects javascript language with helpful message", async () => {
+    const tool = await buildTool();
+    const result = await tool.exec({
+      sampleCode: "function test() { return true; }",
+      language: "javascript",
+      engine: "pmd"
+    });
+
+    expect(result.isError).toBe(true);
+    expect(result.structuredContent?.status).toContain(
+      "This tool returns AST nodes for Apex and Visualforce only"
+    );
+    expect(result.structuredContent?.status).toContain(
+      "For javascript, please generate the XPath expression for your scenario"
+    );
+    expect(actionExecMock).not.toHaveBeenCalled();
+  });
+
+  it("rejects unsupported language with case-insensitive check", async () => {
+    const tool = await buildTool();
+    const result = await tool.exec({
+      sampleCode: "class Test {}",
+      language: "Java",
+      engine: "pmd"
+    });
+
+    expect(result.isError).toBe(true);
+    expect(result.structuredContent?.status).toContain(
+      "This tool returns AST nodes for Apex and Visualforce only"
+    );
     expect(actionExecMock).not.toHaveBeenCalled();
   });
 
@@ -74,6 +152,7 @@ describe("GenerateXpathPromptMcpTool", () => {
       engine: "pmd"
     });
 
+    expect(result.isError).toBe(true);
     expect(result.structuredContent?.status).toBe("code in apex is required");
     expect(actionExecMock).not.toHaveBeenCalled();
   });
@@ -92,6 +171,7 @@ describe("GenerateXpathPromptMcpTool", () => {
       engine: "pmd"
     });
 
+    expect(result.isError).toBe(true);
     expect(result.structuredContent?.status).toBe("failure");
     expect(result.structuredContent?.prompt).toBe("");
   });
@@ -111,6 +191,7 @@ describe("GenerateXpathPromptMcpTool", () => {
       engine: "pmd"
     });
 
+    expect(result.isError).toBeUndefined();
     expect(buildPromptMock).toHaveBeenCalledTimes(1);
     expect(result.structuredContent?.prompt).toBe("PROMPT");
     expect(telemetrySendMock).toHaveBeenCalledTimes(1);
