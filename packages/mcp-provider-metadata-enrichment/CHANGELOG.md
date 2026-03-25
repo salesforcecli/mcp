@@ -1,3 +1,12 @@
+## [0.1.4](https://github.com/salesforcecli/mcp/compare/mcp-provider-metadata-enrichment@0.1.3...mcp-provider-metadata-enrichment@0.1.4) (2026-03-25)
+
+
+### Bug Fixes
+
+* @W-21671867 - fix: update metadata-enrichment library to 0.0.13 ([#418](https://github.com/salesforcecli/mcp/issues/418)) ([b4d9dfa](https://github.com/salesforcecli/mcp/commit/b4d9dfaa3afcdab398bf2d0ced2b295262f9e67f))
+
+
+
 ## [0.1.3](https://github.com/salesforcecli/mcp/compare/mcp-provider-metadata-enrichment@0.1.2...mcp-provider-metadata-enrichment@0.1.3) (2026-03-18)
 
 

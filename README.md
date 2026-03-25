@@ -209,10 +209,12 @@ For complete documentation, see [Use the Aura-to-LWC Migration Tools](https://de
 
 For complete documentation, see [Use MCP Tools to Analyze Your Code ](https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/mcp.html) in the _Salesforce Code Analyzer Developer Guide_.
 
-- `describe_code_analyzer_rule` (GA) - A tool for getting the description of a Code Analyzer rule.
-- `list_code_analyzer_rules` (GA) - A tool for selecting Code Analyzer rules based on a number of criteria.
+- `create-custom-rule` (NON-GA) - Creates a custom XPath-based PMD rule from a provided Apex code sample.
+- `describe_code_analyzer_rule` (GA) - Gets the description of a Code Analyzer rule.
+- `generate_xpath_prompt` (NON-GA) - Builds the prompt that guides XPath authoring from AST context. Invoked when creating an XPath-based PMD custom rule.
+- `list_code_analyzer_rules` (GA) - Selects Code Analyzer rules based on a number of criteria.
 - `query_code_analyzer_results` (GA) - Queries a Code Analyzer results JSON file and returns filtered violations. Supports filters such as severity, category/tag, engine, rule, and file name, plus top-N and sorting. Use this after running `run_code_analyzer` to read the generated results file. After completion, this tool will summarize and explain the filtered results to the user.
-- `run_code_analyzer` (GA) - A tool for performing static analysis against code. This tool can validate that code conforms to best practices, check for security vulnerabilities, and identify possible performance issues. It returns a JSON containing the absolute path to a results file if such a file was created and a string indicating the overall success or failure of the operation.
+- `run_code_analyzer` (GA) - Performs a static analysis against code. This tool can validate that code conforms to best practices, check for security vulnerabilities, and identify possible performance issues. It returns a JSON containing the absolute path to a results file if such a file was created and a string indicating the overall success or failure of the operation.
 
 ### Core Toolset (always enabled)
 
@@ -239,6 +241,7 @@ For complete documentation, see [Merge Conflict Resolution with DevOps Center MC
 - `list_devops_center_projects` (NON-GA) - List all DevOps Center projects in a specific org.
 - `list_devops_center_work_items` (NON-GA) - List all the work items for a specific DevOps Center project.
 - `promote_devops_center_work_item` (NON-GA) - Promote an approved work item to the next stage in the DevOps Center pipeline.
+- `resolve_devops_center_deployment_failure` (NON-GA) - Diagnose and resolve deployment failures.
 - `resolve_devops_center_merge_conflict` (GA) - Apply a selected resolution method to a merge conflict.
 
 ### Enrichment Toolset
