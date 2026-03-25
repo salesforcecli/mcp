@@ -92,7 +92,7 @@ describe('SfDevopsCommitWorkItem', () => {
     });
 
     // Verify the result shows error
-    expect(result.isError).toBeUndefined();
+    expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('Commit failed');
 
     // Verify telemetry was sent with error info
