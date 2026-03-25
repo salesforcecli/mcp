@@ -1,16 +1,13 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import type { ApexAstNodeMetadata } from "../../../src/ast/metadata/apex-ast-reference.js";
+import type { AstNodeMetadata } from "../../../src/ast/metadata/pmd-ast-reference.js";
 
 // Mock the generic pmd-ast-reference module
 const mockGetAstNodeMetadataByNames = vi.fn();
 vi.mock("../../../src/ast/metadata/pmd-ast-reference.js", () => ({
-  getAstNodeMetadataByNames: mockGetAstNodeMetadataByNames,
-  // Re-export types for the test
-  AstAttribute: {},
-  AstNodeMetadata: {}
+  getAstNodeMetadataByNames: mockGetAstNodeMetadataByNames
 }));
 
-const sampleApexMetadata: ApexAstNodeMetadata[] = [
+const sampleApexMetadata: AstNodeMetadata[] = [
   {
     name: "ClassDeclaration",
     description: "Represents a class declaration",
