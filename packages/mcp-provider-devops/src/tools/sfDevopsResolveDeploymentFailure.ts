@@ -184,20 +184,20 @@ If your current working directory is not the repo root, pass the absolute path t
     }
 
     // Full promotion can fix — ask for confirmation; do NOT call promote until user explicitly confirms
-    const comparisonNote =
-      reason === "dependency_in_source_branch" && missingDependencyName && targetBranchName
-        ? inTargetBranch === false
-          ? ` The missing dependency "${missingDependencyName}" is in source branch "${sourceBranchName}" but not in target branch "${targetBranchName}"; full promotion will resolve this.`
-          : ` The dependency "${missingDependencyName}" is present in both source and target branches; full promotion will resolve.`
-        : "";
+    const recommendationContext =
+      reason === "dependency_in_source_branch" && missingDependencyName
+        ? targetBranchName && inTargetBranch === false
+          ? `The promotion of "${input.workItemName}" failed due to missing dependency "${missingDependencyName}". This dependency exists in source branch "${sourceBranchName}" but not in target branch "${targetBranchName}", so full promotion is recommended.`
+          : `The promotion of "${input.workItemName}" failed due to missing dependency "${missingDependencyName}". This dependency exists in source branch "${sourceBranchName}", so full promotion is recommended.`
+        : `The promotion of "${input.workItemName}" can be resolved with full promotion.`;
     return {
       content: [{
         type: "text",
-        text: `**Full promotion can resolve this failure** based on the error details.${comparisonNote}
+        text: `**Full promotion can resolve this failure** based on the error details.${recommendationContext}
 
 **Ask for confirmation:** Do not run full promotion until the user explicitly confirms. Present this to the user:
 
-"Full promotion can fix this. Do you want me to run full promotion for work item ${input.workItemName}? Reply **Yes**, **Proceed**, or **Go ahead** to confirm."
+"${recommendationContext} Do you want me to run full promotion for work item ${input.workItemName}? Reply **Yes**, **Proceed**, or **Go ahead** to confirm."
 
 Only after the user confirms should you call **promote_devops_center_work_item** with:
 - usernameOrAlias: "${input.usernameOrAlias}"
