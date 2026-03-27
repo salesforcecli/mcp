@@ -268,13 +268,15 @@ For complete documentation, see [Use DX MCP Tools for LWC](https://developer.sal
 - `guide_lwc_best_practices` (GA) - Offers LWC development best practices and coding standards guidance.
 - `guide_lwc_development` (GA) - Provides LWC development workflow and implementation guidelines.
 - `guide_lwc_rtl_support` (GA) - Provides Right-to-Left (RTL) internationalization support and RTL development guidance.
-- `guide_lwc_security` (GA) - Provides security analysis in accordance with product security guidelines and Lightning Web Security guidelines.
+- `guide_lws_security` (GA) - Provides security analysis in accordance with product security guidelines and Lightning Web Security guidelines.
 - `guide_slds_blueprints` (NON-GA) - Provides comprehensive SLDS blueprints guidelines, reference documentation, and a complete index of all available blueprints by category.
 - `guide_utam_generation` (NON-GA) - Provides UI Test Automation Model (UTAM) Page Object generation guidelines and best practices.
 - `lwc-doc-error` (GA) - Retrieves information about LWC error messages, including static guidance for resolving the issue based on the error code.
 - `reference_lwc_compilation_error` (GA) - References LWC compilation errors by looking up error codes against a knowledge base of documented error patterns, causes, and fixes.
 - `guide_slds_styling` (NON-GA) - Retrieves SLDS styling hooks guidance and reference documentation.
 - `explore_slds_styling` (NON-GA) - Search and explore SLDS styling hooks with support for exact lookup, fuzzy matching, prefix search, and wildcard patterns.
+- `guide_lbc_usage` (GA) - Provides an index of available Lightning Base Components with short descriptions, helping developers identify which components suit their use case. 
+- `explore_lbc_components` (GA) - Given a list of Lightning Base Component names, returns full API documentation from markdown knowledge files.
 
 #### Lightning Data Service (LDS) Tools
 
