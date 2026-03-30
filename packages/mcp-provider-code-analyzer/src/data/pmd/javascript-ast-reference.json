@@ -1,0 +1,2553 @@
+{
+  "description": "PMD JavaScript (ECMAScript) AST Nodes - Complete Reference",
+  "source": "Extracted from PMD source code",
+  "extraction_date": "2026-03-17",
+  "total_nodes": 63,
+  "version": "7.x",
+  "language": "javascript",
+  "note": "Includes inherited attributes from parent classes (marked with inherited_from field)",
+  "nodes": [
+    {
+      "name": "ArrayComprehension",
+      "description": "Represents ArrayComprehension",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetResult",
+          "type": "EcmascriptNode",
+          "description": "Returns getResult"
+        },
+        {
+          "name": "@GetNumArrayComprehensionLoops",
+          "type": "number",
+          "description": "Returns getNumArrayComprehensionLoops"
+        },
+        {
+          "name": "@GetArrayComprehensionLoop",
+          "type": "ASTArrayComprehensionLoop",
+          "description": "Returns getArrayComprehensionLoop",
+          "parameters": [
+            "int index"
+          ]
+        },
+        {
+          "name": "@HasFilter",
+          "type": "boolean",
+          "description": "Returns hasFilter"
+        },
+        {
+          "name": "@GetFilter",
+          "type": "EcmascriptNode",
+          "description": "Returns getFilter"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "ArrayComprehensionLoop",
+      "description": "Represents ArrayComprehensionLoop",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetIterator",
+          "type": "EcmascriptNode",
+          "description": "Returns getIterator"
+        },
+        {
+          "name": "@GetIteratedObject",
+          "type": "EcmascriptNode",
+          "description": "Returns getIteratedObject"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "ArrayLiteral",
+      "description": "Represents ArrayLiteral",
+      "category": "Literals",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@IsDestructuring",
+          "type": "boolean",
+          "description": "Returns isDestructuring"
+        },
+        {
+          "name": "@IsTrailingComma",
+          "type": "boolean",
+          "description": "Returns isTrailingComma"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "Assignment",
+      "description": "Represents Assignment",
+      "category": "Other",
+      "extends": "AbstractInfixEcmascriptNode",
+      "implements": [],
+      "attributes": []
+    },
+    {
+      "name": "AstRoot",
+      "description": "Represents AstRoot",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [
+        "RootNode"
+      ],
+      "attributes": [
+        {
+          "name": "@GetAstInfo",
+          "type": "AstInfo",
+          "description": "Returns getAstInfo"
+        },
+        {
+          "name": "@GetNumComments",
+          "type": "number",
+          "description": "Returns getNumComments"
+        },
+        {
+          "name": "@GetComment",
+          "type": "ASTComment",
+          "description": "Returns getComment",
+          "parameters": [
+            "int index"
+          ]
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "BigIntLiteral",
+      "description": "Represents BigIntLiteral",
+      "category": "Literals",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetNumber",
+          "type": "number",
+          "description": "Returns getNumber"
+        },
+        {
+          "name": "@GetValue",
+          "type": "string",
+          "description": "Returns getValue"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "Block",
+      "description": "Represents Block",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "BreakStatement",
+      "description": "Represents BreakStatement",
+      "category": "Statements",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasLabel",
+          "type": "boolean",
+          "description": "Returns hasLabel"
+        },
+        {
+          "name": "@GetLabel",
+          "type": "ASTName",
+          "description": "Returns getLabel"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "CatchClause",
+      "description": "Represents CatchClause",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetVariableName",
+          "type": "ASTName",
+          "description": "Returns getVariableName"
+        },
+        {
+          "name": "@IsIf",
+          "type": "boolean",
+          "description": "Returns isIf"
+        },
+        {
+          "name": "@GetCatchCondition",
+          "type": "EcmascriptNode",
+          "description": "Returns getCatchCondition"
+        },
+        {
+          "name": "@GetBlock",
+          "type": "ASTBlock",
+          "description": "Returns getBlock"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "Comment",
+      "description": "Represents Comment",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetValue",
+          "type": "string",
+          "description": "Returns getValue"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "ConditionalExpression",
+      "description": "Represents ConditionalExpression",
+      "category": "Expressions",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTestExpression",
+          "type": "EcmascriptNode",
+          "description": "Returns getTestExpression"
+        },
+        {
+          "name": "@GetTrueExpression",
+          "type": "EcmascriptNode",
+          "description": "Returns getTrueExpression"
+        },
+        {
+          "name": "@GetFalseExpression",
+          "type": "EcmascriptNode",
+          "description": "Returns getFalseExpression"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "ContinueStatement",
+      "description": "Represents ContinueStatement",
+      "category": "Statements",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasLabel",
+          "type": "boolean",
+          "description": "Returns hasLabel"
+        },
+        {
+          "name": "@GetLabel",
+          "type": "ASTName",
+          "description": "Returns getLabel"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "DoLoop",
+      "description": "Represents DoLoop",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetBody",
+          "type": "EcmascriptNode",
+          "description": "Returns getBody"
+        },
+        {
+          "name": "@GetCondition",
+          "type": "EcmascriptNode",
+          "description": "Returns getCondition"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "ElementGet",
+      "description": "Represents ElementGet",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTarget",
+          "type": "EcmascriptNode",
+          "description": "Returns getTarget"
+        },
+        {
+          "name": "@GetElement",
+          "type": "EcmascriptNode",
+          "description": "Returns getElement"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "EmptyExpression",
+      "description": "Represents EmptyExpression",
+      "category": "Expressions",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "EmptyStatement",
+      "description": "Represents EmptyStatement",
+      "category": "Statements",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "ErrorNode",
+      "description": "Represents ErrorNode",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetMessage",
+          "type": "string",
+          "description": "Returns getMessage"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "ExpressionStatement",
+      "description": "Represents ExpressionStatement",
+      "category": "Expressions",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasResult",
+          "type": "boolean",
+          "description": "Returns hasResult"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "ForInLoop",
+      "description": "Represents ForInLoop",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetIterator",
+          "type": "EcmascriptNode",
+          "description": "Returns getIterator"
+        },
+        {
+          "name": "@GetIteratedObject",
+          "type": "EcmascriptNode",
+          "description": "Returns getIteratedObject"
+        },
+        {
+          "name": "@GetBody",
+          "type": "EcmascriptNode",
+          "description": "Returns getBody"
+        },
+        {
+          "name": "@IsForEach",
+          "type": "boolean",
+          "description": "Returns isForEach"
+        },
+        {
+          "name": "@IsForOf",
+          "type": "boolean",
+          "description": "Returns isForOf"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "ForLoop",
+      "description": "Represents ForLoop",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetInitializer",
+          "type": "EcmascriptNode",
+          "description": "Returns getInitializer"
+        },
+        {
+          "name": "@GetCondition",
+          "type": "EcmascriptNode",
+          "description": "Returns getCondition"
+        },
+        {
+          "name": "@GetIncrement",
+          "type": "EcmascriptNode",
+          "description": "Returns getIncrement"
+        },
+        {
+          "name": "@GetBody",
+          "type": "EcmascriptNode",
+          "description": "Returns getBody"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "FunctionCall",
+      "description": "Represents FunctionCall",
+      "category": "Functions",
+      "extends": "AbstractFunctionCallNode",
+      "implements": [],
+      "attributes": []
+    },
+    {
+      "name": "FunctionNode",
+      "description": "Represents FunctionNode",
+      "category": "Functions",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetNumParams",
+          "type": "number",
+          "description": "Returns getNumParams"
+        },
+        {
+          "name": "@GetFunctionName",
+          "type": "ASTName",
+          "description": "Returns getFunctionName"
+        },
+        {
+          "name": "@GetParam",
+          "type": "EcmascriptNode",
+          "description": "Returns getParam",
+          "parameters": [
+            "int index"
+          ]
+        },
+        {
+          "name": "@GetBody",
+          "type": "EcmascriptNode",
+          "description": "Returns getBody"
+        },
+        {
+          "name": "@IsClosure",
+          "type": "boolean",
+          "description": "Returns isClosure"
+        },
+        {
+          "name": "@IsGetter",
+          "type": "boolean",
+          "description": "Returns isGetter"
+        },
+        {
+          "name": "@IsSetter",
+          "type": "boolean",
+          "description": "Returns isSetter"
+        },
+        {
+          "name": "@IsGetterOrSetter",
+          "type": "boolean",
+          "description": "Returns isGetterOrSetter"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "GeneratorExpression",
+      "description": "Represents GeneratorExpression",
+      "category": "Expressions",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "GeneratorExpressionLoop",
+      "description": "Represents GeneratorExpressionLoop",
+      "category": "Expressions",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "IfStatement",
+      "description": "Represents IfStatement",
+      "category": "Statements",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasElse",
+          "type": "boolean",
+          "description": "Returns hasElse"
+        },
+        {
+          "name": "@GetCondition",
+          "type": "EcmascriptNode",
+          "description": "Returns getCondition"
+        },
+        {
+          "name": "@GetThen",
+          "type": "EcmascriptNode",
+          "description": "Returns getThen"
+        },
+        {
+          "name": "@GetElse",
+          "type": "EcmascriptNode",
+          "description": "Returns getElse"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "InfixExpression",
+      "description": "Represents InfixExpression",
+      "category": "Expressions",
+      "extends": "AbstractInfixEcmascriptNode",
+      "implements": [],
+      "attributes": []
+    },
+    {
+      "name": "KeywordLiteral",
+      "description": "Represents KeywordLiteral",
+      "category": "Literals",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetLiteral",
+          "type": "string",
+          "description": "Returns getLiteral"
+        },
+        {
+          "name": "@IsBoolean",
+          "type": "boolean",
+          "description": "Returns isBoolean"
+        },
+        {
+          "name": "@IsThis",
+          "type": "boolean",
+          "description": "Returns isThis"
+        },
+        {
+          "name": "@IsNull",
+          "type": "boolean",
+          "description": "Returns isNull"
+        },
+        {
+          "name": "@IsDebugger",
+          "type": "boolean",
+          "description": "Returns isDebugger"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "Label",
+      "description": "Represents Label",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetName",
+          "type": "string",
+          "description": "Returns getName"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "LabeledStatement",
+      "description": "Represents LabeledStatement",
+      "category": "Statements",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetNumLabels",
+          "type": "number",
+          "description": "Returns getNumLabels"
+        },
+        {
+          "name": "@GetLabel",
+          "type": "ASTLabel",
+          "description": "Returns getLabel",
+          "parameters": [
+            "int index"
+          ]
+        },
+        {
+          "name": "@GetStatement",
+          "type": "EcmascriptNode",
+          "description": "Returns getStatement"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "LetNode",
+      "description": "Represents LetNode",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetVariables",
+          "type": "ASTVariableDeclaration",
+          "description": "Returns getVariables"
+        },
+        {
+          "name": "@HasBody",
+          "type": "boolean",
+          "description": "Returns hasBody"
+        },
+        {
+          "name": "@GetBody",
+          "type": "EcmascriptNode",
+          "description": "Returns getBody"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "Name",
+      "description": "Represents Name",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetIdentifier",
+          "type": "string",
+          "description": "Returns getIdentifier"
+        },
+        {
+          "name": "@IsLocalName",
+          "type": "boolean",
+          "description": "Returns isLocalName"
+        },
+        {
+          "name": "@IsGlobalName",
+          "type": "boolean",
+          "description": "Returns isGlobalName"
+        },
+        {
+          "name": "@IsFunctionNodeName",
+          "type": "boolean",
+          "description": "Returns whether this name node is the name of a function declaration."
+        },
+        {
+          "name": "@IsFunctionNodeParameter",
+          "type": "boolean",
+          "description": "Returns whether this name node is the name of a function declaration. public boolean isFunctionNodeName() { return getParent() instanceof ASTFunctionNode && ((ASTFunctionNode) getParent()).getFunctionName() == this; } / Returns whether this name node is the name of a function declaration parameter."
+        },
+        {
+          "name": "@IsFunctionCallName",
+          "type": "boolean",
+          "description": "Returns whether this name node is the name of a function declaration. public boolean isFunctionNodeName() { return getParent() instanceof ASTFunctionNode && ((ASTFunctionNode) getParent()).getFunctionName() == this; } / Returns whether this name node is the name of a function declaration parameter. public boolean isFunctionNodeParameter() { if (getParent() instanceof ASTFunctionNode) { ASTFunctionNode functionNode = (ASTFunctionNode) getParent(); for (int i = 0; i < functionNode.getNumParams(); i++) { if (functionNode.getParam(i) == this) { return true; } } } return false; } / Returns whether this name node is the name of a function call."
+        },
+        {
+          "name": "@IsVariableDeclaration",
+          "type": "boolean",
+          "description": "Returns whether this name node is the name of a function declaration. public boolean isFunctionNodeName() { return getParent() instanceof ASTFunctionNode && ((ASTFunctionNode) getParent()).getFunctionName() == this; } / Returns whether this name node is the name of a function declaration parameter. public boolean isFunctionNodeParameter() { if (getParent() instanceof ASTFunctionNode) { ASTFunctionNode functionNode = (ASTFunctionNode) getParent(); for (int i = 0; i < functionNode.getNumParams(); i++) { if (functionNode.getParam(i) == this) { return true; } } } return false; } / Returns whether this name node is the name of a function call. public boolean isFunctionCallName() { return getParent() instanceof ASTFunctionCall && ((ASTFunctionCall) getParent()).getTarget() == this; } / Returns whether this name node is the name of a variable declaration."
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "NewExpression",
+      "description": "Represents NewExpression",
+      "category": "Expressions",
+      "extends": "AbstractFunctionCallNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasInitializer",
+          "type": "boolean",
+          "description": "Returns hasInitializer"
+        },
+        {
+          "name": "@GetInitializer",
+          "type": "ASTObjectLiteral",
+          "description": "Returns getInitializer"
+        }
+      ]
+    },
+    {
+      "name": "NumberLiteral",
+      "description": "Represents NumberLiteral",
+      "category": "Literals",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetNormalizedImage",
+          "type": "string",
+          "description": "Returns getNormalizedImage"
+        },
+        {
+          "name": "@GetNumber",
+          "type": "number",
+          "description": "Returns getNumber"
+        },
+        {
+          "name": "@GetValue",
+          "type": "string",
+          "description": "Returns getValue"
+        },
+        {
+          "name": "@IsInaccurate",
+          "type": "boolean",
+          "description": "Checks if this number literal cannot be represented exactly without loss as a JavaScript Number. The number is either too big or uses too many decimal places."
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "ObjectLiteral",
+      "description": "Represents ObjectLiteral",
+      "category": "Literals",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetObjectProperty",
+          "type": "ASTObjectProperty",
+          "description": "Returns getObjectProperty",
+          "parameters": [
+            "int index"
+          ]
+        },
+        {
+          "name": "@IsDestructuring",
+          "type": "boolean",
+          "description": "Returns isDestructuring"
+        },
+        {
+          "name": "@IsTrailingComma",
+          "type": "boolean",
+          "description": "Returns isTrailingComma"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "ObjectProperty",
+      "description": "Represents ObjectProperty",
+      "category": "Other",
+      "extends": "AbstractInfixEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@IsGetter",
+          "type": "boolean",
+          "description": "Returns isGetter"
+        },
+        {
+          "name": "@IsSetter",
+          "type": "boolean",
+          "description": "Returns isSetter"
+        }
+      ]
+    },
+    {
+      "name": "ParenthesizedExpression",
+      "description": "Represents ParenthesizedExpression",
+      "category": "Expressions",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "PropertyGet",
+      "description": "Represents PropertyGet",
+      "category": "Other",
+      "extends": "AbstractInfixEcmascriptNode",
+      "implements": [],
+      "attributes": []
+    },
+    {
+      "name": "RegExpLiteral",
+      "description": "Represents RegExpLiteral",
+      "category": "Literals",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetFlags",
+          "type": "string",
+          "description": "Returns getFlags"
+        },
+        {
+          "name": "@GetValue",
+          "type": "string",
+          "description": "Returns getValue"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "ReturnStatement",
+      "description": "Represents ReturnStatement",
+      "category": "Statements",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@HasResult",
+          "type": "boolean",
+          "description": "Returns hasResult"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "Scope",
+      "description": "Represents Scope",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "ScriptNode",
+      "description": "Represents ScriptNode",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "StringLiteral",
+      "description": "Represents StringLiteral",
+      "category": "Literals",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetQuoteCharacter",
+          "type": "char",
+          "description": "Returns getQuoteCharacter"
+        },
+        {
+          "name": "@IsSingleQuoted",
+          "type": "boolean",
+          "description": "Returns isSingleQuoted"
+        },
+        {
+          "name": "@IsDoubleQuoted",
+          "type": "boolean",
+          "description": "Returns isDoubleQuoted"
+        },
+        {
+          "name": "@GetValue",
+          "type": "string",
+          "description": "Returns getValue"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "SwitchCase",
+      "description": "Represents SwitchCase",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@IsDefault",
+          "type": "boolean",
+          "description": "Returns isDefault"
+        },
+        {
+          "name": "@GetExpression",
+          "type": "EcmascriptNode",
+          "description": "Returns getExpression"
+        },
+        {
+          "name": "@GetNumStatements",
+          "type": "number",
+          "description": "Returns getNumStatements"
+        },
+        {
+          "name": "@GetStatement",
+          "type": "EcmascriptNode",
+          "description": "Returns getStatement",
+          "parameters": [
+            "int index"
+          ]
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "SwitchStatement",
+      "description": "Represents SwitchStatement",
+      "category": "Statements",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetExpression",
+          "type": "EcmascriptNode",
+          "description": "Returns getExpression"
+        },
+        {
+          "name": "@GetNumCases",
+          "type": "number",
+          "description": "Returns getNumCases"
+        },
+        {
+          "name": "@GetSwitchCase",
+          "type": "ASTSwitchCase",
+          "description": "Returns getSwitchCase",
+          "parameters": [
+            "int index"
+          ]
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "TaggedTemplateLiteral",
+      "description": "Represents TaggedTemplateLiteral",
+      "category": "Literals",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "TemplateCharacters",
+      "description": "Represents TemplateCharacters",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetValue",
+          "type": "string",
+          "description": "Returns getValue"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "TemplateLiteral",
+      "description": "Represents TemplateLiteral",
+      "category": "Literals",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "ThrowStatement",
+      "description": "Represents ThrowStatement",
+      "category": "Statements",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "TryStatement",
+      "description": "Represents TryStatement",
+      "category": "Statements",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTryBlock",
+          "type": "EcmascriptNode",
+          "description": "Returns getTryBlock"
+        },
+        {
+          "name": "@HasCatch",
+          "type": "boolean",
+          "description": "Returns hasCatch"
+        },
+        {
+          "name": "@GetNumCatchClause",
+          "type": "number",
+          "description": "Returns getNumCatchClause"
+        },
+        {
+          "name": "@GetCatchClause",
+          "type": "ASTCatchClause",
+          "description": "Returns getCatchClause",
+          "parameters": [
+            "int index"
+          ]
+        },
+        {
+          "name": "@HasFinally",
+          "type": "boolean",
+          "description": "Returns hasFinally"
+        },
+        {
+          "name": "@GetFinallyBlock",
+          "type": "EcmascriptNode",
+          "description": "Returns getFinallyBlock"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "UnaryExpression",
+      "description": "Represents UnaryExpression",
+      "category": "Expressions",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetOperand",
+          "type": "EcmascriptNode",
+          "description": "Returns getOperand"
+        },
+        {
+          "name": "@IsPrefix",
+          "type": "boolean",
+          "description": "Returns isPrefix"
+        },
+        {
+          "name": "@IsPostfix",
+          "type": "boolean",
+          "description": "Returns isPostfix"
+        },
+        {
+          "name": "@GetOperator",
+          "type": "string",
+          "description": "Returns getOperator"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "UpdateExpression",
+      "description": "Represents UpdateExpression",
+      "category": "Expressions",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetOperator",
+          "type": "string",
+          "description": "Returns getOperator"
+        },
+        {
+          "name": "@IsPostfix",
+          "type": "boolean",
+          "description": "Returns isPostfix"
+        },
+        {
+          "name": "@IsPrefix",
+          "type": "boolean",
+          "description": "Returns isPrefix"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "VariableDeclaration",
+      "description": "Represents VariableDeclaration",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetVariableInitializer",
+          "type": "ASTVariableInitializer",
+          "description": "Returns getVariableInitializer",
+          "parameters": [
+            "int index"
+          ]
+        },
+        {
+          "name": "@IsVar",
+          "type": "boolean",
+          "description": "Returns isVar"
+        },
+        {
+          "name": "@IsLet",
+          "type": "boolean",
+          "description": "Returns isLet"
+        },
+        {
+          "name": "@IsConst",
+          "type": "boolean",
+          "description": "Returns isConst"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "VariableInitializer",
+      "description": "Represents VariableInitializer",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [
+        "DestructuringNode"
+      ],
+      "attributes": [
+        {
+          "name": "@GetTarget",
+          "type": "EcmascriptNode",
+          "description": "Returns getTarget"
+        },
+        {
+          "name": "@GetInitializer",
+          "type": "EcmascriptNode",
+          "description": "Returns getInitializer"
+        },
+        {
+          "name": "@IsDestructuring",
+          "type": "boolean",
+          "description": "Returns isDestructuring"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "WhileLoop",
+      "description": "Represents WhileLoop",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetCondition",
+          "type": "EcmascriptNode",
+          "description": "Returns getCondition"
+        },
+        {
+          "name": "@GetBody",
+          "type": "EcmascriptNode",
+          "description": "Returns getBody"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "WithStatement",
+      "description": "Represents WithStatement",
+      "category": "Statements",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetExpression",
+          "type": "EcmascriptNode",
+          "description": "Returns getExpression"
+        },
+        {
+          "name": "@GetStatement",
+          "type": "EcmascriptNode",
+          "description": "Returns getStatement"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "XmlDotQuery",
+      "description": "Represents XmlDotQuery",
+      "category": "Other",
+      "extends": "AbstractInfixEcmascriptNode",
+      "implements": [],
+      "attributes": []
+    },
+    {
+      "name": "XmlElemRef",
+      "description": "Represents XmlElemRef",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "XmlExpression",
+      "description": "Represents XmlExpression",
+      "category": "Expressions",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetExpression",
+          "type": "EcmascriptNode",
+          "description": "Returns getExpression"
+        },
+        {
+          "name": "@IsXmlAttribute",
+          "type": "boolean",
+          "description": "Returns isXmlAttribute"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "XmlLiteral",
+      "description": "Represents XmlLiteral",
+      "category": "Literals",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "XmlMemberGet",
+      "description": "Represents XmlMemberGet",
+      "category": "Other",
+      "extends": "AbstractInfixEcmascriptNode",
+      "implements": [],
+      "attributes": []
+    },
+    {
+      "name": "XmlPropRef",
+      "description": "Represents XmlPropRef",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetPropName",
+          "type": "ASTName",
+          "description": "Returns getPropName"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "XmlString",
+      "description": "Represents XmlString",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetXml",
+          "type": "string",
+          "description": "Returns getXml"
+        },
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    },
+    {
+      "name": "Yield",
+      "description": "Represents Yield",
+      "category": "Other",
+      "extends": "AbstractEcmascriptNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetTextRegion",
+          "type": "TextRegion",
+          "description": "Returns getTextRegion",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetJsDoc",
+          "type": "string",
+          "description": "Returns getJsDoc",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@HasSideEffects",
+          "type": "boolean",
+          "description": "Returns hasSideEffects",
+          "inherited_from": "AbstractEcmascriptNode"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractEcmascriptNode"
+        }
+      ]
+    }
+  ]
+}

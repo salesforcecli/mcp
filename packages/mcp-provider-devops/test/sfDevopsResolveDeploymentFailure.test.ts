@@ -184,6 +184,8 @@ describe('SfDevopsResolveDeploymentFailure', () => {
       targetBranchName: 'main',
     });
     expect(result.isError).toBe(false);
-    expect(result.content[0].text).toContain('present in both source and target');
+    expect(result.content[0].text).toContain('This dependency exists in source branch "feature/wi-001"');
+    expect(result.content[0].text).toContain('full promotion is recommended');
+    expect(result.content[0].text).not.toContain('not in target branch');
   });
 });

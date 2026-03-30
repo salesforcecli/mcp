@@ -125,6 +125,7 @@ function buildRepositoryInfoFromItem(item: any, providerOwnerMap?: Map<string, s
     if (normalizedProvider && repoOwner && repoName) {
         if (normalizedProvider === "github") {
             repoType = "github";
+            repoType = "github";
             repoUrl = `https://github.com/${repoOwner}/${repoName}`;
         } else if (normalizedProvider === "bitbucket") {
             // Canonicalize both provider variants to "bitbucket" for downstream consistency.
@@ -141,19 +142,28 @@ async function ensureProjectStages(
     connection: any,
     cache: Map<string, ProjectStagesContext | null>,
     projectId?: string
+    cache: Map<string, ProjectStagesContext | null>,
+    projectId?: string
 ): Promise<ProjectStagesContext | null> {
+    if (!projectId) {
+        return null;
+    }
     if (!projectId) {
         return null;
     }
     if (cache.has(projectId)) {
         return cache.get(projectId) ?? null;
+        return cache.get(projectId) ?? null;
     }
     const pipelineId = await getPipelineIdForProject(connection, projectId);
     if (!pipelineId) {
         cache.set(projectId, null);
+        cache.set(projectId, null);
         return null;
     }
     const stages = await fetchPipelineStages(connection, pipelineId);
+    if (!stages?.length) {
+        cache.set(projectId, null);
     if (!stages?.length) {
         cache.set(projectId, null);
         return null;
@@ -181,8 +191,18 @@ function mapRawItemToWorkItem(item: any, ctx: ProjectStagesContext | null, provi
         PipelineStageId: item?.DevopsPipelineStageId || undefined,
         DevopsProjectId: item?.DevopsProjectId,
         PipelineId: ctx?.pipelineId
+        PipelineId: ctx?.pipelineId
     };
 
+    if (ctx) {
+        let targetStageId = resolveTargetStageId((mapped as any)?.PipelineStageId, ctx.stages);
+        if (!targetStageId) {
+            targetStageId = ctx.firstStageId;
+        }
+        const targetStage = findStageById(ctx.stages, targetStageId);
+        mapped.TargetBranch = getBranchNameFromStage(targetStage);
+        mapped.TargetStageId = targetStageId;
+    }
     if (ctx) {
         let targetStageId = resolveTargetStageId((mapped as any)?.PipelineStageId, ctx.stages);
         if (!targetStageId) {
@@ -217,6 +237,7 @@ export async function fetchWorkItems(connection: Connection, projectId: string):
             FROM WorkItem
             WHERE DevopsProjectId = '${projectId}'
         `;
+        
         
         const result = await connection.query(query);
         if (!result || !(result as any).records) {
@@ -269,6 +290,7 @@ export async function fetchWorkItemByName(connection: Connection, workItemName: 
 
         const projectId: string = item?.DevopsProjectId;
         const cache = new Map<string, ProjectStagesContext | null>();
+        const cache = new Map<string, ProjectStagesContext | null>();
         const ctx = await ensureProjectStages(connection, cache, projectId);
         const providerOwnerMap = await fetchVcsOwnersForRecords(connection, [item]);
         return mapRawItemToWorkItem(item, ctx, providerOwnerMap);
@@ -314,6 +336,9 @@ export async function fetchWorkItemsByNames(connection: Connection, workItemName
 
         for (const item of records) {
             const projectId: string = item?.DevopsProjectId;
+            let ctx: ProjectStagesContext | null = null;
+            if (projectId) {
+                ctx = await ensureProjectStages(connection, projectStagesCache, projectId);
             let ctx: ProjectStagesContext | null = null;
             if (projectId) {
                 ctx = await ensureProjectStages(connection, projectStagesCache, projectId);

@@ -1,0 +1,334 @@
+{
+  "description": "PMD Visualforce AST Nodes - Complete Reference",
+  "source": "Extracted from PMD source code",
+  "extraction_date": "2026-03-17",
+  "total_nodes": 17,
+  "version": "7.x",
+  "language": "visualforce",
+  "note": "Includes inherited attributes from parent classes (marked with inherited_from field)",
+  "nodes": [
+    {
+      "name": "Arguments",
+      "description": "Represents Arguments",
+      "category": "Other",
+      "extends": "AbstractVfNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractVfNode"
+        }
+      ]
+    },
+    {
+      "name": "Attribute",
+      "description": "Represents Attribute",
+      "category": "Attributes",
+      "extends": "AbstractVfNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetName",
+          "type": "string",
+          "description": "Returns getName"
+        },
+        {
+          "name": "@IsHasNamespacePrefix",
+          "type": "boolean",
+          "description": "Returns isHasNamespacePrefix"
+        },
+        {
+          "name": "@GetNamespacePrefix",
+          "type": "string",
+          "description": "public boolean isHasNamespacePrefix() { return name.indexOf(':') >= 0; } /"
+        },
+        {
+          "name": "@GetLocalName",
+          "type": "string",
+          "description": "public boolean isHasNamespacePrefix() { return name.indexOf(':') >= 0; } / public String getNamespacePrefix() { int colonIndex = name.indexOf(':'); return colonIndex >= 0 ? name.substring(0, colonIndex) : \"\"; } /"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractVfNode"
+        }
+      ]
+    },
+    {
+      "name": "AttributeValue",
+      "description": "Represents AttributeValue",
+      "category": "Attributes",
+      "extends": "AbstractVfNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractVfNode"
+        }
+      ]
+    },
+    {
+      "name": "CData",
+      "description": "Represents CData",
+      "category": "Content",
+      "extends": "AbstractVfNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractVfNode"
+        }
+      ]
+    },
+    {
+      "name": "CompilationUnit",
+      "description": "Represents CompilationUnit",
+      "category": "Other",
+      "extends": "AbstractVfNode",
+      "implements": [
+        "RootNode"
+      ],
+      "attributes": [
+        {
+          "name": "@GetAstInfo",
+          "type": "AstInfo",
+          "description": "Returns getAstInfo"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractVfNode"
+        }
+      ]
+    },
+    {
+      "name": "Content",
+      "description": "Represents Content",
+      "category": "Other",
+      "extends": "AbstractVfNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractVfNode"
+        }
+      ]
+    },
+    {
+      "name": "Declaration",
+      "description": "Represents Declaration",
+      "category": "Other",
+      "extends": "AbstractVfNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetName",
+          "type": "string",
+          "description": "Returns getName"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractVfNode"
+        }
+      ]
+    },
+    {
+      "name": "DoctypeDeclaration",
+      "description": "Represents DoctypeDeclaration",
+      "category": "Structure",
+      "extends": "AbstractVfNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetName",
+          "type": "string",
+          "description": "Returns getName"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractVfNode"
+        }
+      ]
+    },
+    {
+      "name": "DoctypeExternalId",
+      "description": "Represents DoctypeExternalId",
+      "category": "Structure",
+      "extends": "AbstractVfNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@IsHasPublicId",
+          "type": "boolean",
+          "description": "Returns isHasPublicId"
+        },
+        {
+          "name": "@GetUri",
+          "type": "string",
+          "description": "Returns getUri"
+        },
+        {
+          "name": "@GetPublicId",
+          "type": "string",
+          "description": "URI of the external entity. Cannot be null. / private String uri; / Public ID of the external entity. This is optional. / private String publicId; ASTDoctypeExternalId(int id) { super(id); } public boolean isHasPublicId() { return null != publicId; } public String getUri() { return uri; } void setUri(String uri) { this.uri = uri; } /"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractVfNode"
+        }
+      ]
+    },
+    {
+      "name": "DotExpression",
+      "description": "Represents DotExpression",
+      "category": "Other",
+      "extends": "AbstractVfNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractVfNode"
+        }
+      ]
+    },
+    {
+      "name": "ElExpression",
+      "description": "Represents ElExpression",
+      "category": "Other",
+      "extends": "AbstractVfNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractVfNode"
+        }
+      ]
+    },
+    {
+      "name": "Element",
+      "description": "Represents Element",
+      "category": "Elements",
+      "extends": "AbstractVfNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@IsHasNamespacePrefix",
+          "type": "boolean",
+          "description": "Name of the element-tag. Cannot be null. / private String name; / Flag indicating that the element consists of one tag (\"<... />\"). / private boolean empty; // / Flag indicating that the parser did not find a proper ending marker or ending tag for this element. / private boolean unclosed; ASTElement(int id) { super(id); } /"
+        },
+        {
+          "name": "@GetNamespacePrefix",
+          "type": "string",
+          "description": "Name of the element-tag. Cannot be null. / private String name; / Flag indicating that the element consists of one tag (\"<... />\"). / private boolean empty; // / Flag indicating that the parser did not find a proper ending marker or ending tag for this element. / private boolean unclosed; ASTElement(int id) { super(id); } / public boolean isHasNamespacePrefix() { return name.indexOf(':') >= 0; } /"
+        },
+        {
+          "name": "@GetLocalName",
+          "type": "string",
+          "description": "Name of the element-tag. Cannot be null. / private String name; / Flag indicating that the element consists of one tag (\"<... />\"). / private boolean empty; // / Flag indicating that the parser did not find a proper ending marker or ending tag for this element. / private boolean unclosed; ASTElement(int id) { super(id); } / public boolean isHasNamespacePrefix() { return name.indexOf(':') >= 0; } / public String getNamespacePrefix() { int colonIndex = name.indexOf(':'); return colonIndex >= 0 ? name.substring(0, colonIndex) : \"\"; } /"
+        },
+        {
+          "name": "@GetName",
+          "type": "string",
+          "description": "Returns getName"
+        },
+        {
+          "name": "@IsEmpty",
+          "type": "boolean",
+          "description": "Returns isEmpty"
+        },
+        {
+          "name": "@IsUnclosed",
+          "type": "boolean",
+          "description": "Returns isUnclosed"
+        },
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractVfNode"
+        }
+      ]
+    },
+    {
+      "name": "Expression",
+      "description": "Represents Expression",
+      "category": "Other",
+      "extends": "AbstractVfNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractVfNode"
+        }
+      ]
+    },
+    {
+      "name": "Identifier",
+      "description": "Represents Identifier",
+      "category": "Other",
+      "extends": "AbstractVFDataNode",
+      "implements": [],
+      "attributes": []
+    },
+    {
+      "name": "Literal",
+      "description": "Represents Literal",
+      "category": "Other",
+      "extends": "AbstractVFDataNode",
+      "implements": [],
+      "attributes": []
+    },
+    {
+      "name": "NegationExpression",
+      "description": "Represents NegationExpression",
+      "category": "Other",
+      "extends": "AbstractVfNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractVfNode"
+        }
+      ]
+    },
+    {
+      "name": "Text",
+      "description": "Represents Text",
+      "category": "Content",
+      "extends": "AbstractVfNode",
+      "implements": [],
+      "attributes": [
+        {
+          "name": "@GetXPathNodeName",
+          "type": "string",
+          "description": "Returns getXPathNodeName",
+          "inherited_from": "AbstractVfNode"
+        }
+      ]
+    }
+  ]
+}
