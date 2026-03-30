@@ -3,6 +3,7 @@ import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
 import { checkoutWorkitemBranch } from "../checkoutWorkitemBranch.js";
 import { fetchWorkItemByName } from "../getWorkItems.js";
+import { SfDevopsUpdateWorkItemStatus } from "./sfDevopsUpdateWorkItemStatus.js";
 import { normalizeAndValidateRepoPath } from "../shared/pathUtils.js";
 import { TelemetryEventNames } from "../constants.js";
 import { usernameOrAliasParam } from "../shared/params.js";
@@ -130,6 +131,37 @@ This tool takes the DevOps Center org username and the exact Work Item Name, loo
           type: "text",
           text: `Work item is missing required repository URL or branch information  ${workItem}`
         }],
+        isError: true
+      };
+    }
+
+    try {
+      const updateTool = new SfDevopsUpdateWorkItemStatus(this.services);
+      const statusUpdateResult = await updateTool.exec({
+        usernameOrAlias: input.usernameOrAlias,
+        workItemName: input.workItemName,
+        status: "In Progress"
+      });
+      if (statusUpdateResult.isError) {
+        const executionTime = Date.now() - startTime;
+        this.services.getTelemetryService().sendEvent(TelemetryEventNames.CHECKOUT_WORK_ITEM, {
+          success: false,
+          error: "Error setting work item to In Progress before checkout",
+          workItemName: input.workItemName,
+          executionTimeMs: executionTime,
+        });
+        return statusUpdateResult;
+      }
+    } catch (e: any) {
+      const executionTime = Date.now() - startTime;
+      this.services.getTelemetryService().sendEvent(TelemetryEventNames.CHECKOUT_WORK_ITEM, {
+        success: false,
+        error: `Error setting work item to In Progress: ${e?.message || e}`,
+        workItemName: input.workItemName,
+        executionTimeMs: executionTime,
+      });
+      return {
+        content: [{ type: "text", text: `Error setting work item to In Progress before checkout: ${e?.message || e}` }],
         isError: true
       };
     }

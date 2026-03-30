@@ -6,6 +6,7 @@ import { Services } from '@salesforce/mcp-provider-api';
 import * as getWorkItems from '../src/getWorkItems.js';
 import * as checkoutBranch from '../src/checkoutWorkitemBranch.js';
 import * as pathUtils from '../src/shared/pathUtils.js';
+import { SfDevopsUpdateWorkItemStatus } from '../src/tools/sfDevopsUpdateWorkItemStatus.js';
 
 describe('SfDevopsCheckoutWorkItem', () => {
   let tool: SfDevopsCheckoutWorkItem;
@@ -44,6 +45,9 @@ describe('SfDevopsCheckoutWorkItem', () => {
 
     vi.spyOn(getWorkItems, 'fetchWorkItemByName').mockResolvedValue(mockWorkItem);
     vi.spyOn(pathUtils, 'normalizeAndValidateRepoPath').mockReturnValue('/tmp/repo');
+    vi.spyOn(SfDevopsUpdateWorkItemStatus.prototype, 'exec').mockResolvedValue({
+      content: [{ type: 'text', text: '{"success": true}' }]
+    });
     vi.spyOn(checkoutBranch, 'checkoutWorkitemBranch').mockResolvedValue({
       content: [{ type: 'text', text: 'Checkout successful' }]
     });
@@ -106,6 +110,9 @@ describe('SfDevopsCheckoutWorkItem', () => {
 
     vi.spyOn(pathUtils, 'normalizeAndValidateRepoPath').mockReturnValue('/tmp/repo');
     vi.spyOn(getWorkItems, 'fetchWorkItemByName').mockResolvedValue(mockWorkItem);
+    vi.spyOn(SfDevopsUpdateWorkItemStatus.prototype, 'exec').mockResolvedValue({
+      content: [{ type: 'text', text: '{"success": true}' }]
+    });
     vi.spyOn(checkoutBranch, 'checkoutWorkitemBranch').mockRejectedValue(mockError);
 
     const result = await tool.exec({ 
@@ -138,6 +145,9 @@ describe('SfDevopsCheckoutWorkItem', () => {
 
     vi.spyOn(pathUtils, 'normalizeAndValidateRepoPath').mockReturnValue('/tmp/repo');
     vi.spyOn(getWorkItems, 'fetchWorkItemByName').mockResolvedValue(mockWorkItem);
+    vi.spyOn(SfDevopsUpdateWorkItemStatus.prototype, 'exec').mockResolvedValue({
+      content: [{ type: 'text', text: '{"success": true}' }]
+    });
     vi.spyOn(checkoutBranch, 'checkoutWorkitemBranch').mockResolvedValue({
       content: [{ type: 'text', text: 'Checkout successful' }]
     });
