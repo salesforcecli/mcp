@@ -24,7 +24,7 @@ export enum Toolset {
   DEVOPS = 'devops',
   CODE_ANALYSIS = 'code-analysis',
   SCALE_PRODUCTS = 'scale-products',
-  ENRICHMENT = 'enrichment',
+  ENRICHMENT = 'enrich_metadata',
   EXPERTS_VALIDATION = 'experts-validation',
   OTHER = 'other'
 }
