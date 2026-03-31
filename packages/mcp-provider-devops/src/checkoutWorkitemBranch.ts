@@ -1,4 +1,4 @@
-import { isGitRepository, hasUncommittedChanges } from './shared/gitUtils.js';
+import { isGitRepository, hasUncommittedChanges, getCurrentBranch } from './shared/gitUtils.js';
 
 export interface PushWorkitemBranchChangesParams {
   repoPath: string;
@@ -42,10 +42,11 @@ export async function checkoutWorkitemBranch(
   }
 
   if (hasUncommittedChanges(localPath)) {
+    const currentBranch = getCurrentBranch(localPath);
     return {
       content: [{
         type: "text",
-        text: `Error: '${localPath}' has uncommitted changes. Please commit or stash your changes before checking out the work item branch.`
+        text: `Error: '${localPath}' has uncommitted changes.${currentBranch ? ` Current branch is '${currentBranch}'.` : ""} Resolve this on the current branch first (commit or stash), then retry checkout for '${branchName}'. Do not commit those pending changes to '${branchName}' before switching.`
       }],
       isError: true
     };

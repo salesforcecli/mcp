@@ -40,6 +40,8 @@ export class SfDevopsListWorkItems extends McpTool<InputArgsShape, OutputArgsSha
     return {
       title: "List DevOps Work Items",
       description: `List all the work items for a specific  DevOps Center project.
+
+      **Terminology:** Treat "DevOps Center", "DOCe", and "DoCe" as the same product/org context.
       
 **Input:**
 - Either username (example devops-center@example.com) or alias (example myDevOpsOrg) is required.
