@@ -113,6 +113,23 @@ This tool takes the DevOps Center org username and the exact Work Item Name, loo
     }
   }
 
+  private withWorkItemContext(result: CallToolResult, workItem: any): CallToolResult {
+    return {
+      ...result,
+      content: [
+        ...(result.content ?? []),
+        {
+          type: "text",
+          text: JSON.stringify({
+            workItemName: workItem?.name || workItem?.Name || "",
+            subject: workItem?.subject || workItem?.Subject || undefined,
+            description: workItem?.description || workItem?.Description || undefined
+          }, null, 2)
+        }
+      ]
+    };
+  }
+
   public async exec(input: InputArgs): Promise<CallToolResult> {
     const startTime = Date.now();
     let safeLocalPath: string | undefined = undefined;
@@ -230,7 +247,7 @@ This tool takes the DevOps Center org username and the exact Work Item Name, loo
         executionTimeMs: executionTime,
       });
       
-      return result;
+      return this.withWorkItemContext(result, workItem);
     } catch (e: any) {
       const checkoutErrorMessage = e?.message || String(e);
 
@@ -262,7 +279,7 @@ This tool takes the DevOps Center org username and the exact Work Item Name, loo
               repoUrl: latestWorkItem.SourceCodeRepository.repoUrl,
               executionTimeMs: executionTime,
             });
-            return retryResult;
+            return this.withWorkItemContext(retryResult, latestWorkItem);
           }
         } catch {
           // Fall through and return the original checkout error.

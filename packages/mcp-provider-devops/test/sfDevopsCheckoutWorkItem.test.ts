@@ -39,6 +39,8 @@ describe('SfDevopsCheckoutWorkItem', () => {
     const mockWorkItem = {
       Id: '1',
       Name: 'WI-001',
+      subject: 'Fix login',
+      description: 'Resolve login redirect bug',
       status: 'New',
       WorkItemBranch: 'feature/wi-001',
       SourceCodeRepository: { repoUrl: 'https://github.com/test/repo.git' }
@@ -62,6 +64,8 @@ describe('SfDevopsCheckoutWorkItem', () => {
     // Verify the result
     expect(result.isError).toBeUndefined();
     expect(result.content[0].text).toContain('Checkout successful');
+    expect(result.content[1].text).toContain('Fix login');
+    expect(result.content[1].text).toContain('Resolve login redirect bug');
     expect(updateStatusSpy).toHaveBeenCalledTimes(1);
     expect(updateStatusSpy).toHaveBeenCalledWith({
       usernameOrAlias: 'test@example.com',

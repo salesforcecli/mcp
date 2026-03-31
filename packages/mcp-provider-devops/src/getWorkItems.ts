@@ -171,6 +171,7 @@ function mapRawItemToWorkItem(item: any, ctx: ProjectStagesContext | null, provi
         id: item?.Id,
         name: item?.Name || "",
         subject: item?.Subject || undefined,
+        description: item?.Description || undefined,
         status: item?.Status || "",
         owner: item?.AssignedToId || "",
         SourceCodeRepository: repoUrl || repoType ? {
