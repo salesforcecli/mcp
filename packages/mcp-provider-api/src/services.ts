@@ -17,9 +17,9 @@ export type TelemetryEvent = {
 };
 
 export type PdpEvent = {
-  eventName: string;
-  productFeatureId: string;
-  componentId: string;
+  eventName: `${string}.${string}`;
+  productFeatureId: `aJC${string}`;
+  componentId?: string;
   eventVolume?: number;
 };
 
