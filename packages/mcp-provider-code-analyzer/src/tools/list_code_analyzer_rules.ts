@@ -1,11 +1,12 @@
 import {z} from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import {McpTool, ReleaseState, McpToolConfig, Toolset} from "@salesforce/mcp-provider-api";
+import {McpTool, ReleaseState, McpToolConfig, Toolset, TelemetryService} from "@salesforce/mcp-provider-api";
 import {ListRulesAction, ListRulesInput, ListRulesOutput, ListRulesActionImpl} from "../actions/list-rules.js";
 import {CodeAnalyzerConfigFactoryImpl} from "../factories/CodeAnalyzerConfigFactory.js";
 import {EnginePluginsFactoryImpl} from "../factories/EnginePluginsFactory.js";
 import {getErrorMessage} from "../utils.js";
 import { isFullListSelector, makePolicyError } from "../policies.js";
+import * as Constants from "../constants.js";
 import {
     ENGINE_NAMES,
     SEVERITY_NUMBERS,
@@ -83,6 +84,7 @@ type OutputArgsShape = typeof outputSchema.shape;
 export class CodeAnalyzerListRulesMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
     public static readonly NAME: string = 'list_code_analyzer_rules';
     private readonly action: ListRulesAction;
+    private readonly telemetryService?: TelemetryService;
 
     /**
      * Validates a selector string ensuring that each token (split on ',' and ':')
@@ -133,10 +135,12 @@ export class CodeAnalyzerListRulesMcpTool extends McpTool<InputArgsShape, Output
         action: ListRulesAction = new ListRulesActionImpl({
             configFactory: new CodeAnalyzerConfigFactoryImpl(),
             enginePluginsFactory: new EnginePluginsFactoryImpl()
-        })
+        }),
+        telemetryService?: TelemetryService
     ) {
         super();
         this.action = action;
+        this.telemetryService = telemetryService;
     }
 
     public getReleaseState(): ReleaseState {
@@ -193,6 +197,14 @@ export class CodeAnalyzerListRulesMcpTool extends McpTool<InputArgsShape, Output
         }
         try {
             output = await this.action.exec(input);
+            // Send PFT event for product analytics
+            if (output.status === "success") {
+                this.telemetryService?.sendPdpEvent({
+                    eventName: 'codeAnalyzer.listRules',
+                    productFeatureId: Constants.CODE_ANALYZER_PRODUCT_FEATURE_ID,
+                    componentId: CodeAnalyzerListRulesMcpTool.NAME
+                });
+            }
         } catch (e) {
             output = { status: getErrorMessage(e) }
         }

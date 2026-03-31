@@ -27,17 +27,17 @@ export class CodeAnalyzerMcpProvider extends McpProvider {
                 configFactory,
                 enginePluginsFactory,
                 telemetryService: services.getTelemetryService()
-            })),
+            }), services.getTelemetryService()),
             new CodeAnalyzerDescribeRuleMcpTool(new DescribeRuleActionImpl({
                 configFactory,
                 enginePluginsFactory,
                 telemetryService: services.getTelemetryService()
-            })),
+            }), services.getTelemetryService()),
             new CodeAnalyzerListRulesMcpTool(new ListRulesActionImpl({
                 configFactory,
                 enginePluginsFactory,
                 telemetryService: services.getTelemetryService()
-            })),
+            }), services.getTelemetryService()),
             new CodeAnalyzerQueryResultsMcpTool(new QueryResultsActionImpl(), services.getTelemetryService()),
             new GenerateXpathPromptMcpTool(new GetAstNodesActionImpl(), services.getTelemetryService()),
             new CreateCustomRuleMcpTool(new CreateXpathCustomRuleActionImpl(), services.getTelemetryService())

@@ -98,12 +98,6 @@ export class ListRulesActionImpl implements ListRulesAction {
                 tags: r.getTags()
             }
         });
-        // Send PFT event for product analytics
-        this.telemetryService?.sendPdpEvent({
-            eventName: 'codeAnalyzer.listRules',
-            productFeatureId: Constants.CODE_ANALYZER_PRODUCT_FEATURE_ID,
-            componentId: 'list_code_analyzer_rules'
-        });
         return {
             status: "success",
             rules
