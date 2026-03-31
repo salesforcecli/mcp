@@ -102,12 +102,25 @@ export class RunAnalyzerActionImpl implements RunAnalyzerAction {
         const capturedErrors: string[] = errorCapturer.getCapturedEvents();
 
         if (capturedErrors.length > 0) {
+            // Send PFT event for product analytics
+            this.telemetryService?.sendPdpEvent({
+                eventName: 'codeAnalyzer.run',
+                productFeatureId: 'aJCEE0000007Uiv4AE', // TODO: Get specific Code Analyzer product feature ID
+                componentId: 'run_code_analyzer'
+            });
             return {
                 status: getMessage('runCompletedWithErrorsHeader') + '\n' + indent(capturedErrors.join('\n')),
                 resultsFile,
                 summary: generateSummary(results)
             };
         }
+
+        // Send PFT event for product analytics
+        this.telemetryService?.sendPdpEvent({
+            eventName: 'codeAnalyzer.run',
+            productFeatureId: 'aJCEE0000007Uiv4AE', // TODO: Get specific Code Analyzer product feature ID
+            componentId: 'run_code_analyzer'
+        });
 
         return Promise.resolve({
             status: `success`,

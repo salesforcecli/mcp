@@ -119,6 +119,12 @@ export class GenerateXpathPromptMcpTool extends McpTool<InputArgsShape, OutputAr
         engine: input.engine,
         language: input.language
       });
+      // Send PFT event for product analytics
+      this.telemetryService.sendPdpEvent({
+        eventName: 'codeAnalyzer.generateXpathPrompt',
+        productFeatureId: 'aJCEE0000007Uiv4AE', // TODO: Get specific Code Analyzer product feature ID
+        componentId: 'get_ast_nodes_to_generate_xpath'
+      });
     }
     return buildToolResult(output);
   }

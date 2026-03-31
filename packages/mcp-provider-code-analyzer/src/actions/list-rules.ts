@@ -98,6 +98,12 @@ export class ListRulesActionImpl implements ListRulesAction {
                 tags: r.getTags()
             }
         });
+        // Send PFT event for product analytics
+        this.telemetryService?.sendPdpEvent({
+            eventName: 'codeAnalyzer.listRules',
+            productFeatureId: 'aJCEE0000007Uiv4AE', // TODO: Get specific Code Analyzer product feature ID
+            componentId: 'list_code_analyzer_rules'
+        });
         return {
             status: "success",
             rules

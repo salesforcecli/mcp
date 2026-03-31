@@ -89,6 +89,12 @@ export class DescribeRuleActionImpl implements DescribeRuleAction {
         }
 
         const rule: Rule = ruleSelection.getRulesFor(ruleSelection.getEngineNames()[0])[0];
+        // Send PFT event for product analytics
+        this.telemetryService?.sendPdpEvent({
+            eventName: 'codeAnalyzer.describeRule',
+            productFeatureId: 'aJCEE0000007Uiv4AE', // TODO: Get specific Code Analyzer product feature ID
+            componentId: 'describe_code_analyzer_rule'
+        });
         return {
             status: `success`,
             rule: {

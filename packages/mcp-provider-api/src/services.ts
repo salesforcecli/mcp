@@ -9,10 +9,18 @@ export interface Services {
 
 export interface TelemetryService {
   sendEvent(eventName: string, event: TelemetryEvent): void;
+  sendPdpEvent(event: PdpEvent): void;
 }
 
 export type TelemetryEvent = {
   [key: string]: string | number | boolean | null | undefined;
+};
+
+export type PdpEvent = {
+  eventName: string;
+  productFeatureId: string;
+  componentId: string;
+  eventVolume?: number;
 };
 
 
