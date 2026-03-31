@@ -122,7 +122,7 @@ export class GenerateXpathPromptMcpTool extends McpTool<InputArgsShape, OutputAr
       // Send PFT event for product analytics
       this.telemetryService.sendPdpEvent({
         eventName: 'codeAnalyzer.generateXpathPrompt',
-        productFeatureId: 'aJCEE0000007Uiv4AE', // TODO: Get specific Code Analyzer product feature ID
+        productFeatureId: Constants.CODE_ANALYZER_PRODUCT_FEATURE_ID,
         componentId: 'get_ast_nodes_to_generate_xpath'
       });
     }

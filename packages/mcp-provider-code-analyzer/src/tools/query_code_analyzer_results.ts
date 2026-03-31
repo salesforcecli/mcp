@@ -133,7 +133,7 @@ export class CodeAnalyzerQueryResultsMcpTool extends McpTool<InputArgsShape, Out
             // Send PFT event for product analytics
             this.telemetryService?.sendPdpEvent({
                 eventName: 'codeAnalyzer.query',
-                productFeatureId: 'aJCEE0000007Uiv4AE', // TODO: Get specific Code Analyzer product feature ID
+                productFeatureId: Constants.CODE_ANALYZER_PRODUCT_FEATURE_ID,
                 componentId: CodeAnalyzerQueryResultsMcpTool.NAME
             });
             const contentItems: { type: "text"; text: string }[] = [];

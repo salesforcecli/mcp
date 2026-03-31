@@ -92,7 +92,7 @@ export class DescribeRuleActionImpl implements DescribeRuleAction {
         // Send PFT event for product analytics
         this.telemetryService?.sendPdpEvent({
             eventName: 'codeAnalyzer.describeRule',
-            productFeatureId: 'aJCEE0000007Uiv4AE', // TODO: Get specific Code Analyzer product feature ID
+            productFeatureId: Constants.CODE_ANALYZER_PRODUCT_FEATURE_ID,
             componentId: 'describe_code_analyzer_rule'
         });
         return {

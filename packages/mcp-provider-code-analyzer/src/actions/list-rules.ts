@@ -101,7 +101,7 @@ export class ListRulesActionImpl implements ListRulesAction {
         // Send PFT event for product analytics
         this.telemetryService?.sendPdpEvent({
             eventName: 'codeAnalyzer.listRules',
-            productFeatureId: 'aJCEE0000007Uiv4AE', // TODO: Get specific Code Analyzer product feature ID
+            productFeatureId: Constants.CODE_ANALYZER_PRODUCT_FEATURE_ID,
             componentId: 'list_code_analyzer_rules'
         });
         return {
