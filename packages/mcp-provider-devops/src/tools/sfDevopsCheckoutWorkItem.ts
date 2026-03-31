@@ -3,6 +3,7 @@ import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, Toolset, Services } from "@salesforce/mcp-provider-api";
 import { checkoutWorkitemBranch } from "../checkoutWorkitemBranch.js";
 import { fetchWorkItemByName } from "../getWorkItems.js";
+import { SfDevopsUpdateWorkItemStatus } from "./sfDevopsUpdateWorkItemStatus.js";
 import { normalizeAndValidateRepoPath } from "../shared/pathUtils.js";
 import { TelemetryEventNames } from "../constants.js";
 import { usernameOrAliasParam } from "../shared/params.js";
@@ -15,6 +16,10 @@ const inputSchema = z.object({
 type InputArgs = z.infer<typeof inputSchema>;
 type InputArgsShape = typeof inputSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
+
+function isNewStatus(status: unknown): boolean {
+  return String(status ?? "").trim().toLowerCase() === "new";
+}
 
 export class SfDevopsCheckoutWorkItem extends McpTool<InputArgsShape, OutputArgsShape> {
   private readonly services: Services;
@@ -40,6 +45,8 @@ export class SfDevopsCheckoutWorkItem extends McpTool<InputArgsShape, OutputArgs
     return {
       title: "Checkout Work Item",
       description: `Checks out the branch associated with a selected work item by name.
+
+**Terminology:** Treat "DevOps Center", "DOCe", and "DoCe" as the same product/org context.
 
 **MANDATORY:** Always ask the user to provide the local path (repoPath) to the checked-out repository. 
 You may show the current working directory as an option, but do not proceed until the user has explicitly chosen a repo path. 
@@ -69,6 +76,57 @@ This tool takes the DevOps Center org username and the exact Work Item Name, loo
 - Success or error message indicating the result of the clone and checkout operations, including the path where the repository is cloned.`,
       inputSchema: inputSchema.shape,
       outputSchema: undefined,
+    };
+  }
+
+  private async markWorkItemInProgress(input: InputArgs, startTime: number): Promise<CallToolResult | null> {
+    try {
+      const updateTool = new SfDevopsUpdateWorkItemStatus(this.services);
+      const statusUpdateResult = await updateTool.exec({
+        usernameOrAlias: input.usernameOrAlias,
+        workItemName: input.workItemName,
+        status: "In Progress"
+      });
+      if (statusUpdateResult.isError) {
+        const executionTime = Date.now() - startTime;
+        this.services.getTelemetryService().sendEvent(TelemetryEventNames.CHECKOUT_WORK_ITEM, {
+          success: false,
+          error: "Error setting work item to In Progress before checkout",
+          workItemName: input.workItemName,
+          executionTimeMs: executionTime,
+        });
+        return statusUpdateResult;
+      }
+      return null;
+    } catch (e: any) {
+      const executionTime = Date.now() - startTime;
+      this.services.getTelemetryService().sendEvent(TelemetryEventNames.CHECKOUT_WORK_ITEM, {
+        success: false,
+        error: `Error setting work item to In Progress: ${e?.message || e}`,
+        workItemName: input.workItemName,
+        executionTimeMs: executionTime,
+      });
+      return {
+        content: [{ type: "text", text: `Error setting work item to In Progress before checkout: ${e?.message || e}` }],
+        isError: true
+      };
+    }
+  }
+
+  private withWorkItemContext(result: CallToolResult, workItem: any): CallToolResult {
+    return {
+      ...result,
+      content: [
+        ...(result.content ?? []),
+        {
+          type: "text",
+          text: JSON.stringify({
+            workItemName: workItem?.name || workItem?.Name || "",
+            subject: workItem?.subject || workItem?.Subject || undefined,
+            description: workItem?.description || workItem?.Description || undefined
+          }, null, 2)
+        }
+      ]
     };
   }
 
@@ -124,14 +182,52 @@ This tool takes the DevOps Center org username and the exact Work Item Name, loo
       };
     }
 
+    let attemptedInProgressUpdate = false;
     if (!workItem?.SourceCodeRepository?.repoUrl || !workItem?.WorkItemBranch) {
-      return {
-        content: [{
-          type: "text",
-          text: `Work item is missing required repository URL or branch information  ${workItem}`
-        }],
-        isError: true
-      };
+      if (isNewStatus(workItem?.status)) {
+        const updateError = await this.markWorkItemInProgress(input, startTime);
+        if (updateError) {
+          return updateError;
+        }
+        attemptedInProgressUpdate = true;
+        try {
+          const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
+          const latestWorkItem = await fetchWorkItemByName(connection, input.workItemName);
+          if (latestWorkItem) {
+            workItem = latestWorkItem;
+          }
+        } catch (e: any) {
+          const executionTime = Date.now() - startTime;
+          this.services.getTelemetryService().sendEvent(TelemetryEventNames.CHECKOUT_WORK_ITEM, {
+            success: false,
+            error: `Error setting work item to In Progress: ${e?.message || e}`,
+            workItemName: input.workItemName,
+            executionTimeMs: executionTime,
+          });
+          return {
+            content: [{ type: "text", text: `Error setting work item to In Progress before checkout: ${e?.message || e}` }],
+            isError: true
+          };
+        }
+      }
+
+      if (!workItem?.SourceCodeRepository?.repoUrl || !workItem?.WorkItemBranch) {
+        return {
+          content: [{
+            type: "text",
+            text: `Work item is missing required repository URL or branch information.`
+          }],
+          isError: true
+        };
+      }
+    }
+
+    if (!attemptedInProgressUpdate && isNewStatus(workItem?.status)) {
+      const updateError = await this.markWorkItemInProgress(input, startTime);
+      if (updateError) {
+        return updateError;
+      }
+      attemptedInProgressUpdate = true;
     }
     
     try {
@@ -151,19 +247,56 @@ This tool takes the DevOps Center org username and the exact Work Item Name, loo
         executionTimeMs: executionTime,
       });
       
-      return result;
+      return this.withWorkItemContext(result, workItem);
     } catch (e: any) {
+      const checkoutErrorMessage = e?.message || String(e);
+
+      // Retry once after ensuring the work item is In Progress and fetching latest branch details.
+      if (isNewStatus(workItem?.status) || attemptedInProgressUpdate) {
+        try {
+          if (!attemptedInProgressUpdate && isNewStatus(workItem?.status)) {
+            const updateError = await this.markWorkItemInProgress(input, startTime);
+            if (updateError) {
+              return updateError;
+            }
+            attemptedInProgressUpdate = true;
+          }
+
+          const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
+          const latestWorkItem = await fetchWorkItemByName(connection, input.workItemName);
+          if (latestWorkItem?.SourceCodeRepository?.repoUrl && latestWorkItem?.WorkItemBranch) {
+            const retryResult = await checkoutWorkitemBranch({
+              repoUrl: latestWorkItem.SourceCodeRepository.repoUrl,
+              branchName: latestWorkItem.WorkItemBranch,
+              localPath: safeLocalPath
+            });
+
+            const executionTime = Date.now() - startTime;
+            this.services.getTelemetryService().sendEvent(TelemetryEventNames.CHECKOUT_WORK_ITEM, {
+              success: true,
+              workItemName: input.workItemName,
+              branchName: latestWorkItem.WorkItemBranch,
+              repoUrl: latestWorkItem.SourceCodeRepository.repoUrl,
+              executionTimeMs: executionTime,
+            });
+            return this.withWorkItemContext(retryResult, latestWorkItem);
+          }
+        } catch {
+          // Fall through and return the original checkout error.
+        }
+      }
+
       const executionTime = Date.now() - startTime;
       
       this.services.getTelemetryService().sendEvent(TelemetryEventNames.CHECKOUT_WORK_ITEM, {
         success: false,
-        error: `Error during checkout: ${e?.message || e}`,
+        error: `Error during checkout: ${checkoutErrorMessage}`,
         workItemName: input.workItemName,
         executionTimeMs: executionTime,
       });
       
       return {
-        content: [{ type: "text", text: `Error during checkout: ${e?.message || e}` }],
+        content: [{ type: "text", text: `Error during checkout: ${checkoutErrorMessage}` }],
         isError: true
       };
     }
