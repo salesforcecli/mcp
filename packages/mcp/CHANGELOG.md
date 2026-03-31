@@ -1,3 +1,17 @@
+# [0.30.0](https://github.com/salesforcecli/mcp/compare/0.29.5...0.30.0) (2026-03-30)
+
+
+### Bug Fixes
+
+* update mcp @salesforce/mcp-provider-api to 0.6.0 ([#425](https://github.com/salesforcecli/mcp/issues/425)) ([dadc60b](https://github.com/salesforcecli/mcp/commit/dadc60b1e730101a9ad0c7eabc2798a90b2d1757))
+
+
+### Features
+
+* update lwc and aura experts and add validation tools @W-21659002@ ([#426](https://github.com/salesforcecli/mcp/issues/426)) ([471d638](https://github.com/salesforcecli/mcp/commit/471d638046f2236a4617679c8b0652ee0cc13b0f))
+
+
+
 ## [0.29.5](https://github.com/salesforcecli/mcp/compare/0.29.4...0.29.5) (2026-03-26)
 
 
