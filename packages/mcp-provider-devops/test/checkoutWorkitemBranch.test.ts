@@ -2,10 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('../src/shared/gitUtils.js', () => ({
   isGitRepository: vi.fn(),
-  hasUncommittedChanges: vi.fn()
+  hasUncommittedChanges: vi.fn(),
+  getCurrentBranch: vi.fn()
 }));
 
-import { isGitRepository, hasUncommittedChanges } from '../src/shared/gitUtils.js';
+import { isGitRepository, hasUncommittedChanges, getCurrentBranch } from '../src/shared/gitUtils.js';
 import { checkoutWorkitemBranch } from '../src/checkoutWorkitemBranch.js';
 
 describe('checkoutWorkitemBranch', () => {
@@ -47,10 +48,13 @@ describe('checkoutWorkitemBranch', () => {
   it('returns error when uncommitted changes exist', async () => {
     (isGitRepository as any).mockReturnValue(true);
     (hasUncommittedChanges as any).mockReturnValue(true);
+    (getCurrentBranch as any).mockReturnValue('feature/WI-456');
 
     const res = await checkoutWorkitemBranch({ repoUrl: REPO_URL, branchName: BRANCH, localPath: LOCAL_PATH });
-    // Function currently returns without setting isError on this path; assert message
+    expect(res.isError).toBe(true);
     expect(res.content[0].text).toMatch(/has uncommitted changes/);
+    expect(res.content[0].text).toMatch(/Current branch is 'feature\/WI-456'/);
+    expect(res.content[0].text).toMatch(/Do not commit those pending changes to/);
   });
 
   it('returns action plan for fetch and checkout without cloning', async () => {

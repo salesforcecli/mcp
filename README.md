@@ -176,6 +176,7 @@ These are the available toolsets.
 | `data`           | Tools to manage the data in your org, such as listing all accounts.                                                     | [Link](#data-toolset)                                 |
 | `devops`         | Tools to securely and autonomously read, manage, and operate DevOps Center resources.                                                           | [Link](#devops-center-toolset)                        |
 | `enrich_metadata`| Tools to Enrich metadata components in your DX project.                                                                                                                                                                                                                                 | [Link](#enrichment-toolset)                        |
+| `experts-validation` | Tools to validate and score LWC components for production readiness across accessibility, security, and best practices. | [Link](#experts-validation-toolset)                   |
 | `lwc-experts`    | Tools to assist with Lightning Web Component (LWC) development, testing, optimization, and best practices.                                                          | [Link](#lightning-web-components-lwc-experts-toolset) |
 | `metadata`       | Tools to deploy and retrieve metadata to and from your org and your DX project.                                          | [Link](#metadata-toolset)                             |
 | `mobile`         | Tools for mobile development and capabilities.                                                                      | [Link](#mobile-toolset)                               |
@@ -261,17 +262,21 @@ For complete documentation, see [Use DX MCP Tools for LWC](https://developer.sal
 #### Development Guidelines
 
 - `create_lightning_type` (GA) - Provides guidance for creating Custom Lightning Types (CLT) for Salesforce applications, agent actions, Lightning web components, and Lightning Platform integrations.
-- `explore_slds_blueprints` (GA) - Retrieves SLDS blueprint specifications by name, category, Lightning component, CSS class, or styling hook.
+- `explore_slds_blueprints` (NON-GA) - Retrieves SLDS blueprint specifications by name, category, Lightning component, CSS class, or styling hook.
 - `guide_design_general` (GA) - Provides SLDS guidelines and best practices for Lightning Web Components with accessibility, responsive design, and component usage patterns.
 - `guide_lwc_accessibility` (GA) - Provides accessibility guidelines and testing instructions for LWC components.
 - `guide_lwc_best_practices` (GA) - Offers LWC development best practices and coding standards guidance.
 - `guide_lwc_development` (GA) - Provides LWC development workflow and implementation guidelines.
 - `guide_lwc_rtl_support` (GA) - Provides Right-to-Left (RTL) internationalization support and RTL development guidance.
-- `guide_lwc_security` (GA) - Provides security analysis in accordance with product security guidelines and Lightning Web Security guidelines.
-- `guide_slds_blueprints` (GA) - Provides comprehensive SLDS blueprints guidelines, reference documentation, and a complete index of all available blueprints by category.
+- `guide_lws_security` (GA) - Provides security analysis in accordance with product security guidelines and Lightning Web Security guidelines.
+- `guide_slds_blueprints` (NON-GA) - Provides comprehensive SLDS blueprints guidelines, reference documentation, and a complete index of all available blueprints by category.
 - `guide_utam_generation` (NON-GA) - Provides UI Test Automation Model (UTAM) Page Object generation guidelines and best practices.
 - `lwc-doc-error` (GA) - Retrieves information about LWC error messages, including static guidance for resolving the issue based on the error code.
 - `reference_lwc_compilation_error` (GA) - References LWC compilation errors by looking up error codes against a knowledge base of documented error patterns, causes, and fixes.
+- `guide_slds_styling` (NON-GA) - Retrieves SLDS styling hooks guidance and reference documentation.
+- `explore_slds_styling` (NON-GA) - Search and explore SLDS styling hooks with support for exact lookup, fuzzy matching, prefix search, and wildcard patterns.
+- `guide_lbc_usage` (GA) - Provides an index of available Lightning Base Components with short descriptions, helping developers identify which components suit their use case. 
+- `explore_lbc_components` (GA) - Given a list of Lightning Base Component names, returns full API documentation from markdown knowledge files.
 
 #### Lightning Data Service (LDS) Tools
 
@@ -299,6 +304,11 @@ For complete documentation, see [Use DX MCP Tools for LWC](https://developer.sal
 - `orchestrate_lwc_component_optimization` (GA) - Provides performance optimization and best practices for LWC components.
 - `orchestrate_lwc_component_testing` (GA) - Provides comprehensive testing workflow and test generation guidance.
 - `orchestrate_lwc_slds2_uplift` (NON-GA) - Provides migration guidance for upgrading to SLDS 2.
+
+### Experts Validation Toolset
+
+- `validate_and_optimize` (GA) - Returns a validation runbook that instructs the agent to run a suite of validators (accessibility, security, best practices, etc.), produce SARIF issues, and score results
+- `score_issues` (GA) - Computes a readiness score (0-100) and quality grade (`draft`, `prototype`, `review-for-production`) from SARIF issues
 
 ### Metadata Toolset
 

@@ -63,10 +63,9 @@ Agent execution guide (perform these steps now):
    - After applying the user's choice, stage the file: 'git add -- "<file>"'
    - Do not run checkout --ours or --theirs for any file until the user has explicitly told you which option they want for that file.
 
-5) Finalize the resolution
+5) Finalize the resolution (local only)
    - Verify no conflicts remain: 'git --no-pager diff --name-only --diff-filter=U' (should be empty).
    - Commit locally: 'git commit -m "Resolve merge conflicts between ${workItemBranch} and ${targetBranch}"'. If nothing to commit, report that the index is clean.
-   - Push the changes to the remote branch: 'git push origin ${workItemBranch}'
 
 Important constraints:
 - NEVER resolve conflicts automatically. For every conflicted file, you MUST ask the user whether to keep current or incoming and wait for their answer before running git checkout --ours or --theirs.

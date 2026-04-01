@@ -3,20 +3,130 @@ import { computeFirstStageId, fetchPipelineStages, getBranchNameFromStage, getPi
 import type { WorkItem } from "./types/WorkItem.js";
 
 type ProjectStagesContext = { pipelineId: string; stages: any[]; firstStageId: string | undefined };
+type VcsType = "GITHUB" | "BITBUCKET";
 
-function buildRepositoryInfoFromItem(item: any): { repoUrl?: string; repoType?: string } {
+const API_VERSION = "v65.0";
+
+function normalizeProvider(provider: unknown): string | undefined {
+    if (!provider) return undefined;
+    const normalized = String(provider).toLowerCase();
+    if (normalized === "bitbucketcloud") {
+        return "bitbucket";
+    }
+    return normalized;
+}
+
+function providerToVcsType(provider: unknown): VcsType | undefined {
+    const normalized = normalizeProvider(provider);
+    if (normalized === "github") {
+        return "GITHUB";
+    }
+    if (normalized === "bitbucket") {
+        return "BITBUCKET";
+    }
+    return undefined;
+}
+
+function extractOwnerValue(ownerContainer: any): string | undefined {
+    if (!ownerContainer || typeof ownerContainer !== "object") {
+        return undefined;
+    }
+    const owner = ownerContainer?.owner;
+    return typeof owner === "string" && owner.trim() ? owner.trim() : undefined;
+}
+
+function extractOwnerFromVcsPayload(payload: any): string | undefined {
+    if (!payload) {
+        return undefined;
+    }
+
+    if (typeof payload === "string") {
+        return payload.trim() || undefined;
+    }
+
+    const directOwner = payload?.owner;
+    if (typeof directOwner === "string" && directOwner.trim()) {
+        return directOwner.trim();
+    }
+
+    const directObjectOwner = extractOwnerValue(payload?.owner);
+    if (directObjectOwner) {
+        return directObjectOwner;
+    }
+
+    const list =
+        payload?.owners ||
+        payload?.items ||
+        payload?.records;
+    if (Array.isArray(list)) {
+        for (const candidate of list) {
+            if (typeof candidate === "string" && candidate.trim()) {
+                return candidate.trim();
+            }
+            const ownerFromCandidate = extractOwnerValue(candidate);
+            if (ownerFromCandidate) {
+                return ownerFromCandidate;
+            }
+        }
+    }
+
+    return undefined;
+}
+
+async function fetchOwnerByVcsType(connection: Connection, vcsType: VcsType): Promise<string | undefined> {
+    const path = `/services/data/${API_VERSION}/connect/devops/vcs/${vcsType}`;
+    const response = await (connection as any).request({
+        method: "GET",
+        url: path
+    });
+    return extractOwnerFromVcsPayload(response);
+}
+
+async function fetchVcsOwnersForRecords(connection: Connection, records: any[]): Promise<Map<string, string>> {
+    const providerOwnerMap = new Map<string, string>();
+    const vcsTypes = new Set<VcsType>();
+
+    for (const item of records) {
+        const provider = item?.SourceCodeRepositoryBranch?.SourceCodeRepository?.Provider;
+        const vcsType = providerToVcsType(provider);
+        if (vcsType) {
+            vcsTypes.add(vcsType);
+        }
+    }
+
+    await Promise.all(Array.from(vcsTypes).map(async (vcsType) => {
+        try {
+            const owner = await fetchOwnerByVcsType(connection, vcsType);
+            if (!owner) {
+                return;
+            }
+            if (vcsType === "GITHUB") {
+                providerOwnerMap.set("github", owner);
+            } else if (vcsType === "BITBUCKET") {
+                providerOwnerMap.set("bitbucket", owner);
+            }
+        } catch {
+            // Fall back to RepositoryOwner from work item when Connect API owner lookup fails.
+        }
+    }));
+
+    return providerOwnerMap;
+}
+
+function buildRepositoryInfoFromItem(item: any, providerOwnerMap?: Map<string, string>): { repoUrl?: string; repoType?: string } {
     const repoName = item?.SourceCodeRepositoryBranch?.SourceCodeRepository?.Name;
-    const repoOwner = item?.SourceCodeRepositoryBranch?.SourceCodeRepository?.RepositoryOwner;
     const provider = item?.SourceCodeRepositoryBranch?.SourceCodeRepository?.Provider;
+    const normalizedProvider = normalizeProvider(provider);
+    const ownerFromConnectApi = normalizedProvider ? providerOwnerMap?.get(normalizedProvider) : undefined;
+    const repoOwner = ownerFromConnectApi || item?.SourceCodeRepositoryBranch?.SourceCodeRepository?.RepositoryOwner;
 
     let repoUrl: string | undefined;
     let repoType: string | undefined;
-    if (provider && repoOwner && repoName) {
-        const normalizedProvider = String(provider).toLowerCase();
+    if (normalizedProvider && repoOwner && repoName) {
         if (normalizedProvider === "github") {
             repoType = "github";
             repoUrl = `https://github.com/${repoOwner}/${repoName}`;
-        } else if (normalizedProvider === "bitbucket" || normalizedProvider === "bitbucketcloud") {
+        } else if (normalizedProvider === "bitbucket") {
             // Canonicalize both provider variants to "bitbucket" for downstream consistency.
             repoType = "bitbucket";
             repoUrl = `https://bitbucket.org/${repoOwner}/${repoName}`;
@@ -54,13 +164,14 @@ async function ensureProjectStages(
     return ctx;
 }
 
-function mapRawItemToWorkItem(item: any, ctx: ProjectStagesContext | null): WorkItem {
-    const { repoUrl, repoType } = buildRepositoryInfoFromItem(item);
+function mapRawItemToWorkItem(item: any, ctx: ProjectStagesContext | null, providerOwnerMap?: Map<string, string>): WorkItem {
+    const { repoUrl, repoType } = buildRepositoryInfoFromItem(item, providerOwnerMap);
 
     const mapped: WorkItem = {
         id: item?.Id,
         name: item?.Name || "",
         subject: item?.Subject || undefined,
+        description: item?.Description || undefined,
         status: item?.Status || "",
         owner: item?.AssignedToId || "",
         SourceCodeRepository: repoUrl || repoType ? {
@@ -108,6 +219,7 @@ export async function fetchWorkItems(connection: Connection, projectId: string):
             WHERE DevopsProjectId = '${projectId}'
         `;
         
+        
         const result = await connection.query(query);
         if (!result || !(result as any).records) {
             return [];
@@ -116,8 +228,9 @@ export async function fetchWorkItems(connection: Connection, projectId: string):
         const records: any[] = (result as any).records;
         const projectStagesCache = new Map<string, ProjectStagesContext | null>();
         const ctx = await ensureProjectStages(connection, projectStagesCache, projectId);
+        const providerOwnerMap = await fetchVcsOwnersForRecords(connection, records);
 
-        const workItems: WorkItem[] = records.map((item: any): WorkItem => mapRawItemToWorkItem(item, ctx));
+        const workItems: WorkItem[] = records.map((item: any): WorkItem => mapRawItemToWorkItem(item, ctx, providerOwnerMap));
         return workItems;
     } catch (error) {
         throw error;
@@ -159,7 +272,8 @@ export async function fetchWorkItemByName(connection: Connection, workItemName: 
         const projectId: string = item?.DevopsProjectId;
         const cache = new Map<string, ProjectStagesContext | null>();
         const ctx = await ensureProjectStages(connection, cache, projectId);
-        return mapRawItemToWorkItem(item, ctx);
+        const providerOwnerMap = await fetchVcsOwnersForRecords(connection, [item]);
+        return mapRawItemToWorkItem(item, ctx, providerOwnerMap);
     } catch (error) {
         throw error;
     }
@@ -196,6 +310,7 @@ export async function fetchWorkItemsByNames(connection: Connection, workItemName
         const records: any[] = result?.records || [];
 
         const projectStagesCache = new Map<string, ProjectStagesContext | null>();
+        const providerOwnerMap = await fetchVcsOwnersForRecords(connection, records);
 
         const workItems: WorkItem[] = [];
 
@@ -206,7 +321,7 @@ export async function fetchWorkItemsByNames(connection: Connection, workItemName
                 ctx = await ensureProjectStages(connection, projectStagesCache, projectId);
             }
 
-            const mapped = mapRawItemToWorkItem(item, ctx);
+            const mapped = mapRawItemToWorkItem(item, ctx, providerOwnerMap);
             workItems.push(mapped);
         }
 

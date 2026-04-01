@@ -4,6 +4,7 @@ import { McpTool, McpToolConfig, ReleaseState, Toolset, Services } from "@salesf
 import { commitWorkItem } from "../commitLiteWorkItem.js";
 import { fetchWorkItemByName } from "../getWorkItems.js";
 import { normalizeAndValidateRepoPath } from "../shared/pathUtils.js";
+import { getCurrentBranch } from "../shared/gitUtils.js";
 import { randomUUID } from 'crypto';
 import { TelemetryEventNames } from "../constants.js";
 import { usernameOrAliasParam } from "../shared/params.js";
@@ -44,6 +45,7 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
       description: `Commit SFDX project changes and register the commit SHA in DevOps Center.
 
 **CRITICAL:** Do not run git commands (git add/commit/push) manually. When a user asks to commit, call this tool so DevOps Center correctly tracks metadata and links the commit to the Work Item.
+**CRITICAL:** This tool commits on the currently checked out branch. Ensure current branch matches the selected Work Item branch before running.
 
 **Inputs to validate before execution:**
 1. DevOps Center org identifier (username or alias)
@@ -118,6 +120,18 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
     }
 
     const localPath = normalizeAndValidateRepoPath(input.repoPath);
+    const currentBranch = getCurrentBranch(localPath);
+    if (workItem?.WorkItemBranch && currentBranch && currentBranch !== workItem.WorkItemBranch) {
+      return {
+        error: {
+          content: [{
+            type: "text",
+            text: `Error: Current git branch is '${currentBranch}', but work item '${input.workItemName}' is associated with '${workItem.WorkItemBranch}'. Commit/stash current changes on '${currentBranch}' first, or checkout '${workItem.WorkItemBranch}' before committing for '${input.workItemName}'.`
+          }],
+          isError: true
+        }
+      };
+    }
     return { workItem, localPath };
   }
 
