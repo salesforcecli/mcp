@@ -264,7 +264,7 @@ For complete documentation, see [Use DX MCP Tools for LWC](https://developer.sal
 - `create_lightning_type` (GA) - Provides guidance for creating Custom Lightning Types (CLT) for Salesforce applications, agent actions, Lightning web components, and Lightning Platform integrations.
 - `explore_slds_blueprints` (NON-GA) - Retrieves SLDS blueprint specifications by name, category, Lightning component, CSS class, or styling hook.
 - `guide_design_general` (GA) - Provides SLDS guidelines and best practices for Lightning Web Components with accessibility, responsive design, and component usage patterns.
-- `guide_lwc_accessibility` (GA) - Provides accessibility guidelines and testing instructions for LWC components.
+- `guide_component_accessibility` (GA) - Provides accessibility guidelines and testing instructions for LWC components.
 - `guide_lwc_best_practices` (GA) - Offers LWC development best practices and coding standards guidance.
 - `guide_lwc_development` (GA) - Provides LWC development workflow and implementation guidelines.
 - `guide_lwc_rtl_support` (GA) - Provides Right-to-Left (RTL) internationalization support and RTL development guidance.
