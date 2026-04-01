@@ -40,7 +40,7 @@ export class SfDevopsResolveConflict extends McpTool<InputArgsShape, OutputArgsS
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: "Resolve Conflict",
-      description: `Resolves merge conflicts for a selected work item by name.
+      description: `Guides merge conflict resolution for a selected work item by name.
 
       **When to use:**
       - After running 'detect_devops_center_merge_conflict' and conflicts were found.
@@ -51,12 +51,19 @@ export class SfDevopsResolveConflict extends McpTool<InputArgsShape, OutputArgsS
       **Behavior:**
       - Looks up the Work Item by Name, validates required fields, and prepares per-file resolution commands.
       - If branch/target branch/repo URL are missing, returns actionable guidance to fix inputs first.
+      - NEVER auto-resolve conflicts. For every conflicted file, the agent must ask the user which side to keep and wait for explicit confirmation before running any checkout command.
 
       **What this tool does:**
       1. Confirms the repo is in a conflicted state
       2. Lists conflicted files
-      3. For each file, provides choices (keep current / keep incoming / keep both ) with exact git commands
-      4. Guides removing conflict markers, staging, and committing
+      3. For each file, asks the user to choose one option only: keep current OR keep incoming
+      4. After each explicit user choice, applies the selected command and stages the file
+      5. Verifies conflicts are cleared and guides local commit steps
+
+      **Hard constraints:**
+      - Do not run \`git checkout --ours\` or \`git checkout --theirs\` until the user chooses for that specific file.
+      - Do not offer or attempt a "keep both" merge path in this tool.
+      - Keep operations local unless the user explicitly asks to push.
 
       **Output:**
       - If conflicts exist: per-file action plan with commands

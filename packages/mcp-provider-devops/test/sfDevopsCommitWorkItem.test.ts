@@ -6,6 +6,7 @@ import { Services } from '@salesforce/mcp-provider-api';
 import * as getWorkItems from '../src/getWorkItems.js';
 import * as commitWorkItem from '../src/commitLiteWorkItem.js';
 import * as pathUtils from '../src/shared/pathUtils.js';
+import * as gitUtils from '../src/shared/gitUtils.js';
 
 describe('SfDevopsCommitWorkItem', () => {
   let tool: SfDevopsCommitWorkItem;
@@ -34,6 +35,7 @@ describe('SfDevopsCommitWorkItem', () => {
     };
     
     tool = new SfDevopsCommitWorkItem(mockServices);
+    vi.spyOn(gitUtils, 'getCurrentBranch').mockReturnValue('feature/wi-001');
   });
 
   it('should send telemetry on successful commit with usernameOrAlias', async () => {
@@ -137,6 +139,30 @@ describe('SfDevopsCommitWorkItem', () => {
     expect(telemetryEvent.eventName).toBe(TelemetryEventNames.COMMIT_WORK_ITEM);
     expect(telemetryEvent.event.success).toBe(true);
     expect(telemetryEvent.event.workItemName).toBe('WI-001');
+  });
+
+  it('should fail when current branch does not match work item branch', async () => {
+    vi.spyOn(pathUtils, 'normalizeAndValidateRepoPath').mockReturnValue('/tmp/repo');
+    vi.spyOn(gitUtils, 'getCurrentBranch').mockReturnValue('feature/wi-002');
+    vi.spyOn(getWorkItems, 'fetchWorkItemByName').mockResolvedValue({
+      Id: '1',
+      Name: 'WI-001',
+      WorkItemBranch: 'feature/wi-001',
+      SourceCodeRepository: { repoUrl: 'https://github.com/test/repo.git' }
+    });
+    const commitSpy = vi.spyOn(commitWorkItem, 'commitWorkItem');
+
+    const result = await tool.exec({
+      usernameOrAlias: 'test@example.com',
+      workItemName: 'WI-001',
+      commitMessage: 'Test commit',
+      repoPath: '/tmp/repo'
+    });
+
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain("Current git branch is 'feature/wi-002'");
+    expect(result.content[0].text).toContain("associated with 'feature/wi-001'");
+    expect(commitSpy).not.toHaveBeenCalled();
   });
 });
 

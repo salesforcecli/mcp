@@ -57,6 +57,17 @@ export function hasUncommittedChanges(candidatePath: string): boolean {
   }
 }
 
+export function getCurrentBranch(candidatePath: string): string | undefined {
+  try {
+    const output = execSync('git rev-parse --abbrev-ref HEAD', { cwd: candidatePath, stdio: ['ignore', 'pipe', 'pipe'] })
+      .toString()
+      .trim();
+    return output || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export function isSameGitRepo(repoUrl: string, repoPath: string): [boolean, string] {
   const repo = getRepo(repoPath);
 

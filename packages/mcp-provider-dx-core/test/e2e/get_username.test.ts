@@ -23,7 +23,7 @@ import { ensureString } from '@salesforce/ts-types';
 import { getUsernameParamsSchema } from '../../src/tools/get_username.js';
 
 describe('get_username', () => {
-  const client = new McpTestClient();
+  const client = new McpTestClient({ timeout: 120000 });
 
   let orgUsername: string;
 

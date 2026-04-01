@@ -2,6 +2,7 @@ export interface WorkItem {
   id: string;
   name: string; // Salesforce record Name
   subject?: string; // Work item subject/title
+  description?: string;
   status: string;
   owner: string;
   DevopsProjectId: string;

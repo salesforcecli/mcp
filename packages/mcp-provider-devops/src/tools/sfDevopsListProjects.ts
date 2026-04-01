@@ -35,6 +35,8 @@ export class SfDevopsListProjects extends McpTool<InputArgsShape, OutputArgsShap
     return {
       title: "List DevOps Projects",
       description: `List all DevOps Center projects in a specific org
+
+      **Terminology:** Treat "DevOps Center", "DOCe", and "DoCe" as the same product/org context.
       
       **MANDATORY:** If the DevOps Center org is not given, use the 'list_all_orgs' tool to list all orgs. 
       The list will indicate which org is DevOps Center, or Sandbox if possible. If these details are not provided in the list, 

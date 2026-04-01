@@ -3424,10 +3424,10 @@
     zod "^3.24.2"
     zod-to-json-schema "^3.24.5"
 
-"@salesforce/metadata-enrichment@^0.0.13":
-  version "0.0.13"
-  resolved "https://registry.yarnpkg.com/@salesforce/metadata-enrichment/-/metadata-enrichment-0.0.13.tgz#7fd0db9871ef3b0f3add00dbe524f82945a4cea2"
-  integrity sha512-50XP83/gH3nj5RLhitqhz4VJyrsH2111Dg+p+bs6zjR5grtLD4l82V/QptRZ0i2ivizxSl14/s+phgCZo9xHiw==
+"@salesforce/metadata-enrichment@^0.0.14":
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/@salesforce/metadata-enrichment/-/metadata-enrichment-0.0.14.tgz#a8c8bf4367d363cd4789d86915eddfa406b95901"
+  integrity sha512-A9d2jN3msPn1JGtm+4Vk3UpXxRtXNm6/c5gLcJwBQCT4tMHXkgi3jhqCkls9Fl+ZoGGW41LMzmMda/lzu/Ojig==
   dependencies:
     "@salesforce/core" "^8.24.3"
     "@salesforce/kit" "^3.2.4"
