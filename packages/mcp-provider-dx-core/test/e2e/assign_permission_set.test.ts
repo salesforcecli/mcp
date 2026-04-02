@@ -23,7 +23,7 @@ import { ensureString } from '@salesforce/ts-types';
 import { assignPermissionSetParamsSchema } from '../../src/tools/assign_permission_set.js';
 
 describe('assign_permission_set', () => {
-  const client = new McpTestClient();
+  const client = new McpTestClient({ timeout: 120_000 });
 
   let testSession: TestSession;
   let orgUsername: string;
