@@ -1,8 +1,9 @@
 import path from "node:path";
 import fs from "node:fs/promises";
+import fssync from "node:fs";
 import { escapeXml, toSafeFilenameSlug } from "../utils.js";
 
-// Creates PMD XPath ruleset XML and updates code-analyzer.yml.
+// Creates PMD XPath ruleset XML and updates code-analyzer.yml or code-analyzer.yaml.
 
 export type CreateXpathCustomRuleInput = {
   xpath: string;
@@ -110,8 +111,27 @@ function buildPaths(input: NormalizedInput): { customRulesDir: string; rulesetPa
   return {
     customRulesDir,
     rulesetPath: path.join(customRulesDir, `${safeRuleName}-${input.engine}-rules.xml`),
-    configPath: path.join(input.workingDirectory, "code-analyzer.yml")
+    configPath: findOrCreateConfigPath(input.workingDirectory)
   };
+}
+
+/**
+ * Finds existing code-analyzer config file or returns default path for creating new one.
+ * Priority: code-analyzer.yaml > code-analyzer.yml (matches Code Analyzer Core behavior)
+ */
+function findOrCreateConfigPath(workingDirectory: string): string {
+  const yamlPath = path.join(workingDirectory, "code-analyzer.yaml");
+  const ymlPath = path.join(workingDirectory, "code-analyzer.yml");
+
+  if (fssync.existsSync(yamlPath)) {
+    return yamlPath;
+  }
+  if (fssync.existsSync(ymlPath)) {
+    return ymlPath;
+  }
+
+  // If neither exists, default to .yml for creating new file
+  return ymlPath;
 }
 
 function toRelativeRulesetPath(workingDirectory: string, rulesetPath: string): string {

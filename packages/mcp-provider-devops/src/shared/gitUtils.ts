@@ -78,7 +78,19 @@ export function isSameGitRepo(repoUrl: string, repoPath: string): [boolean, stri
     const sameHost = a.host === b.host;
     const sameOwner = a.owner === b.owner;
     const sameRepo = a.repo === b.repo;
-    return [sameHost && sameOwner && sameRepo, repo.url];
+    const strictMatch = sameHost && sameOwner && sameRepo;
+    if (strictMatch) {
+      return [true, repo.url];
+    }
+
+    // Bitbucket can sometimes return display-name owner values from API payloads
+    // while git remotes use workspace slugs. If host and
+    // repo name match, allow the comparison when one owner looks like a display name.
+    if (sameHost && sameRepo && isBitbucketHost(a.host) && (isLikelyDisplayOwner(a.owner) || isLikelyDisplayOwner(b.owner))) {
+      return [true, repo.url];
+    }
+
+    return [false, repo.url];
   }
 
   // Fallback: normalize simple differences (.git suffix, trailing slashes, case)
@@ -102,7 +114,7 @@ function parseGitUrlParts(input: string): { host: string; owner: string; repo: s
       const [owner, repoRaw] = pathPart.split('/') as [string, string];
       if (!owner || !repoRaw) return null;
       const repo = stripGitSuffix(repoRaw).toLowerCase();
-      return { host, owner: owner.toLowerCase(), repo };
+      return { host, owner: safeDecodePathToken(owner).toLowerCase(), repo };
     }
 
     // Normalize git+ssh to ssh so URL can parse
@@ -113,10 +125,26 @@ function parseGitUrlParts(input: string): { host: string; owner: string; repo: s
     const [owner, repoRaw] = pathPart.split('/') as [string, string];
     if (!owner || !repoRaw) return null;
     const repo = stripGitSuffix(repoRaw).toLowerCase();
-    return { host, owner: owner.toLowerCase(), repo };
+    return { host, owner: safeDecodePathToken(owner).toLowerCase(), repo };
   } catch {
     return null;
   }
+}
+
+function safeDecodePathToken(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+function isBitbucketHost(host: string): boolean {
+  return host === "bitbucket.org";
+}
+
+function isLikelyDisplayOwner(owner: string): boolean {
+  return /\s/.test(owner);
 }
 
 function stripGitSuffix(name: string): string {

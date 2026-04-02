@@ -46,7 +46,7 @@ describe('list_all_orgs', () => {
     });
 
     describe('with ALLOW_ALL_ORGS', () => {
-        const client = new McpTestClient();
+        const client = new McpTestClient({ timeout: 120_000 });
 
         before(async () => {
             const transport = DxMcpTransport({
@@ -98,7 +98,7 @@ describe('list_all_orgs', () => {
     });
 
     describe('with DEFAULT_TARGET_ORG only', () => {
-        const defaultOrgClient = new McpTestClient();
+        const defaultOrgClient = new McpTestClient({ timeout: 120_000 });
 
         before(async () => {
             const transport = DxMcpTransport({

@@ -118,7 +118,11 @@ function buildRepositoryInfoFromItem(item: any, providerOwnerMap?: Map<string, s
     const provider = item?.SourceCodeRepositoryBranch?.SourceCodeRepository?.Provider;
     const normalizedProvider = normalizeProvider(provider);
     const ownerFromConnectApi = normalizedProvider ? providerOwnerMap?.get(normalizedProvider) : undefined;
-    const repoOwner = ownerFromConnectApi || item?.SourceCodeRepositoryBranch?.SourceCodeRepository?.RepositoryOwner;
+    const ownerFromRepository = item?.SourceCodeRepositoryBranch?.SourceCodeRepository?.RepositoryOwner;
+    // Bitbucket owner from Connect API may be a display name, while RepositoryOwner is the workspace slug.
+    const repoOwner = normalizedProvider === "bitbucket"
+        ? (ownerFromRepository || ownerFromConnectApi)
+        : (ownerFromConnectApi || ownerFromRepository);
 
     let repoUrl: string | undefined;
     let repoType: string | undefined;
