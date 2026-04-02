@@ -107,7 +107,7 @@ export async function registerToolsets(
     if(invalidTools.includes('guide_lwc_accessibility')) {
       ux.stderr('Tool "guide_lwc_accessibility" has been renamed to "guide_component_accessibility". Update config to remove this warning.')
       // Remove that entry from invalidTools
-      invalidTools.splice(invalidTools.indexOf('guide_component_accessibility'), 1);
+      invalidTools.splice(invalidTools.indexOf('guide_lwc_accessibility'), 1);
       // Then rename the old tool with guide_component_accessibility in the tools array
       tools[tools.indexOf('guide_lwc_accessibility')] = 'guide_component_accessibility';
     }
