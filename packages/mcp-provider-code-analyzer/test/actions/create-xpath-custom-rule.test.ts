@@ -214,4 +214,123 @@ describe("CreateXpathCustomRuleActionImpl", () => {
       workingDirectory: tempDir
     })).rejects.toThrow();
   });
+
+  it("uses existing code-analyzer.yaml when present", async () => {
+    const { CreateXpathCustomRuleActionImpl } = await import("../../src/actions/create-xpath-custom-rule.js");
+    const action = new CreateXpathCustomRuleActionImpl();
+    tempDir = await createTempDir();
+
+    // Create existing code-analyzer.yaml
+    const yamlConfigPath = path.join(tempDir, "code-analyzer.yaml");
+    await fs.writeFile(
+      yamlConfigPath,
+      ["engines:", "  pmd:", "    custom_rulesets:", '      - "existing-rule.xml"'].join("\n"),
+      "utf8"
+    );
+
+    const result = await action.exec({
+      xpath: "//MethodCallExpression",
+      ruleName: "NewRule",
+      engine: "pmd",
+      workingDirectory: tempDir
+    });
+
+    expect(result.status).toBe("success");
+    expect(result.configPath).toBe(yamlConfigPath);
+    expect(result.configPath).toContain("code-analyzer.yaml");
+
+    const configContent = await fs.readFile(yamlConfigPath, "utf8");
+    expect(configContent).toContain("existing-rule.xml");
+    expect(configContent).toContain("newrule-pmd-rules.xml");
+  });
+
+  it("uses existing code-analyzer.yml when present and .yaml does not exist", async () => {
+    const { CreateXpathCustomRuleActionImpl } = await import("../../src/actions/create-xpath-custom-rule.js");
+    const action = new CreateXpathCustomRuleActionImpl();
+    tempDir = await createTempDir();
+
+    // Create existing code-analyzer.yml (not .yaml)
+    const ymlConfigPath = path.join(tempDir, "code-analyzer.yml");
+    await fs.writeFile(
+      ymlConfigPath,
+      ["engines:", "  pmd:", "    custom_rulesets:", '      - "existing-rule.xml"'].join("\n"),
+      "utf8"
+    );
+
+    const result = await action.exec({
+      xpath: "//MethodCallExpression",
+      ruleName: "NewRule",
+      engine: "pmd",
+      workingDirectory: tempDir
+    });
+
+    expect(result.status).toBe("success");
+    expect(result.configPath).toBe(ymlConfigPath);
+    expect(result.configPath).toContain("code-analyzer.yml");
+
+    const configContent = await fs.readFile(ymlConfigPath, "utf8");
+    expect(configContent).toContain("existing-rule.xml");
+    expect(configContent).toContain("newrule-pmd-rules.xml");
+  });
+
+  it("prefers code-analyzer.yaml over code-analyzer.yml when both exist", async () => {
+    const { CreateXpathCustomRuleActionImpl } = await import("../../src/actions/create-xpath-custom-rule.js");
+    const action = new CreateXpathCustomRuleActionImpl();
+    tempDir = await createTempDir();
+
+    // Create both config files
+    const yamlConfigPath = path.join(tempDir, "code-analyzer.yaml");
+    const ymlConfigPath = path.join(tempDir, "code-analyzer.yml");
+
+    await fs.writeFile(
+      yamlConfigPath,
+      ["engines:", "  pmd:", "    custom_rulesets:", '      - "yaml-rule.xml"'].join("\n"),
+      "utf8"
+    );
+    await fs.writeFile(
+      ymlConfigPath,
+      ["engines:", "  pmd:", "    custom_rulesets:", '      - "yml-rule.xml"'].join("\n"),
+      "utf8"
+    );
+
+    const result = await action.exec({
+      xpath: "//MethodCallExpression",
+      ruleName: "NewRule",
+      engine: "pmd",
+      workingDirectory: tempDir
+    });
+
+    expect(result.status).toBe("success");
+    expect(result.configPath).toBe(yamlConfigPath);
+    expect(result.configPath).toContain("code-analyzer.yaml");
+
+    // .yaml file should be updated, not .yml
+    const yamlContent = await fs.readFile(yamlConfigPath, "utf8");
+    expect(yamlContent).toContain("yaml-rule.xml");
+    expect(yamlContent).toContain("newrule-pmd-rules.xml");
+
+    // .yml file should be unchanged
+    const ymlContent = await fs.readFile(ymlConfigPath, "utf8");
+    expect(ymlContent).toContain("yml-rule.xml");
+    expect(ymlContent).not.toContain("newrule-pmd-rules.xml");
+  });
+
+  it("creates code-analyzer.yml when neither .yaml nor .yml exists", async () => {
+    const { CreateXpathCustomRuleActionImpl } = await import("../../src/actions/create-xpath-custom-rule.js");
+    const action = new CreateXpathCustomRuleActionImpl();
+    tempDir = await createTempDir();
+
+    const result = await action.exec({
+      xpath: "//MethodCallExpression",
+      ruleName: "NewRule",
+      engine: "pmd",
+      workingDirectory: tempDir
+    });
+
+    expect(result.status).toBe("success");
+    expect(result.configPath).toContain("code-analyzer.yml");
+
+    const configContent = await fs.readFile(result.configPath as string, "utf8");
+    expect(configContent).toContain("newrule-pmd-rules.xml");
+  });
 });
