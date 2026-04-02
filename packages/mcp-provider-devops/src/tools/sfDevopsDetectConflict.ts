@@ -18,6 +18,21 @@ type InputArgs = z.infer<typeof inputSchema>;
 type InputArgsShape = typeof inputSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
 
+function extractFetchErrorMessage(workItem: any): string | undefined {
+  const message = workItem?.error?.message;
+  if (typeof message === "string" && message.trim().length > 0) {
+    return message.trim();
+  }
+  return undefined;
+}
+
+function isNotFoundError(message?: string): boolean {
+  if (!message) {
+    return false;
+  }
+  return message.toLowerCase().includes("not found");
+}
+
 export class SfDevopsDetectConflict extends McpTool<InputArgsShape, OutputArgsShape> {
   private readonly services: Services;
 
@@ -73,7 +88,12 @@ export class SfDevopsDetectConflict extends McpTool<InputArgsShape, OutputArgsSh
   }
 
   private async validateAndPrepare(input: InputArgs): Promise<{ workItem: any; localPath: string } | { error: CallToolResult }> {
-    if (!input.usernameOrAlias || input.usernameOrAlias.trim().length === 0) {
+    const normalizedUsernameOrAlias = input.usernameOrAlias?.trim();
+    const normalizedWorkItemName = input.workItemName?.trim();
+    const normalizedSourceBranch = input.sourcebranch?.trim();
+    const effectiveWorkItemName = normalizedWorkItemName || normalizedSourceBranch;
+
+    if (!normalizedUsernameOrAlias) {
       return {
         error: {
           content: [{ type: "text", text: `Error: Username or alias of valid DevOps Center org is required` }],
@@ -82,7 +102,7 @@ export class SfDevopsDetectConflict extends McpTool<InputArgsShape, OutputArgsSh
       };
     }
 
-    if (!input.workItemName && !input.sourcebranch) {
+    if (!effectiveWorkItemName) {
       return {
         error: {
           content: [{ type: "text", text: `Error: Work item name or source branch is required` }],
@@ -93,12 +113,30 @@ export class SfDevopsDetectConflict extends McpTool<InputArgsShape, OutputArgsSh
 
     let workItem: any;
     try {
-      const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
+      const connection = await this.services.getOrgService().getConnection(normalizedUsernameOrAlias);
       const isMP = await isManagedPackageDevopsOrg(connection);
-      const effectiveWorkItemName = input.workItemName || input.sourcebranch;
-      workItem = isMP
-        ? await fetchWorkItemByNameMP(connection, effectiveWorkItemName as string)
-        : await fetchWorkItemByName(connection, effectiveWorkItemName as string);
+
+      if (isMP) {
+        // Some orgs expose MP objects but store active DevOps Center data in standard WorkItem.
+        // Prefer standard WorkItem when present; keep MP as fallback.
+        const mpWorkItem = await fetchWorkItemByNameMP(connection, effectiveWorkItemName);
+        let standardWorkItem: any;
+        try {
+          standardWorkItem = await fetchWorkItemByName(connection, effectiveWorkItemName);
+        } catch {
+          standardWorkItem = undefined;
+        }
+        const mpErrorMessage = extractFetchErrorMessage(mpWorkItem);
+        if (standardWorkItem) {
+          workItem = standardWorkItem;
+        } else if (mpErrorMessage && isNotFoundError(mpErrorMessage)) {
+          workItem = null;
+        } else {
+          workItem = mpWorkItem;
+        }
+      } else {
+        workItem = await fetchWorkItemByName(connection, effectiveWorkItemName);
+      }
     } catch (e: any) {
       return {
         error: {
@@ -115,6 +153,16 @@ export class SfDevopsDetectConflict extends McpTool<InputArgsShape, OutputArgsSh
             type: "text",
             text: `Error: Work item not found. Please provide a valid work item name or valid DevOps Center org username or alias.`
           }],
+          isError: true
+        }
+      };
+    }
+
+    const fetchErrorMessage = extractFetchErrorMessage(workItem);
+    if (fetchErrorMessage) {
+      return {
+        error: {
+          content: [{ type: "text", text: `Error fetching work item: ${fetchErrorMessage}` }],
           isError: true
         }
       };
