@@ -3408,10 +3408,10 @@
     open "^10.1.2"
     zod "^3.25.76"
 
-"@salesforce/mcp-provider-lwc-experts@0.6.11":
-  version "0.6.11"
-  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-lwc-experts/-/mcp-provider-lwc-experts-0.6.11.tgz#4c0c2ca9f43366327656db39051318471428cb43"
-  integrity sha512-RjNoGCylTtLKXaDr1GxOfQ1pR5zM9QCpn3wwRdLkd233GhkgKT38Yxm/61xxH6/5KoepjjqOz35POg+04/fUdg==
+"@salesforce/mcp-provider-lwc-experts@0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-lwc-experts/-/mcp-provider-lwc-experts-0.7.0.tgz#fa99de22c37a78fc30194139147dd87dc05fc766"
+  integrity sha512-5ykVqLrV9q/UPo28VwqXgwGcJg3ps7Gl9jyD7/94AtYdq/ih9uh4PGZZlk7wy27krfhcCHvbhz/hwtQrkJJfyA==
   dependencies:
     "@modelcontextprotocol/sdk" "^1.9.0"
     "@salesforce/core" "^8.19.0"
