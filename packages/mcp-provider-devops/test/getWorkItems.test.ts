@@ -95,7 +95,7 @@ describe('fetchWorkItems', () => {
     const workItems = await fetchWorkItems(bitbucketConnection as any, 'project-bitbucket');
     expect(workItems).toHaveLength(1);
     expect(workItems[0].SourceCodeRepository).toEqual({
-      repoUrl: 'https://bitbucket.org/workspace-from-connect-api/test-repo',
+      repoUrl: 'https://bitbucket.org/test-workspace/test-repo',
       repoType: 'bitbucket'
     });
     expect(bitbucketConnection.request).toHaveBeenCalledWith({
@@ -132,7 +132,7 @@ describe('fetchWorkItems', () => {
     const workItems = await fetchWorkItems(bitbucketCloudConnection as any, 'project-bitbucket-cloud');
     expect(workItems).toHaveLength(1);
     expect(workItems[0].SourceCodeRepository).toEqual({
-      repoUrl: 'https://bitbucket.org/cloud-workspace-from-connect-api/cloud-repo',
+      repoUrl: 'https://bitbucket.org/cloud-workspace/cloud-repo',
       repoType: 'bitbucket'
     });
     expect(bitbucketCloudConnection.request).toHaveBeenCalledWith({
