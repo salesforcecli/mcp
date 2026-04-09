@@ -23,26 +23,27 @@ const __dirname = path.dirname(__filename);
 describe('DescribeRuleActionImpl', () => {
     describe.each([
         {
-            case: 'When a custom configuration is present in the run directory',
-            pathToDirectory: path.resolve(__dirname, '..', 'fixtures', 'sample-workspaces', 'workspace-with-config'),
+            case: 'When a custom configuration is explicitly provided',
+            configFactory: new CustomizableConfigFactory(JSON.stringify({
+                rules: {
+                    pmd: {
+                        WhileLoopsMustUseBraces: {
+                            severity: 1,
+                            tags: ['Recommended', 'Apex', 'MyCustomTag']
+                        }
+                    }
+                }
+            })),
             expectedSeverity: 1,
             expectedTags: ['Recommended', 'Apex', 'MyCustomTag']
         },
         {
-            case: 'When no custom configuration is present',
-            pathToDirectory: path.resolve(__dirname, '..', 'fixtures', 'sample-workspaces', 'workspace-without-config'),
+            case: 'When no custom configuration is provided (uses defaults)',
+            configFactory: new CodeAnalyzerConfigFactoryImpl(),
             expectedSeverity: 3,
             expectedTags: ['Recommended', 'CodeStyle', 'Apex']
         }
-    ])('$case', ({pathToDirectory, expectedSeverity, expectedTags}) => {
-
-        beforeEach(() => {
-            process.chdir(pathToDirectory);
-        });
-
-        afterEach(() => {
-            process.chdir(__dirname);
-        });
+    ])('$case', ({configFactory, expectedSeverity, expectedTags}) => {
 
         it('When asked to describe an existing rule, the correct description is returned', async () => {
             const input: DescribeRuleInput = {
@@ -51,7 +52,7 @@ describe('DescribeRuleActionImpl', () => {
             };
 
             const action: DescribeRuleActionImpl = new DescribeRuleActionImpl({
-                configFactory: new CodeAnalyzerConfigFactoryImpl(),
+                configFactory,
                 enginePluginsFactory: new EnginePluginsFactoryImpl()
             });
 
@@ -70,7 +71,7 @@ describe('DescribeRuleActionImpl', () => {
             };
 
             const action: DescribeRuleActionImpl = new DescribeRuleActionImpl({
-                configFactory: new CodeAnalyzerConfigFactoryImpl(),
+                configFactory,
                 enginePluginsFactory: new EnginePluginsFactoryImpl()
             });
 

@@ -36,8 +36,7 @@ export const inputSchema = z.object({
     ),
     configPath: z.string().optional().describe(
         `Optional absolute path to a Code Analyzer configuration file (code-analyzer.yml or code-analyzer.yaml). ` +
-        `If omitted, the tool will search for a config file in the current working directory. ` +
-        `If no config is found, default configuration will be used.`
+        `If omitted, the tool will use default configuration and ignore any code-analyzer yaml files in the working directory.`
     )
 });
 type InputArgsShape = typeof inputSchema.shape;
