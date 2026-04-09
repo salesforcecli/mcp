@@ -20,6 +20,12 @@ When to use this tool:
 - When the user asks you to generate files, use this tool to scan those files.
 - When the user asks you to check code for problems, use this tool to do that.
 
+IMPORTANT - Configuration File Discovery:
+- BEFORE running this tool, search for code-analyzer.yml or code-analyzer.yaml in the workspace root directory (the parent directory of the target files).
+- If a config file exists, pass its absolute path via the "configPath" parameter.
+- Config files contain custom rule configurations, severities, and ignore patterns that must be respected.
+- If no config file is found, the tool will use default configuration.
+
 Optional: Provide a "selector" (same semantics as "list_code_analyzer_rules") to choose which rules to run.
 Examples:
 - "Security:pmd" → run Security-tagged PMD rules
@@ -36,7 +42,9 @@ export const inputSchema = z.object({
     ),
     configPath: z.string().optional().describe(
         `Optional absolute path to a Code Analyzer configuration file (code-analyzer.yml or code-analyzer.yaml). ` +
-        `If omitted, the tool will use default configuration and ignore any code-analyzer yaml files in the working directory.`
+        `IMPORTANT: Search for this file in the workspace root directory before running the tool. ` +
+        `If a config file exists, provide its absolute path here to respect custom rule configurations. ` +
+        `If omitted, the tool will use default configuration.`
     )
 });
 type InputArgsShape = typeof inputSchema.shape;
