@@ -3,14 +3,26 @@ import fs from "node:fs";
 import { CodeAnalyzerConfig } from "@salesforce/code-analyzer-core";
 
 export interface CodeAnalyzerConfigFactory {
-    create(): CodeAnalyzerConfig;
+    create(configPath?: string): CodeAnalyzerConfig;
 }
 
 export class CodeAnalyzerConfigFactoryImpl {
     private static readonly CONFIG_FILE_NAME: string = "code-analyzer";
     private static readonly CONFIG_FILE_EXTENSIONS: string[] = ['yaml', 'yml'];
 
-    public create(): CodeAnalyzerConfig {
+    public create(configPath?: string): CodeAnalyzerConfig {
+        // If a config path is explicitly provided, use it
+        if (configPath) {
+            if (!path.isAbsolute(configPath)) {
+                throw new Error(`Config path must be an absolute path: ${configPath}`);
+            }
+            if (!fs.existsSync(configPath)) {
+                throw new Error(`Specified config file does not exist: ${configPath}`);
+            }
+            return CodeAnalyzerConfig.fromFile(configPath);
+        }
+
+        // Otherwise, seek config in current directory
         return this.seekConfigInCurrentDirectory() ?? CodeAnalyzerConfig.withDefaults();
     }
 

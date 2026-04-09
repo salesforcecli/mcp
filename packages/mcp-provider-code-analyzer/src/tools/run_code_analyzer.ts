@@ -33,6 +33,11 @@ export const inputSchema = z.object({
     selector: z.string().optional().describe(
         `Optional selector for Code Analyzer rules (same semantics as "list_code_analyzer_rules"). If omitted, "recommended" rules run.\n` +
         `Examples: "Security:pmd", "Critical", "(Security,Performance):eslint", "pmd:High"`
+    ),
+    configPath: z.string().optional().describe(
+        `Optional absolute path to a Code Analyzer configuration file (code-analyzer.yml or code-analyzer.yaml). ` +
+        `If omitted, the tool will search for a config file in the current working directory. ` +
+        `If no config is found, default configuration will be used.`
     )
 });
 type InputArgsShape = typeof inputSchema.shape;
