@@ -20,11 +20,15 @@ When to use this tool:
 - When the user asks you to generate files, use this tool to scan those files.
 - When the user asks you to check code for problems, use this tool to do that.
 
-IMPORTANT - Configuration File Discovery:
-- BEFORE running this tool, search for code-analyzer.yml or code-analyzer.yaml in the workspace root directory (the parent directory of the target files).
-- If a config file exists, pass its absolute path via the "configPath" parameter.
-- Config files contain custom rule configurations, severities, and ignore patterns that must be respected.
-- If no config file is found, the tool will use default configuration.
+REQUIRED INPUT - Working Directory:
+- You MUST provide the "workingDirectory" parameter with the absolute path to the project/workspace root.
+- The tool will automatically search for code-analyzer.yml or code-analyzer.yaml config files in this directory.
+- Config files contain custom rule configurations, severities, and ignore patterns that will be respected.
+- If no config file is found in the working directory, default configuration will be used.
+
+OPTIONAL - Custom Config Path:
+- Use "configPath" parameter only if the config file has a custom name or is in a non-standard location.
+- If provided, configPath takes precedence over config files in workingDirectory.
 
 Optional: Provide a "selector" (same semantics as "list_code_analyzer_rules") to choose which rules to run.
 Examples:
@@ -36,15 +40,19 @@ After completion: Use the "query_code_analyzer_results" tool to filter and expla
 
 export const inputSchema = z.object({
     target: z.array(z.string()).describe(`A JSON-formatted array of between 1 and ${MAX_ALLOWABLE_TARGET_COUNT} files on the users machine that should be scanned. These paths MUST be ABSOLUTE paths, and not relative paths.`),
+    workingDirectory: z.string().describe(
+        `REQUIRED: Absolute path to the workspace/working directory. ` +
+        `The tool will automatically search for code-analyzer.yml or code-analyzer.yaml config files in this directory. ` +
+        `This should typically be the root directory of the project being analyzed.`
+    ),
     selector: z.string().optional().describe(
         `Optional selector for Code Analyzer rules (same semantics as "list_code_analyzer_rules"). If omitted, "recommended" rules run.\n` +
         `Examples: "Security:pmd", "Critical", "(Security,Performance):eslint", "pmd:High"`
     ),
     configPath: z.string().optional().describe(
-        `Optional absolute path to a Code Analyzer configuration file (code-analyzer.yml or code-analyzer.yaml). ` +
-        `IMPORTANT: Search for this file in the workspace root directory before running the tool. ` +
-        `If a config file exists, provide its absolute path here to respect custom rule configurations. ` +
-        `If omitted, the tool will use default configuration.`
+        `Optional absolute path to a Code Analyzer configuration file with a custom name or in a non-standard location. ` +
+        `Use this when your config file has a different name or is not in the working directory. ` +
+        `If provided, this takes precedence over config files found in workingDirectory.`
     )
 });
 type InputArgsShape = typeof inputSchema.shape;
