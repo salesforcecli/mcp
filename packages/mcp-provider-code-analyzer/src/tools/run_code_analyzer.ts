@@ -5,7 +5,6 @@ import { McpTool, McpToolConfig, ReleaseState, Services, Toolset } from "@salesf
 import { getMessage } from "../messages.js";
 import { getErrorMessage } from "../utils.js";
 import { RunAnalyzerAction, RunAnalyzerActionImpl, RunInput, RunOutput } from "../actions/run-analyzer.js";
-import { CodeAnalyzerListRulesMcpTool } from "./list_code_analyzer_rules.js";
 import { CodeAnalyzerConfigFactoryImpl } from "../factories/CodeAnalyzerConfigFactory.js";
 import { EnginePluginsFactoryImpl } from "../factories/EnginePluginsFactory.js";
 
@@ -30,8 +29,15 @@ OPTIONAL - Custom Config Path:
 - Use "configPath" parameter only if the config file has a custom name or is in a non-standard location.
 - If provided, configPath takes precedence over config files in workingDirectory.
 
-Optional: Provide a "selector" (same semantics as "list_code_analyzer_rules") to choose which rules to run.
+Optional: Provide a "selector" to choose which rules to run. Supports:
+- Rule names: "WhileLoopsMustUseBraces", "no-unused-vars"
+- Engines: "pmd", "eslint", "regex"
+- Tags: "Security", "Performance", "Recommended"
+- Severities: "Critical", "High", "1", "2"
+- Combinations: "Security:pmd", "(Security,Performance):eslint"
+
 Examples:
+- "WhileLoopsMustUseBraces" → run specific rule by name
 - "Security:pmd" → run Security-tagged PMD rules
 - "Critical" → run all Critical-severity rules
 - "(Security,Performance):eslint" → ESLint rules tagged Security or Performance
@@ -46,8 +52,8 @@ export const inputSchema = z.object({
         `This should typically be the root directory of the project being analyzed.`
     ),
     selector: z.string().optional().describe(
-        `Optional selector for Code Analyzer rules (same semantics as "list_code_analyzer_rules"). If omitted, "recommended" rules run.\n` +
-        `Examples: "Security:pmd", "Critical", "(Security,Performance):eslint", "pmd:High"`
+        `Optional selector for Code Analyzer rules. Supports rule names, engines, tags, severities, and combinations. If omitted, "recommended" rules run.\n` +
+        `Examples: "WhileLoopsMustUseBraces", "Security:pmd", "Critical", "(Security,Performance):eslint", "pmd:High"`
     ),
     configPath: z.string().optional().describe(
         `Optional absolute path to a Code Analyzer configuration file with a custom name or in a non-standard location. ` +
@@ -115,11 +121,6 @@ export class CodeAnalyzerRunMcpTool extends McpTool<InputArgsShape, OutputArgsSh
         try {
             validateInput(input);
 
-            const selectorValidationError: CallToolResult | null = validateSelectorIfProvided(input.selector);
-            if (selectorValidationError) {
-                return selectorValidationError;
-            }
-
             const unsupportedEngineError: CallToolResult | null = rejectUnsupportedEnginesIfPresent(input.selector);
             if (unsupportedEngineError) {
                 return unsupportedEngineError;
@@ -144,18 +145,6 @@ function selectorIncludesEngine(selectorLower: string, engineLower: 'sfge' | 'fl
     // Match token boundaries: start or one of "(:," before, and end or one of ":),"
     const pattern = new RegExp(`(^|[(:,])\\s*${engineLower}\\s*(?=[:),]|$)`, 'i');
     return pattern.test(selectorLower);
-}
-
-function validateSelectorIfProvided(selector: string | undefined): CallToolResult | null {
-    if (!selector || selector.trim().length === 0) {
-        return null;
-    }
-    const validation = CodeAnalyzerListRulesMcpTool.validateSelector(selector);
-    if (validation.valid === false) {
-        const msg = `Invalid selector token(s): ${validation.invalidTokens.join(', ')}`;
-        return makeErrorResult(msg);
-    }
-    return null;
 }
 
 function rejectUnsupportedEnginesIfPresent(selector: string | undefined): CallToolResult | null {
