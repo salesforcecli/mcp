@@ -11,8 +11,10 @@ import {DescribeRuleActionImpl} from "./actions/describe-rule.js";
 import { ListRulesActionImpl } from "./actions/list-rules.js";
 import { GenerateXpathPromptMcpTool } from "./tools/generate_xpath_prompt.js";
 import { CreateCustomRuleMcpTool } from "./tools/create_custom_rule.js";
+import { CreateRegexRuleMcpTool } from "./tools/create_regex_rule.js";
 import { GetAstNodesActionImpl } from "./actions/get-ast-nodes.js";
-import { CreateXpathCustomRuleActionImpl } from "./actions/create-xpath-custom-rule.js";
+import { RuleCreationStrategyFactory } from "./strategies/RuleCreationStrategyFactory.js";
+import { CreateRegexCustomRuleActionImpl } from "./actions/create-regex-custom-rule.js";
 
 export class CodeAnalyzerMcpProvider extends McpProvider {
     public getName(): string {
@@ -40,7 +42,8 @@ export class CodeAnalyzerMcpProvider extends McpProvider {
             })),
             new CodeAnalyzerQueryResultsMcpTool(new QueryResultsActionImpl(), services.getTelemetryService()),
             new GenerateXpathPromptMcpTool(new GetAstNodesActionImpl(), services.getTelemetryService()),
-            new CreateCustomRuleMcpTool(new CreateXpathCustomRuleActionImpl(), services.getTelemetryService())
+            new CreateCustomRuleMcpTool(new RuleCreationStrategyFactory(), services.getTelemetryService()),
+            new CreateRegexRuleMcpTool(new CreateRegexCustomRuleActionImpl(), services.getTelemetryService())
         ]);
     }
 }
