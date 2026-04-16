@@ -20,6 +20,144 @@ For general documentation about the Salesforce DX MCP Server, see [this section]
 
 [Here are the release notes.](https://github.com/forcedotcom/mcp/tree/main/releasenotes)
 
+## Local Development Setup From This Repo
+
+These steps describe how to run the Salesforce DX MCP Server from this monorepo source checkout instead of using the published `@salesforce/mcp` package.
+
+### Prerequisites
+
+- Node.js 24 or another supported Node.js version compatible with the package requirement.
+- Yarn v1.
+- Salesforce CLI installed and available on your `PATH`.
+- At least one Salesforce org already authorized on your machine.
+
+If `sf` is not recognized in PowerShell or Command Prompt, install Salesforce CLI first and then reopen your terminal so the updated `PATH` is loaded.
+
+Windows installation options:
+
+```powershell
+npm install --global @salesforce/cli
+```
+
+Then verify the installation:
+
+```powershell
+sf --version
+```
+
+### 1. Install dependencies
+
+From the repository root:
+
+```powershell
+yarn install
+```
+
+### 2. Build the required workspaces
+
+When building `@salesforce/mcp` from source, build these two provider packages first, then build the server package:
+
+```powershell
+yarn workspace @salesforce/mcp-provider-scale-products build
+yarn workspace @salesforce/mcp-provider-metadata-enrichment build
+yarn workspace @salesforce/mcp build
+```
+
+This is required because the server imports both providers, and their build outputs must exist before the `@salesforce/mcp` TypeScript build runs.
+
+### 3. Verify Salesforce CLI authentication
+
+The local MCP server uses your existing Salesforce CLI authorization. It does not prompt for separate credentials.
+
+If Salesforce CLI is not installed yet, complete the installation step in Prerequisites before continuing.
+
+Authorize an org if needed:
+
+```powershell
+sf org login web
+```
+
+To log in to a sandbox explicitly, pass the sandbox login URL or My Domain URL and set an alias:
+
+If your sandbox uses a specific My Domain login URL, you can also log in directly to that URL:
+
+```powershell
+sf org login web --instance-url https://amdarisgroup--uat.sandbox.my.salesforce.com --alias my-sandbox
+```
+
+Verify the orgs available on your machine and the current default org:
+
+```powershell
+sf org list
+sf config get target-org
+```
+
+If you plan to use `DEFAULT_TARGET_ORG`, make sure the default target org is configured correctly.
+
+If `sf` is still not recognized after installation, close and reopen the terminal and run `sf --version` again.
+
+### 4. Run the local server with MCP Inspector
+
+From `packages/mcp`:
+
+```powershell
+npx @modelcontextprotocol/inspector node bin/run.js --toolsets all --orgs DEFAULT_TARGET_ORG
+```
+
+If you want to target a specific authenticated org directly, run the server with the org alias instead of `DEFAULT_TARGET_ORG`:
+
+```powershell
+npx @modelcontextprotocol/inspector node bin/run.js --toolsets all --orgs my-sandbox
+```
+
+To list tools in CLI mode:
+
+```powershell
+npx @modelcontextprotocol/inspector --cli node bin/run.js --toolsets all --orgs DEFAULT_TARGET_ORG --method tools/list
+```
+
+To list tools against the explicit sandbox alias:
+
+```powershell
+npx @modelcontextprotocol/inspector --cli node bin/run.js --toolsets all --orgs my-sandbox --method tools/list
+```
+
+If you want to avoid relying on the default org, replace `DEFAULT_TARGET_ORG` with a specific authorized alias or username.
+
+### 5. Point an MCP client to the local build
+
+To use the local checked-out server instead of the published npm package, configure your MCP client to run `node` against the built server entrypoint.
+
+Example for VS Code with Copilot:
+
+```json
+{
+  "servers": {
+    "Salesforce DX": {
+      "command": "node",
+      "args": [
+        "c:/full/path/to/mcp/packages/mcp/bin/run.js",
+        "--orgs",
+        "DEFAULT_TARGET_ORG",
+        "--toolsets",
+        "orgs,metadata,data,users"
+      ]
+    }
+  }
+}
+```
+
+### 6. How authentication works in the local server
+
+The server uses the Salesforce CLI auth already stored on your machine through `@salesforce/core`:
+
+- It enumerates locally authorized orgs.
+- It filters those orgs based on the `--orgs` startup flag.
+- It resolves `DEFAULT_TARGET_ORG` from your Salesforce CLI config.
+- It creates Salesforce connections from the selected authorized org, not from credentials passed on the command line.
+
+In practice, this means your local MCP session runs against the same Salesforce identity that `sf org list`, `sf config get target-org`, and `sf org display --target-org <alias>` would use.
+
 ## Overview of the Salesforce DX MCP Server (Beta)
 
 The Salesforce DX MCP Server is a specialized Model Context Protocol (MCP) implementation designed to facilitate seamless interaction between large language models (LLMs) and Salesforce orgs. This MCP server provides a robust set of tools and capabilities that enable LLMs to read, manage, and operate Salesforce resources securely.
