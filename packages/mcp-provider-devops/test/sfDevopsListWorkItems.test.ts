@@ -108,5 +108,30 @@ describe('SfDevopsListWorkItems', () => {
     expect(telemetryEvent.event.success).toBe(true);
     expect(telemetryEvent.event.workItemCount).toBe(1);
   });
+
+  it('should return description preview and hasDescription instead of full description', async () => {
+    const longDescription = 'A'.repeat(200);
+    vi.spyOn(getWorkItems, 'fetchWorkItems').mockResolvedValue([
+      {
+        id: '1',
+        name: 'WI-001',
+        subject: 'Fix login',
+        description: longDescription,
+        status: 'Open'
+      }
+    ]);
+
+    const result = await tool.exec({
+      usernameOrAlias: 'test@example.com',
+      project: { Id: 'proj-123' }
+    });
+
+    expect(result.isError).toBeUndefined();
+    const payload = JSON.parse(result.content[0].text as string);
+    expect(payload[0].hasDescription).toBe(true);
+    expect(payload[0].descriptionPreview.length).toBe(163);
+    expect(payload[0].descriptionPreview.endsWith('...')).toBe(true);
+    expect(payload[0].description).toBeUndefined();
+  });
 });
 

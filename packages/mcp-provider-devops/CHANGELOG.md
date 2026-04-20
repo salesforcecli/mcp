@@ -1,3 +1,20 @@
+## [0.3.4](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.3.3...mcp-provider-devops@0.3.4) (2026-04-02)
+
+
+
+## [0.3.3](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.3.2...mcp-provider-devops@0.3.3) (2026-04-02)
+
+
+### Bug Fixes
+
+* @W-21866291 - Bitbucket and merge conflict fixes ([#435](https://github.com/salesforcecli/mcp/issues/435)) ([70b9832](https://github.com/salesforcecli/mcp/commit/70b983287f3cdc33f613fb2adb39b20e4ef4e38b))
+
+
+
+## [0.3.2](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.3.1...mcp-provider-devops@0.3.2) (2026-03-31)
+
+
+
 ## [0.3.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-devops@0.3.0...mcp-provider-devops@0.3.1) (2026-03-26)
 
 

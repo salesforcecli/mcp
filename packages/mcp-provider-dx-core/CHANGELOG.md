@@ -1,3 +1,28 @@
+## [0.9.6](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.9.5...mcp-provider-dx-core@0.9.6) (2026-04-03)
+
+
+
+## [0.9.5](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.9.4...mcp-provider-dx-core@0.9.5) (2026-04-02)
+
+
+
+## [0.9.4](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.9.3...mcp-provider-dx-core@0.9.4) (2026-04-02)
+
+
+
+## [0.9.3](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.9.2...mcp-provider-dx-core@0.9.3) (2026-04-02)
+
+
+### Bug Fixes
+
+* @W-21866291 - Bitbucket and merge conflict fixes ([#435](https://github.com/salesforcecli/mcp/issues/435)) ([70b9832](https://github.com/salesforcecli/mcp/commit/70b983287f3cdc33f613fb2adb39b20e4ef4e38b))
+
+
+
+## [0.9.2](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.9.1...mcp-provider-dx-core@0.9.2) (2026-03-31)
+
+
+
 ## [0.9.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.9.0...mcp-provider-dx-core@0.9.1) (2026-03-18)
 
 

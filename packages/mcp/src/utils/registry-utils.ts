@@ -102,6 +102,16 @@ export async function registerToolsets(
       tools[tools.indexOf('create_lwc_component')] = 'create_lwc_component_from_prd';
     }
 
+    // This is a temporary fix to handle a tool rename. Tool alias support is coming soon.
+    // If the invalid tools list includes the *old* guide_lwc_accessibility tool name
+    if(invalidTools.includes('guide_lwc_accessibility')) {
+      ux.stderr('Tool "guide_lwc_accessibility" has been renamed to "guide_component_accessibility". Update config to remove this warning.')
+      // Remove that entry from invalidTools
+      invalidTools.splice(invalidTools.indexOf('guide_lwc_accessibility'), 1);
+      // Then rename the old tool with guide_component_accessibility in the tools array
+      tools[tools.indexOf('guide_lwc_accessibility')] = 'guide_component_accessibility';
+    }
+
     if (invalidTools.length > 0) throw new Error(`Invalid tool names provided to --tools: "${invalidTools.join('", "')}"
 Valid tools include:
 - ${Array.from(existingToolNames).join(`${EOL}- `)}`);

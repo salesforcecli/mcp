@@ -1,12 +1,18 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { detectConflict } from '../src/detectConflict.js';
 import type { WorkItem } from '../src/types/WorkItem.js';
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
-import { execSync } from 'child_process';
+import * as gitUtils from '../src/shared/gitUtils.js';
 
 describe('detectConflict', () => {
+  beforeEach(() => {
+    vi.spyOn(gitUtils, 'isGitRepository').mockReturnValue(true);
+    vi.spyOn(gitUtils, 'hasUncommittedChanges').mockReturnValue(false);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should return an error if no workItem is provided', async () => {
     const result = await detectConflict({});
     expect(result.content[0].text).toContain('Error: Please provide a workItem to check for conflicts.');
@@ -23,51 +29,29 @@ describe('detectConflict', () => {
   });
 
   it('should request correct path when localPath is not a git repo', async () => {
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'detect-conflict-nonrepo-'));
-    try {
-      const workItem: WorkItem = {
-        id: 'WI-0002',
-        name: 'Repo Check',
-        WorkItemBranch: 'feature/abc',
-        TargetBranch: 'main',
-        SourceCodeRepository: { repoUrl: 'https://example.com/repo.git' }
-      } as unknown as WorkItem;
-      const result = await detectConflict({ workItem, localPath: tmpDir });
-      expect(result.content[0].text).toContain('is not a Git repository');
-    } finally {
-      fs.rmSync(tmpDir, { recursive: true, force: true });
-    }
+    vi.mocked(gitUtils.isGitRepository).mockReturnValue(false);
+    const workItem: WorkItem = {
+      id: 'WI-0002',
+      name: 'Repo Check',
+      WorkItemBranch: 'feature/abc',
+      TargetBranch: 'main',
+      SourceCodeRepository: { repoUrl: 'https://example.com/repo.git' }
+    } as unknown as WorkItem;
+    const result = await detectConflict({ workItem, localPath: '/fake/not-repo' });
+    expect(result.content[0].text).toContain('is not a Git repository');
   });
 
   it('should block when uncommitted changes exist in localPath', async () => {
-    // Use workspace temp dir so sandbox allows git init
-    const tmpBase = path.join(process.cwd(), 'test', 'tmp');
-    if (!fs.existsSync(tmpBase)) fs.mkdirSync(tmpBase, { recursive: true });
-    const tmpDir = fs.mkdtempSync(path.join(tmpBase, 'detect-conflict-dirtyrepo-'));
-    try {
-      // Initialize a git repository
-      execSync('git init', { cwd: tmpDir });
-      execSync('git config user.email "test@example.com"', { cwd: tmpDir });
-      execSync('git config user.name "Test User"', { cwd: tmpDir });
-      // Create initial commit
-      fs.writeFileSync(path.join(tmpDir, 'README.md'), 'initial');
-      execSync('git add README.md', { cwd: tmpDir });
-      execSync('git commit -m "init"', { cwd: tmpDir });
-      // Create uncommitted change
-      fs.writeFileSync(path.join(tmpDir, 'README.md'), 'changed');
+    vi.mocked(gitUtils.hasUncommittedChanges).mockReturnValue(true);
+    const workItem: WorkItem = {
+      id: 'WI-0003',
+      name: 'Dirty Repo Check',
+      WorkItemBranch: 'feature/xyz',
+      TargetBranch: 'main',
+      SourceCodeRepository: { repoUrl: 'https://example.com/repo.git' }
+    } as unknown as WorkItem;
 
-      const workItem: WorkItem = {
-        id: 'WI-0003',
-        name: 'Dirty Repo Check',
-        WorkItemBranch: 'feature/xyz',
-        TargetBranch: 'main',
-        SourceCodeRepository: { repoUrl: 'https://example.com/repo.git' }
-      } as unknown as WorkItem;
-
-      const result = await detectConflict({ workItem, localPath: tmpDir });
-      expect(result.content[0].text).toContain('Local changes detected');
-    } finally {
-      fs.rmSync(tmpDir, { recursive: true, force: true });
-    }
+    const result = await detectConflict({ workItem, localPath: '/fake/repo' });
+    expect(result.content[0].text).toContain('Local changes detected');
   });
 });
