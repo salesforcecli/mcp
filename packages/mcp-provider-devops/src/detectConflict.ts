@@ -81,13 +81,15 @@ Agent execution guide (perform these steps now):
    - A one-line summary: 'Conflicts found between ${workItemBranch} and ${targetBranch}'
    - A bullet list of conflicted files with conflict type
    - For each file: a brief explanation (1–2 sentences) and the excerpt with conflict markers
-   - End with a clear next step: suggest calling the resolve_devops_center_merge_conflict tool to proceed
+   - End with a clear next step: call 'resolve_devops_center_merge_conflict' to proceed with guided resolution.
+   - Use the same work item context when calling it (same work item and localPath).
 
 6) If no conflicts are found:
    - State clearly: 'No merge conflicts detected. It is safe to proceed with merge.'
 
 Important constraints:
-- Do NOT provide manual resolution steps and do NOT modify files. After summarizing, suggest using the resolve_devops_center_merge_conflict tool to resolve the conflicts.
+- Do NOT provide manual resolution steps and do NOT modify files.
+- If conflicts are detected, the immediate next action is to call resolve_devops_center_merge_conflict for guided per-file resolution.
 - Do NOT create new branches or make commits during detection.
 - Execute the git commands yourself using available tools. Present command outputs and status updates here.`,
         actionRequired: true

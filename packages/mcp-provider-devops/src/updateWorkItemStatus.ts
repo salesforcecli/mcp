@@ -51,8 +51,18 @@ export async function updateWorkItemStatus(
     };
   }
 
-  const path = `/services/data/${API_VERSION}/connect/devops/projects/${projectId}/workitem/${workItem.id}`;
   const statusApiValue = STATUS_TO_API_VALUE[status];
+  const currentStatus = String(workItem?.status ?? "").trim().toUpperCase().replace(/\s+/g, "_");
+  if (currentStatus === statusApiValue) {
+    return {
+      success: true,
+      workItemId: workItem.id,
+      workItemName: workItem.name ?? workItemName,
+      status,
+    };
+  }
+
+  const path = `/services/data/${API_VERSION}/connect/devops/projects/${projectId}/workitem/${workItem.id}`;
   const body = JSON.stringify({ status: statusApiValue });
 
   try {

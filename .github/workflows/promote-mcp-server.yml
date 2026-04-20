@@ -5,13 +5,13 @@ on:
     inputs:
       version:
         type: string
-        description: 'Semver version to promote. Example: 2.1.1'
+        description: "Semver version to promote. Example: 2.1.1"
       old-channel:
         type: string
-        description: 'Existing channel to promote. Example: Promote **rc** to latest'
+        description: "Existing channel to promote. Example: Promote **rc** to latest"
       new-channel:
         type: string
-        description: 'The channel to promote to. Example: Promote rc to **latest**'
+        description: "The channel to promote to. Example: Promote rc to **latest**"
         required: true
 
 jobs:
@@ -48,7 +48,7 @@ jobs:
       - uses: salesforcecli/github-workflows/.github/actions/versionInfo@main
         id: version-info
         with:
-          npmPackage: '@salesforce/mcp'
+          npmPackage: "@salesforce/mcp"
           version: ${{ inputs.version || inputs.old-channel }}
 
   # CTC is only needed for promotions to 'latest'
@@ -62,7 +62,7 @@ jobs:
     steps:
       - name: Open CTC
         id: open-ctc
-        if: inputs.new-channel == 'latest-skip'
+        if: inputs.new-channel == 'latest'
         uses: salesforcecli/github-workflows/.github/actions/ctcOpen@main
         with:
           SF_CHANGE_CASE_SFDX_AUTH_URL: ${{ secrets.SF_CHANGE_CASE_SFDX_AUTH_URL }}

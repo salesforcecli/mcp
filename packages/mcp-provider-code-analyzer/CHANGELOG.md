@@ -1,3 +1,12 @@
+## [0.7.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-code-analyzer@0.7.0...mcp-provider-code-analyzer@0.7.1) (2026-04-01)
+
+
+### Bug Fixes
+
+* respect existing code-analyzer.yaml when creating custom rules ([#432](https://github.com/salesforcecli/mcp/issues/432)) ([18f862a](https://github.com/salesforcecli/mcp/commit/18f862a49e8e4e27e2b12fa632755cf28aae8607))
+
+
+
 # [0.7.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-code-analyzer@0.6.0...mcp-provider-code-analyzer@0.7.0) (2026-03-25)
 
 

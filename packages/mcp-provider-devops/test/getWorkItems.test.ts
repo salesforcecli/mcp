@@ -19,7 +19,8 @@ const mockConnection = {
       return { records: [{ Id: 'WI-0001', Name: 'Test Work Item' }] };
     }
     return { records: [] };
-  })
+  }),
+  request: vi.fn().mockResolvedValue({ owner: 'acme-org' })
 };
 
 describe('fetchWorkItems', () => {
@@ -87,7 +88,8 @@ describe('fetchWorkItems', () => {
           };
         }
         return { records: [] };
-      })
+      }),
+      request: vi.fn().mockResolvedValue({ owner: 'workspace-from-connect-api' })
     };
 
     const workItems = await fetchWorkItems(bitbucketConnection as any, 'project-bitbucket');
@@ -95,6 +97,10 @@ describe('fetchWorkItems', () => {
     expect(workItems[0].SourceCodeRepository).toEqual({
       repoUrl: 'https://bitbucket.org/test-workspace/test-repo',
       repoType: 'bitbucket'
+    });
+    expect(bitbucketConnection.request).toHaveBeenCalledWith({
+      method: 'GET',
+      url: '/services/data/v65.0/connect/devops/vcs/BITBUCKET'
     });
   });
 
@@ -119,7 +125,8 @@ describe('fetchWorkItems', () => {
           };
         }
         return { records: [] };
-      })
+      }),
+      request: vi.fn().mockResolvedValue({ owner: 'cloud-workspace-from-connect-api' })
     };
 
     const workItems = await fetchWorkItems(bitbucketCloudConnection as any, 'project-bitbucket-cloud');
@@ -127,6 +134,47 @@ describe('fetchWorkItems', () => {
     expect(workItems[0].SourceCodeRepository).toEqual({
       repoUrl: 'https://bitbucket.org/cloud-workspace/cloud-repo',
       repoType: 'bitbucket'
+    });
+    expect(bitbucketCloudConnection.request).toHaveBeenCalledWith({
+      method: 'GET',
+      url: '/services/data/v65.0/connect/devops/vcs/BITBUCKET'
+    });
+  });
+
+  it('uses GitHub owner from connect vcs API for repo URL', async () => {
+    const githubConnection = {
+      query: vi.fn().mockImplementation((query: string) => {
+        if (query.includes("WHERE DevopsProjectId = 'project-github'")) {
+          return {
+            records: [{
+              Id: 'WI-2001',
+              Name: 'GitHub Item',
+              DevopsProjectId: 'project-github',
+              SourceCodeRepositoryBranch: {
+                Name: 'feature/WI-2001',
+                SourceCodeRepository: {
+                  Name: 'repo-one',
+                  RepositoryOwner: 'owner-from-soql',
+                  Provider: 'github'
+                }
+              }
+            }]
+          };
+        }
+        return { records: [] };
+      }),
+      request: vi.fn().mockResolvedValue({ owner: 'owner-from-connect-api' })
+    };
+
+    const workItems = await fetchWorkItems(githubConnection as any, 'project-github');
+    expect(workItems).toHaveLength(1);
+    expect(workItems[0].SourceCodeRepository).toEqual({
+      repoUrl: 'https://github.com/owner-from-connect-api/repo-one',
+      repoType: 'github'
+    });
+    expect(githubConnection.request).toHaveBeenCalledWith({
+      method: 'GET',
+      url: '/services/data/v65.0/connect/devops/vcs/GITHUB'
     });
   });
 

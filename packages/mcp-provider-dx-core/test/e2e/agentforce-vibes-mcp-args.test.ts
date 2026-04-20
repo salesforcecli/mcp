@@ -37,6 +37,10 @@ async function getMcpClient(opts: { args: string[] }) {
     return client;
 }
 
+const TOOL_RENAMES: Record<string, string> = {
+    'guide_lwc_accessibility': 'guide_component_accessibility',
+};
+
 async function getExpectedArgsAndTools(): Promise<{ args: string[]; tools: string[] }> {
     try {
         const result = await execAsync('gh api repos/forcedotcom/cline-fork/contents/src/shared/mcp/a4dServerArgs.json | jq -r .content | base64 --decode');
@@ -55,7 +59,7 @@ async function getExpectedArgsAndTools(): Promise<{ args: string[]; tools: strin
 
         return {
             args: mcpRepoConfig.args ?? [],
-            tools: mcpRepoConfig.tools ?? []
+            tools: (mcpRepoConfig.tools ?? []).map(t => TOOL_RENAMES[t] ?? t)
         };
     } catch (error) {
         throw new Error(`Failed to fetch a4dServerArgs.json via gh command: ${String(error)}`);

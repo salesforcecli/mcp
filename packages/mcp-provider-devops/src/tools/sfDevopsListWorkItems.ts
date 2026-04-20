@@ -15,6 +15,7 @@ const inputSchema = z.object({
 type InputArgs = z.infer<typeof inputSchema>;
 type InputArgsShape = typeof inputSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
+const DESCRIPTION_PREVIEW_MAX_LEN = 160;
 
 export class SfDevopsListWorkItems extends McpTool<InputArgsShape, OutputArgsShape> {
   private readonly services: Services;
@@ -40,6 +41,8 @@ export class SfDevopsListWorkItems extends McpTool<InputArgsShape, OutputArgsSha
     return {
       title: "List DevOps Work Items",
       description: `List all the work items for a specific  DevOps Center project.
+
+      **Terminology:** Treat "DevOps Center", "DOCe", and "DoCe" as the same product/org context.
       
 **Input:**
 - Either username (example devops-center@example.com) or alias (example myDevOpsOrg) is required.
@@ -69,6 +72,20 @@ export class SfDevopsListWorkItems extends McpTool<InputArgsShape, OutputArgsSha
     try {
       const connection = await this.services.getOrgService().getConnection(input.usernameOrAlias);
       const workItems = await fetchWorkItems(connection, input.project.Id);
+      const summarizedWorkItems = workItems.map((workItem: any) => {
+        const description = typeof workItem?.description === "string" ? workItem.description.trim() : "";
+        const descriptionPreview = description
+          ? (description.length > DESCRIPTION_PREVIEW_MAX_LEN
+            ? `${description.slice(0, DESCRIPTION_PREVIEW_MAX_LEN)}...`
+            : description)
+          : undefined;
+        return {
+          ...workItem,
+          descriptionPreview,
+          hasDescription: Boolean(description),
+          description: undefined
+        };
+      });
       
       const executionTime = Date.now() - startTime;
       const workItemCount = workItems.length;
@@ -83,7 +100,7 @@ export class SfDevopsListWorkItems extends McpTool<InputArgsShape, OutputArgsSha
       return {
         content: [{
           type: "text",
-          text: JSON.stringify(workItems, null, 2)
+          text: JSON.stringify(summarizedWorkItems, null, 2)
         }]
       };
     } catch (e: any) {
