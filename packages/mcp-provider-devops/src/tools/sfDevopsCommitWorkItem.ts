@@ -179,7 +179,7 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
         repoPath: localPath
       });
 
-      if (result && Array.isArray((result as any).content)) {
+      if (result && (result as { isError?: boolean }).isError === true) {
         const executionTime = Date.now() - startTime;
         
         this.services.getTelemetryService().sendEvent(TelemetryEventNames.COMMIT_WORK_ITEM, {
@@ -190,7 +190,8 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
         });
         
         return {
-          content: (result as any).content
+          content: (result as any).content,
+          isError: true
         };
       }
 

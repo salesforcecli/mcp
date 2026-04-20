@@ -33,7 +33,7 @@ describe('commitLiteWorkItem', () => {
     await expect(
       commitWorkItem({
         connection: mockConnection as any,
-        workItem: { id: 'WI-1' },
+        workItem: { id: 'WI-1', DevopsProjectId: 'P1' },
         requestId: 'r1',
         commitMessage: 'msg',
         repoPath: '/repo'
@@ -56,11 +56,11 @@ describe('commitLiteWorkItem', () => {
       return rels.map((rel: string) => ({ fullName: rel.endsWith('A.cls') ? 'A' : 'B', type: { name: 'ApexClass' }, filePath: baseDir + '/' + rel }));
     });
 
-    mockConnection.request.mockResolvedValue(undefined);
+    mockConnection.request.mockResolvedValue({ success: 'true', hasUpdates: false });
 
     const res = await commitWorkItem({
       connection: mockConnection as any,
-      workItem: { id: 'WI-2' },
+      workItem: { id: 'WI-2', DevopsProjectId: 'proj-abc' },
       requestId: 'r2',
       commitMessage: 'feat: update',
       repoPath: '/repo'
@@ -71,7 +71,13 @@ describe('commitLiteWorkItem', () => {
     expect(joined).toMatch('Changes committed successfully');
     expect(joined).toMatch('Commit SHA: abc123');
     expect(mockConnection.request).toHaveBeenCalledWith(
-      expect.objectContaining({ method: 'POST', url: expect.stringContaining('commitlite') })
+      expect.objectContaining({
+        method: 'POST',
+        url: expect.stringContaining(
+          '/connect/devops/projects/proj-abc/workitem/WI-2/sync'
+        ),
+        body: '{}'
+      })
     );
   });
 });
