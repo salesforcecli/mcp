@@ -28,7 +28,7 @@ export class SfDevopsResolveDeploymentFailure extends McpTool<InputArgsShape, Ou
   }
 
   public getReleaseState(): ReleaseState {
-    return ReleaseState.NON_GA;
+    return ReleaseState.GA;
   }
 
   public getToolsets(): Toolset[] {
