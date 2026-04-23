@@ -234,15 +234,17 @@ For sample prompts that invoke the core DX MCP tools, see [Use the Core Salesfor
 
 For complete documentation, see [Merge Conflict Resolution with DevOps Center MCP Tools (Managed Package)](https://help.salesforce.com/s/articleView?id=platform.devops_center_mcp_intro.htm&type=5) in Salesforce Help.
 
-- `check_devops_center_commit_status` (NON-GA) - Check the current status of a work item committed to DevOps Center.
-- `checkout_devops_center_work_item` (NON-GA) - Checks out the branch associated with a selected work item by name.
-- `commit_devops_center_work_item` (NON-GA) - Commit SFDX project changes and register the commit SHA in DevOps Center.
-- `create_devops_center_pull_request` (NON-GA) - Commit local changes to a DevOps Center work item’s feature branch.
+- `check_devops_center_commit_status` (GA) - Check the current status of a work item committed to DevOps Center.
+- `checkout_devops_center_work_item` (GA) - Checks out the branch associated with a selected work item by name.
+- `commit_devops_center_work_item` (GA) - Commit SFDX project changes and register the commit SHA in DevOps Center.
+- `create_devops_center_pull_request` (GA) - Commit local changes to a DevOps Center work item’s feature branch.
 - `detect_devops_center_merge_conflict` (GA) - Detects merge conflicts for a selected work item or in a given source branch.
-- `list_devops_center_projects` (NON-GA) - List all DevOps Center projects in a specific org.
-- `list_devops_center_work_items` (NON-GA) - List all the work items for a specific DevOps Center project.
-- `promote_devops_center_work_item` (NON-GA) - Promote an approved work item to the next stage in the DevOps Center pipeline.
-- `resolve_devops_center_deployment_failure` (NON-GA) - Diagnose and resolve deployment failures.
+- `list_devops_center_projects` (GA) - List all DevOps Center projects in a specific org.
+- `list_devops_center_work_items` (GA) - List all the work items for a specific DevOps Center project.
+- `create_devops_center_work_item` (GA) - Creates a new DevOps Center work item in the selected project.
+- `update_devops_center_work_item_status` (GA) - Sets a work item’s status to In Progress or Ready to Promote.
+- `promote_devops_center_work_item` (GA) - Promote an approved work item to the next stage in the DevOps Center pipeline.
+- `resolve_devops_center_deployment_failure` (GA) - Diagnose and resolve deployment failures.
 - `resolve_devops_center_merge_conflict` (GA) - Apply a selected resolution method to a merge conflict.
 
 ### Enrichment Toolset
