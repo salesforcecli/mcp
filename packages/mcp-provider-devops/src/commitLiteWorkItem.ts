@@ -9,6 +9,20 @@ import { convertToSourceComponents } from './shared/sfdxService.js';
 
 const API_VERSION = 'v65.0';
 
+export type SyncWorkItemResult = {
+    success: string;
+    hasUpdates: boolean | null;
+    errorCode?: string | null;
+    errorMessage?: string | null;
+};
+
+export type SyncWorkItemWithConnectionParams = {
+    projectId: string;
+    workItemId: string;
+    /** Optional; Core WorkItemSyncResource may ignore body fields */
+    status?: string;
+};
+
 interface Change {
     fullName: string;
     type: string;
@@ -17,47 +31,91 @@ interface Change {
 
 export interface CommitWorkItemParams {
     connection: Connection;
-    workItem: { id: string };
-    requestId: string;
+    workItem: { id: string; DevopsProjectId?: string };
     commitMessage: string;
     repoPath?: string;
 }
 
 /**
- * Commits work item changes (lite flow) using the provided Connection.
- * API: POST /services/data/v65.0/connect/devops/workItems/<id>/commitlite
+ * POST /services/data/v65.0/connect/devops/projects/{projectId}/workitem/{workItemId}/sync
+ *
+ * Sync reconciles the work item with VCS (branch/review/CR/external commit inspection, etc.).
+ */
+export async function syncWorkItem(
+    connection: Connection,
+    params: SyncWorkItemWithConnectionParams
+): Promise<SyncWorkItemResult> {
+    const { projectId, workItemId, status } = params;
+    const pathUrl = `/services/data/${API_VERSION}/connect/devops/projects/${encodeURIComponent(
+        projectId
+    )}/workitem/${encodeURIComponent(workItemId)}/sync`;
+
+    // DevOps Connect accepts an empty JSON object; nested workitemSyncInput is rejected by some API versions.
+    const requestBody =
+        status !== undefined && status !== '' ? JSON.stringify({ status }) : '{}';
+
+    const response = await connection.request({
+        method: 'POST',
+        url: pathUrl,
+        body: requestBody,
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' }
+    });
+
+    const body = (response ?? {}) as Partial<SyncWorkItemResult>;
+    return {
+        success: String(body.success ?? 'false'),
+        hasUpdates: typeof body.hasUpdates === 'boolean' ? body.hasUpdates : null,
+        errorCode: body.errorCode ?? null,
+        errorMessage: body.errorMessage ?? null
+    };
+}
+
+/** @deprecated Prefer {@link syncWorkItem}; kept for callers that imported the old name */
+export const commitLiteWorkItem = syncWorkItem;
+
+/**
+ * Creates a local git commit, then reconciles the work item with DevOps Center via sync.
+ * API: POST .../connect/devops/projects/{projectId}/workitem/{workItemId}/sync
  */
 export async function commitWorkItem({
     connection,
     workItem,
-    requestId,
     commitMessage,
     repoPath
 }: CommitWorkItemParams): Promise<any> {
-    const workingDir = normalizeAndValidateRepoPath(repoPath);
-    const computedChanges = buildComputedChanges(workingDir);
-    const { commitSha } = AddAndCommitChanges(workingDir, commitMessage);
-
-    const pathUrl = `/services/data/${API_VERSION}/connect/devops/workItems/${workItem.id}/commitlite`;
-    const requestBody = {
-        requestId,
-        commitMessage,
-        commitId: commitSha,
-        changes: computedChanges
-    };
-
-    try {
-        await connection.request({
-            method: 'POST',
-            url: pathUrl,
-            body: JSON.stringify(requestBody),
-            headers: { 'Content-Type': 'application/json' }
-        });
+    const projectId = workItem.DevopsProjectId;
+    if (!projectId) {
         return {
             content: [{
-                type: "text",
+                type: 'text',
+                text: 'Failed to commit work item: Work item has no DevOps project (DevopsProjectId).'
+            }],
+            isError: true
+        };
+    }
+
+    const workingDir = normalizeAndValidateRepoPath(repoPath);
+    buildComputedChanges(workingDir);
+    const { commitSha } = AddAndCommitChanges(workingDir, commitMessage);
+
+    try {
+        const syncResult = await syncWorkItem(connection, {
+            projectId,
+            workItemId: workItem.id
+        });
+        if (syncResult.success !== 'true') {
+            throw new Error(
+                syncResult.errorMessage ||
+                    `DevOps sync unsuccessful (success=${syncResult.success})`
+            );
+        }
+        const hasUpdatesNote =
+            syncResult.hasUpdates === null ? '' : `\n              DevOps sync hasUpdates: ${syncResult.hasUpdates}`;
+        return {
+            content: [{
+                type: 'text',
                 text: `Changes committed successfully.
-              Commit SHA: ${commitSha}
+              Commit SHA: ${commitSha}${hasUpdatesNote}
               Agent execution guide (perform these steps now)
               - Push the commit: 'git push'`,
                 actionRequired: true
@@ -67,9 +125,10 @@ export async function commitWorkItem({
     } catch (error: any) {
         return {
             content: [{
-                type: "text",
+                type: 'text',
                 text: `Failed to commit work item: ${error.message}`
-            }]
+            }],
+            isError: true
         };
     }
 }
