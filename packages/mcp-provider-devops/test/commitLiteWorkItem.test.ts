@@ -21,6 +21,20 @@ describe('commitLiteWorkItem', () => {
     vi.restoreAllMocks();
   });
 
+  it('returns error when work item has no DevopsProjectId', async () => {
+    const res = await commitWorkItem({
+      connection: mockConnection as any,
+      workItem: { id: 'WI-orphan' },
+      commitMessage: 'msg',
+      repoPath: '/repo'
+    });
+
+    expect(res.isError).toBe(true);
+    expect(res.content[0].text).toContain('DevopsProjectId');
+    expect(mockConnection.request).not.toHaveBeenCalled();
+    expect(pathUtils.normalizeAndValidateRepoPath).not.toHaveBeenCalled();
+  });
+
   it('throws when no eligible changes are detected', async () => {
     (execFileSync as unknown as Mock)
       .mockImplementationOnce(() => '\n') // -d
@@ -34,7 +48,6 @@ describe('commitLiteWorkItem', () => {
       commitWorkItem({
         connection: mockConnection as any,
         workItem: { id: 'WI-1', DevopsProjectId: 'P1' },
-        requestId: 'r1',
         commitMessage: 'msg',
         repoPath: '/repo'
       })
@@ -61,7 +74,6 @@ describe('commitLiteWorkItem', () => {
     const res = await commitWorkItem({
       connection: mockConnection as any,
       workItem: { id: 'WI-2', DevopsProjectId: 'proj-abc' },
-      requestId: 'r2',
       commitMessage: 'feat: update',
       repoPath: '/repo'
     });

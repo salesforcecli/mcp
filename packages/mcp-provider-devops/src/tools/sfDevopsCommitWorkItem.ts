@@ -174,7 +174,6 @@ export class SfDevopsCommitWorkItem extends McpTool<InputArgsShape, OutputArgsSh
       const result = await commitWorkItem({
         connection,
         workItem,
-        requestId,
         commitMessage: input.commitMessage,
         repoPath: localPath
       });

@@ -32,7 +32,6 @@ interface Change {
 export interface CommitWorkItemParams {
     connection: Connection;
     workItem: { id: string; DevopsProjectId?: string };
-    requestId: string;
     commitMessage: string;
     repoPath?: string;
 }
@@ -96,7 +95,7 @@ export async function commitWorkItem({
     }
 
     const workingDir = normalizeAndValidateRepoPath(repoPath);
-    const computedChanges = buildComputedChanges(workingDir);
+    buildComputedChanges(workingDir);
     const { commitSha } = AddAndCommitChanges(workingDir, commitMessage);
 
     try {
