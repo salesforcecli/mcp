@@ -117,6 +117,12 @@ export class CreateCustomRuleMcpTool extends McpTool<InputArgsShape, OutputArgsS
         rulesetPath: output.rulesetPath,
         configPath: output.configPath
       });
+      // Send PFT event for product analytics
+      this.telemetryService.sendPdpEvent({
+        eventName: 'codeAnalyzer.createCustomRule',
+        productFeatureId: Constants.CODE_ANALYZER_PRODUCT_FEATURE_ID,
+        componentId: CreateCustomRuleMcpTool.NAME
+      });
     }
     return {
       content: [{ type: "text", text: message }],

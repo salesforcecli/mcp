@@ -130,6 +130,12 @@ export class CodeAnalyzerQueryResultsMcpTool extends McpTool<InputArgsShape, Out
                 totalViolations: output.totalViolations ?? 0,
                 totalMatches: output.totalMatches ?? 0
             });
+            // Send PFT event for product analytics
+            this.telemetryService?.sendPdpEvent({
+                eventName: 'codeAnalyzer.query',
+                productFeatureId: Constants.CODE_ANALYZER_PRODUCT_FEATURE_ID,
+                componentId: CodeAnalyzerQueryResultsMcpTool.NAME
+            });
             const contentItems: { type: "text"; text: string }[] = [];
             if (truncated) {
                 contentItems.push({

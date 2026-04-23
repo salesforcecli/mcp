@@ -1,11 +1,12 @@
 import { z }  from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { McpTool, McpToolConfig, ReleaseState, Services, Toolset } from "@salesforce/mcp-provider-api";
+import { McpTool, McpToolConfig, ReleaseState, Services, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
 import { DescribeRuleAction, DescribeRuleActionImpl, DescribeRuleInput, DescribeRuleOutput} from "../actions/describe-rule.js";
 import { CodeAnalyzerConfigFactoryImpl } from "../factories/CodeAnalyzerConfigFactory.js";
 import { EnginePluginsFactoryImpl } from "../factories/EnginePluginsFactory.js";
 import { getErrorMessage } from "../utils.js";
 import {CodeAnalyzerRunMcpTool} from "./run_code_analyzer.js";
+import * as Constants from "../constants.js";
 
 const DESCRIPTION: string = `A tool for getting the description of a Code Analyzer rule.
 This tool can return a JSON that describes the properties of a Code Analyzer rule, which may include information about
@@ -38,15 +39,18 @@ type OutputArgsShape = typeof outputSchema.shape;
 export class CodeAnalyzerDescribeRuleMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
     public static readonly NAME: string = 'describe_code_analyzer_rule';
     private readonly action: DescribeRuleAction;
+    private readonly telemetryService?: TelemetryService;
 
     public constructor(
         action: DescribeRuleAction = new DescribeRuleActionImpl({
             configFactory: new CodeAnalyzerConfigFactoryImpl(),
             enginePluginsFactory: new EnginePluginsFactoryImpl()
-        })
+        }),
+        telemetryService?: TelemetryService
     ) {
         super();
         this.action = action;
+        this.telemetryService = telemetryService;
     }
 
     public getReleaseState(): ReleaseState {
@@ -77,6 +81,14 @@ export class CodeAnalyzerDescribeRuleMcpTool extends McpTool<InputArgsShape, Out
         let output: DescribeRuleOutput;
         try {
             output = await this.action.exec(input);
+            // Send PFT event for product analytics
+            if (output.status === "success") {
+                this.telemetryService?.sendPdpEvent({
+                    eventName: 'codeAnalyzer.describeRule',
+                    productFeatureId: Constants.CODE_ANALYZER_PRODUCT_FEATURE_ID,
+                    componentId: CodeAnalyzerDescribeRuleMcpTool.NAME
+                });
+            }
         } catch (e) {
             output = { status: getErrorMessage(e) };
         }

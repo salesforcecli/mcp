@@ -1,13 +1,14 @@
 import fs from "node:fs";
 import { z }  from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { McpTool, McpToolConfig, ReleaseState, Services, Toolset } from "@salesforce/mcp-provider-api";
+import { McpTool, McpToolConfig, ReleaseState, Services, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
 import { getMessage } from "../messages.js";
 import { getErrorMessage } from "../utils.js";
 import { RunAnalyzerAction, RunAnalyzerActionImpl, RunInput, RunOutput } from "../actions/run-analyzer.js";
 import { CodeAnalyzerListRulesMcpTool } from "./list_code_analyzer_rules.js";
 import { CodeAnalyzerConfigFactoryImpl } from "../factories/CodeAnalyzerConfigFactory.js";
 import { EnginePluginsFactoryImpl } from "../factories/EnginePluginsFactory.js";
+import * as Constants from "../constants.js";
 
 const MAX_ALLOWABLE_TARGET_COUNT = 10;
 
@@ -56,15 +57,18 @@ type OutputArgsShape = typeof outputSchema.shape;
 export class CodeAnalyzerRunMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
     public static readonly NAME: string = 'run_code_analyzer';
     private readonly action: RunAnalyzerAction;
+    private readonly telemetryService?: TelemetryService;
 
     public constructor(
         action: RunAnalyzerAction = new RunAnalyzerActionImpl({
             configFactory: new CodeAnalyzerConfigFactoryImpl(),
             enginePluginsFactory: new EnginePluginsFactoryImpl()
-        })
+        }),
+        telemetryService?: TelemetryService
     ) {
         super();
         this.action = action;
+        this.telemetryService = telemetryService;
     }
 
     public getReleaseState(): ReleaseState {
@@ -106,6 +110,14 @@ export class CodeAnalyzerRunMcpTool extends McpTool<InputArgsShape, OutputArgsSh
             }
 
             const output: RunOutput = await this.action.exec(input);
+            // Send PFT event for product analytics
+            if (output.status === "success" || output.resultsFile) {
+                this.telemetryService?.sendPdpEvent({
+                    eventName: 'codeAnalyzer.run',
+                    productFeatureId: Constants.CODE_ANALYZER_PRODUCT_FEATURE_ID,
+                    componentId: CodeAnalyzerRunMcpTool.NAME
+                });
+            }
             return {
                 content: [{ type: "text", text: JSON.stringify(output) }],
                 structuredContent: output

@@ -1,6 +1,9 @@
 export const TelemetryEventName = "code-analyzer"
 export const TelemetrySource = "MCP"
 
+// Product Feature ID for PFT (Product Feedback Telemetry) events
+export const CODE_ANALYZER_PRODUCT_FEATURE_ID = "aJCEE0000000mDK4AY"
+
 export const McpTelemetryEvents = {
     ENGINE_SELECTION: 'engine_selection',
     ENGINE_EXECUTION: 'engine_execution',
