@@ -47,7 +47,7 @@ Use this guide to learn how to contribute to the Salesforce DX MCP Server.
    }
    ```
 
-1. Start the Salesforce DX MCP server and call the tools using natural language prompts. See [./README.md] for details.
+1. Start the Salesforce DX MCP server and call the tools using natural language prompts. See [README.md](./README.md) for details.
 1. Write tests and run them: `yarn test`. See [Unit Tests](#unit-tests) for details.
 1. See all changed files and verify that you want to commit them: `git status`.
 1. Add all files to staging: `git add .` (Make sure you include the period!)

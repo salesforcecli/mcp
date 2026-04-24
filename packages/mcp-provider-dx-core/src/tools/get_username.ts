@@ -113,8 +113,8 @@ WHEN TO USE THIS TOOL:
 - When uncertain which org username a user wants for Salesforce operations.
 
 To resolve the default org username, set the defaultTargetOrg param to true and defaultDevHub to false.
-To resole the default devhub org username, set the defaultTargetOrg param to false and defaultDevHub to true.
-If it's not clear which type of org to resolve, set both defaultTargetOrg and defaultDevHub to false to an allow-listed org username available.
+To resolve the default devhub org username, set the defaultTargetOrg param to false and defaultDevHub to true.
+If it's not clear which type of org to resolve, set both defaultTargetOrg and defaultDevHub to false to get an available allow-listed org username.
 `,
       inputSchema: getUsernameParamsSchema.shape,
       outputSchema: undefined,

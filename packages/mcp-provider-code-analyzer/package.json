@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/mcp-provider-code-analyzer",
-  "description": "(For Interal Use Only) Provides MCP Tools for Salesforce Code Analyzer to a MCP Server",
+  "description": "(For Internal Use Only) Provides MCP Tools for Salesforce Code Analyzer to an MCP Server",
   "version": "0.7.1",
   "author": "Salesforce",
   "license": "Apache-2.0",

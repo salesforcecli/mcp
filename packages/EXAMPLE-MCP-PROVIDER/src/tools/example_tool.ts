@@ -22,7 +22,7 @@ type InputArgsShape = typeof exampleInputSchema.shape;
 type OutputArgsShape = z.ZodRawShape;
 
 /**
- * Example tool for demonstration puproses
+ * Example tool for demonstration purposes
  */
 export class ExampleMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
   private readonly telemetryService: TelemetryService;
@@ -43,8 +43,6 @@ export class ExampleMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
   }
 
   // Must return the name of your tool.
-  // For internal naming guidelines see:
-  //  https://confluence.internal.salesforce.com/spaces/DOCTEAM/pages/1166876463/MCP+Server+Terminology+and+Style+Guide
   public getName(): string {
     return "example_tool";
   }

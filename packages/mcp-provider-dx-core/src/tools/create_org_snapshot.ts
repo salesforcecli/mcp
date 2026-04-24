@@ -42,7 +42,7 @@ const createOrgSnapshotParams = z.object({
   sourceOrg: usernameOrAliasParam.describe(
     'The org username or alias to create a snapshot of, use the #get_username tool to get the default target org if unsure',
   ),
-  description: z.string().describe(' Description of snapshot.').optional(),
+  description: z.string().describe('Description of snapshot.').optional(),
   name: z.string().describe('Unique name of snapshot').max(15).default(Date.now().toString().substring(0, 15)),
 });
 

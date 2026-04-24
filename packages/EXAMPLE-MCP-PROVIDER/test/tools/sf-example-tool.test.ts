@@ -13,7 +13,7 @@ describe("Tests for ExampleMcpTool", () => {
   });
 
   it("When getReleaseState is called, then 'non-ga' is returned", () => {
-    expect(tool.getReleaseState()).toEqual(ReleaseState.NON_GA); // Make sure this truely reflects what you want
+    expect(tool.getReleaseState()).toEqual(ReleaseState.NON_GA); // Make sure this truly reflects what you want
   })
 
   it("When getToolsets is called, then 'other' is returned", () => {

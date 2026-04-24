@@ -152,7 +152,7 @@ The server release workflow will automatically update to the latest provider ver
 - For server wiring details and how providers are loaded, see `packages/mcp/DEVELOPING.md`.
 
 ## Dependabot automation
-We have Dependabot enabled in this repo for the the packages listed in `.github/dependabot.yml`, if a PR passes all tests it will be automatically merged (cron job checks PRs opens every day).
+We have Dependabot enabled in this repo for the packages listed in `.github/dependabot.yml`. If a PR passes all tests, it will be automatically merged (cron job checks open PRs every day).
 This automation is opt-in by default (just add your package dir to the dependabot config), just note that you can't enable dependabot PRs and disable automerges yet (will be addressed in the future)
 
 ## Running the MCP server locally
