@@ -59,7 +59,7 @@ The `args` format shown in the preceding example is the same for all MCP clients
   - [Configure Toolsets](#configure-toolsets)
   - [Configure Tools](#configure-tools)
 - When writing the `args` option, surround both the flag names and their values in double quotes, and separate all flags and values with commas. Some flags are Boolean and don't take a value.
-- The preceding example shows three flags that take a string value (`--orgs`, `--toolsets`, and `--tools`) and one Boolean flag (`--allow-non-ga-tools`). This configuration starts a DX MCP Server that enables all the MCP tools in the `orgs`, `metadata`, `data`, and `users` toolsets and a specific tool called `run_apex_tests`. It also enables tools in these configured toolsets that aren't yet generally available.
+- The preceding example shows three flags that take a string value (`--orgs`, `--toolsets`, and `--tools`) and one Boolean flag (`--allow-non-ga-tools`). This configuration starts a DX MCP Server that enables all the MCP tools in the `orgs`, `metadata`, `data`, and `users` toolsets and a specific tool called `run_apex_test`. It also enables tools in these configured toolsets that aren't yet generally available.
 
 ## MCP Client Configurations
 
@@ -170,7 +170,7 @@ These are the available toolsets.
 | Toolset          | Description                                                                                                                                                                                                                                                                             | See Tool List                                         |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | `all`            | Enables all available tools from all toolsets. <br>We recommend that you configure only the toolsets you’re going to use, rather than all of them with this value. The DX MCP Server includes over 60 MCP tools, so enabling them all in your MCP client can overwhelm the LLM context. | N/A                                                   |
-| `aura-experts`   | Tools that provide Aura component analysis, blueprinting, and migration expertise..                                                                      | [Link](#aura-experts-toolset)                         |
+| `aura-experts`   | Tools that provide Aura component analysis, blueprinting, and migration expertise.                                                                      | [Link](#aura-experts-toolset)                         |
 | `code-analysis`  | Tools for static analysis of your code using Salesforce Code Analyzer.                                                                      | [Link](#code-analysis-toolset)                        |
 | `core`           | Core set of DX MCP tools. This toolset is always enabled.                                                               | [Link](#core-toolset-always-enabled)                  |
 | `data`           | Tools to manage the data in your org, such as listing all accounts.                                                     | [Link](#data-toolset)                                 |
@@ -208,7 +208,7 @@ For complete documentation, see [Use the Aura-to-LWC Migration Tools](https://de
 
 ### Code Analysis Toolset
 
-For complete documentation, see [Use MCP Tools to Analyze Your Code ](https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/mcp.html) in the _Salesforce Code Analyzer Developer Guide_.
+For complete documentation, see [Use MCP Tools to Analyze Your Code](https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/mcp.html) in the _Salesforce Code Analyzer Developer Guide_.
 
 - `create-custom-rule` (NON-GA) - Creates a custom XPath-based PMD rule from a provided Apex code sample.
 - `describe_code_analyzer_rule` (GA) - Gets the description of a Code Analyzer rule.
@@ -257,7 +257,7 @@ For complete documentation, see [Use DX MCP Tools for LWC](https://developer.sal
 
 #### Component Development 
 
-- `create_lwc_component_from_prd` (GA) - Creates complete LWC components from PRD specifications with proper structure. and best practices
+- `create_lwc_component_from_prd` (GA) - Creates complete LWC components from PRD specifications with proper structure and best practices.
 - `create_lwc_jest_tests` (GA) - Generates Jest test suites for LWC components with coverage and mocking.
 - `review_lwc_jest_tests` (GA) - Reviews and validates Jest test implementations for LWC components.
 
@@ -333,7 +333,7 @@ For complete documentation, see [Use the mobile Toolset](https://developer.sales
 - `create_mobile_lwc_geofencing` (GA) - Provides TypeScript API documentation for Salesforce LWC Geofencing Service, offering expert guidance for implementing geofencing features in LWC components.
 - `create_mobile_lwc_location` (GA) - Provides TypeScript API documentation for Salesforce LWC Location Service, offering expert guidance for implementing location services in LWC components.
 - `create_mobile_lwc_nfc` (GA) - Provides TypeScript API documentation for Salesforce LWC NFC Service, offering expert guidance for implementing NFC features in LWC components.
-- `create_mobile_lwc_payments` - Provides TypeScript API documentation for Salesforce LWC Payments Service, offering expert guidance for implementing payment processing features in LWC components.
+- `create_mobile_lwc_payments` (NON-GA) - Provides TypeScript API documentation for Salesforce LWC Payments Service, offering expert guidance for implementing payment processing features in LWC components.
 - `get_mobile_lwc_offline_analysis` (GA) - Analyzes LWC components for mobile-specific issues and provides detailed recommendations for mobile offline compatibility and performance improvements.
 - `get_mobile_lwc_offline_guidance` (GA) - Provides structured review instructions to detect and remediate mobile offline code violations in LWC components for Salesforce mobile apps.
 

@@ -2,7 +2,7 @@ import { McpProvider, McpTool, Services } from "@salesforce/mcp-provider-api";
 import { ExampleMcpTool } from "./tools/example_tool.js";
 
 /**
- * Example MCPProvider for demonstration puproses
+ * Example MCPProvider for demonstration purposes
  */
 export class ExampleMcpProvider extends McpProvider {
   // Must return a name for your McpProvider. It is recommended to make this match the class name

@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/EXAMPLE-MCP-PROVIDER",
-  "description": "(For Interal Use Only) YOUR DESCRIPTION GOES HERE",
+  "description": "(For Internal Use Only) YOUR DESCRIPTION GOES HERE",
   "version": "0.0.1-alpha.1",
   "author": "Salesforce",
   "license": "Apache-2.0",

@@ -61,7 +61,7 @@ export class DeleteOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: 'Delete an Org',
-      description: `Deletes specified salesforce org.
+      description: `Deletes specified Salesforce org.
 
 AGENT INSTRUCTIONS:
 ALWAYS confirm with the user before deleting an org
