@@ -132,7 +132,7 @@ Report on my org snapshot`,
       case resumableIdPrefixes.get('orgSnapshot'):
         return resumeOrgSnapshot(connection, input.jobId, input.wait);
       default:
-        return textResponse(`The job id: ${input.jobId} is not resumeable.`, true);
+        return textResponse(`The job id: ${input.jobId} is not resumable.`, true);
     }
   }
 }
