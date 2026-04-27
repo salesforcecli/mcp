@@ -21,6 +21,20 @@ describe('commitLiteWorkItem', () => {
     vi.restoreAllMocks();
   });
 
+  it('returns error when work item has no DevopsProjectId', async () => {
+    const res = await commitWorkItem({
+      connection: mockConnection as any,
+      workItem: { id: 'WI-orphan' },
+      commitMessage: 'msg',
+      repoPath: '/repo'
+    });
+
+    expect(res.isError).toBe(true);
+    expect(res.content[0].text).toContain('DevopsProjectId');
+    expect(mockConnection.request).not.toHaveBeenCalled();
+    expect(pathUtils.normalizeAndValidateRepoPath).not.toHaveBeenCalled();
+  });
+
   it('throws when no eligible changes are detected', async () => {
     (execFileSync as unknown as Mock)
       .mockImplementationOnce(() => '\n') // -d
@@ -33,8 +47,7 @@ describe('commitLiteWorkItem', () => {
     await expect(
       commitWorkItem({
         connection: mockConnection as any,
-        workItem: { id: 'WI-1' },
-        requestId: 'r1',
+        workItem: { id: 'WI-1', DevopsProjectId: 'P1' },
         commitMessage: 'msg',
         repoPath: '/repo'
       })
@@ -56,12 +69,11 @@ describe('commitLiteWorkItem', () => {
       return rels.map((rel: string) => ({ fullName: rel.endsWith('A.cls') ? 'A' : 'B', type: { name: 'ApexClass' }, filePath: baseDir + '/' + rel }));
     });
 
-    mockConnection.request.mockResolvedValue(undefined);
+    mockConnection.request.mockResolvedValue({ success: 'true', hasUpdates: false });
 
     const res = await commitWorkItem({
       connection: mockConnection as any,
-      workItem: { id: 'WI-2' },
-      requestId: 'r2',
+      workItem: { id: 'WI-2', DevopsProjectId: 'proj-abc' },
       commitMessage: 'feat: update',
       repoPath: '/repo'
     });
@@ -71,7 +83,13 @@ describe('commitLiteWorkItem', () => {
     expect(joined).toMatch('Changes committed successfully');
     expect(joined).toMatch('Commit SHA: abc123');
     expect(mockConnection.request).toHaveBeenCalledWith(
-      expect.objectContaining({ method: 'POST', url: expect.stringContaining('commitlite') })
+      expect.objectContaining({
+        method: 'POST',
+        url: expect.stringContaining(
+          '/connect/devops/projects/proj-abc/workitem/WI-2/sync'
+        ),
+        body: '{}'
+      })
     );
   });
 });
