@@ -3,7 +3,7 @@ import { z }  from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, Services, Toolset } from "@salesforce/mcp-provider-api";
 import { getMessage } from "../messages.js";
-import { getErrorMessage } from "../utils.js";
+import { getErrorMessage, sanitizePath } from "../utils.js";
 import { RunAnalyzerAction, RunAnalyzerActionImpl, RunInput, RunOutput } from "../actions/run-analyzer.js";
 import { CodeAnalyzerConfigFactoryImpl } from "../factories/CodeAnalyzerConfigFactory.js";
 import { EnginePluginsFactoryImpl } from "../factories/EnginePluginsFactory.js";
@@ -19,15 +19,15 @@ When to use this tool:
 - When the user asks you to generate files, use this tool to scan those files.
 - When the user asks you to check code for problems, use this tool to do that.
 
-REQUIRED INPUT - Working Directory:
-- You MUST provide the "workingDirectory" parameter with the absolute path to the project/workspace root.
+REQUIRED INPUT - Directory:
+- You MUST provide the "directory" parameter with the absolute path to the project/workspace root.
 - The tool will automatically search for code-analyzer.yml or code-analyzer.yaml config files in this directory.
 - Config files contain custom rule configurations, severities, and ignore patterns that will be respected.
-- If no config file is found in the working directory, default configuration will be used.
+- If no config file is found in the directory, default configuration will be used.
 
 OPTIONAL - Custom Config Path:
 - Use "configPath" parameter only if the config file has a custom name or is in a non-standard location.
-- If provided, configPath takes precedence over config files in workingDirectory.
+- If provided, configPath takes precedence over config files in directory.
 
 Optional: Provide a "selector" to choose which rules to run. Supports:
 - Rule names: "WhileLoopsMustUseBraces", "no-unused-vars"
@@ -46,8 +46,8 @@ After completion: Use the "query_code_analyzer_results" tool to filter and expla
 
 export const inputSchema = z.object({
     target: z.array(z.string()).describe(`A JSON-formatted array of between 1 and ${MAX_ALLOWABLE_TARGET_COUNT} files on the users machine that should be scanned. These paths MUST be ABSOLUTE paths, and not relative paths.`),
-    workingDirectory: z.string().describe(
-        `REQUIRED: Absolute path to the workspace/working directory. ` +
+    directory: z.string().describe(
+        `REQUIRED: Absolute path to the workspace/directory. ` +
         `The tool will automatically search for code-analyzer.yml or code-analyzer.yaml config files in this directory. ` +
         `This should typically be the root directory of the project being analyzed.`
     ),
@@ -57,8 +57,8 @@ export const inputSchema = z.object({
     ),
     configPath: z.string().optional().describe(
         `Optional absolute path to a Code Analyzer configuration file with a custom name or in a non-standard location. ` +
-        `Use this when your config file has a different name or is not in the working directory. ` +
-        `If provided, this takes precedence over config files found in workingDirectory.`
+        `Use this when your config file has a different name or is not in the directory. ` +
+        `If provided, this takes precedence over config files found in directory.`
     )
 });
 type InputArgsShape = typeof inputSchema.shape;
@@ -178,7 +178,22 @@ function validateInput(input: RunInput): void {
     if (input.target.length > MAX_ALLOWABLE_TARGET_COUNT) {
         throw new Error(getMessage('tooManyTargets', input.target.length, MAX_ALLOWABLE_TARGET_COUNT));
     }
+
+    // Validate directory path
+    if (!sanitizePath(input.directory)) {
+        throw new Error(`Invalid directory path: ${input.directory}. Path must be absolute and not contain traversal sequences.`);
+    }
+
+    // Validate configPath if provided
+    if (input.configPath && !sanitizePath(input.configPath)) {
+        throw new Error(`Invalid config path: ${input.configPath}. Path must be absolute and not contain traversal sequences.`);
+    }
+
+    // Validate target paths
     for (const entry of input.target) {
+        if (!sanitizePath(entry)) {
+            throw new Error(`Invalid target path: ${entry}. Path must be absolute and not contain traversal sequences.`);
+        }
         if (!fs.existsSync(entry)) {
             throw new Error(getMessage('allTargetsMustExist', entry));
         }

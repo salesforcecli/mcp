@@ -34,7 +34,7 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
         expect(config.title).toEqual('Run Code Analyzer');
         expect(config.description).toContain('A tool for performing static analysis against code.');
         expect(config.inputSchema).toBeTypeOf('object');
-        expect(Object.keys(config.inputSchema as object).sort()).toEqual(['configPath', 'selector', 'target', 'workingDirectory']);
+        expect(Object.keys(config.inputSchema as object).sort()).toEqual(['configPath', 'directory', 'selector', 'target']);
         expect(config.outputSchema).toBeTypeOf('object');
         expect(Object.keys(config.outputSchema as object)).toEqual(['status', 'resultsFile', 'summary']);
         expect(config.annotations).toEqual({readOnlyHint: false});
@@ -63,12 +63,12 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
 
             const result: CallToolResult = await tool.exec({
                 target: sampleTargets.slice(0, 5),
-                workingDirectory: PATH_TO_SAMPLE_TARGETS
+                directory: PATH_TO_SAMPLE_TARGETS
             });
 
             expect(spyAction.execCallHistory).toHaveLength(1);
             expect(spyAction.execCallHistory[0].target).toEqual(sampleTargets.slice(0, 5));
-            expect(spyAction.execCallHistory[0].workingDirectory).toEqual(PATH_TO_SAMPLE_TARGETS);
+            expect(spyAction.execCallHistory[0].directory).toEqual(PATH_TO_SAMPLE_TARGETS);
 
             const expectedOutput: RunOutput = {
                 status: "Spy successfully invoked"
@@ -84,7 +84,7 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
                 case: 'paths to files that do not exist',
                 args: {
                     target: [path.join(PATH_TO_SAMPLE_TARGETS, 'beep.cls')],
-                    workingDirectory: PATH_TO_SAMPLE_TARGETS
+                    directory: PATH_TO_SAMPLE_TARGETS
                 },
                 keyErrorPhrase: "must exist"
             },
@@ -92,7 +92,7 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
                 case: 'paths to directories',
                 args: {
                     target: [PATH_TO_SAMPLE_TARGETS],
-                    workingDirectory: PATH_TO_SAMPLE_TARGETS
+                    directory: PATH_TO_SAMPLE_TARGETS
                 },
                 keyErrorPhrase: "must be files"
             },
@@ -100,7 +100,7 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
                 case: 'lists in excess of 10 entries',
                 args: {
                     target: sampleTargets,
-                    workingDirectory: PATH_TO_SAMPLE_TARGETS
+                    directory: PATH_TO_SAMPLE_TARGETS
                 },
                 keyErrorPhrase: "maximum allowable length of 10"
             },
@@ -108,7 +108,7 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
                 case: 'empty lists',
                 args: {
                     target: [],
-                    workingDirectory: PATH_TO_SAMPLE_TARGETS
+                    directory: PATH_TO_SAMPLE_TARGETS
                 },
                 keyErrorPhrase: "non-empty"
             }
@@ -128,7 +128,7 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
 
             const result: CallToolResult = await tool.exec({
                 target: sampleTargets.slice(0, 5),
-                workingDirectory: PATH_TO_SAMPLE_TARGETS
+                directory: PATH_TO_SAMPLE_TARGETS
             });
 
             const expectedOutput: RunOutput = {
@@ -150,7 +150,7 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
             tool = new CodeAnalyzerRunMcpTool(spyAction);
             const result: CallToolResult = await tool.exec({
                 target: [path.join(PATH_TO_SAMPLE_TARGETS, 'ApexTarget1.cls'), path.join(PATH_TO_SAMPLE_TARGETS, 'ApexTarget2.cls')],
-                workingDirectory: PATH_TO_SAMPLE_TARGETS,
+                directory: PATH_TO_SAMPLE_TARGETS,
                 selector
             } as RunInput);
             expect(result.isError).toBe(true);
@@ -164,7 +164,7 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
             tool = new CodeAnalyzerRunMcpTool(spyAction);
             const result: CallToolResult = await tool.exec({
                 target: [path.join(PATH_TO_SAMPLE_TARGETS, 'ApexTarget1.cls')],
-                workingDirectory: PATH_TO_SAMPLE_TARGETS,
+                directory: PATH_TO_SAMPLE_TARGETS,
                 selector: 'WhileLoopsMustUseBraces:pmd'
             } as RunInput);
 

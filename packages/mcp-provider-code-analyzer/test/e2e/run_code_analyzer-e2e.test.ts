@@ -52,7 +52,7 @@ describe('run_code_analyzer', () => {
             name: 'run_code_analyzer',
             params: {
                 target: [target],
-                workingDirectory: PATH_TO_SAMPLE_TARGETS
+                directory: PATH_TO_SAMPLE_TARGETS
             }
         }, 60000);
 
@@ -65,7 +65,7 @@ describe('run_code_analyzer', () => {
             name: 'run_code_analyzer',
             params: {
                 target: [path.join(__dirname, '..', 'fixtures', 'sample-targets', 'NoTargetWithThisName.cls')],
-                workingDirectory: PATH_TO_SAMPLE_TARGETS
+                directory: PATH_TO_SAMPLE_TARGETS
             }
         }, 60000);
 

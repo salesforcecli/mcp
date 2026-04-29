@@ -197,7 +197,7 @@ describe('RunAnalyzerActionImpl', () => {
     ])('When $case, $expectation', async ({target, comparisonFile, configFactory, enginePluginsFactory, keyStatusPhrases, expectedSummary}) => {
         const input: RunInput = {
             target,
-            workingDirectory: PATH_TO_SAMPLE_TARGETS
+            directory: PATH_TO_SAMPLE_TARGETS
         }
 
         const action: RunAnalyzerActionImpl = new RunAnalyzerActionImpl({
@@ -242,7 +242,7 @@ describe('RunAnalyzerActionImpl', () => {
         it('When a telemetry service is provided, it is used', async () => {
             const input: RunInput = {
                 target: [path.join(PATH_TO_SAMPLE_TARGETS, 'ApexTarget1.cls')],
-                workingDirectory: PATH_TO_SAMPLE_TARGETS
+                directory: PATH_TO_SAMPLE_TARGETS
             };
 
             const spyTelemetryService: SpyTelemetryService = new SpyTelemetryService();

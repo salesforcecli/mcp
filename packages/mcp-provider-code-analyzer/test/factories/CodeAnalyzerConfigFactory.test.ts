@@ -25,19 +25,19 @@ describe("CodeAnalyzerConfigFactoryImpl", () => {
         });
     });
 
-    describe("create with workingDirectory", () => {
-        it("When workingDirectory contains config file, then loads config from that directory", () => {
+    describe("create with directory", () => {
+        it("When directory contains config file, then loads config from that directory", () => {
             const config: CodeAnalyzerConfig = factory.create(undefined, PATH_TO_WORKSPACE_WITH_CONFIG);
             expect(config).toBeDefined();
 
-            // Verify the config was loaded from the working directory
+            // Verify the config was loaded from the directory
             // The test config file has a custom rule override with severity 1
             const ruleOverride = config.getRuleOverrideFor('pmd', 'WhileLoopsMustUseBraces');
             expect(ruleOverride.severity).toBe(1);
             expect(ruleOverride.tags).toContain('MyCustomTag');
         });
 
-        it("When workingDirectory does not contain config file, then returns default config", () => {
+        it("When directory does not contain config file, then returns default config", () => {
             const config: CodeAnalyzerConfig = factory.create(undefined, PATH_TO_WORKSPACE_WITHOUT_CONFIG);
             expect(config).toBeDefined();
 
@@ -46,18 +46,18 @@ describe("CodeAnalyzerConfigFactoryImpl", () => {
             expect(ruleOverride.severity).toBeUndefined(); // No override in default config
         });
 
-        it("When workingDirectory does not exist, then throws error", () => {
+        it("When directory does not exist, then throws error", () => {
             const nonExistentPath = path.join(__dirname, 'does-not-exist');
-            expect(() => factory.create(undefined, nonExistentPath)).toThrow('Working directory does not exist');
+            expect(() => factory.create(undefined, nonExistentPath)).toThrow('Directory does not exist');
         });
 
-        it("When workingDirectory is a file not a directory, then throws error", () => {
-            expect(() => factory.create(undefined, PATH_TO_CONFIG_FILE)).toThrow('Working directory must be a directory');
+        it("When directory is a file not a directory, then throws error", () => {
+            expect(() => factory.create(undefined, PATH_TO_CONFIG_FILE)).toThrow('Directory must be a directory');
         });
 
-        it("When workingDirectory is relative, then throws error", () => {
+        it("When directory is relative, then throws error", () => {
             const relativePath = './some-dir';
-            expect(() => factory.create(undefined, relativePath)).toThrow('Working directory must be an absolute path');
+            expect(() => factory.create(undefined, relativePath)).toThrow('Invalid directory path');
         });
     });
 
@@ -80,14 +80,14 @@ describe("CodeAnalyzerConfigFactoryImpl", () => {
 
         it("When config path is relative, then throws error", () => {
             const relativePath = './code-analyzer.yml';
-            expect(() => factory.create(relativePath)).toThrow('Config path must be an absolute path');
+            expect(() => factory.create(relativePath)).toThrow('Invalid config path');
         });
 
-        it("When both configPath and workingDirectory provided, configPath takes precedence", () => {
+        it("When both configPath and directory provided, configPath takes precedence", () => {
             const config: CodeAnalyzerConfig = factory.create(PATH_TO_CONFIG_FILE, PATH_TO_WORKSPACE_WITHOUT_CONFIG);
             expect(config).toBeDefined();
 
-            // Should load from configPath (which has custom severity 1), not workingDirectory
+            // Should load from configPath (which has custom severity 1), not directory
             const ruleOverride = config.getRuleOverrideFor('pmd', 'WhileLoopsMustUseBraces');
             expect(ruleOverride.severity).toBe(1);
             expect(ruleOverride.tags).toContain('MyCustomTag');

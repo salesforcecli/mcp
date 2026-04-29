@@ -1,20 +1,21 @@
 import path from "node:path";
 import fs from "node:fs";
 import { CodeAnalyzerConfig } from "@salesforce/code-analyzer-core";
+import { sanitizePath } from "../utils.js";
 
 export interface CodeAnalyzerConfigFactory {
-    create(configPath?: string, workingDirectory?: string): CodeAnalyzerConfig;
+    create(configPath?: string, directory?: string): CodeAnalyzerConfig;
 }
 
 export class CodeAnalyzerConfigFactoryImpl {
     private static readonly CONFIG_FILE_NAME: string = "code-analyzer";
     private static readonly CONFIG_FILE_EXTENSIONS: string[] = ['yaml', 'yml'];
 
-    public create(configPath?: string, workingDirectory?: string): CodeAnalyzerConfig {
+    public create(configPath?: string, directory?: string): CodeAnalyzerConfig {
         // Priority 1: If a config path is explicitly provided, use it
         if (configPath) {
-            if (!path.isAbsolute(configPath)) {
-                throw new Error(`Config path must be an absolute path: ${configPath}`);
+            if (!sanitizePath(configPath)) {
+                throw new Error(`Invalid config path: ${configPath}. Path must be absolute and not contain traversal sequences.`);
             }
             if (!fs.existsSync(configPath)) {
                 throw new Error(`Specified config file does not exist: ${configPath}`);
@@ -22,20 +23,20 @@ export class CodeAnalyzerConfigFactoryImpl {
             return CodeAnalyzerConfig.fromFile(configPath);
         }
 
-        // Priority 2: If workingDirectory is provided, search for config files there
-        if (workingDirectory) {
-            if (!path.isAbsolute(workingDirectory)) {
-                throw new Error(`Working directory must be an absolute path: ${workingDirectory}`);
+        // Priority 2: If directory is provided, search for config files there
+        if (directory) {
+            if (!sanitizePath(directory)) {
+                throw new Error(`Invalid directory path: ${directory}. Path must be absolute and not contain traversal sequences.`);
             }
-            if (!fs.existsSync(workingDirectory)) {
-                throw new Error(`Working directory does not exist: ${workingDirectory}`);
+            if (!fs.existsSync(directory)) {
+                throw new Error(`Directory does not exist: ${directory}`);
             }
-            if (!fs.statSync(workingDirectory).isDirectory()) {
-                throw new Error(`Working directory must be a directory, not a file: ${workingDirectory}`);
+            if (!fs.statSync(directory).isDirectory()) {
+                throw new Error(`Directory must be a directory, not a file: ${directory}`);
             }
-            const configFromWorkingDir = this.seekConfigInDirectory(workingDirectory);
-            if (configFromWorkingDir) {
-                return configFromWorkingDir;
+            const configFromDirectory = this.seekConfigInDirectory(directory);
+            if (configFromDirectory) {
+                return configFromDirectory;
             }
         }
 

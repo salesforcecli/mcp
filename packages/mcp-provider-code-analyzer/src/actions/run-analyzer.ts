@@ -28,10 +28,9 @@ type RunAnalyzerActionOptions = {
     telemetryService?: TelemetryService
 }
 
-// NOTE: THIS MUST ALIGN WITH THE ZOD SCHEMA DEFINED IN `tools/run_code_analyzer.ts`.
 export type RunInput = {
     target: string[]
-    workingDirectory: string
+    directory: string
     selector?: string
     configPath?: string
 }
@@ -61,7 +60,7 @@ export class RunAnalyzerActionImpl implements RunAnalyzerAction {
     public async exec(input: RunInput): Promise<RunOutput> {
         let analyzer: CodeAnalyzer;
         try {
-            analyzer = new CodeAnalyzer(this.configFactory.create(input.configPath, input.workingDirectory));
+            analyzer = new CodeAnalyzer(this.configFactory.create(input.configPath, input.directory));
         } catch (e) {
             return {
                 status: getMessage('errorCreatingConfig', getErrorMessage(e))
