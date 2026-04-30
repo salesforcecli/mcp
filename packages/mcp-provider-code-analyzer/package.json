@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/mcp-provider-code-analyzer",
-  "description": "(For Interal Use Only) Provides MCP Tools for Salesforce Code Analyzer to a MCP Server",
+  "description": "(For Internal Use Only) Provides MCP Tools for Salesforce Code Analyzer to a MCP Server",
   "version": "0.7.1",
   "author": "Salesforce",
   "license": "Apache-2.0",
@@ -17,11 +17,11 @@
     "@salesforce/code-analyzer-core": "^0.43.0",
     "@salesforce/code-analyzer-engine-api": "^0.35.0",
     "@salesforce/code-analyzer-eslint-engine": "^0.40.2",
-    "@salesforce/code-analyzer-pmd-engine": "^0.37.0",
+    "@salesforce/code-analyzer-pmd-engine": "^0.40.0",
     "@salesforce/code-analyzer-regex-engine": "^0.33.0",
     "@salesforce/code-analyzer-retirejs-engine": "^0.32.0",
     "@salesforce/mcp-provider-api": "^0.4.1",
-    "fast-xml-parser": "^5.5.3",
+    "fast-xml-parser": "^5.7.2",
     "zod": "^3.25.76"
   },
   "devDependencies": {

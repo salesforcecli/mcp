@@ -206,7 +206,7 @@ jobs:
           # Use -L flag to dereference symlinks (e.g., README.md -> ../../README.md)
           cp -rL . ${{ runner.temp }}/mcp-shrinkwrap
           cd ${{ runner.temp }}/mcp-shrinkwrap
-          npm install
+          npm install --omit=dev
           npm shrinkwrap
 
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
