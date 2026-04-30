@@ -3081,6 +3081,19 @@
     nock "^13.5.6"
     yaml "^2.8.3"
 
+"@salesforce/agents@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/agents/-/agents-1.3.0.tgz#342f2790013978c6b8855df399bf58ad4b5e9aec"
+  integrity sha512-HuwVifaBXdPuabHrRrLdyuUDV600YDsuDPI0pxw6A/JCzCdwsOkExpzi/Zz7v8I7qnUGhX9uK1GSKsBLasSXSg==
+  dependencies:
+    "@salesforce/core" "^8.28.3"
+    "@salesforce/kit" "^3.2.6"
+    "@salesforce/source-deploy-retrieve" "^12.32.7"
+    "@salesforce/types" "^1.7.1"
+    fast-xml-parser "^5.6.0"
+    nock "^13.5.6"
+    yaml "^2.8.3"
+
 "@salesforce/apex-node@^8.2.1":
   version "8.3.3"
   resolved "https://registry.yarnpkg.com/@salesforce/apex-node/-/apex-node-8.3.3.tgz#9a1c49ef7f2e567e37e14b45cf61df075572366c"
@@ -3088,6 +3101,21 @@
   dependencies:
     "@salesforce/core" "^8.23.1"
     "@salesforce/kit" "^3.2.4"
+    "@types/istanbul-reports" "^3.0.4"
+    fast-glob "^3.3.2"
+    faye "1.4.1"
+    istanbul-lib-coverage "^3.2.2"
+    istanbul-lib-report "^3.0.1"
+    istanbul-reports "^3.2.0"
+    json-stream-stringify "^3.1.6"
+
+"@salesforce/apex-node@^8.4.22":
+  version "8.4.22"
+  resolved "https://registry.yarnpkg.com/@salesforce/apex-node/-/apex-node-8.4.22.tgz#608c115082b5838a39b6f6980e06e16093d81044"
+  integrity sha512-/pleLG4HD/F5li4eQUXIqLCFCYh/UnXHZNgoeHSkG89WDLITxjTp2lzbdE7QkkRzCFKGcjECW6DmHR67+TYqrQ==
+  dependencies:
+    "@salesforce/core" "^8.28.3"
+    "@salesforce/kit" "^3.2.6"
     "@types/istanbul-reports" "^3.0.4"
     fast-glob "^3.3.2"
     faye "1.4.1"
@@ -3540,26 +3568,6 @@
     proxy-agent "^6.4.0"
     yaml "^2.8.1"
 
-"@salesforce/source-deploy-retrieve@^12.31.8":
-  version "12.31.8"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-12.31.8.tgz#0eade61d5f117722fed81a4f2c04eb7a7d5f4703"
-  integrity sha512-gp2yJUuAsR86v8QkGY50Sxyiup4H0QNyT7bC3rowxUnR/mw1q3gkXSDnhHOWt5toWsZr78oL1ztGQxG89l89XQ==
-  dependencies:
-    "@salesforce/core" "^8.24.0"
-    "@salesforce/kit" "^3.2.4"
-    "@salesforce/ts-types" "^2.0.12"
-    "@salesforce/types" "^1.6.0"
-    fast-levenshtein "^3.0.0"
-    fast-xml-parser "^4.5.3"
-    got "^11.8.6"
-    graceful-fs "^4.2.11"
-    ignore "^5.3.2"
-    jszip "^3.10.1"
-    mime "2.6.0"
-    minimatch "^9.0.5"
-    proxy-agent "^6.4.0"
-    yaml "^2.8.1"
-
 "@salesforce/source-deploy-retrieve@^12.32.1":
   version "12.34.5"
   resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-12.34.5.tgz#c02cd88f6c673c75b0d15bf06c8dafc85d06a004"
@@ -3610,20 +3618,6 @@
     "@salesforce/source-deploy-retrieve" "^12.32.7"
     "@salesforce/ts-types" "^2.0.12"
     fast-xml-parser "^5.5.7"
-    graceful-fs "^4.2.11"
-    isomorphic-git "^1.34.2"
-    ts-retry-promise "^0.8.1"
-
-"@salesforce/source-tracking@^7.8.2":
-  version "7.8.2"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-7.8.2.tgz#3bd186dd98ae72d52485ddb61e4b4b772a72c1aa"
-  integrity sha512-NCzCTiVztYsM9AtMhFCruG5dO9ucWjEI6NnF08zueGagP/F8QY4Z6JRrXst1MVYz5287XKWFqDHvA2nXVmAh3Q==
-  dependencies:
-    "@salesforce/core" "^8.24.0"
-    "@salesforce/kit" "^3.2.4"
-    "@salesforce/source-deploy-retrieve" "^12.31.8"
-    "@salesforce/ts-types" "^2.0.12"
-    fast-xml-parser "^4.5.3"
     graceful-fs "^4.2.11"
     isomorphic-git "^1.34.2"
     ts-retry-promise "^0.8.1"
@@ -7528,7 +7522,7 @@ fast-xml-parser@^5.5.7:
     path-expression-matcher "^1.2.0"
     strnum "^2.2.2"
 
-fast-xml-parser@^5.5.8, fast-xml-parser@^5.7.2:
+fast-xml-parser@^5.5.8, fast-xml-parser@^5.6.0, fast-xml-parser@^5.7.2:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-5.7.2.tgz#fecd0b054c6c132fc03dab994a413da781e0eb9f"
   integrity sha512-P7oW7tLbYnhOLQk/Gv7cZgzgMPP/XN03K02/Jy6Y/NHzyIAIpxuZIM/YqAkfiXFPxA2CTm7NtCijK9EDu09u2w==
