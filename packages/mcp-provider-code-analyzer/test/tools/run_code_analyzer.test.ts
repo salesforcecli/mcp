@@ -34,7 +34,7 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
         expect(config.title).toEqual('Run Code Analyzer');
         expect(config.description).toContain('A tool for performing static analysis against code.');
         expect(config.inputSchema).toBeTypeOf('object');
-        expect(Object.keys(config.inputSchema as object).sort()).toEqual(['selector', 'target']);
+        expect(Object.keys(config.inputSchema as object).sort()).toEqual(['configPath', 'directory', 'selector', 'target']);
         expect(config.outputSchema).toBeTypeOf('object');
         expect(Object.keys(config.outputSchema as object)).toEqual(['status', 'resultsFile', 'summary']);
         expect(config.annotations).toEqual({readOnlyHint: false});
@@ -61,10 +61,14 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
             const spyAction: SpyRunAction = new SpyRunAction();
             tool = new CodeAnalyzerRunMcpTool(spyAction);
 
-            const result: CallToolResult = await tool.exec({target: sampleTargets.slice(0, 5)});
+            const result: CallToolResult = await tool.exec({
+                target: sampleTargets.slice(0, 5),
+                directory: PATH_TO_SAMPLE_TARGETS
+            });
 
             expect(spyAction.execCallHistory).toHaveLength(1);
             expect(spyAction.execCallHistory[0].target).toEqual(sampleTargets.slice(0, 5));
+            expect(spyAction.execCallHistory[0].directory).toEqual(PATH_TO_SAMPLE_TARGETS);
 
             const expectedOutput: RunOutput = {
                 status: "Spy successfully invoked"
@@ -79,28 +83,32 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
             {
                 case: 'paths to files that do not exist',
                 args: {
-                    target: [path.join(PATH_TO_SAMPLE_TARGETS, 'beep.cls')]
+                    target: [path.join(PATH_TO_SAMPLE_TARGETS, 'beep.cls')],
+                    directory: PATH_TO_SAMPLE_TARGETS
                 },
                 keyErrorPhrase: "must exist"
             },
             {
                 case: 'paths to directories',
                 args: {
-                    target: [PATH_TO_SAMPLE_TARGETS]
+                    target: [PATH_TO_SAMPLE_TARGETS],
+                    directory: PATH_TO_SAMPLE_TARGETS
                 },
                 keyErrorPhrase: "must be files"
             },
             {
                 case: 'lists in excess of 10 entries',
                 args: {
-                    target: sampleTargets
+                    target: sampleTargets,
+                    directory: PATH_TO_SAMPLE_TARGETS
                 },
                 keyErrorPhrase: "maximum allowable length of 10"
             },
             {
                 case: 'empty lists',
                 args: {
-                    target: []
+                    target: [],
+                    directory: PATH_TO_SAMPLE_TARGETS
                 },
                 keyErrorPhrase: "non-empty"
             }
@@ -118,7 +126,10 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
             const throwingAction: ThrowingRunAction = new ThrowingRunAction();
             tool = new CodeAnalyzerRunMcpTool(throwingAction);
 
-            const result: CallToolResult = await tool.exec({target: sampleTargets.slice(0, 5)});
+            const result: CallToolResult = await tool.exec({
+                target: sampleTargets.slice(0, 5),
+                directory: PATH_TO_SAMPLE_TARGETS
+            });
 
             const expectedOutput: RunOutput = {
                 status: "Error from ThrowingRunAction"
@@ -127,19 +138,6 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
             expect(result.content[0].type).toEqual("text");
             expect(result.content[0].text).toEqual(JSON.stringify(expectedOutput));
             expect(result.structuredContent).toEqual(expectedOutput);
-        });
-
-        it('When selector has invalid tokens, then return validation error (no action call)', async () => {
-            const spyAction: SpyRunAction = new SpyRunAction();
-            tool = new CodeAnalyzerRunMcpTool(spyAction);
-            const result: CallToolResult = await tool.exec({
-                target: [path.join(PATH_TO_SAMPLE_TARGETS, 'ApexTarget1.cls')],
-                selector: 'NotATag:9999'
-            } as RunInput);
-            expect(result.isError).toBe(true);
-            expect(result.structuredContent?.status).toContain('Invalid selector token(s):');
-            // Ensure action was not invoked
-            expect(spyAction.execCallHistory).toHaveLength(0);
         });
 
         it.each([
@@ -152,12 +150,27 @@ describe("Tests for CodeAnalyzerRunMcpTool", () => {
             tool = new CodeAnalyzerRunMcpTool(spyAction);
             const result: CallToolResult = await tool.exec({
                 target: [path.join(PATH_TO_SAMPLE_TARGETS, 'ApexTarget1.cls'), path.join(PATH_TO_SAMPLE_TARGETS, 'ApexTarget2.cls')],
+                directory: PATH_TO_SAMPLE_TARGETS,
                 selector
             } as RunInput);
             expect(result.isError).toBe(true);
             expect(result.structuredContent?.status).toContain('Unsupported engine(s) for this tool');
             // Ensure action was not invoked
             expect(spyAction.execCallHistory).toHaveLength(0);
+        });
+
+        it('When selector contains rule names, action is called with the selector', async () => {
+            const spyAction: SpyRunAction = new SpyRunAction();
+            tool = new CodeAnalyzerRunMcpTool(spyAction);
+            const result: CallToolResult = await tool.exec({
+                target: [path.join(PATH_TO_SAMPLE_TARGETS, 'ApexTarget1.cls')],
+                directory: PATH_TO_SAMPLE_TARGETS,
+                selector: 'WhileLoopsMustUseBraces:pmd'
+            } as RunInput);
+
+            expect(spyAction.execCallHistory).toHaveLength(1);
+            expect(spyAction.execCallHistory[0].selector).toEqual('WhileLoopsMustUseBraces:pmd');
+            expect(result.structuredContent?.status).toEqual('Spy successfully invoked');
         });
     });
 });

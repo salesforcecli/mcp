@@ -3321,6 +3321,31 @@
     ts-retry-promise "^0.8.1"
     zod "^4.1.12"
 
+"@salesforce/core@^8.28.3":
+  version "8.29.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.29.0.tgz#d75d1afe06962e10c466bdf670fa8512bd683882"
+  integrity sha512-q6xDNLPbbZW1n4X4YK1iM8jZvwvJRiwbJxdeF5iHuETxmMka16FoCVi+WziK/Rh5EP0yW08FYyiynwPlgz5RBw==
+  dependencies:
+    "@jsforce/jsforce-node" "^3.10.13"
+    "@salesforce/kit" "^3.2.4"
+    "@salesforce/ts-types" "^2.0.12"
+    ajv "^8.18.0"
+    change-case "^4.1.2"
+    fast-levenshtein "^3.0.0"
+    faye "^1.4.1"
+    form-data "^4.0.4"
+    js2xmlparser "^4.0.1"
+    jsonwebtoken "9.0.3"
+    jszip "3.10.1"
+    memfs "4.38.1"
+    pino "^9.7.0"
+    pino-abstract-transport "^1.2.0"
+    pino-pretty "^11.3.0"
+    proper-lockfile "^4.1.2"
+    semver "^7.7.3"
+    ts-retry-promise "^0.8.1"
+    zod "^4.1.12"
+
 "@salesforce/dev-config@^4.3.2":
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/@salesforce/dev-config/-/dev-config-4.3.2.tgz#10047e2b8d289c93f157ab4243a1b1de57f2d6a2"
@@ -3410,16 +3435,6 @@
     semver "^7.7.2"
     zod "^3.25.76"
 
-"@salesforce/mcp-provider-api@file:packages/mcp-provider-api":
-  version "0.6.0"
-  dependencies:
-    "@modelcontextprotocol/sdk" "^1.18.0"
-    "@salesforce/core" "^8.24.3"
-    "@salesforce/ts-types" "^2"
-    "@types/semver" "^7.7.1"
-    semver "^7.7.2"
-    zod "^3.25.76"
-
 "@salesforce/mcp-provider-aura-experts@0.3.7":
   version "0.3.7"
   resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-aura-experts/-/mcp-provider-aura-experts-0.3.7.tgz#285981884f571defc313dc60730c55b0cfc504c0"
@@ -3437,45 +3452,6 @@
     zod "^3.24.2"
     zod-to-json-schema "^3.24.3"
 
-"@salesforce/mcp-provider-code-analyzer@file:packages/mcp-provider-code-analyzer":
-  version "0.7.1"
-  dependencies:
-    "@modelcontextprotocol/sdk" "^1.18.0"
-    "@salesforce/code-analyzer-core" "^0.43.0"
-    "@salesforce/code-analyzer-engine-api" "^0.35.0"
-    "@salesforce/code-analyzer-eslint-engine" "^0.40.2"
-    "@salesforce/code-analyzer-pmd-engine" "^0.40.0"
-    "@salesforce/code-analyzer-regex-engine" "^0.33.0"
-    "@salesforce/code-analyzer-retirejs-engine" "^0.32.0"
-    "@salesforce/mcp-provider-api" "^0.4.1"
-    fast-xml-parser "^5.7.2"
-    zod "^3.25.76"
-
-"@salesforce/mcp-provider-devops@file:packages/mcp-provider-devops":
-  version "0.3.6"
-  dependencies:
-    "@modelcontextprotocol/sdk" "^1.18.0"
-    "@salesforce/core" "^8.24.3"
-    "@salesforce/mcp-provider-api" "^0.4.1"
-    "@salesforce/source-deploy-retrieve" "^12.31.7"
-    "@salesforce/ts-types" "^2.0.12"
-    zod "^3.25.76"
-
-"@salesforce/mcp-provider-dx-core@file:packages/mcp-provider-dx-core":
-  version "0.9.7"
-  dependencies:
-    "@modelcontextprotocol/sdk" "^1.18.0"
-    "@salesforce/agents" "^0.25.1"
-    "@salesforce/apex-node" "^8.2.1"
-    "@salesforce/core" "^8.24.3"
-    "@salesforce/kit" "^3.1.6"
-    "@salesforce/mcp-provider-api" "^0.4.1"
-    "@salesforce/source-deploy-retrieve" "^12.31.8"
-    "@salesforce/source-tracking" "^7.8.2"
-    "@salesforce/ts-types" "^2.0.11"
-    open "^10.1.2"
-    zod "^3.25.76"
-
 "@salesforce/mcp-provider-lwc-experts@0.7.0":
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-lwc-experts/-/mcp-provider-lwc-experts-0.7.0.tgz#fa99de22c37a78fc30194139147dd87dc05fc766"
@@ -3491,34 +3467,6 @@
     stylelint "^16.19.1"
     zod "^3.24.2"
     zod-to-json-schema "^3.24.5"
-
-"@salesforce/mcp-provider-metadata-enrichment@file:packages/mcp-provider-metadata-enrichment":
-  version "0.1.6"
-  dependencies:
-    "@modelcontextprotocol/sdk" "^1.29.0"
-    "@salesforce/mcp-provider-api" "^0.6.0"
-    "@salesforce/mcp-provider-dx-core" "^0.9.7"
-    "@salesforce/metadata-enrichment" "^0.0.15"
-    "@salesforce/source-deploy-retrieve" "^12.35.0"
-    zod "^3.25.76"
-
-"@salesforce/mcp-provider-mobile-web@file:packages/mcp-provider-mobile-web":
-  version "0.2.2"
-  dependencies:
-    "@modelcontextprotocol/sdk" "^1.17.3"
-    "@salesforce/eslint-plugin-lwc-graph-analyzer" "^1.1.0-beta.2"
-    "@salesforce/mcp-provider-api" "^0.4.1"
-    dedent "^1.5.3"
-    eslint "^9.35.0"
-    zod "^3.25.76"
-
-"@salesforce/mcp-provider-scale-products@file:packages/mcp-provider-scale-products":
-  version "0.0.5"
-  dependencies:
-    "@apexdevtools/apex-parser" "^5.0.0-beta.5"
-    "@modelcontextprotocol/sdk" "^1.18.0"
-    "@salesforce/mcp-provider-api" "^0.4.1"
-    zod "^3.25.76"
 
 "@salesforce/metadata-enrichment@^0.0.15":
   version "0.0.15"
@@ -3632,7 +3580,7 @@
     proxy-agent "^6.5.0"
     yaml "^2.8.3"
 
-"@salesforce/source-deploy-retrieve@^12.35.0":
+"@salesforce/source-deploy-retrieve@^12.32.7", "@salesforce/source-deploy-retrieve@^12.35.0":
   version "12.35.0"
   resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-12.35.0.tgz#3df5f9ebd25e8b31ab245ec3827b44a97f8e1156"
   integrity sha512-R/qO0JavpDsfhmkoR/z9jcB9mJFrJCAfaRaySmDuaqiHPuBVlpzey44irCtboNq6agqkOOogIbE3d4gUt5BGHQ==
@@ -3651,6 +3599,20 @@
     minimatch "^9.0.9"
     proxy-agent "^6.5.0"
     yaml "^2.8.3"
+
+"@salesforce/source-tracking@^7.8.14":
+  version "7.8.14"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-7.8.14.tgz#fb4cd354a9502bfdd140c731bd2a65dbf3a8f3e5"
+  integrity sha512-qebz8KFH2plLJzQNs6r+/DG16UmnoUqK3Z3HvIjaIsTuoQUd0d/XP96C1nNEfnnhkqLc6Pu0sd1C0Et59y3CxA==
+  dependencies:
+    "@salesforce/core" "^8.28.3"
+    "@salesforce/kit" "^3.2.6"
+    "@salesforce/source-deploy-retrieve" "^12.32.7"
+    "@salesforce/ts-types" "^2.0.12"
+    fast-xml-parser "^5.5.7"
+    graceful-fs "^4.2.11"
+    isomorphic-git "^1.34.2"
+    ts-retry-promise "^0.8.1"
 
 "@salesforce/source-tracking@^7.8.2":
   version "7.8.2"

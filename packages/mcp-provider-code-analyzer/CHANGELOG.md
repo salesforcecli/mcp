@@ -1,3 +1,12 @@
+# [0.8.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-code-analyzer@0.7.1...mcp-provider-code-analyzer@0.8.0) (2026-04-30)
+
+
+### Features
+
+* Add workingDirectory parameter and fix selector rule name support ([#439](https://github.com/salesforcecli/mcp/issues/439)) ([fcfe832](https://github.com/salesforcecli/mcp/commit/fcfe832b9c8eeece35c8d43a2fe061e8963d2b96))
+
+
+
 ## [0.7.1](https://github.com/salesforcecli/mcp/compare/mcp-provider-code-analyzer@0.7.0...mcp-provider-code-analyzer@0.7.1) (2026-04-01)
 
 
