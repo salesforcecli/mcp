@@ -8,7 +8,7 @@ export class CustomizableConfigFactory implements CodeAnalyzerConfigFactory {
         this.configString = configString;
     }
 
-    public create(): CodeAnalyzerConfig {
+    public create(_configPath?: string, _directory?: string): CodeAnalyzerConfig {
         return CodeAnalyzerConfig.fromJsonString(this.configString);
     }
 }

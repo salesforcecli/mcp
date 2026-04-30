@@ -158,7 +158,7 @@ describe("CodeAnalyzerQueryResultsMcpTool", () => {
 
     const res = await tool.exec({ resultsFile: relPath, selector: "Security", topN: 5 });
     expect(res.isError).toBe(true);
-    expect(res.structuredContent?.status).toContain("resultsFile must be an absolute path");
+    expect(res.structuredContent?.status).toContain("Invalid results file path");
   });
 
   it("wraps action output into content and structuredContent", async () => {
