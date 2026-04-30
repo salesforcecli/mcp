@@ -38,7 +38,7 @@
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@salesforce/agents": "^1.3.0",
     "@salesforce/apex-node": "^8.4.22",
-    "@salesforce/core": "^8.28.4",
+    "@salesforce/core": "^8.29.0",
     "@salesforce/kit": "^3.2.6",
     "@salesforce/mcp-provider-api": "^0.6.0",
     "@salesforce/source-deploy-retrieve": "^12.35.0",
