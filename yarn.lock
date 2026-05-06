@@ -3221,7 +3221,7 @@
     node-stream-zip "^1.15.0"
     retire "^5.4.2"
 
-"@salesforce/core@^8", "@salesforce/core@^8.19.0", "@salesforce/core@^8.19.1", "@salesforce/core@^8.23.1", "@salesforce/core@^8.24.3", "@salesforce/core@^8.27.1", "@salesforce/core@^8.28.1", "@salesforce/core@^8.28.3", "@salesforce/core@^8.28.4", "@salesforce/core@^8.29.0", "@salesforce/core@^8.8.0":
+"@salesforce/core@^8", "@salesforce/core@^8.19.0", "@salesforce/core@^8.19.1", "@salesforce/core@^8.23.1", "@salesforce/core@^8.27.1", "@salesforce/core@^8.28.1", "@salesforce/core@^8.28.3", "@salesforce/core@^8.28.4", "@salesforce/core@^8.29.0", "@salesforce/core@^8.8.0":
   version "8.29.0"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.29.0.tgz#d75d1afe06962e10c466bdf670fa8512bd683882"
   integrity sha512-q6xDNLPbbZW1n4X4YK1iM8jZvwvJRiwbJxdeF5iHuETxmMka16FoCVi+WziK/Rh5EP0yW08FYyiynwPlgz5RBw==
@@ -3323,18 +3323,6 @@
     semver "^7.7.2"
     zod "^3.25.76"
 
-"@salesforce/mcp-provider-api@^0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-api/-/mcp-provider-api-0.4.1.tgz#26214403cee6c4a2631c6ed04846e3a4fa1b3c70"
-  integrity sha512-+e+xIEqfgNSETnn8Mv0jlto3q3MDX5V781ijrm5irwcZn9QmXPRBVDmVvByKHi8gDhDh9Wm5hzCcinTqtUaAcg==
-  dependencies:
-    "@modelcontextprotocol/sdk" "^1.18.0"
-    "@salesforce/core" "^8"
-    "@salesforce/ts-types" "^2"
-    "@types/semver" "^7.7.1"
-    semver "^7.7.2"
-    zod "^3.25.76"
-
 "@salesforce/mcp-provider-aura-experts@0.3.7":
   version "0.3.7"
   resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-aura-experts/-/mcp-provider-aura-experts-0.3.7.tgz#285981884f571defc313dc60730c55b0cfc504c0"
@@ -3351,18 +3339,6 @@
     stylelint "^16.0.0"
     zod "^3.24.2"
     zod-to-json-schema "^3.24.3"
-
-"@salesforce/mcp-provider-devops@0.3.6":
-  version "0.3.6"
-  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-devops/-/mcp-provider-devops-0.3.6.tgz#d1961b210ce7d43ddc5a0c223a2f4412918eac92"
-  integrity sha512-CKlHWR/N8GCVtdULavXEWavTtxDb2rcILxAGtSW7s/gjw9WPT2q5/SEVMLWXqDdZqSeX5uZEsV59HIF+JwjNDw==
-  dependencies:
-    "@modelcontextprotocol/sdk" "^1.18.0"
-    "@salesforce/core" "^8.24.3"
-    "@salesforce/mcp-provider-api" "^0.4.1"
-    "@salesforce/source-deploy-retrieve" "^12.31.7"
-    "@salesforce/ts-types" "^2.0.12"
-    zod "^3.25.76"
 
 "@salesforce/mcp-provider-lwc-experts@0.7.0":
   version "0.7.0"
@@ -3411,26 +3387,6 @@
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/@salesforce/prettier-config/-/prettier-config-0.0.3.tgz#ba648d4886bb38adabe073dbea0b3a91b3753bb0"
   integrity sha512-hYOhoPTCSYMDYn+U1rlEk16PoBeAJPkrdg4/UtAzupM1mRRJOwEPMG1d7U8DxJFKuXW3DMEYWr2MwAIBDaHmFg==
-
-"@salesforce/source-deploy-retrieve@^12.31.7":
-  version "12.35.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-12.35.1.tgz#36c87a1d1d481ff7ad75ae01b7a6df4c788375ba"
-  integrity sha512-BOhoSu38KTmOZCIfoRELQpI0UxmL4wkkrqWxarodtaObaMmw5a14l8dgralxHgX1Y8DyBaA9nekCxxLopQKLFA==
-  dependencies:
-    "@salesforce/core" "^8.29.0"
-    "@salesforce/kit" "^3.2.4"
-    "@salesforce/ts-types" "^2.0.12"
-    "@salesforce/types" "^1.6.0"
-    fast-levenshtein "^3.0.0"
-    fast-xml-parser "^5.7.2"
-    got "^11.8.6"
-    graceful-fs "^4.2.11"
-    ignore "^5.3.2"
-    jszip "^3.10.1"
-    mime "2.6.0"
-    minimatch "^9.0.9"
-    proxy-agent "^6.5.0"
-    yaml "^2.8.3"
 
 "@salesforce/source-deploy-retrieve@^12.32.1", "@salesforce/source-deploy-retrieve@^12.32.7", "@salesforce/source-deploy-retrieve@^12.35.0":
   version "12.35.0"
