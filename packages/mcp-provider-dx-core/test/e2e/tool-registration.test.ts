@@ -71,14 +71,14 @@ describe('specific tool registration', function() {
   it('should not enable NON_GA tools if --allow-non-ga-tools is not specified', async function() {
     this.timeout(60000); // Set 60 second timeout for this test
     const client = await getMcpClient({
-      args: ['--orgs', 'ALLOW_ALL_ORGS', '--tools', 'run_soql_query, list_devops_center_work_items', '--no-telemetry'],
+      args: ['--orgs', 'ALLOW_ALL_ORGS', '--tools', 'run_soql_query, create_scratch_org', '--no-telemetry'],
     });
 
     try {
       const initialTools = (await client.listTools()).tools.map((t) => t.name).sort();
 
       expect(initialTools.length).to.equal(3);
-      // assert that devops's `list_devops_center_work_items` tool isn't included.
+      // assert that the NON_GA `create_scratch_org` tool isn't included without --allow-non-ga-tools.
       expect(initialTools).to.deep.equal(['run_soql_query', 'get_username', 'resume_tool_operation'].sort());
     } catch (err) {
       console.error(err);

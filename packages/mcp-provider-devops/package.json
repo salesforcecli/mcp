@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/mcp-provider-devops",
   "description": "MCP provider for DevOps tools and operations",
-  "version": "0.3.4",
+  "version": "0.3.8",
   "author": "Salesforce",
   "license": "Apache-2.0",
   "type": "module",
@@ -14,9 +14,9 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.18.0",
-    "@salesforce/mcp-provider-api": "^0.4.1",
-    "@salesforce/core": "^8.24.3",
-    "@salesforce/source-deploy-retrieve": "^12.31.7",
+    "@salesforce/mcp-provider-api": "^0.6.0",
+    "@salesforce/core": "^8.29.0",
+    "@salesforce/source-deploy-retrieve": "^12.35.0",
     "@salesforce/ts-types": "^2.0.12",
     "zod": "^3.25.76"
   },

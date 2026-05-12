@@ -2,6 +2,7 @@ import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService } from "@salesforce/mcp-provider-api";
 import * as Constants from "../constants.js";
+import { sanitizePath } from "../utils.js";
 import {
   IRuleCreationStrategy,
   RuleCreationInput,
@@ -215,6 +216,10 @@ function validateCommonInputs(input: z.infer<typeof inputSchema>): CallToolResul
   const workingDirectory = input.workingDirectory?.trim();
   if (!workingDirectory) {
     return buildError("workingDirectory is required. Provide a directory where files can be written.");
+  }
+
+  if (!sanitizePath(workingDirectory)) {
+    return buildError(`Invalid workingDirectory path: ${workingDirectory}. Path must be absolute and not contain traversal sequences.`);
   }
 
   return undefined;

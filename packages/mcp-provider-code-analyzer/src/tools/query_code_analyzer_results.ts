@@ -2,7 +2,7 @@ import path from "node:path";
 import { z } from "zod";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { McpTool, McpToolConfig, ReleaseState, Toolset, TelemetryService, TelemetryEvent } from "@salesforce/mcp-provider-api";
-import { getErrorMessage } from "../utils.js";
+import { getErrorMessage, sanitizePath } from "../utils.js";
 import * as Constants from "../constants.js";
 import { QueryResultsAction, QueryResultsActionImpl, QueryResultsInput, QueryResultsOutput } from "../actions/query-results.js";
 import { validateSelectorForQuery, parseSelectorToFilters } from "../selector.js";
@@ -190,8 +190,8 @@ function emitQueryTelemetry(telemetryService: TelemetryService | undefined, data
 }
 
 function validateInput(input: z.infer<typeof inputSchema>): void {
-    if (!path.isAbsolute(input.resultsFile)) {
-        throw new Error(`resultsFile must be an absolute path: ${input.resultsFile}`);
+    if (!sanitizePath(input.resultsFile)) {
+        throw new Error(`Invalid results file path: ${input.resultsFile}. Path must be absolute and not contain traversal sequences.`);
     }
     // Existence will be validated by the action while reading
 }

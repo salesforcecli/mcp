@@ -6,6 +6,7 @@ import { inputSchema } from '../../src/tools/run_code_analyzer.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const PATH_TO_SAMPLE_TARGETS = path.join(__dirname, '..', 'fixtures', 'sample-targets');
 
 describe('run_code_analyzer', () => {
     const client = new McpTestClient({
@@ -50,7 +51,8 @@ describe('run_code_analyzer', () => {
         const result = await client.callTool(testInputSchema, {
             name: 'run_code_analyzer',
             params: {
-                target: [target]
+                target: [target],
+                directory: PATH_TO_SAMPLE_TARGETS
             }
         }, 60000);
 
@@ -62,7 +64,8 @@ describe('run_code_analyzer', () => {
         const result = await client.callTool(testInputSchema, {
             name: 'run_code_analyzer',
             params: {
-                target: [path.join(__dirname, '..', 'fixtures', 'sample-targets', 'NoTargetWithThisName.cls')]
+                target: [path.join(__dirname, '..', 'fixtures', 'sample-targets', 'NoTargetWithThisName.cls')],
+                directory: PATH_TO_SAMPLE_TARGETS
             }
         }, 60000);
 

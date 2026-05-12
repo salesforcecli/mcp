@@ -1,3 +1,16 @@
+## [0.1.7](https://github.com/salesforcecli/mcp/compare/mcp-provider-metadata-enrichment@0.1.6...mcp-provider-metadata-enrichment@0.1.7) (2026-05-06)
+
+
+
+## [0.1.6](https://github.com/salesforcecli/mcp/compare/mcp-provider-metadata-enrichment@0.1.5...mcp-provider-metadata-enrichment@0.1.6) (2026-04-23)
+
+
+### Bug Fixes
+
+* remove unsupported metadata types ([#447](https://github.com/salesforcecli/mcp/issues/447)) ([3497e41](https://github.com/salesforcecli/mcp/commit/3497e413f73d0b6219e97b5aa1259f06dddb112e))
+
+
+
 ## [0.1.5](https://github.com/salesforcecli/mcp/compare/mcp-provider-metadata-enrichment@0.1.4...mcp-provider-metadata-enrichment@0.1.5) (2026-04-01)
 
 

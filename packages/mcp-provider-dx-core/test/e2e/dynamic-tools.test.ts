@@ -19,8 +19,11 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { DxMcpTransport } from '@salesforce/mcp-test-client';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
+/** Stdio MCP startup can exceed 60s on slow CI runners (e.g. Windows). */
+const E2E_TIMEOUT_MS = 120_000;
+
 describe('sf-dynamic-tools', function() {
-  this.timeout(60000); // Set 60 second timeout for all tests in this suite
+  this.timeout(E2E_TIMEOUT_MS);
 
   const client = new Client({
     name: 'sf-dynamic-tools',
@@ -28,7 +31,7 @@ describe('sf-dynamic-tools', function() {
   });
 
   before(async function() {
-    this.timeout(60000); // Set 60 second timeout for before hook
+    this.timeout(E2E_TIMEOUT_MS);
     const transport = DxMcpTransport({
       args: ['--orgs', 'ALLOW_ALL_ORGS', '--dynamic-tools', '--no-telemetry'],
     });
@@ -37,12 +40,12 @@ describe('sf-dynamic-tools', function() {
   });
 
   after(async function() {
-    this.timeout(60000); // Set 60 second timeout for after hook
+    this.timeout(E2E_TIMEOUT_MS);
     await client.close();
   });
 
   it('should enable 2 tools', async function() {
-    this.timeout(60000); // Set 60 second timeout for this test
+    this.timeout(E2E_TIMEOUT_MS);
     const initialTools = (await client.listTools()).tools.map((t) => t.name).sort();
 
     expect(initialTools.length).to.equal(4);
@@ -76,7 +79,7 @@ describe('sf-dynamic-tools', function() {
   });
 
   it('should list available tools to be enabled', async function() {
-    this.timeout(60000); // Set 60 second timeout for this test
+    this.timeout(E2E_TIMEOUT_MS);
     const result = (await client.callTool({
       name: 'list_tools',
     })) as CallToolResult;

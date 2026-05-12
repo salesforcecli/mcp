@@ -27,7 +27,7 @@ const PATH_TO_SAMPLE_TARGETS: string = path.resolve(__dirname, '..', 'fixtures',
 const PATH_TO_COMPARISON_FILES: string = path.resolve(__dirname, '..', 'fixtures', 'comparison-files');
 
 // TODO: FIGURE OUT A WAY TO MAKE THESE GOLD FILE TESTS MORE ROBUST AGAINST VERSION CHANGES. FOR NOW USING CONSTANT:
-const PMD_VERSION: string = '7.21.0';
+const PMD_VERSION: string = '7.23.0';
 
 describe('RunAnalyzerActionImpl', () => {
     it.each([
@@ -196,7 +196,8 @@ describe('RunAnalyzerActionImpl', () => {
         }
     ])('When $case, $expectation', async ({target, comparisonFile, configFactory, enginePluginsFactory, keyStatusPhrases, expectedSummary}) => {
         const input: RunInput = {
-            target
+            target,
+            directory: PATH_TO_SAMPLE_TARGETS
         }
 
         const action: RunAnalyzerActionImpl = new RunAnalyzerActionImpl({
@@ -240,7 +241,8 @@ describe('RunAnalyzerActionImpl', () => {
     describe('Telemetry Emission', () => {
         it('When a telemetry service is provided, it is used', async () => {
             const input: RunInput = {
-                target: [path.join(PATH_TO_SAMPLE_TARGETS, 'ApexTarget1.cls')]
+                target: [path.join(PATH_TO_SAMPLE_TARGETS, 'ApexTarget1.cls')],
+                directory: PATH_TO_SAMPLE_TARGETS
             };
 
             const spyTelemetryService: SpyTelemetryService = new SpyTelemetryService();
