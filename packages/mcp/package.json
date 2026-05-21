@@ -80,6 +80,9 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
+  "overrides": {
+    "nock": "^13.5.6"
+  },
   "publishConfig": {
     "access": "public"
   },
