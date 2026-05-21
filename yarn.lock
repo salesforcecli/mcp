@@ -3340,6 +3340,39 @@
     zod "^3.24.2"
     zod-to-json-schema "^3.24.3"
 
+"@salesforce/mcp-provider-code-analyzer@0.8.1":
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-code-analyzer/-/mcp-provider-code-analyzer-0.8.1.tgz#9ce35f8db9621f790619c6288d0f48d8bbf3599c"
+  integrity sha512-LCbrJSsxvxWdLMejGeYdbR4qDKGAiebTmtF5TCKjw1P5W8XftBEag/d3s3ZZfZu/J+8OFHfn7v+8Wmjy8M8Odg==
+  dependencies:
+    "@modelcontextprotocol/sdk" "^1.18.0"
+    "@salesforce/code-analyzer-core" "^0.43.0"
+    "@salesforce/code-analyzer-engine-api" "^0.35.0"
+    "@salesforce/code-analyzer-eslint-engine" "^0.40.2"
+    "@salesforce/code-analyzer-pmd-engine" "^0.40.0"
+    "@salesforce/code-analyzer-regex-engine" "^0.33.0"
+    "@salesforce/code-analyzer-retirejs-engine" "^0.32.0"
+    "@salesforce/mcp-provider-api" "^0.6.0"
+    fast-xml-parser "^5.7.2"
+    zod "^3.25.76"
+
+"@salesforce/mcp-provider-dx-core@0.9.8", "@salesforce/mcp-provider-dx-core@^0.9.7":
+  version "0.9.8"
+  resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-dx-core/-/mcp-provider-dx-core-0.9.8.tgz#7205fb877fe4c943053c08845c95b4487a9e5d91"
+  integrity sha512-ESE6laK+Crh1PGTGeTtxMyN+AnEyerC1gHSfgkFbcXrK1vs67rHodrviz1VuxREuJJWExItGkfSyWV330SHzuw==
+  dependencies:
+    "@modelcontextprotocol/sdk" "^1.18.0"
+    "@salesforce/agents" "^1.3.0"
+    "@salesforce/apex-node" "^8.4.22"
+    "@salesforce/core" "^8.29.0"
+    "@salesforce/kit" "^3.2.6"
+    "@salesforce/mcp-provider-api" "^0.6.0"
+    "@salesforce/source-deploy-retrieve" "^12.35.0"
+    "@salesforce/source-tracking" "^7.8.14"
+    "@salesforce/ts-types" "^2.0.12"
+    open "^10.1.2"
+    zod "^3.25.76"
+
 "@salesforce/mcp-provider-lwc-experts@0.7.0":
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-lwc-experts/-/mcp-provider-lwc-experts-0.7.0.tgz#fa99de22c37a78fc30194139147dd87dc05fc766"
