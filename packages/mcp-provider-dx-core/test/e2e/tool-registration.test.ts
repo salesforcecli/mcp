@@ -28,7 +28,18 @@ async function getMcpClient(opts: { args: string[] }) {
     args: opts.args,
   });
 
-  await client.connect(transport);
+  // Add a connection timeout to fail fast if the server doesn't respond
+  // Increased to 90s for Windows compatibility
+  const connectionTimeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('MCP client connection timeout')), 90000)
+  );
+
+  try {
+    await Promise.race([client.connect(transport), connectionTimeout]);
+  } catch (err) {
+    await client.close();
+    throw err;
+  }
 
   return client;
 }
@@ -78,7 +89,7 @@ describe('specific tool registration', function() {
   });
 
   it('should enable 1 tool and a toolset', async function() {
-    this.timeout(60000); // Set 60 second timeout for this test
+    this.timeout(90000); // Increased to 90 seconds for Windows compatibility
     const client = await getMcpClient({
       args: [
         '--orgs',

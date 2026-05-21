@@ -7,6 +7,7 @@ import { CodeAnalyzerListRulesMcpTool } from "../src/tools/list_code_analyzer_ru
 import { CodeAnalyzerQueryResultsMcpTool } from "../src/tools/query_code_analyzer_results.js";
 import { GenerateXpathPromptMcpTool } from "../src/tools/generate_xpath_prompt.js";
 import { CreateCustomRuleMcpTool } from "../src/tools/create_custom_rule.js";
+// CreateRegexRuleMcpTool - Not registered in provider
 
 describe("Tests for CodeAnalyzerMcpProvider", () => {
     let services: Services;
@@ -30,5 +31,6 @@ describe("Tests for CodeAnalyzerMcpProvider", () => {
         expect(tools[3]).toBeInstanceOf(CodeAnalyzerQueryResultsMcpTool);
         expect(tools[4]).toBeInstanceOf(GenerateXpathPromptMcpTool);
         expect(tools[5]).toBeInstanceOf(CreateCustomRuleMcpTool);
+        // Note: create_regex_rule is NOT registered - test via create_custom_rule with engine: "regex"
     });
 })
