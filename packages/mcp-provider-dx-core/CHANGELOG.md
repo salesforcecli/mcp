@@ -1,3 +1,12 @@
+# [0.10.0](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.9.8...mcp-provider-dx-core@0.10.0) (2026-05-21)
+
+
+### Features
+
+* @W-21741005: NEW - Implement Strategy Pattern for multi-engine custom rule creation ([#441](https://github.com/salesforcecli/mcp/issues/441)) ([64b1af9](https://github.com/salesforcecli/mcp/commit/64b1af9130a50ba7edd32d9d02e8c8ed9ff7a6c3))
+
+
+
 ## [0.9.8](https://github.com/salesforcecli/mcp/compare/mcp-provider-dx-core@0.9.7...mcp-provider-dx-core@0.9.8) (2026-05-07)
 
 
