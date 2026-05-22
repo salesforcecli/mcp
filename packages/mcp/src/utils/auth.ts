@@ -140,7 +140,7 @@ async function getDefaultConfig(
 
   if (!value || typeof value !== 'string' || !path) return undefined;
 
-  // Return an typed object with only the necessary properties
+  // Return a typed object with only the necessary properties
   // This reduces assertions and lowers context returned to the LLM
   return { key, location, value, path } as OrgConfigInfo;
 }
