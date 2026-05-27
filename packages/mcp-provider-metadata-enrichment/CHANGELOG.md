@@ -1,3 +1,12 @@
+## [0.1.8](https://github.com/salesforcecli/mcp/compare/mcp-provider-metadata-enrichment@0.1.7...mcp-provider-metadata-enrichment@0.1.8) (2026-05-27)
+
+
+### Bug Fixes
+
+* metadata library version upgrade ([#459](https://github.com/salesforcecli/mcp/issues/459)) ([b505861](https://github.com/salesforcecli/mcp/commit/b505861cf588225499367674b1ba294581ea3052))
+
+
+
 ## [0.1.7](https://github.com/salesforcecli/mcp/compare/mcp-provider-metadata-enrichment@0.1.6...mcp-provider-metadata-enrichment@0.1.7) (2026-05-06)
 
 
