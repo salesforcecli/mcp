@@ -52,7 +52,7 @@
     "@salesforce/mcp-provider-mobile-web": "0.3.0",
     "@salesforce/mcp-provider-devops": "0.3.8",
     "@salesforce/mcp-provider-scale-products": "0.0.6",
-    "@salesforce/mcp-provider-metadata-enrichment": "0.1.7",
+    "@salesforce/mcp-provider-metadata-enrichment": "0.1.8",
     "@salesforce/source-deploy-retrieve": "^12.35.0",
     "@salesforce/source-tracking": "^7.8.14",
     "@salesforce/telemetry": "^6.8.19",
