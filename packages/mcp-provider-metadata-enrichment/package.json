@@ -16,7 +16,7 @@
     "@modelcontextprotocol/sdk": "^1.18.0",
     "@salesforce/mcp-provider-api": "^0.6.0",
     "@salesforce/mcp-provider-dx-core": "^0.9.7",
-    "@salesforce/metadata-enrichment": "^0.0.16",
+    "@salesforce/metadata-enrichment": "^0.0.17",
     "@salesforce/source-deploy-retrieve": "^12.35.0",
     "zod": "^3.25.76"
   },
