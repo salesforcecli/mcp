@@ -1,5 +1,6 @@
 import { type Connection } from "@salesforce/core";
 import { computeFirstStageId, fetchPipelineStages, getBranchNameFromStage, getPipelineIdForProject, findStageById, resolveTargetStageId } from "./shared/pipelineUtils.js";
+import { validateSalesforceId, validateWorkItemName } from "./shared/soqlUtils.js";
 import type { WorkItem } from "./types/WorkItem.js";
 
 type ProjectStagesContext = { pipelineId: string; stages: any[]; firstStageId: string | undefined };
@@ -203,6 +204,9 @@ function mapRawItemToWorkItem(item: any, ctx: ProjectStagesContext | null, provi
 
 export async function fetchWorkItems(connection: Connection, projectId: string): Promise<WorkItem[] | any> {
     try {
+        // Validate projectId to prevent SOQL injection
+        const validatedProjectId = validateSalesforceId(projectId, 'projectId');
+
         const query = `
             SELECT
                 Id,
@@ -220,7 +224,7 @@ export async function fetchWorkItems(connection: Connection, projectId: string):
                 DevopsPipelineStageId,
                 DevopsProjectId
             FROM WorkItem
-            WHERE DevopsProjectId = '${projectId}'
+            WHERE DevopsProjectId = '${validatedProjectId}'
         `;
         
         
@@ -246,6 +250,9 @@ export async function fetchWorkItems(connection: Connection, projectId: string):
  */
 export async function fetchWorkItemByName(connection: Connection, workItemName: string): Promise<WorkItem | null | any> {
     try {
+        // Validate workItemName to prevent SOQL injection
+        const validatedWorkItemName = validateWorkItemName(workItemName);
+
         const query = `
             SELECT
                 Id,
@@ -263,7 +270,7 @@ export async function fetchWorkItemByName(connection: Connection, workItemName: 
                 DevopsPipelineStageId,
                 DevopsProjectId
             FROM WorkItem
-            WHERE Name = '${workItemName}'
+            WHERE Name = '${validatedWorkItemName}'
             LIMIT 1
         `;
 
