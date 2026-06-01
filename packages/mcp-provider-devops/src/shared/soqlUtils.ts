@@ -54,13 +54,62 @@ export function isValidWorkItemName(name: string): boolean {
 }
 
 /**
+ * Checks if a string contains potential SQL injection patterns.
+ * Returns true if injection patterns are detected.
+ */
+export function containsSqlInjectionPatterns(value: string): boolean {
+    if (typeof value !== 'string') {
+        return true;
+    }
+
+    const trimmed = value.trim();
+
+    // Check for common SQL injection patterns
+    const injectionPatterns = [
+        /--/,           // SQL comment
+        /;/,            // Statement terminator
+        /\bOR\b/i,      // OR keyword
+        /\bAND\b/i,     // AND keyword
+        /\bUNION\b/i,   // UNION keyword
+        /\bSELECT\b/i,  // SELECT keyword
+        /\bDROP\b/i,    // DROP keyword
+        /\bINSERT\b/i,  // INSERT keyword
+        /\bUPDATE\b/i,  // UPDATE keyword
+        /\bDELETE\b/i,  // DELETE keyword
+        /\bEXEC\b/i,    // EXEC keyword
+        /'/,            // Unescaped single quote (will be escaped later)
+    ];
+
+    // Allow single quotes since we'll escape them, but check for injection patterns first
+    const withoutQuotes = trimmed.replace(/'/g, '');
+    return injectionPatterns.slice(0, -1).some(pattern => pattern.test(withoutQuotes)) ||
+           (trimmed.includes("'") && injectionPatterns.slice(0, -1).some(pattern => pattern.test(trimmed)));
+}
+
+/**
  * Validates and escapes a work item name for SOQL.
- * Throws an error if the format is invalid.
+ * Accepts WI-XXXXXXX format or any alphanumeric string without injection patterns.
+ * Throws an error if the format is invalid or contains injection attempts.
  */
 export function validateWorkItemName(name: string): string {
     const trimmed = name.trim();
-    if (!isValidWorkItemName(trimmed)) {
-        throw new Error(`Invalid work item name format: ${name}. Expected format: WI-XXXXXXX`);
+
+    // Check for SQL injection patterns first
+    if (containsSqlInjectionPatterns(trimmed)) {
+        throw new Error(`Invalid work item name: potential SQL injection detected in "${name}"`);
     }
-    return escapeSoqlString(trimmed);
+
+    // If it matches the standard WI-XXXXXXX format, it's valid
+    if (isValidWorkItemName(trimmed)) {
+        return escapeSoqlString(trimmed);
+    }
+
+    // Also allow alphanumeric names with spaces, hyphens, and underscores (for managed package work items)
+    // but ensure no special characters that could be used for injection
+    const safeNamePattern = /^[a-zA-Z0-9\s_-]+$/;
+    if (safeNamePattern.test(trimmed)) {
+        return escapeSoqlString(trimmed);
+    }
+
+    throw new Error(`Invalid work item name format: ${name}. Expected WI-XXXXXXX or alphanumeric name without special characters`);
 }
