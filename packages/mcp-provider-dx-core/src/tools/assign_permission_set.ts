@@ -20,6 +20,7 @@ import { McpTool, McpToolConfig, ReleaseState, Services, Toolset } from '@salesf
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
 import { textResponse } from '../shared/utils.js';
+import { validateAndEscapeUsername } from '../shared/soqlUtils.js';
 
 /*
  * Assign permission set
@@ -117,10 +118,21 @@ export class AssignPermissionSetMcpTool extends McpTool<InputArgsShape, OutputAr
         return textResponse('Unable to resolve the username for alias. Make sure it is correct', true);
       }
 
+      // Validate and escape the username to prevent SOQL injection
+      let validatedUsername: string;
+      try {
+        validatedUsername = validateAndEscapeUsername(assignTo);
+      } catch (error) {
+        return textResponse(
+          `Invalid username format: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          true,
+        );
+      }
+
       const org = await Org.create({ connection });
       const user = await User.create({ org });
       const queryResult = await connection.singleRecordQuery<{ Id: string }>(
-        `SELECT Id FROM User WHERE Username='${assignTo}'`,
+        `SELECT Id FROM User WHERE Username='${validatedUsername}'`,
       );
 
       await user.assignPermissionSets(queryResult.Id, [input.permissionSetName]);
