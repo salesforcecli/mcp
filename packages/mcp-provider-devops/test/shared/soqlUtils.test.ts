@@ -4,7 +4,8 @@ import {
     escapeSoqlString,
     validateSalesforceId,
     isValidWorkItemName,
-    validateWorkItemName
+    validateWorkItemName,
+    containsSqlInjectionPatterns
 } from '../../src/shared/soqlUtils.js';
 
 describe('soqlUtils', () => {
@@ -108,14 +109,54 @@ describe('soqlUtils', () => {
             expect(validateWorkItemName(' WI-0001 ')).to.equal('WI-0001');
         });
 
-        it('should throw on invalid work item names', () => {
-            expect(() => validateWorkItemName('invalid')).to.throw(/Invalid work item name format/);
-            expect(() => validateWorkItemName("WI-0001' OR 1=1--")).to.throw(/Invalid work item name format/);
+        it('should allow alphanumeric work item names for managed packages', () => {
+            expect(validateWorkItemName('Test Work Item')).to.equal('Test Work Item');
+            expect(validateWorkItemName('My_Work_Item-123')).to.equal('My_Work_Item-123');
+            expect(validateWorkItemName('Feature 2024')).to.equal('Feature 2024');
+        });
+
+        it('should escape single quotes in work item names', () => {
+            expect(validateWorkItemName("O'Brien Task")).to.equal("O\\'Brien Task");
+        });
+
+        it('should throw on SQL injection attempts', () => {
+            expect(() => validateWorkItemName("WI-0001' OR 1=1--")).to.throw(/SQL injection/);
+            expect(() => validateWorkItemName("Test'; DROP TABLE--")).to.throw(/SQL injection/);
+            expect(() => validateWorkItemName("WI-001 UNION SELECT")).to.throw(/SQL injection/);
+            expect(() => validateWorkItemName("Task OR Name != 'x'")).to.throw(/SQL injection/);
+        });
+
+        it('should throw on special characters that could be dangerous', () => {
+            expect(() => validateWorkItemName('Task<script>')).to.throw(/Invalid work item name format/);
+            expect(() => validateWorkItemName('Task;DROP;')).to.throw(/SQL injection/);
+        });
+    });
+
+    describe('containsSqlInjectionPatterns', () => {
+        it('should detect SQL injection patterns', () => {
+            expect(containsSqlInjectionPatterns("' OR '1'='1")).to.be.true;
+            expect(containsSqlInjectionPatterns("'; DROP TABLE--")).to.be.true;
+            expect(containsSqlInjectionPatterns("test UNION SELECT")).to.be.true;
+            expect(containsSqlInjectionPatterns("value--comment")).to.be.true;
+            expect(containsSqlInjectionPatterns("item; DELETE FROM")).to.be.true;
+        });
+
+        it('should allow safe strings', () => {
+            expect(containsSqlInjectionPatterns("WI-12345")).to.be.false;
+            expect(containsSqlInjectionPatterns("Test Work Item")).to.be.false;
+            expect(containsSqlInjectionPatterns("Feature_123")).to.be.false;
+        });
+
+        it('should handle single quotes that will be escaped', () => {
+            // Single quotes alone are not blocked since we escape them
+            expect(containsSqlInjectionPatterns("O'Brien")).to.be.false;
+            // But quotes with injection keywords should be blocked
+            expect(containsSqlInjectionPatterns("O'Brien' OR 1=1")).to.be.true;
         });
     });
 
     describe('SQL injection prevention', () => {
-        it('should prevent common injection patterns', () => {
+        it('should prevent common injection patterns in Salesforce IDs', () => {
             const injectionAttempts = [
                 "' OR '1'='1",
                 "'; DROP TABLE WorkItem--",
@@ -127,7 +168,20 @@ describe('soqlUtils', () => {
 
             injectionAttempts.forEach(attempt => {
                 expect(isValidSalesforceId(attempt), `Should reject: ${attempt}`).to.be.false;
-                expect(isValidWorkItemName(attempt), `Should reject: ${attempt}`).to.be.false;
+            });
+        });
+
+        it('should prevent injection patterns in work item names via validateWorkItemName', () => {
+            const injectionAttempts = [
+                "' OR '1'='1",
+                "'; DROP TABLE WorkItem--",
+                "' UNION SELECT * FROM User--",
+                "' OR 1=1--",
+                "test' OR 'x'='x"
+            ];
+
+            injectionAttempts.forEach(attempt => {
+                expect(() => validateWorkItemName(attempt), `Should reject: ${attempt}`).to.throw();
             });
         });
     });
