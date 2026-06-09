@@ -77,13 +77,12 @@ export function containsSqlInjectionPatterns(value: string): boolean {
         /\bUPDATE\b/i,  // UPDATE keyword
         /\bDELETE\b/i,  // DELETE keyword
         /\bEXEC\b/i,    // EXEC keyword
-        /'/,            // Unescaped single quote (will be escaped later)
     ];
 
-    // Allow single quotes since we'll escape them, but check for injection patterns first
+    // Check for injection patterns (excluding quotes which we'll escape)
     const withoutQuotes = trimmed.replace(/'/g, '');
-    return injectionPatterns.slice(0, -1).some(pattern => pattern.test(withoutQuotes)) ||
-           (trimmed.includes("'") && injectionPatterns.slice(0, -1).some(pattern => pattern.test(trimmed)));
+    return injectionPatterns.some(pattern => pattern.test(withoutQuotes)) ||
+           (trimmed.includes("'") && injectionPatterns.some(pattern => pattern.test(trimmed)));
 }
 
 /**
@@ -106,10 +105,10 @@ export function validateWorkItemName(name: string): string {
 
     // Also allow alphanumeric names with spaces, hyphens, and underscores (for managed package work items)
     // but ensure no special characters that could be used for injection
-    const safeNamePattern = /^[a-zA-Z0-9\s_-]+$/;
+    const safeNamePattern = /^[a-zA-Z0-9\s_'-]+$/;
     if (safeNamePattern.test(trimmed)) {
         return escapeSoqlString(trimmed);
     }
 
-    throw new Error(`Invalid work item name format: ${name}. Expected WI-XXXXXXX or alphanumeric name without special characters`);
+    throw new Error(`Invalid work item name format: ${name}`);
 }
