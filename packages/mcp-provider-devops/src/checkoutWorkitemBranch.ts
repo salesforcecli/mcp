@@ -46,10 +46,11 @@ export async function checkoutWorkitemBranch(
   try {
     validatedBranchName = validateGitBranchName(branchName);
   } catch (error) {
+    // Don't echo back the potentially malicious branch name to avoid exposing injection attempts
     return {
       content: [{
         type: "text",
-        text: `Error: Invalid branch name '${branchName}'. ${error instanceof Error ? error.message : 'Branch name validation failed.'}`
+        text: `Error: Invalid branch name. ${error instanceof Error ? error.message : 'Branch name validation failed.'}`
       }],
       isError: true
     };
