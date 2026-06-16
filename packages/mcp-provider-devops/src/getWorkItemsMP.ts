@@ -2,6 +2,7 @@ import type { Connection } from "@salesforce/core";
 import type { WorkItem } from "./types/WorkItem.js";
 import { getPipelineMP } from "./getPipelineMP.js";
 import { fetchPipelineStagesMP } from "./getPipelineStagesMP.js";
+import { validateSalesforceId, validateWorkItemName } from "./shared/soqlUtils.js";
 
 
 function inferRepoTypeFromUrl(repoUrl: string): string {
@@ -56,6 +57,9 @@ export async function fetchWorkItemByNameMP(connection: Connection, workItemName
 }
 
 async function queryWorkItemByName(connection: any, workItemName: string): Promise<any | null> {
+    // Validate workItemName to prevent SOQL injection
+    const validatedWorkItemName = validateWorkItemName(workItemName);
+
     const query = `
         SELECT Id,
         Name,
@@ -64,10 +68,10 @@ async function queryWorkItemByName(connection: any, workItemName: string): Promi
         sf_devops__State__c,
         sf_devops__Concluded__c,
         sf_devops__Assigned_To__c, sf_devops__Assigned_To__r.Name,
-        sf_devops__Branch__c, sf_devops__Branch__r.Name, 
+        sf_devops__Branch__c, sf_devops__Branch__r.Name,
         sf_devops__Branch__r.sf_devops__Repository__r.sf_devops__Url__c, sf_devops__Project__c
         FROM sf_devops__Work_Item__c
-        WHERE Name = '${workItemName}'
+        WHERE Name = '${validatedWorkItemName}'
         LIMIT 1
     `;
     const result: any = await connection.query(query);
@@ -118,10 +122,14 @@ function orderStagesFromFirst(idToStage: Map<string, any>, firstStageId?: string
 
 async function getCompletedStageIds(connection: any, workItemId: string): Promise<Set<string>> {
     const completed = new Set<string>();
+
+    // Validate workItemId to prevent SOQL injection
+    const validatedWorkItemId = validateSalesforceId(workItemId, 'workItemId');
+
     const q = `
         SELECT Id, sf_devops__Pipeline_Stage__c, sf_devops__Deployment_Result__r.sf_devops__Completion_Date__c
         FROM sf_devops__Work_Item_Promote__c
-        WHERE sf_devops__Work_Item__c = '${workItemId}'
+        WHERE sf_devops__Work_Item__c = '${validatedWorkItemId}'
           AND sf_devops__Deployment_Result__r.sf_devops__Completion_Date__c != NULL
           AND sf_devops__Deployment_Result__r.sf_devops__Deployment_Id__c != NULL
     `;

@@ -23,29 +23,29 @@ function createMockConnection(workItemRecord: any, pipelineRecord: any, stagesRe
 
 describe('fetchWorkItemByNameMP', () => {
   it('should return a work item successfully', async () => {
-    const workItemRecord = { Id: 'WI-0001', Name: 'Test Work Item', sf_devops__Project__c: 'P-001' };
-    const pipelineRecord = { Id: 'PL-001', Name: 'Pipeline 1', sf_devops__Project__c: 'P-001' };
-    const stagesRecords = [{ Id: 'PS-001', Name: 'Stage 1', sf_devops__Next_Stage__c: null }];
+    const workItemRecord = { Id: 'a07xx0000000001', Name: 'Test Work Item', sf_devops__Project__c: 'a0Bxx00000002Cd' };
+    const pipelineRecord = { Id: 'a0Axx00000001Ab', Name: 'Pipeline 1', sf_devops__Project__c: 'a0Bxx00000002Cd' };
+    const stagesRecords = [{ Id: 'a08xx0000000001', Name: 'Stage 1', sf_devops__Next_Stage__c: null }];
     const mockConnection = createMockConnection(workItemRecord, pipelineRecord, stagesRecords);
 
     const workItem = await fetchWorkItemByNameMP(mockConnection, 'WI-0001');
-    expect(workItem.id).toBe('WI-0001');
+    expect(workItem.id).toBe('a07xx0000000001');
     expect(workItem.name).toBe('Test Work Item');
   });
 
   it('infers bitbucket repoType from managed package repository URL', async () => {
     const workItemRecord = {
-      Id: 'WI-0001',
+      Id: 'a07xx0000000002',
       Name: 'Test Work Item',
-      sf_devops__Project__c: 'P-001',
+      sf_devops__Project__c: 'a0Bxx00000002Cd',
       sf_devops__Branch__r: {
         sf_devops__Repository__r: {
           sf_devops__Url__c: 'https://bitbucket.org/acme/project-repo.git'
         }
       }
     };
-    const pipelineRecord = { Id: 'PL-001', Name: 'Pipeline 1', sf_devops__Project__c: 'P-001' };
-    const stagesRecords = [{ Id: 'PS-001', Name: 'Stage 1', sf_devops__Next_Stage__c: null }];
+    const pipelineRecord = { Id: 'a0Axx00000001Ab', Name: 'Pipeline 1', sf_devops__Project__c: 'a0Bxx00000002Cd' };
+    const stagesRecords = [{ Id: 'a08xx0000000001', Name: 'Stage 1', sf_devops__Next_Stage__c: null }];
     const mockConnection = createMockConnection(workItemRecord, pipelineRecord, stagesRecords);
 
     const workItem = await fetchWorkItemByNameMP(mockConnection as any, 'WI-0001');
@@ -53,9 +53,9 @@ describe('fetchWorkItemByNameMP', () => {
   });
 
   it('should return an error if work item is concluded', async () => {
-    const workItemRecord = { Id: 'WI-0001', Name: 'Test Work Item', sf_devops__Concluded__c: 'true', sf_devops__Project__c: 'P-001' };
-    const pipelineRecord = { Id: 'PL-001', Name: 'Pipeline 1', sf_devops__Project__c: 'P-001' };
-    const stagesRecords = [{ Id: 'PS-001', Name: 'Stage 1' }];
+    const workItemRecord = { Id: 'a07xx0000000003', Name: 'Test Work Item', sf_devops__Concluded__c: 'true', sf_devops__Project__c: 'a0Bxx00000002Cd' };
+    const pipelineRecord = { Id: 'a0Axx00000001Ab', Name: 'Pipeline 1', sf_devops__Project__c: 'a0Bxx00000002Cd' };
+    const stagesRecords = [{ Id: 'a08xx0000000001', Name: 'Stage 1' }];
     const mockConnection = createMockConnection(workItemRecord, pipelineRecord, stagesRecords);
 
     const result = await fetchWorkItemByNameMP(mockConnection, 'WI-0001');

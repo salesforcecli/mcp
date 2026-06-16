@@ -1,4 +1,5 @@
 import type { Connection } from "@salesforce/core";
+import { validateSalesforceId } from "./shared/soqlUtils.js";
 
 export interface PipelineStageRecordMP {
     Id: string;
@@ -17,6 +18,9 @@ export interface PipelineStageRecordMP {
  */
 export async function fetchPipelineStagesMP(connection: Connection, pipelineId: string): Promise<PipelineStageRecordMP[] | any> {
     try {
+        // Validate pipelineId to prevent SOQL injection
+        const validatedPipelineId = validateSalesforceId(pipelineId, 'pipelineId');
+
         const query = `
             SELECT
                 Id,
@@ -28,7 +32,7 @@ export async function fetchPipelineStagesMP(connection: Connection, pipelineId: 
                 sf_devops__Next_Stage__c,
                 sf_devops__Next_Stage__r.Name
             FROM sf_devops__Pipeline_Stage__c
-            WHERE sf_devops__Pipeline__c = '${pipelineId}'
+            WHERE sf_devops__Pipeline__c = '${validatedPipelineId}'
         `;
         const result: any = await connection.query(query);
         const records: any[] = result?.records || [];

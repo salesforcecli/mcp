@@ -66,6 +66,13 @@ jobs:
           node-version: lts/*
           cache: yarn
 
+      - name: Setup Java for code-analyzer
+        if: inputs.provider == 'mcp-provider-code-analyzer'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
       - name: Install sf CLI
         uses: salesforcecli/github-workflows/.github/actions/retry@main
         with:
