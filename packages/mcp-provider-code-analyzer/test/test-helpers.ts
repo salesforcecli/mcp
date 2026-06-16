@@ -1,4 +1,4 @@
-import { execFileSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 
 /**
  * Checks if Java 11+ is available on the system.
@@ -6,8 +6,16 @@ import { execFileSync } from 'node:child_process';
  */
 export function isJavaAvailable(): boolean {
     try {
-        const output = execFileSync('java', ['-version'], { encoding: 'utf-8', stdio: 'pipe' });
-        // Check if output contains version information
+        // Use spawnSync to properly capture stderr where java -version outputs
+        const result = spawnSync('java', ['-version'], {
+            encoding: 'utf-8',
+            shell: false
+        });
+
+        // java -version outputs to stderr, not stdout
+        const output = result.stderr || result.stdout || '';
+
+        // Check for version information
         // Java version format: "java version "11.0.x"" or "openjdk version "11.0.x""
         const versionMatch = output.match(/version "(\d+)\.(\d+)/);
         if (versionMatch) {
@@ -15,16 +23,11 @@ export function isJavaAvailable(): boolean {
             // Java 11+ is required
             return majorVersion >= 11;
         }
+
+        // If no version pattern found, Java is not properly available
         return false;
-    } catch (error: any) {
-        // Try to parse version from stderr if it's in the error message
-        if (error.stderr) {
-            const versionMatch = error.stderr.toString().match(/version "(\d+)\.(\d+)/);
-            if (versionMatch) {
-                const majorVersion = parseInt(versionMatch[1], 10);
-                return majorVersion >= 11;
-            }
-        }
+    } catch (error) {
+        // If java command fails, it's not available
         return false;
     }
 }

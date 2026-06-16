@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026, Salesforce, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { expect } from 'chai';
 import {
     escapeSoqlString,
@@ -9,43 +25,43 @@ import {
 describe('soqlUtils', () => {
     describe('escapeSoqlString', () => {
         it('should escape single quotes', () => {
-            expect(escapeSoqlString("O'Brien")).to.equal("O\\'Brien");
-            expect(escapeSoqlString("It's working")).to.equal("It\\'s working");
+            expect(escapeSoqlString('O\'Brien')).to.equal('O\\\'Brien');
+            expect(escapeSoqlString('It\'s working')).to.equal('It\\\'s working');
         });
 
         it('should handle strings without quotes', () => {
-            expect(escapeSoqlString("normal text")).to.equal("normal text");
+            expect(escapeSoqlString('normal text')).to.equal('normal text');
         });
 
         it('should handle empty strings', () => {
-            expect(escapeSoqlString("")).to.equal("");
+            expect(escapeSoqlString('')).to.equal('');
         });
 
         it('should throw on non-string values', () => {
-            expect(() => escapeSoqlString(null as any)).to.throw();
-            expect(() => escapeSoqlString(123 as any)).to.throw();
+            expect(() => escapeSoqlString(null as unknown as string)).to.throw();
+            expect(() => escapeSoqlString(123 as unknown as string)).to.throw();
         });
     });
 
     describe('containsSqlInjectionPatterns', () => {
         it('should detect SQL injection patterns', () => {
-            expect(containsSqlInjectionPatterns("' OR '1'='1")).to.be.true;
-            expect(containsSqlInjectionPatterns("'; DROP TABLE--")).to.be.true;
-            expect(containsSqlInjectionPatterns("test UNION SELECT")).to.be.true;
-            expect(containsSqlInjectionPatterns("value--comment")).to.be.true;
-            expect(containsSqlInjectionPatterns("item; DELETE FROM")).to.be.true;
+            expect(containsSqlInjectionPatterns('\' OR \'1\'=\'1')).to.be.true;
+            expect(containsSqlInjectionPatterns('\'; DROP TABLE--')).to.be.true;
+            expect(containsSqlInjectionPatterns('test UNION SELECT')).to.be.true;
+            expect(containsSqlInjectionPatterns('value--comment')).to.be.true;
+            expect(containsSqlInjectionPatterns('item; DELETE FROM')).to.be.true;
         });
 
         it('should allow safe strings', () => {
-            expect(containsSqlInjectionPatterns("user@example.com")).to.be.false;
-            expect(containsSqlInjectionPatterns("admin@test.org")).to.be.false;
-            expect(containsSqlInjectionPatterns("test.user@company.com")).to.be.false;
+            expect(containsSqlInjectionPatterns('user@example.com')).to.be.false;
+            expect(containsSqlInjectionPatterns('admin@test.org')).to.be.false;
+            expect(containsSqlInjectionPatterns('test.user@company.com')).to.be.false;
         });
 
         it('should handle non-string values', () => {
-            expect(containsSqlInjectionPatterns(null as any)).to.be.true;
-            expect(containsSqlInjectionPatterns(undefined as any)).to.be.true;
-            expect(containsSqlInjectionPatterns(123 as any)).to.be.true;
+            expect(containsSqlInjectionPatterns(null as unknown as string)).to.be.true;
+            expect(containsSqlInjectionPatterns(undefined as unknown as string)).to.be.true;
+            expect(containsSqlInjectionPatterns(123 as unknown as string)).to.be.true;
         });
     });
 
@@ -70,16 +86,16 @@ describe('soqlUtils', () => {
         });
 
         it('should reject SQL injection attempts', () => {
-            expect(isValidUsername("user@example.com' OR 1=1--")).to.be.false;
-            expect(isValidUsername("x@example.com' OR IsActive = true OR Username='x")).to.be.false;
-            expect(isValidUsername("admin@test.com; DROP TABLE")).to.be.false;
-            expect(isValidUsername("user@domain.com' UNION SELECT")).to.be.false;
+            expect(isValidUsername('user@example.com\' OR 1=1--')).to.be.false;
+            expect(isValidUsername('x@example.com\' OR IsActive = true OR Username=\'x')).to.be.false;
+            expect(isValidUsername('admin@test.com; DROP TABLE')).to.be.false;
+            expect(isValidUsername('user@domain.com\' UNION SELECT')).to.be.false;
         });
 
         it('should reject non-string values', () => {
-            expect(isValidUsername(null as any)).to.be.false;
-            expect(isValidUsername(undefined as any)).to.be.false;
-            expect(isValidUsername(123 as any)).to.be.false;
+            expect(isValidUsername(null as unknown as string)).to.be.false;
+            expect(isValidUsername(undefined as unknown as string)).to.be.false;
+            expect(isValidUsername(123 as unknown as string)).to.be.false;
         });
     });
 
@@ -90,8 +106,9 @@ describe('soqlUtils', () => {
             expect(validateAndEscapeUsername('test.user@company.com')).to.equal('test.user@company.com');
         });
 
-        it('should escape single quotes in valid usernames', () => {
-            expect(validateAndEscapeUsername("o'brien@example.com")).to.equal("o\\'brien@example.com");
+        it('should reject usernames with single quotes (potential injection)', () => {
+            // Single quotes in usernames are rejected as suspicious
+            expect(() => validateAndEscapeUsername('o\'brien@example.com')).to.throw(/Invalid username format/);
         });
 
         it('should throw on invalid usernames', () => {
@@ -101,13 +118,13 @@ describe('soqlUtils', () => {
         });
 
         it('should throw on SQL injection attempts', () => {
-            expect(() => validateAndEscapeUsername("user@example.com' OR 1=1--")).to.throw(/SQL injection/);
-            expect(() => validateAndEscapeUsername("x@example.com' OR IsActive = true OR Username='x")).to.throw(/SQL injection/);
-            expect(() => validateAndEscapeUsername("admin@test.com; DROP TABLE")).to.throw(/SQL injection/);
+            expect(() => validateAndEscapeUsername('user@example.com\' OR 1=1--')).to.throw(/SQL injection/);
+            expect(() => validateAndEscapeUsername('x@example.com\' OR IsActive = true OR Username=\'x')).to.throw(/SQL injection/);
+            expect(() => validateAndEscapeUsername('admin@test.com; DROP TABLE')).to.throw(/SQL injection/);
         });
 
         it('should reject the proof of concept from the bug report', () => {
-            const pocUsername = "x@example.com' OR IsActive = true OR Username='x";
+            const pocUsername = 'x@example.com\' OR IsActive = true OR Username=\'x';
             expect(() => validateAndEscapeUsername(pocUsername)).to.throw(/SQL injection/);
         });
     });
@@ -116,7 +133,7 @@ describe('soqlUtils', () => {
         it('should block the exact proof of concept attack', () => {
             // From the bug report:
             // "onBehalfOf": "x@example.com' OR IsActive = true OR Username='x"
-            const attackUsername = "x@example.com' OR IsActive = true OR Username='x";
+            const attackUsername = 'x@example.com\' OR IsActive = true OR Username=\'x';
 
             // Should be detected as invalid
             expect(isValidUsername(attackUsername)).to.be.false;
@@ -140,11 +157,11 @@ describe('soqlUtils', () => {
 
         it('should prevent predicate modification via various injection techniques', () => {
             const injectionAttempts = [
-                "user@test.com' OR 1=1--",
-                "admin@test.com'; DROP TABLE Users--",
-                "user@test.com' UNION SELECT * FROM User--",
-                "test@example.com' AND '1'='1",
-                "user@test.com' OR IsActive=true--"
+                'user@test.com\' OR 1=1--',
+                'admin@test.com\'; DROP TABLE Users--',
+                'user@test.com\' UNION SELECT * FROM User--',
+                'test@example.com\' AND \'1\'=\'1',
+                'user@test.com\' OR IsActive=true--'
             ];
 
             injectionAttempts.forEach(attempt => {
