@@ -1,4 +1,5 @@
 import type { Connection } from "@salesforce/core";
+import { validateSalesforceId } from "./shared/soqlUtils.js";
 
 export interface DevopsPipelineRecordMP {
     Id: string;
@@ -13,10 +14,13 @@ export interface DevopsPipelineRecordMP {
  */
 export async function getPipelineMP(connection: Connection, projectId: string): Promise<DevopsPipelineRecordMP | null | any> {
     try {
+        // Validate projectId to prevent SOQL injection
+        const validatedProjectId = validateSalesforceId(projectId, 'projectId');
+
         const query = `
             SELECT Id, Name, sf_devops__Activated__c, sf_devops__Project__c
             FROM sf_devops__Pipeline__c
-            WHERE sf_devops__Project__c = '${projectId}'
+            WHERE sf_devops__Project__c = '${validatedProjectId}'
               AND sf_devops__Activated__c = true
             LIMIT 1
         `;

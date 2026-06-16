@@ -9,7 +9,7 @@ vi.mock('../src/shared/pipelineUtils');
 
 const mockConnection = {
   query: vi.fn().mockImplementation((query: string) => {
-    if (query.includes("WHERE DevopsProjectId = 'project-001'")) {
+    if (query.includes("WHERE DevopsProjectId = '001xx0000012345'")) {
       return { records: [{ Id: 'WI-0001', Name: 'Test Work Item' }] };
     }
     if (query.includes("WHERE Name IN ('WI-0001', 'WI-0002')")) {
@@ -25,14 +25,14 @@ const mockConnection = {
 
 describe('fetchWorkItems', () => {
   it('should fetch work items successfully', async () => {
-    const workItems = await fetchWorkItems(mockConnection as any, 'project-001');
+    const workItems = await fetchWorkItems(mockConnection as any, '001xx0000012345');
     expect(workItems).toHaveLength(1);
     expect(workItems[0].id).toBe('WI-0001');
   });
 
   it('should fetch work items when no pipeline is linked to the project', async () => {
     (getPipelineIdForProject as any).mockResolvedValueOnce(undefined);
-    const workItems = await fetchWorkItems(mockConnection as any, 'project-001');
+    const workItems = await fetchWorkItems(mockConnection as any, '001xx0000012345');
     expect(workItems).toHaveLength(1);
     expect(workItems[0].id).toBe('WI-0001');
     expect(workItems[0].name).toBe('Test Work Item');
@@ -70,12 +70,12 @@ describe('fetchWorkItems', () => {
   it('maps Bitbucket repository metadata from work items', async () => {
     const bitbucketConnection = {
       query: vi.fn().mockImplementation((query: string) => {
-        if (query.includes("WHERE DevopsProjectId = 'project-bitbucket'")) {
+        if (query.includes("WHERE DevopsProjectId = '001xx0000012346'")) {
           return {
             records: [{
               Id: 'WI-1001',
               Name: 'Bitbucket Item',
-              DevopsProjectId: 'project-bitbucket',
+              DevopsProjectId: '001xx0000012346',
               SourceCodeRepositoryBranch: {
                 Name: 'feature/WI-1001',
                 SourceCodeRepository: {
@@ -92,7 +92,7 @@ describe('fetchWorkItems', () => {
       request: vi.fn().mockResolvedValue({ owner: 'workspace-from-connect-api' })
     };
 
-    const workItems = await fetchWorkItems(bitbucketConnection as any, 'project-bitbucket');
+    const workItems = await fetchWorkItems(bitbucketConnection as any, '001xx0000012346');
     expect(workItems).toHaveLength(1);
     expect(workItems[0].SourceCodeRepository).toEqual({
       repoUrl: 'https://bitbucket.org/test-workspace/test-repo',
@@ -107,12 +107,12 @@ describe('fetchWorkItems', () => {
   it('normalizes bitbucketcloud provider to bitbucket repoType', async () => {
     const bitbucketCloudConnection = {
       query: vi.fn().mockImplementation((query: string) => {
-        if (query.includes("WHERE DevopsProjectId = 'project-bitbucket-cloud'")) {
+        if (query.includes("WHERE DevopsProjectId = '001xx0000012347'")) {
           return {
             records: [{
               Id: 'WI-1002',
               Name: 'Bitbucket Cloud Item',
-              DevopsProjectId: 'project-bitbucket-cloud',
+              DevopsProjectId: '001xx0000012347',
               SourceCodeRepositoryBranch: {
                 Name: 'feature/WI-1002',
                 SourceCodeRepository: {
@@ -129,7 +129,7 @@ describe('fetchWorkItems', () => {
       request: vi.fn().mockResolvedValue({ owner: 'cloud-workspace-from-connect-api' })
     };
 
-    const workItems = await fetchWorkItems(bitbucketCloudConnection as any, 'project-bitbucket-cloud');
+    const workItems = await fetchWorkItems(bitbucketCloudConnection as any, '001xx0000012347');
     expect(workItems).toHaveLength(1);
     expect(workItems[0].SourceCodeRepository).toEqual({
       repoUrl: 'https://bitbucket.org/cloud-workspace/cloud-repo',
@@ -144,12 +144,12 @@ describe('fetchWorkItems', () => {
   it('uses GitHub owner from connect vcs API for repo URL', async () => {
     const githubConnection = {
       query: vi.fn().mockImplementation((query: string) => {
-        if (query.includes("WHERE DevopsProjectId = 'project-github'")) {
+        if (query.includes("WHERE DevopsProjectId = '001xx0000012348'")) {
           return {
             records: [{
               Id: 'WI-2001',
               Name: 'GitHub Item',
-              DevopsProjectId: 'project-github',
+              DevopsProjectId: '001xx0000012348',
               SourceCodeRepositoryBranch: {
                 Name: 'feature/WI-2001',
                 SourceCodeRepository: {
@@ -166,7 +166,7 @@ describe('fetchWorkItems', () => {
       request: vi.fn().mockResolvedValue({ owner: 'owner-from-connect-api' })
     };
 
-    const workItems = await fetchWorkItems(githubConnection as any, 'project-github');
+    const workItems = await fetchWorkItems(githubConnection as any, '001xx0000012348');
     expect(workItems).toHaveLength(1);
     expect(workItems[0].SourceCodeRepository).toEqual({
       repoUrl: 'https://github.com/owner-from-connect-api/repo-one',
