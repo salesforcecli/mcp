@@ -137,7 +137,7 @@ export class AssignPermissionSetMcpTool extends McpTool<InputArgsShape, OutputAr
 
       await user.assignPermissionSets(queryResult.Id, [input.permissionSetName]);
 
-      return textResponse(`Assigned ${input.permissionSetName} to ${assignTo}`);
+      return textResponse(`Assigned ${input.permissionSetName} to ${validatedUsername}`);
     } catch (error) {
       return textResponse(
         `Failed to assign permission set: ${error instanceof Error ? error.message : 'Unknown error'}`,
