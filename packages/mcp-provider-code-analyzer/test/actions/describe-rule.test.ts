@@ -15,13 +15,15 @@ import { FactoryWithThrowingPlugin1, FactoryWithErrorLoggingPlugin } from "../st
 import {SendTelemetryEvent, SpyTelemetryService} from "../test-doubles.js";
 import * as Constants from "../../src/constants.js";
 import {expect} from "vitest";
+import { isJavaAvailable } from "../test-helpers.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const javaAvailable = isJavaAvailable();
 
 describe('DescribeRuleActionImpl', () => {
-    describe.each([
+    describe.skipIf(!javaAvailable).each([
         {
             case: 'When a custom configuration is explicitly provided',
             configFactory: new CustomizableConfigFactory(JSON.stringify({

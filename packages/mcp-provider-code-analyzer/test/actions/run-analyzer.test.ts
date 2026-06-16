@@ -18,6 +18,7 @@ import {
 } from "../stubs/EnginePluginFactories.js";
 import {SendTelemetryEvent, SpyTelemetryService} from "../test-doubles.js";
 import * as Constants from "../../src/constants.js";
+import { isJavaAvailable } from "../test-helpers.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -29,8 +30,11 @@ const PATH_TO_COMPARISON_FILES: string = path.resolve(__dirname, '..', 'fixtures
 // TODO: FIGURE OUT A WAY TO MAKE THESE GOLD FILE TESTS MORE ROBUST AGAINST VERSION CHANGES. FOR NOW USING CONSTANT:
 const PMD_VERSION: string = '7.23.0';
 
+const javaAvailable = isJavaAvailable();
+
 describe('RunAnalyzerActionImpl', () => {
-    it.each([
+    // Tests that require Java (PMD/CPD engines)
+    it.skipIf(!javaAvailable).each([
         {
             case: 'no violations are found and all engines succeed',
             expectation: 'the status is "success" and the outfile has no violations',
@@ -76,6 +80,74 @@ describe('RunAnalyzerActionImpl', () => {
             }
         },
         {
+            case: 'an engine-level config is invalid',
+            expectation: 'the status has the relevant errors and the outfile has an UninstantiableEngineError violation',
+            target: [
+                path.join(PATH_TO_SAMPLE_TARGETS, 'ApexTarget1.cls')
+            ],
+            comparisonFile: path.join(PATH_TO_COMPARISON_FILES, 'invalid-pmd-config-violation.goldfile.txt'),
+            configFactory: new CustomizableConfigFactory('{"engines": {"pmd": {"asdf": true}}}'),
+            enginePluginsFactory: new EnginePluginsFactoryImpl(),
+            keyStatusPhrases: [
+                `Error within Core: Failed to create engine with name 'pmd' due to the following error:`,
+                `invalid key 'asdf'`
+            ],
+            expectedSummary: {
+                total: 1,
+                sev1: 1,
+                sev2: 0,
+                sev3: 0,
+                sev4: 0,
+                sev5: 0
+            }
+        }
+    ])('When $case, $expectation', async ({target, comparisonFile, configFactory, enginePluginsFactory, keyStatusPhrases, expectedSummary}) => {
+        const input: RunInput = {
+            target,
+            directory: PATH_TO_SAMPLE_TARGETS
+        }
+
+        const action: RunAnalyzerActionImpl = new RunAnalyzerActionImpl({
+            configFactory,
+            enginePluginsFactory
+        });
+
+        const output: RunOutput = await action.exec(input);
+
+        for (const keyStatusPhrase of keyStatusPhrases) {
+            expect(output.status).toContain(keyStatusPhrase);
+        }
+
+        if (comparisonFile) {
+            expect(output.resultsFile).toBeDefined();
+
+            const outputFileContents: string = await fs.promises.readFile(output.resultsFile!, 'utf-8');
+
+            const pathSepVar: string = path.sep.replaceAll('\\', '\\\\');
+            const runDir: string = process.cwd().replaceAll('\\' , '\\\\');
+
+            const codeAnalyzerVersion: string = (JSON.parse((await fs.promises.readFile(path.join(require.resolve('@salesforce/code-analyzer-core'), '..', '..', 'package.json'), 'utf-8'))) as any).version;
+            const pmdEngineVersion: string = (JSON.parse((await fs.promises.readFile(path.join(require.resolve('@salesforce/code-analyzer-pmd-engine'), '..', '..', 'package.json'), 'utf-8'))) as any).version;
+            const regexEngineVersion: string = (JSON.parse((await fs.promises.readFile(path.join(require.resolve('@salesforce/code-analyzer-regex-engine'), '..', '..', 'package.json'), 'utf-8'))) as any).version;
+
+            const expectedOutfile: string =  (await fs.promises.readFile(comparisonFile, 'utf-8'))
+                .replaceAll('{{RUNDIR}}', runDir)
+                .replaceAll(`{{SEP}}`, pathSepVar)
+                .replaceAll('{{CODE_ANALYZER_VERSION}}', codeAnalyzerVersion)
+                .replaceAll('{{PMD_ENGINE_VERSION}}', pmdEngineVersion)
+                .replaceAll('{{REGEX_ENGINE_VERSION}}', regexEngineVersion)
+                .replaceAll('{{PMD_VERSION}}', PMD_VERSION);
+
+            expect(outputFileContents).toContain(expectedOutfile);
+            expect(output.summary).toEqual(expectedSummary);
+        } else {
+            expect(output.resultsFile).toBeUndefined();
+        }
+    }, 60_000);
+
+    // Tests that do NOT require Java (use stub plugins or test errors)
+    it.each([
+        {
             case: 'no violations are found and non-fatal errors are logged',
             expectation: 'the status contains the errors and the outfile has no violations',
             target: [
@@ -110,28 +182,6 @@ describe('RunAnalyzerActionImpl', () => {
                 `Error creating Code Analyzer Config:`,
                 `invalid key 'asdf'`
             ]
-        },
-        {
-            case: 'an engine-level config is invalid',
-            expectation: 'the status has the relevant errors and the outfile has an UninstantiableEngineError violation',
-            target: [
-                path.join(PATH_TO_SAMPLE_TARGETS, 'ApexTarget1.cls')
-            ],
-            comparisonFile: path.join(PATH_TO_COMPARISON_FILES, 'invalid-pmd-config-violation.goldfile.txt'),
-            configFactory: new CustomizableConfigFactory('{"engines": {"pmd": {"asdf": true}}}'),
-            enginePluginsFactory: new EnginePluginsFactoryImpl(),
-            keyStatusPhrases: [
-                `Error within Core: Failed to create engine with name 'pmd' due to the following error:`,
-                `invalid key 'asdf'`
-            ],
-            expectedSummary: {
-                total: 1,
-                sev1: 1,
-                sev2: 0,
-                sev3: 0,
-                sev4: 0,
-                sev5: 0
-            }
         },
         {
             case: 'an engine cannot be added',
@@ -236,7 +286,7 @@ describe('RunAnalyzerActionImpl', () => {
         } else {
             expect(output.resultsFile).toBeUndefined();
         }
-    }, 60_000); 
+    }, 60_000);
 
     describe('Telemetry Emission', () => {
         it('When a telemetry service is provided, it is used', async () => {
