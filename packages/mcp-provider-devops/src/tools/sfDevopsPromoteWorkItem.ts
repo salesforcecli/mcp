@@ -65,14 +65,11 @@ export class SfDevopsPromoteWorkItem extends McpTool<InputArgsShape, OutputArgsS
       - Never promote without explicit user confirmation of workitems.
 
       **Output:**
-      - JSON with promotion requestId (if available) and any error details.
+      A JSON object containing the promotion request ID, the org details, and any relevant status or tracking information.
 
       **Next steps:**
       - Suggest how to track promotion status using the returned requestId or the DevOps Center UI.
       - If applicable, prompt the user to promote to the next stage after validation.
-
-      **Output:**
-      A JSON object containing the promotion request ID, the org details, and any relevant status or tracking information.
       `,
       inputSchema: inputSchema.shape,
       outputSchema: undefined,
