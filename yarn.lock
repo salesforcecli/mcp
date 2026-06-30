@@ -3096,7 +3096,7 @@
     istanbul-reports "^3.2.0"
     json-stream-stringify "^3.1.6"
 
-"@salesforce/cli-plugins-testkit@^5.3.39", "@salesforce/cli-plugins-testkit@^5.3.41":
+"@salesforce/cli-plugins-testkit@^5.3.39":
   version "5.3.41"
   resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-5.3.41.tgz#16acca933dcd64f0fd2c917c7b22529107f373e6"
   integrity sha512-K6fZfvzJAb0WFJFlgyIHgLyWLXR7i2SKDZ069kvCmDN0QVfftp/OwYrtosIzxiXdpHOtcoAkt65M1UR1aw0XzA==
@@ -3356,7 +3356,7 @@
     fast-xml-parser "^5.7.2"
     zod "^3.25.76"
 
-"@salesforce/mcp-provider-dx-core@0.9.8", "@salesforce/mcp-provider-dx-core@^0.9.7":
+"@salesforce/mcp-provider-dx-core@0.9.8":
   version "0.9.8"
   resolved "https://registry.yarnpkg.com/@salesforce/mcp-provider-dx-core/-/mcp-provider-dx-core-0.9.8.tgz#7205fb877fe4c943053c08845c95b4487a9e5d91"
   integrity sha512-ESE6laK+Crh1PGTGeTtxMyN+AnEyerC1gHSfgkFbcXrK1vs67rHodrviz1VuxREuJJWExItGkfSyWV330SHzuw==
@@ -3388,17 +3388,6 @@
     stylelint "^16.19.1"
     zod "^3.24.2"
     zod-to-json-schema "^3.24.5"
-
-"@salesforce/metadata-enrichment@^0.0.17":
-  version "0.0.17"
-  resolved "https://registry.yarnpkg.com/@salesforce/metadata-enrichment/-/metadata-enrichment-0.0.17.tgz#f26c1741a02b498c27ef8a0d72ef7e4811bbd1dc"
-  integrity sha512-QC2ioVxBSrsvTd4tB5YVHBf7h0EHIH/djKJfnL2pGipb2Sb1+5GRVLM4/gBwRON7G6qCqOgQqNaIQrGZ+LU+RQ==
-  dependencies:
-    "@salesforce/core" "^8.29.0"
-    "@salesforce/kit" "^3.2.4"
-    "@salesforce/source-deploy-retrieve" "^12.35.0"
-    "@salesforce/ts-types" "^2.0.11"
-    fast-xml-parser "^5.5.7"
 
 "@salesforce/o11y-reporter@1.8.2":
   version "1.8.2"
