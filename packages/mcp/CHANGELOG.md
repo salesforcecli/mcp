@@ -1,3 +1,12 @@
+## [0.30.15](https://github.com/salesforcecli/mcp/compare/0.30.14...0.30.15) (2026-07-09)
+
+
+### Bug Fixes
+
+* disable perf ([#471](https://github.com/salesforcecli/mcp/issues/471)) ([f070711](https://github.com/salesforcecli/mcp/commit/f0707117caa99080e53bc94216b5203c6ff77a21))
+
+
+
 ## [0.30.14](https://github.com/salesforcecli/mcp/compare/0.30.13...0.30.14) (2026-06-23)
 
 
