@@ -162,6 +162,10 @@ export class Telemetry implements TelemetryService {
         enableO11y: true,
       });
 
+      // Disable the 60s CPU/mem/request perf-counter timer (AppPerformanceCounters). Usage events (AppEvents) are unaffected.
+      // https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/appperformancecounters?wt.mc_id=fulltextsearch_inproduct_azure-portal-global-search
+      this.reporter.getTelemetryClient().config.enableAutoCollectPerformance = false;
+
       this.reporter.start();
     } catch {
       // connection probably failed, but we can continue without telemetry
