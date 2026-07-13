@@ -244,10 +244,6 @@ For complete documentation, see [Merge Conflict Resolution with DevOps Center MC
 - `resolve_devops_center_deployment_failure` (GA) - Diagnose and resolve deployment failures.
 - `resolve_devops_center_merge_conflict` (GA) - Apply a selected resolution method to a merge conflict.
 
-### Enrichment Toolset
-
-- `enrich_metadata` (NON-GA) - Enrich metadata from your org in your DX project.
-
 ### Lightning Web Components (LWC) Experts Toolset
 
 For complete documentation, see [Use DX MCP Tools for LWC](https://developer.salesforce.com/docs/platform/lwc/guide/mcp-intro.html) in the _Lightning Web Components Developer Guide_.
