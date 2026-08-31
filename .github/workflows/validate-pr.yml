@@ -2,7 +2,7 @@ name: pr-validation
 
 on:
   pull_request:
-    types: [opened, reopened, edited]
+    types: [opened, reopened, edited, synchronize]
     # only applies to PRs that want to merge to main
     branches: [main]
 
