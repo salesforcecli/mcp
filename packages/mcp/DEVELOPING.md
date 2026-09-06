@@ -57,7 +57,7 @@ Use this guide to learn how to contribute to the Salesforce DX MCP Server.
 
 ## Registering New Tools
 
-When you create a new tool, it must be provided by an McpProvider instance that registered via `loadMcpProviders()` in `src/registry.ts` (eager providers plus dynamically imported LWC/Aura experts). This allows the MCP server to recognize and use your tools.
+When you create a new tool, it must be provided by an McpProvider instance that is registered via `loadMcpProviders()` in `src/registry.ts` (eager providers plus dynamically imported LWC/Aura experts). This allows the MCP server to recognize and use your tools.
 
 MORE DOCUMENTATION COMING SOON...
 
