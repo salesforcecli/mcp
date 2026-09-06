@@ -26,7 +26,7 @@ import {
   Versioned,
 } from '@salesforce/mcp-provider-api';
 import { SfMcpServer } from '../sf-mcp-server.js';
-import { MCP_PROVIDER_REGISTRY } from '../registry.js';
+import { loadMcpProviders } from '../registry.js';
 import { addTool, isToolRegistered } from '../utils/tools.js';
 import { Services } from '../services.js';
 import { createDynamicServerTools } from '../main-server-provider.js';
@@ -66,8 +66,9 @@ export async function registerToolsets(
     // CORE toolset is always enabled
     : new Set([Toolset.CORE, ...(toolsets as Toolset[])]);
 
+  const providers = await loadMcpProviders();
   const toolsetRegistry: Record<Toolset, McpTool[]> = await createToolRegistryFromProviders(
-    MCP_PROVIDER_REGISTRY,
+    providers,
     services
   );
 
