@@ -14,6 +14,7 @@ export {
   type Services,
   type TelemetryService,
   type TelemetryEvent,
+  type PdpEvent,
   type OrgService,
   type ConfigService,
   type StartupFlags
