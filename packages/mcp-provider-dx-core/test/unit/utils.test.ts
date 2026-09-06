@@ -16,7 +16,7 @@
 import { sep } from 'node:path';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { textResponse, sanitizePath } from '../../src/shared/utils.js';
+import { textResponse, sanitizePath, isJwtAccessToken } from '../../src/shared/utils.js';
 
 describe('utilities tests', () => {
   // Common test setup
@@ -122,6 +122,22 @@ describe('utilities tests', () => {
     it('should handle mixed path separators', () => {
       expect(sanitizePath('/path\\subpath/file')).to.be.true;
       expect(sanitizePath('\\path/..\\file')).to.be.false;
+    });
+  });
+
+  describe('isJwtAccessToken', () => {
+    it('returns true for a three-segment JWT-shaped token', () => {
+      expect(isJwtAccessToken('aaa.bbb.ccc')).to.be.true;
+      expect(isJwtAccessToken('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.signature')).to.be.true;
+    });
+
+    it('returns false for opaque session ids and empty values', () => {
+      expect(isJwtAccessToken('00Dxx0000006IYJ!AQcAQH0dMHZfz9c')).to.be.false;
+      expect(isJwtAccessToken('a.b.c.d')).to.be.false;
+      expect(isJwtAccessToken('')).to.be.false;
+      expect(isJwtAccessToken(undefined)).to.be.false;
+      expect(isJwtAccessToken(null)).to.be.false;
+      expect(isJwtAccessToken('a..c')).to.be.false;
     });
   });
 });
