@@ -44,7 +44,7 @@ export abstract class McpProvider implements Versioned {
   }
 
   /**
-   * This method allows the server to check that this provider is return compatible prompts, resources, and tools to be registered.
+   * This method allows the server to check that this provider is returning compatible prompts, resources, and tools to be registered.
    * IMPORTANT: Subclasses should not override this method.
    */
   public getVersion(): SemVer {

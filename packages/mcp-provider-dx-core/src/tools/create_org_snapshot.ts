@@ -100,7 +100,7 @@ create a snapshot of my MyScratch in myDevHub`,
       });
 
       if (createResponse.success === false) {
-        return textResponse(`An error while created the org snapshot: ${JSON.stringify(createResponse)}`, true);
+        return textResponse(`An error occurred while creating the org snapshot: ${JSON.stringify(createResponse)}`, true);
       }
       const result = await devHubConnection.singleRecordQuery(`SELECT Id,
               SnapshotName,

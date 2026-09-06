@@ -27,7 +27,7 @@ Examples (natural language → selector/topN):
 `;
 
 export const inputSchema = z.object({
-    resultsFile: z.string().describe("Absolute path to a results JSON file produced by the code analyzer., if results file is not provided, call run_code_analyzer tool to generate a results file first."),
+    resultsFile: z.string().describe("Absolute path to a results JSON file produced by the code analyzer. If a results file is not provided, call run_code_analyzer tool to generate a results file first."),
     selector: z.string().describe('Selector (same semantics as "list_code_analyzer_rules"): colon-separated tokens with optional OR-groups in parentheses, e.g., "Security:(pmd,eslint):High".'),
     topN: z.number().int().positive().max(1000).default(DEFAULT_TOPN_POLICY_LIMIT)
         .describe(`Return at most this many violations after filtering and sorting (default ${DEFAULT_TOPN_POLICY_LIMIT}). Never increase this number unless the user explicitly asks for a larger result set. Requests >${DEFAULT_TOPN_POLICY_LIMIT} require allowLargeResultSet=true.`),

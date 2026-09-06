@@ -30,8 +30,8 @@ export function sanitizePath(projectPath: string): boolean {
   // Check for various traversal patterns
   const hasTraversal =
     normalizedProjectPath.includes("..") ||
-    normalizedProjectPath.includes("\u2025") || // Unicode horizontal ellipsis
-    normalizedProjectPath.includes("\u2026"); // Unicode vertical ellipsis
+    normalizedProjectPath.includes("\u2025") || // Unicode two dot leader
+    normalizedProjectPath.includes("\u2026"); // Unicode horizontal ellipsis
 
   // `path.isAbsolute` doesn't cover Windows's drive-relative path:
   // https://github.com/nodejs/node/issues/56766

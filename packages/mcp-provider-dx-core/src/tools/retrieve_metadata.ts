@@ -152,7 +152,7 @@ Retrieve X metadata from my org and ignore any conflicts between the local proje
         output: project.getDefaultPackage().fullPath,
       });
 
-      // polling freq. is set dynamically by SDR based no the component set size.
+      // polling freq. is set dynamically by SDR based on the component set size.
       const result = await retrieve.pollStatus({
         timeout: Duration.minutes(10),
       });

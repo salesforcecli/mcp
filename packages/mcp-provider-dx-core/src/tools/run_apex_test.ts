@@ -67,7 +67,7 @@ RunSpecifiedTests="Run the Apex tests I specify, these will be specified in the 
     .boolean()
     .default(false)
     .describe(
-      'Weather to wait for the test to finish (false) or enque the Apex tests and return the test run id (true)',
+      'Whether to wait for the test to finish (false) or enqueue the Apex tests and return the test run id (true)',
     ),
   suiteName: z.string().describe('a suite of apex test classes to run').optional(),
   testRunId: z.string().default('an id of an in-progress, or completed apex test run').optional(),
