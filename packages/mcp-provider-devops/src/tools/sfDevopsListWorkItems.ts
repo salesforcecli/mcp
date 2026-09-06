@@ -47,7 +47,7 @@ export class SfDevopsListWorkItems extends McpTool<InputArgsShape, OutputArgsSha
 **Input:**
 - Either username (example devops-center@example.com) or alias (example myDevOpsOrg) is required.
       
-      **MANDATORY:** If the DevOps Center org is not given, use the 'sf-list-all-orgs' tool to list all orgs. 
+      **MANDATORY:** If the DevOps Center org is not given, use the 'list_all_orgs' tool to list all orgs. 
       The list will indicate which org is DevOps Center, or Sandbox if possible. If these details are not provided in the list, 
       ask the user to specify which org is DevOps Center org. Only proceed after the user has selected the DevOps Center org.
 

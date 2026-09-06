@@ -96,7 +96,7 @@ create a snapshot of my MyScratch in myDevHub`,
         SourceOrg: sourceOrgId,
         Description: input.description,
         SnapshotName: input.name,
-        Content: 'metadatadata',
+        Content: 'metadata',
       });
 
       if (createResponse.success === false) {
