@@ -23,7 +23,7 @@ import { Duration } from '@salesforce/kit';
 import { McpTool, McpToolConfig, ReleaseState, Services, Toolset } from '@salesforce/mcp-provider-api';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { directoryParam, usernameOrAliasParam } from '../shared/params.js';
-import { textResponse } from '../shared/utils.js';
+import { isJwtAccessToken, textResponse } from '../shared/utils.js';
 
 /*
  * Deploy metadata to a Salesforce org.
@@ -176,9 +176,14 @@ Deploy X to my org and run A,B and C apex tests.`,
         return textResponse('No local changes to deploy were found.');
       }
 
+      // JWT-shaped access tokens are rejected by Metadata SOAP; force REST.
+      // See forcedotcom/mcp#10. Opaque session IDs keep the SDR SOAP default.
+      const useRestDeploy = isJwtAccessToken(connection.accessToken);
+
       const deploy = await componentSet.deploy({
         usernameOrConnection: connection,
         apiOptions: {
+          ...(useRestDeploy ? { rest: true } : {}),
           ...(input.apexTests ? { runTests: input.apexTests, testLevel: 'RunSpecifiedTests' } : {}),
           ...(input.apexTestLevel ? { testLevel: input.apexTestLevel } : {}),
         },
@@ -198,6 +203,15 @@ Deploy X to my org and run A,B and C apex tests.`,
           `
 YOU MUST inform the user that the deploy timed out and if they want to resume the deploy, they can use the #resume_tool_operation tool
 and ${jobId} for the jobId parameter.`,
+          true,
+        );
+      }
+      if (/SOAP API does not support JWT-based access tokens/i.test(err.message)) {
+        return textResponse(
+          `Failed to deploy metadata: ${err.message}
+
+AGENT INSTRUCTIONS:
+This org's access token is JWT-shaped, which Metadata SOAP rejects. Re-run deploy_metadata on a Salesforce DX MCP build that forces Metadata REST for JWT tokens. Alternatively, ask the user to disable "Issue JSON Web Token (JWT)-based access tokens" on the Connected App / External Client App, or set SF_ORG_METADATA_REST_DEPLOY=true for CLI deploys.`,
           true,
         );
       }
