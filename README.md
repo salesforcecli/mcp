@@ -119,6 +119,27 @@ To configure [Cursor](https://cursor.com/docs/context/mcp) to work with Salesfor
 }
 ```
 
+### OpenCode
+
+To configure [OpenCode](https://opencode.ai/docs/mcp-servers/) to work with Salesforce DX MCP Server, add this snippet to your OpenCode `opencode.json` file:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "Salesforce DX": {
+      "type": "local",
+      "command": ["npx", "-y", "@salesforce/mcp", 
+                "--orgs", "DEFAULT_TARGET_ORG",
+                "--toolsets", "orgs,metadata,data,users",
+                "--tools", "run_apex_test",
+                "--allow-non-ga-tools"]
+    }
+  }
+}
+```
+
+
 ### Other MCP Clients
 
 For these other clients, refer to their documentation for adding MCP servers and follow the same pattern as in the preceding examples to configure the Salesforce DX MCP Server:
