@@ -36,6 +36,9 @@ jobs:
 
       - name: Detect changed packages
         id: detect
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PACKAGES_INPUT: ${{ inputs.packages }}
         run: |
           # Packages that auto-publish on push to main
           AUTO_PUBLISHABLE_PACKAGES=("mcp-provider-api" "mcp-provider-dx-core" "mcp-provider-code-analyzer" "mcp-provider-mobile-web" "mcp-provider-scale-products" "mcp-provider-devops" "mcp-provider-metadata-enrichment")
@@ -47,12 +50,12 @@ jobs:
           PACKAGES='[]'
           HAS_CHANGES=false
 
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             echo "Manual workflow dispatch detected"
 
-            if [ -n "${{ inputs.packages }}" ]; then
+            if [ -n "$PACKAGES_INPUT" ]; then
               # Parse comma-separated input
-              IFS=',' read -ra SPECIFIED_PACKAGES <<< "${{ inputs.packages }}"
+              IFS=',' read -ra SPECIFIED_PACKAGES <<< "$PACKAGES_INPUT"
               for pkg in "${SPECIFIED_PACKAGES[@]}"; do
                 # Trim whitespace
                 pkg=$(echo "$pkg" | xargs)
@@ -157,18 +160,21 @@ jobs:
       - name: Publish to npm
         if: ${{ steps.changelog.outputs.skipped == 'false' && steps.release.outputs.id != '' }}
         run: |
-          cd packages/${{ matrix.package }}
+          cd "packages/$MATRIX_PACKAGE"
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
           npm publish --access public
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          MATRIX_PACKAGE: ${{ matrix.package }}
 
       - name: Update main server dependency
         if: ${{ steps.changelog.outputs.skipped == 'false' && steps.release.outputs.id != '' && matrix.package != 'mcp-provider-api' }}
+        env:
+          MATRIX_PACKAGE: ${{ matrix.package }}
+          PUBLISHED_VERSION: ${{ steps.changelog.outputs.version }}
         run: |
           # Get the published version
-          PUBLISHED_VERSION="${{ steps.changelog.outputs.version }}"
-          PACKAGE_NAME="@salesforce/${{ matrix.package }}"
+          PACKAGE_NAME="@salesforce/$MATRIX_PACKAGE"
 
           echo "Updating $PACKAGE_NAME to version $PUBLISHED_VERSION in main MCP server"
 
@@ -193,5 +199,5 @@ jobs:
 
           Auto-update dependency after provider package publish.
 
-          Related release: ${{ matrix.package }}@${{ steps.changelog.outputs.version }}"
+          Related release: $MATRIX_PACKAGE@$PUBLISHED_VERSION"
           git push
