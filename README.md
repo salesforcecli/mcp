@@ -1,4 +1,10 @@
-# mcp
+> [!IMPORTANT]
+> ⚠️ **End of Life: November 2nd, 2026**
+>
+> The Salesforce DX local MCP server ([@salesforce/mcp](https://www.npmjs.com/package/@salesforce/mcp)) reaches end of life on November 2nd, 2026.  
+> See https://github.com/forcedotcom/mcp/issues/46 for more details.
+
+# MCP
 
 MCP Server for Interacting with Salesforce Orgs
 
