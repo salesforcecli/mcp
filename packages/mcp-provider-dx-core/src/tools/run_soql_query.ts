@@ -19,6 +19,10 @@ import { McpTool, McpToolConfig, ReleaseState, Services, Toolset } from '@salesf
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { textResponse } from '../shared/utils.js';
 import { directoryParam, usernameOrAliasParam, useToolingApiParam } from '../shared/params.js';
+import {
+  DEFAULT_MAX_SOQL_RECORDS,
+  formatSoqlQueryResult,
+} from '../shared/queryResultFormat.js';
 
 /*
  * Query Salesforce org
@@ -28,16 +32,26 @@ import { directoryParam, usernameOrAliasParam, useToolingApiParam } from '../sha
  * Parameters:
  * - query: SOQL query to run (required)
  * - usernameOrAlias: username or alias for the Salesforce org to run the query against
+ * - maxRecords: optional cap on records returned to the MCP client (default 100)
  *
  * Returns:
- * - textResponse: SOQL query results
+ * - textResponse: SOQL query results (may be truncated for large datasets)
  */
 
 export const queryOrgParamsSchema = z.object({
-  query: z.string().describe('SOQL query to run'),
+  query: z.string().describe('SOQL query to run. Prefer selective fields and LIMIT for large objects.'),
   usernameOrAlias: usernameOrAliasParam,
   directory: directoryParam,
   useToolingApi: useToolingApiParam,
+  maxRecords: z
+    .number()
+    .int()
+    .positive()
+    .max(2000)
+    .optional()
+    .describe(
+      `Maximum number of records to return to the MCP client (default ${DEFAULT_MAX_SOQL_RECORDS}). Use a smaller LIMIT in SOQL when possible.`,
+    ),
 });
 
 type InputArgs = z.infer<typeof queryOrgParamsSchema>;
@@ -64,7 +78,11 @@ export class QueryOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
   public getConfig(): McpToolConfig<InputArgsShape, OutputArgsShape> {
     return {
       title: 'Query Org',
-      description: 'Run a SOQL query against a Salesforce org.',
+      description: `Run a SOQL query against a Salesforce org.
+
+AGENT INSTRUCTIONS:
+- Prefer selective fields and LIMIT for large objects.
+- If the tool response says TRUNCATED, do NOT re-run the identical SOQL. Narrow with WHERE/LIMIT or fewer fields instead.`,
       inputSchema: queryOrgParamsSchema.shape,
       outputSchema: undefined,
       annotations: {
@@ -87,7 +105,9 @@ export class QueryOrgMcpTool extends McpTool<InputArgsShape, OutputArgsShape> {
         ? await connection.tooling.query(input.query)
         : await connection.query(input.query);
 
-      return textResponse(`SOQL query results:\n\n${JSON.stringify(result, null, 2)}`);
+      return textResponse(
+        formatSoqlQueryResult(result, { maxRecords: input.maxRecords ?? DEFAULT_MAX_SOQL_RECORDS }),
+      );
     } catch (error) {
       let errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
