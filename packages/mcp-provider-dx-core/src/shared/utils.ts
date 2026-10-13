@@ -54,3 +54,18 @@ export function sanitizePath(projectPath: string): boolean {
 
   return !hasTraversal && isAbsolute;
 }
+
+/**
+ * Connected Apps / External Client Apps can issue JWT-shaped access tokens.
+ * Metadata SOAP deploy rejects those tokens ("SOAP API does not support
+ * JWT-based access tokens"); Metadata REST accepts them. Treat a 3-segment
+ * dotted token as JWT so deploy_metadata can force REST automatically.
+ */
+export function isJwtAccessToken(accessToken: string | undefined | null): boolean {
+  if (!accessToken || typeof accessToken !== 'string') return false;
+  const parts = accessToken.split('.');
+  // Minimal JWT shape: header.payload.signature (all non-empty). Opaque
+  // session IDs are single tokens without dots (or rarely other shapes).
+  return parts.length === 3 && parts.every((p) => p.length > 0);
+}
+
