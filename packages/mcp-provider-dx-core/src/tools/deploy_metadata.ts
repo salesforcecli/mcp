@@ -42,7 +42,7 @@ import { textResponse } from '../shared/utils.js';
  */
 
 export const deployMetadataParams = z.object({
-  ignoreConflicts: z.boolean().describe(' Ignore conflicts and deploy local files, even if they overwrite changes in the org.').optional(),
+  ignoreConflicts: z.boolean().describe('Ignore conflicts and deploy local files, even if they overwrite changes in the org.').optional(),
   sourceDir: z
     .array(z.string())
     .describe('Path to the local source files to deploy. Leave this unset if the user is vague about what to deploy.')
@@ -59,7 +59,7 @@ export const deployMetadataParams = z.object({
       `Apex test level to use during deployment.
 
 AGENT INSTRUCTIONS
-Set this only if the user specifically ask to run apex tests in some of these ways:
+Set this only if the user specifically asks to run Apex tests in some of these ways:
 
 NoTestRun="No tests are run"
 RunLocalTests="Run all tests in the org, except the ones that originate from installed managed and unlocked packages."
@@ -73,7 +73,7 @@ Don't set this param if "apexTests" is also set.
     .describe(
       `Apex tests classes to run.
 
-Set this param if the user ask an Apex test to be run during deployment.
+Set this param if the user asks for an Apex test to be run during deployment.
 `,
     )
     .optional(),
