@@ -17,6 +17,7 @@ import {
   Services as IServices,
   TelemetryService,
   TelemetryEvent,
+  PdpEvent,
   OrgService,
   SanitizedOrgAuthorization,
   ConfigService,
@@ -68,6 +69,10 @@ export class Services implements IServices {
 
 class NoopTelemetryService implements TelemetryService {
   public sendEvent(_eventName: string, _event: TelemetryEvent): void {
+    // no-op
+  }
+
+  public sendPdpEvent(_event: PdpEvent): void {
     // no-op
   }
 }
